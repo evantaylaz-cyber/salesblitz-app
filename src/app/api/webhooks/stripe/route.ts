@@ -57,20 +57,32 @@ export async function POST(req: NextRequest) {
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const userId = session.metadata?.userId;
-  if (!userId) return;
+  if (!userId) {
+    console.warn("checkout.session.completed: No userId in metadata", { sessionId: session.id, metadata: session.metadata });
+    return;
+  }
 
   if (session.mode === "payment") {
     // One-time purchase: Interview Sprint or Run Pack
     const priceKey = session.metadata?.priceKey;
-    if (!priceKey) return;
+    if (!priceKey) {
+      console.warn("checkout.session.completed (payment): No priceKey in metadata", { sessionId: session.id, userId });
+      return;
+    }
 
     // We need to look up the price to determine what was purchased
     const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
     const priceId = lineItems.data[0]?.price?.id;
-    if (!priceId) return;
+    if (!priceId) {
+      console.warn("checkout.session.completed (payment): No priceId in line items", { sessionId: session.id, userId });
+      return;
+    }
 
     const packInfo = getPackFromPriceId(priceId);
-    if (!packInfo) return;
+    if (!packInfo) {
+      console.warn("checkout.session.completed (payment): Unknown priceId", { sessionId: session.id, priceId, userId });
+      return;
+    }
 
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 90);
@@ -86,6 +98,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         stripePaymentId: session.payment_intent as string,
       },
     });
+    console.log("checkout.session.completed: RunPack created", { userId, type: packInfo.type, runs: packInfo.runs });
   }
 
   if (session.mode === "subscription") {
@@ -101,16 +114,28 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   const userId = subscription.metadata?.userId;
-  if (!userId) return;
+  if (!userId) {
+    console.warn("subscription.updated: No userId in metadata", { subscriptionId: subscription.id, metadata: subscription.metadata });
+    return;
+  }
 
   const priceId = subscription.items.data[0]?.price?.id;
-  if (!priceId) return;
+  if (!priceId) {
+    console.warn("subscription.updated: No priceId in subscription items", { subscriptionId: subscription.id, userId });
+    return;
+  }
 
   const tierInfo = getTierFromPriceId(priceId);
-  if (!tierInfo) return;
+  if (!tierInfo) {
+    console.warn("subscription.updated: Unknown priceId", { subscriptionId: subscription.id, priceId, userId });
+    return;
+  }
 
   const user = await prisma.user.findUnique({ where: { id: userId } });
-  if (!user) return;
+  if (!user) {
+    console.warn("subscription.updated: User not found in DB", { subscriptionId: subscription.id, userId });
+    return;
+  }
 
   // Only reset runs if this is a new subscription or tier change
   const isNewOrUpgraded =
@@ -134,7 +159,10 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
 
 async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   const userId = subscription.metadata?.userId;
-  if (!userId) return;
+  if (!userId) {
+    console.warn("subscription.deleted: No userId in metadata", { subscriptionId: subscription.id, metadata: subscription.metadata });
+    return;
+  }
 
   await prisma.user.update({
     where: { id: userId },
@@ -152,19 +180,31 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
 
 async function handleInvoicePaid(invoice: Stripe.Invoice) {
   // Reset subscription runs on successful billing cycle renewal
-  if (!invoice.subscription) return;
+  if (!invoice.subscription) {
+    console.log("invoice.paid: No subscription on invoice (one-time payment)", { invoiceId: invoice.id });
+    return;
+  }
 
   const subscription = await stripe.subscriptions.retrieve(
     invoice.subscription as string
   );
   const userId = subscription.metadata?.userId;
-  if (!userId) return;
+  if (!userId) {
+    console.warn("invoice.paid: No userId in subscription metadata", { invoiceId: invoice.id, subscriptionId: subscription.id });
+    return;
+  }
 
   const priceId = subscription.items.data[0]?.price?.id;
-  if (!priceId) return;
+  if (!priceId) {
+    console.warn("invoice.paid: No priceId in subscription items", { invoiceId: invoice.id, subscriptionId: subscription.id, userId });
+    return;
+  }
 
   const tierInfo = getTierFromPriceId(priceId);
-  if (!tierInfo) return;
+  if (!tierInfo) {
+    console.warn("invoice.paid: Unknown priceId", { invoiceId: invoice.id, priceId, userId });
+    return;
+  }
 
   // Only reset runs for renewal invoices (not the first invoice)
   if (invoice.billing_reason === "subscription_cycle") {
@@ -179,13 +219,19 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
 }
 
 async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
-  if (!invoice.subscription) return;
+  if (!invoice.subscription) {
+    console.log("invoice.payment_failed: No subscription on invoice", { invoiceId: invoice.id });
+    return;
+  }
 
   const subscription = await stripe.subscriptions.retrieve(
     invoice.subscription as string
   );
   const userId = subscription.metadata?.userId;
-  if (!userId) return;
+  if (!userId) {
+    console.warn("invoice.payment_failed: No userId in subscription metadata", { invoiceId: invoice.id, subscriptionId: subscription.id });
+    return;
+  }
 
   await prisma.user.update({
     where: { id: userId },
