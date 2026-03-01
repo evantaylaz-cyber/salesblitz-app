@@ -1,0 +1,155 @@
+import { NextRequest, NextResponse } from "next/server";
+import { currentUser } from "@clerk/nextjs/server";
+import prisma from "@/lib/db";
+import { consumeRun } from "@/lib/runs";
+import { ToolName } from "@/lib/tools";
+import { sendOrderNotification } from "@/lib/email";
+import { initializeSteps, getExpectedAssets } from "@/lib/job-steps";
+
+// GET — list current user's run requests
+export async function GET() {
+  try {
+    const clerkUser = await currentUser();
+    if (!clerkUser) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { clerkId: clerkUser.id },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const requests = await prisma.runRequest.findMany({
+      where: { userId: user.id },
+      orderBy: { createdAt: "desc" },
+      take: 50,
+    });
+
+    return NextResponse.json({ requests });
+  } catch (error) {
+    console.error("Fetch requests error:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch requests" },
+      { status: 500 }
+    );
+  }
+}
+
+// POST — submit a new run request (consumes a run, initializes execution steps)
+export async function POST(req: NextRequest) {
+  try {
+    const clerkUser = await currentUser();
+    if (!clerkUser) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await req.json();
+    const {
+      toolName,
+      targetName,
+      targetCompany,
+      targetRole,
+      targetCompanyUrl,
+      jobDescription,
+      linkedinUrl,
+      linkedinText,
+      additionalNotes,
+      engagementType,
+      meetingDate,
+      priorInteractions,
+    } = body;
+
+    if (!toolName || !targetName || !targetCompany) {
+      return NextResponse.json(
+        { error: "toolName, targetName, and targetCompany are required" },
+        { status: 400 }
+      );
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { clerkId: clerkUser.id },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // Consume a run first — if they don't have runs, fail early
+    const runResult = await consumeRun(user.id, toolName as ToolName);
+    if (!runResult.success) {
+      return NextResponse.json({ error: runResult.error }, { status: 403 });
+    }
+
+    // Initialize execution steps and expected assets for this tool
+    const steps = initializeSteps(toolName as ToolName);
+    const expectedAssets = getExpectedAssets(toolName as ToolName);
+
+    // Create the run request with execution tracking
+    const request = await prisma.runRequest.create({
+      data: {
+        userId: user.id,
+        toolName,
+        targetName,
+        targetCompany,
+        targetRole: targetRole || null,
+        jobDescription: jobDescription || null,
+        linkedinUrl: linkedinUrl || null,
+        linkedinText: linkedinText || null,
+        additionalNotes: additionalNotes || null,
+        targetCompanyUrl: targetCompanyUrl || null,
+        engagementType: engagementType || 'cold_outreach',
+        meetingDate: meetingDate || null,
+        priorInteractions: priorInteractions || null,
+        priority: user.priorityProcessing,
+        status: "submitted",
+        steps: JSON.parse(JSON.stringify(steps)),
+        assets: JSON.parse(JSON.stringify(expectedAssets.map(a => ({ ...a, url: null, size: null })))),
+        currentStep: null,
+      },
+    });
+
+    // Send email notification (fire-and-forget — don't block the response)
+    sendOrderNotification({
+      requestId: request.id,
+      toolName,
+      targetName,
+      targetCompany,
+      targetRole,
+      jobDescription,
+      linkedinUrl,
+      additionalNotes,
+      priority: user.priorityProcessing,
+      customerEmail: clerkUser.emailAddresses?.[0]?.emailAddress || null,
+      customerName: `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`.trim() || null,
+    }).catch((err) => console.error("Order notification failed:", err));
+
+    // Trigger the execution engine (fire-and-forget — don't block the response)
+    if (process.env.WORKER_WEBHOOK_URL) {
+      fetch(process.env.WORKER_WEBHOOK_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": process.env.INTERNAL_API_KEY || "",
+        },
+        body: JSON.stringify({ requestId: request.id }),
+      }).catch((err) => console.error("Worker trigger failed:", err));
+    }
+
+    return NextResponse.json({
+      success: true,
+      requestId: request.id,
+      source: runResult.source,
+      runsRemaining: runResult.runsRemaining,
+      steps,
+    });
+  } catch (error) {
+    console.error("Create request error:", error);
+    return NextResponse.json(
+      { error: "Failed to create request" },
+      { status: 500 }
+    );
+  }
+}

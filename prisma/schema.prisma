@@ -1,0 +1,137 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id                      String     @id @default(uuid())
+  clerkId                 String     @unique
+  email                   String     @unique
+  name                    String?
+  stripeCustomerId        String?    @unique
+  currentTier             String?    // launch | pro | closer | null
+  billingCycle            String?    // monthly | annual
+  subscriptionRunsRemaining Int      @default(0)
+  subscriptionRunsTotal   Int        @default(0)
+  priorityProcessing      Boolean    @default(false)
+  stripeSubscriptionId    String?
+  subscriptionStatus      String     @default("none") // active | canceled | past_due | none
+  currentPeriodEnd        DateTime?
+  createdAt               DateTime   @default(now())
+  updatedAt               DateTime   @updatedAt
+  runPacks                RunPack[]
+  runLogs                 RunLog[]
+  runRequests             RunRequest[]
+}
+
+model RunPack {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  runsRemaining Int
+  runsTotal     Int
+  purchasedAt   DateTime @default(now())
+  expiresAt     DateTime
+  type          String   // pack_5 | pack_10 | pack_20 | interview_sprint
+  allowedTools  String[] // empty array = all accessible tools; ["interview_outreach", "interview_prep"] for sprint
+  stripePaymentId String?
+}
+
+model RunLog {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  toolName  String
+  createdAt DateTime @default(now())
+  source    String   // subscription | pack | sprint
+  status    String   @default("completed") // completed | failed | in_progress
+  priority  Boolean  @default(false)
+}
+
+model RunRequest {
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  toolName        String   // interview_prep | interview_outreach | prospect_prep | prospect_outreach | deal_audit | champion_builder
+  status          String   @default("submitted") // submitted | researching | generating | ready | delivered | failed
+  priority        Boolean  @default(false)
+
+  // Customer inputs
+  targetName      String   // Name of person or account
+  targetCompany   String   // Company name
+  targetRole      String?  // Role/title (for interview tools)
+  jobDescription  String?  @db.Text // Full JD text
+  linkedinUrl     String?  // LinkedIn profile URL
+  linkedinText    String?  @db.Text // Pasted LinkedIn summary + experience
+  additionalNotes String?  @db.Text // Any extra context from customer
+  targetCompanyUrl String?  // Target company website URL
+
+  // Engagement context
+  engagementType           String   @default("cold_outreach")
+  meetingDate              DateTime?
+  priorInteractions        String?  @db.Text
+
+  // Execution tracking
+  currentStep     String?  // Current step ID (e.g., "competitive_research", "market_intel", "generating_assets")
+  steps           Json     @default("[]") // Array of { id, label, status, startedAt, completedAt }
+  assets          Json     @default("[]") // Array of { id, label, format, url, size? }
+  researchData    Json?    // Cached research output from L1-L3 (feeds into asset generation)
+  errorMessage    String?  @db.Text // Error details if failed
+
+  // Pre-execution clarification (v2.5)
+  clarificationQuestions Json?    // Generated questions from executor
+  clarificationAnswers  Json?    // User's answers
+  clarificationSentAt   DateTime? // When clarification email was sent
+
+  // Delivery
+  deliveryUrl     String?  // Google Drive folder URL or download link
+  deliveryNotes   String?  @db.Text // Notes about what was delivered
+  adminNotes      String?  @db.Text // Internal notes (not visible to customer)
+
+  // Timestamps
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  startedAt       DateTime? // When execution begins
+  completedAt     DateTime? // When assets are ready
+  deliveredAt     DateTime? // When customer is notified
+}
+
+model UserProfile {
+  id                    String   @id @default(uuid())
+  userId                String   @unique @map("user_id")
+  
+  // Company context
+  companyName           String?  @map("company_name")
+  companyProduct        String?  @map("company_product") @db.Text
+  companyDescription    String?  @map("company_description") @db.Text
+  companyDifferentiators String? @map("company_differentiators") @db.Text
+  companyCompetitors    String?  @map("company_competitors") @db.Text
+  companyTargetMarket   String?  @map("company_target_market") @db.Text
+  companyUrl            String?  @map("company_url")
+
+  // Customer's own LinkedIn
+  linkedinAbout         String?  @map("linkedin_about") @db.Text
+  linkedinExperience    String?  @map("linkedin_experience") @db.Text
+  linkedinEducation     String?  @map("linkedin_education") @db.Text
+
+  // Selling methodology
+  sellingStyle          String?  @default("MEDDPICC") @map("selling_style")
+
+  // Sales assets (JSONB)
+  dealStories           Json     @default("[]") @map("deal_stories")
+  valueProps            Json     @default("[]") @map("value_props")
+
+  // Preferences
+  preferredTone         String?  @default("professional") @map("preferred_tone")
+  onboardingCompleted   Boolean  @default(false) @map("onboarding_completed")
+
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("user_profile")
+}
