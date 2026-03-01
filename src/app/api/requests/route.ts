@@ -111,7 +111,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Send email notification (fire-and-forget — don't block the response)
+    // Send email notification (don't block response on failure)
     sendOrderNotification({
       requestId: request.id,
       toolName,
@@ -126,16 +126,23 @@ export async function POST(req: NextRequest) {
       customerName: `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`.trim() || null,
     }).catch((err) => console.error("Order notification failed:", err));
 
-    // Trigger the execution engine (fire-and-forget — don't block the response)
+    // Trigger the execution engine (MUST await — unawaited fetch dies on Vercel serverless)
     if (process.env.WORKER_WEBHOOK_URL) {
-      fetch(process.env.WORKER_WEBHOOK_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": process.env.INTERNAL_API_KEY || "",
-        },
-        body: JSON.stringify({ requestId: request.id }),
-      }).catch((err) => console.error("Worker trigger failed:", err));
+      try {
+        const workerRes = await fetch(process.env.WORKER_WEBHOOK_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": process.env.INTERNAL_API_KEY || "",
+          },
+          body: JSON.stringify({ requestId: request.id }),
+        });
+        console.log("Worker trigger response:", workerRes.status, "for request:", request.id);
+      } catch (err) {
+        console.error("Worker trigger failed:", err);
+      }
+    } else {
+      console.warn("WORKER_WEBHOOK_URL not set — skipping worker trigger");
     }
 
     return NextResponse.json({

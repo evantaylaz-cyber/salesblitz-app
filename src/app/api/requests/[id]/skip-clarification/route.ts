@@ -55,16 +55,21 @@ export async function GET(
       },
     });
 
-    // Trigger worker re-execution
+    // Trigger worker re-execution (MUST await — unawaited fetch dies on Vercel serverless)
     if (process.env.WORKER_WEBHOOK_URL) {
-      fetch(process.env.WORKER_WEBHOOK_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": process.env.INTERNAL_API_KEY || "",
-        },
-        body: JSON.stringify({ requestId: params.id }),
-      }).catch((err) => console.error("Worker re-trigger failed:", err));
+      try {
+        const res = await fetch(process.env.WORKER_WEBHOOK_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": process.env.INTERNAL_API_KEY || "",
+          },
+          body: JSON.stringify({ requestId: params.id }),
+        });
+        console.log("Worker re-trigger response:", res.status, "for request:", params.id);
+      } catch (err) {
+        console.error("Worker re-trigger failed:", err);
+      }
     }
 
     // Redirect to request status page
