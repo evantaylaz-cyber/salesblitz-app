@@ -5,6 +5,7 @@ import { consumeRun } from "@/lib/runs";
 import { ToolName } from "@/lib/tools";
 import { sendOrderNotification } from "@/lib/email";
 import { initializeSteps, getExpectedAssets } from "@/lib/job-steps";
+import { normalizeAssets } from "@/lib/normalize-assets";
 
 // GET — list current user's run requests
 export async function GET() {
@@ -28,7 +29,13 @@ export async function GET() {
       take: 50,
     });
 
-    return NextResponse.json({ requests });
+    // Normalize assets for each request so the UI gets consistent array format
+    const normalized = requests.map((r) => ({
+      ...r,
+      assets: normalizeAssets(r.assets, r.toolName),
+    }));
+
+    return NextResponse.json({ requests: normalized });
   } catch (error) {
     console.error("Fetch requests error:", error);
     return NextResponse.json(

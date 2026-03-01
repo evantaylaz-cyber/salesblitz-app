@@ -40,6 +40,7 @@ export default function RequestPage() {
 
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submittedRequestId, setSubmittedRequestId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   // Form fields
@@ -138,6 +139,7 @@ export default function RequestPage() {
       const data = await res.json();
       if (data.success) {
         setSubmitted(true);
+        setSubmittedRequestId(data.requestId);
       } else {
         setError(data.error || "Failed to submit request");
       }
@@ -161,20 +163,22 @@ export default function RequestPage() {
             <strong>{targetName}</strong> at <strong>{targetCompany}</strong> has been submitted.
           </p>
           <p className="mt-2 text-sm text-gray-500">
-            You&apos;ll receive your deliverables within 24 hours. Priority processing requests are handled first.
+            Your deliverables are being generated now. Track progress in real-time below.
           </p>
           <div className="mt-6 flex gap-3 justify-center">
+            {submittedRequestId && (
+              <a
+                href={`/requests/${submittedRequestId}`}
+                className="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-indigo-700"
+              >
+                Track Progress
+              </a>
+            )}
             <a
               href="/dashboard"
-              className="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-indigo-700"
-            >
-              Back to Dashboard
-            </a>
-            <a
-              href="/requests"
               className="rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
             >
-              View My Requests
+              Back to Dashboard
             </a>
           </div>
         </div>
