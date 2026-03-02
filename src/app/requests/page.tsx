@@ -93,6 +93,7 @@ const BATCH_STATUS_CONFIG: Record<string, { label: string; color: string; bg: st
   failed: { label: "Failed", color: "text-red-700", bg: "bg-red-50 border-red-200", icon: AlertCircle },
   partial: { label: "Partial", color: "text-amber-700", bg: "bg-amber-50 border-amber-200", icon: AlertCircle },
   submitted: { label: "Queued", color: "text-blue-700", bg: "bg-blue-50 border-blue-200", icon: Clock },
+  awaiting_clarification: { label: "Your Input Needed", color: "text-indigo-700", bg: "bg-indigo-50 border-indigo-200", icon: MessageCircleQuestion },
 };
 
 export default function RequestsPage() {
@@ -111,6 +112,7 @@ export default function RequestsPage() {
         fetch("/api/requests"),
         fetch("/api/batch-requests"),
       ]);
+
       if (reqRes.ok) {
         const data = await reqRes.json();
         setRequests(data.requests || []);
@@ -141,7 +143,10 @@ export default function RequestsPage() {
       <header className="border-b bg-white">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-4">
-            <a href="/dashboard" className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600">
+            <a
+              href="/dashboard"
+              className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+            >
               <ArrowLeft className="h-5 w-5" />
             </a>
             <h1 className="text-lg font-bold text-gray-900">My Requests</h1>
@@ -188,8 +193,11 @@ export default function RequestsPage() {
                     const isActive = batch.status === "processing" || batch.status === "submitted";
                     const totalAccounts = Array.isArray(batch.accounts) ? batch.accounts.length : 0;
                     const children = Array.isArray(batch.childRequests) ? batch.childRequests : [];
-                    const completedAccounts = children.filter((c) => c.status === "delivered" || c.status === "ready" || c.status === "completed").length;
+                    const completedAccounts = children.filter((c) =>
+                      c.status === "delivered" || c.status === "ready" || c.status === "completed"
+                    ).length;
                     const failedAccounts = children.filter((c) => c.status === "failed").length;
+                    const awaitingAccounts = children.filter((c) => c.status === "awaiting_clarification").length;
                     const progress = totalAccounts > 0 ? Math.round((completedAccounts / totalAccounts) * 100) : 0;
 
                     return (
@@ -224,6 +232,9 @@ export default function RequestsPage() {
                                   {failedAccounts > 0 && (
                                     <span className="text-red-500 ml-1">({failedAccounts} failed)</span>
                                   )}
+                                  {awaitingAccounts > 0 && (
+                                    <span className="text-indigo-500 ml-1">({awaitingAccounts} awaiting input)</span>
+                                  )}
                                 </span>
                                 <span className="text-xs text-gray-400 ml-auto">
                                   {Math.round(progress)}%
@@ -232,12 +243,17 @@ export default function RequestsPage() {
                               <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden">
                                 <div
                                   className={`h-full rounded-full transition-all duration-500 ${
-                                    batch.status === "failed" ? "bg-red-400" :
-                                    batch.status === "partial" ? "bg-amber-400" :
-                                    progress === 100 ? "bg-emerald-500" :
-                                    "bg-indigo-500"
+                                    batch.status === "failed"
+                                      ? "bg-red-400"
+                                      : batch.status === "partial"
+                                      ? "bg-amber-400"
+                                      : batch.status === "awaiting_clarification"
+                                      ? "bg-indigo-400"
+                                      : progress === 100
+                                      ? "bg-emerald-500"
+                                      : "bg-indigo-500"
                                   }`}
-                                  style={{ width: `${progress}%` }}
+                                  style={{ width: `${Math.max(progress, batch.status === "awaiting_clarification" ? 10 : 0)}%` }}
                                 />
                               </div>
                             </div>
@@ -247,11 +263,17 @@ export default function RequestsPage() {
                               {new Date(batch.createdAt).toLocaleTimeString()}
                             </p>
                           </div>
-
                           <div className="flex items-center gap-2 ml-4 shrink-0">
-                            <span className="inline-flex items-center gap-1.5 text-sm text-gray-400">
-                              <ArrowRight className="h-4 w-4" />
-                            </span>
+                            {batch.status === "awaiting_clarification" ? (
+                              <span className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white">
+                                <MessageCircleQuestion className="h-4 w-4" />
+                                Review
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1.5 text-sm text-gray-400">
+                                <ArrowRight className="h-4 w-4" />
+                              </span>
+                            )}
                           </div>
                         </div>
                       </a>
@@ -275,7 +297,6 @@ export default function RequestsPage() {
                   {requests.map((req) => {
                     const statusInfo = STATUS_CONFIG[req.status] || STATUS_CONFIG.submitted;
                     const StatusIcon = statusInfo.icon;
-
                     const steps = Array.isArray(req.steps) ? req.steps as StepData[] : [];
                     const completedSteps = steps.filter((s) => s.status === "completed").length;
                     const totalSteps = steps.length;
@@ -304,7 +325,8 @@ export default function RequestsPage() {
                               </span>
                               {req.priority && (
                                 <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 border border-amber-200 px-2 py-0.5 text-xs font-medium text-amber-700">
-                                  <Zap className="h-3 w-3" /> Priority
+                                  <Zap className="h-3 w-3" />
+                                  Priority
                                 </span>
                               )}
                             </div>
@@ -312,7 +334,6 @@ export default function RequestsPage() {
                               {req.targetName} · {req.targetCompany}
                               {req.targetRole ? ` · ${req.targetRole}` : ""}
                             </p>
-
                             {totalSteps > 0 && (
                               <div className="mt-3">
                                 <div className="flex items-center gap-2 mb-1.5">
@@ -328,16 +349,17 @@ export default function RequestsPage() {
                                 <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden">
                                   <div
                                     className={`h-full rounded-full transition-all duration-500 ${
-                                      req.status === "failed" ? "bg-red-400" :
-                                      progress === 100 ? "bg-emerald-500" :
-                                      "bg-indigo-500"
+                                      req.status === "failed"
+                                        ? "bg-red-400"
+                                        : progress === 100
+                                        ? "bg-emerald-500"
+                                        : "bg-indigo-500"
                                     }`}
                                     style={{ width: `${progress}%` }}
                                   />
                                 </div>
                               </div>
                             )}
-
                             <p className="mt-2 text-xs text-gray-400">
                               Submitted {new Date(req.createdAt).toLocaleDateString()} at{" "}
                               {new Date(req.createdAt).toLocaleTimeString()}
@@ -346,7 +368,6 @@ export default function RequestsPage() {
                               )}
                             </p>
                           </div>
-
                           {req.status === "awaiting_clarification" ? (
                             <div className="flex items-center gap-2 ml-4 shrink-0">
                               <span
