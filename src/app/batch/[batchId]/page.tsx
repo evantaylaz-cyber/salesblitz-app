@@ -217,6 +217,7 @@ export default function BatchProgressPage() {
               {batchJob.status.charAt(0).toUpperCase() + batchJob.status.slice(1)}
             </span>
           </div>
+
           {/* Progress Bar */}
           <div>
             <div className="flex items-center justify-between mb-2">
@@ -351,3 +352,81 @@ export default function BatchProgressPage() {
             )}
           </div>
         </div>
+
+        {/* Synthesis Highlights (when complete) */}
+        {isComplete && batchJob.synthesisHighlights && (
+          <div className="rounded-xl border border-emerald-500/20 bg-emerald-950/30 p-6 space-y-4">
+            <div className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-emerald-400" />
+              <h3 className="text-sm font-semibold text-emerald-300">Synthesis Highlights</h3>
+            </div>
+
+            {(batchJob.synthesisHighlights.topPriorityAccount || batchJob.synthesisHighlights.priorityRanking) && (
+              <div>
+                <p className="text-xs text-emerald-400/70 uppercase tracking-wide mb-1">
+                  Top Priority Account
+                </p>
+                <p className="text-white">
+                  {batchJob.synthesisHighlights.topPriorityAccount ||
+                    (Array.isArray(batchJob.synthesisHighlights.priorityRanking) && batchJob.synthesisHighlights.priorityRanking[0]?.account) ||
+                    "See full report"}
+                </p>
+              </div>
+            )}
+
+            {(batchJob.synthesisHighlights.territoryStrategySummary || batchJob.synthesisHighlights.keyInsight) && (
+              <div>
+                <p className="text-xs text-emerald-400/70 uppercase tracking-wide mb-1">
+                  Territory Strategy
+                </p>
+                <p className="text-white text-sm leading-relaxed">
+                  {batchJob.synthesisHighlights.territoryStrategySummary ||
+                    batchJob.synthesisHighlights.keyInsight ||
+                    "See full report"}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Batch Assets (when complete) */}
+        {isComplete && batchJob.batchAssetUrls && batchJob.batchAssetUrls.length > 0 && (
+          <div className="rounded-xl border border-zinc-800/60 bg-zinc-900/30 p-6 space-y-4">
+            <h3 className="text-sm font-semibold text-white">Batch Assets</h3>
+            <div className="space-y-2">
+              {batchJob.batchAssetUrls.map((asset: any, idx: number) => (
+                <a
+                  key={idx}
+                  href={asset.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 rounded-lg border border-zinc-800/60 bg-zinc-800/20 px-4 py-3 hover:bg-zinc-800/40 transition"
+                >
+                  <FileText className="h-5 w-5 text-indigo-400" />
+                  <span className="flex-1 text-sm font-medium text-white">{asset.label || asset.id || `Asset ${idx + 1}`}</span>
+                  <span className="text-zinc-500">↗</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Status Message */}
+        {isComplete && (
+          <div className="flex items-center gap-3 rounded-lg border border-emerald-500/20 bg-emerald-950/30 p-4">
+            <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0" />
+            <p className="text-sm text-emerald-300">
+              Batch processing{" "}
+              {batchJob.status === "completed"
+                ? "completed successfully"
+                : batchJob.status === "failed"
+                ? "failed"
+                : "partially completed"}
+              . You can now view individual requests.
+            </p>
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}
