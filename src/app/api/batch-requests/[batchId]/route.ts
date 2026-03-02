@@ -5,13 +5,15 @@ import prisma from "@/lib/db";
 // GET - get a single batch job with progress data matching frontend interface
 export async function GET(
   request: NextRequest,
-  { params }: { params: { batchId: string } }
+  context: { params: Promise<{ batchId: string }> }
 ) {
   try {
     const user = await currentUser();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const { batchId } = await context.params;
 
     const dbUser = await prisma.user.findUnique({
       where: { clerkId: user.id },
@@ -22,7 +24,7 @@ export async function GET(
     }
 
     const batchJob = await prisma.batchJob.findUnique({
-      where: { id: params.batchId },
+      where: { id: batchId },
       include: {
         childRequests: {
           orderBy: { batchIndex: "asc" },
@@ -74,8 +76,8 @@ export async function GET(
     // Parse synthesis highlights
     const synthesis = batchJob.synthesisData as any;
     const synthesisHighlights = synthesis ? {
-      topPriorityAccount: synthesis.priorityRanking?.[0]?.account || undefined,
-      territoryStrategySummary: synthesis.territoryStrategy?.substring(0, 200) || undefined,
+      topPriorityAccount: synthesis.priorityRanking?.[0]?.company || synthesis.priorityRanking?.[0]?.account || undefined,
+      territoryStrategySummary: synthesis.territoryStrategy?.substring(0, 300) || undefined,
     } : undefined;
 
     // Parse batch assets into URL map
@@ -86,16 +88,27 @@ export async function GET(
       strategyBriefUrl: assets.find((a: any) => a.label === "strategy_brief")?.url,
     } : undefined;
 
+    // Map batch status to frontend-expected status
+    const statusMap: Record<string, string> = {
+      submitted: "processing",
+      researching: "processing",
+      synthesizing: "processing",
+      ready: "completed",
+      delivered: "completed",
+      failed: "failed",
+    };
+    const frontendStatus = statusMap[batchJob.status] || batchJob.status;
+
     return NextResponse.json({
       batchJob: {
         id: batchJob.id,
         toolName: batchJob.toolName,
         batchType: batchJob.batchType,
-        status: batchJob.status,
+        status: frontendStatus,
         totalAccounts,
         completedAccounts,
         failedAccounts,
-        percentComplete,
+        percentComplete: frontendStatus === "completed" ? 100 : percentComplete,
         steps: defaultSteps,
         accountStatuses,
         createdAt: batchJob.createdAt,
