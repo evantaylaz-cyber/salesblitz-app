@@ -1,94 +1,46 @@
 import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
-import prisma from "@/lib/db";
+import { PrismaClient } from "@prisma/client";
 
-// GET - get a single batch job with progress data matching frontend interface
+const prisma = new PrismaClient();
+
 export async function GET(
   request: NextRequest,
   context: { params: Promise<{ batchId: string }> }
 ) {
   try {
-    const user = await currentUser();
-    if (!user) {
+    const { batchId } = await context.params;
+    console.log("[BATCH GET] batchId:", batchId);
+
+    const clerkUser = await currentUser();
+    if (!clerkUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-
-    const { batchId } = await context.params;
+    console.log("[BATCH GET] clerkUser:", clerkUser.id);
 
     const dbUser = await prisma.user.findUnique({
-      where: { clerkId: user.id },
+      where: { clerkId: clerkUser.id },
     });
-
     if (!dbUser) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
+    console.log("[BATCH GET] dbUser:", dbUser.id);
 
     const batchJob = await prisma.batchJob.findUnique({
       where: { id: batchId },
-      include: {
-        childRequests: {
-          orderBy: { batchIndex: "asc" },
-        },
-      },
+      include: { childRequests: true },
     });
+    console.log("[BATCH GET] batchJob found:", !!batchJob);
 
-    if (!batchJob || batchJob.userId !== dbUser.id) {
+    if (!batchJob) {
       return NextResponse.json({ error: "Batch not found" }, { status: 404 });
     }
 
-    const childRequests = batchJob.childRequests || [];
-    const totalAccounts = childRequests.length;
-    const completedAccounts = childRequests.filter(
-      (r: any) => r.status === "ready" || r.status === "delivered"
-    ).length;
-    const failedAccounts = childRequests.filter(
-      (r: any) => r.status === "failed"
-    ).length;
-    const percentComplete = totalAccounts > 0
-      ? Math.round((completedAccounts / totalAccounts) * 100)
-      : 0;
+    if (batchJob.userId !== dbUser.id) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
 
-    // Build accountStatuses from child requests
-    const accounts = (batchJob.accounts || []) as any[];
-    const accountStatuses = childRequests.map((cr: any, idx: number) => {
-      const account = accounts[idx] || {};
-      const steps = (cr.steps || []) as any[];
-      const currentStep = steps.find((s: any) => s.status === "in_progress");
-      return {
-        id: cr.id,
-        targetName: account.targetName || "Unknown",
-        targetCompany: account.targetCompany || "Unknown",
-        status: cr.status,
-        currentStep: currentStep ? currentStep.label || currentStep.name : undefined,
-        childRequestId: cr.id,
-      };
-    });
-
-    // Build batch-level steps
-    const batchSteps = (batchJob.steps || []) as any[];
-    const defaultSteps = batchSteps.length > 0 ? batchSteps : [
-      { name: "per_account_research", label: "Per-Account Research", status: completedAccounts === totalAccounts ? "completed" : completedAccounts > 0 ? "in_progress" : "pending" },
-      { name: "comparative_synthesis", label: "Comparative Synthesis", status: batchJob.synthesisData ? "completed" : completedAccounts === totalAccounts ? "in_progress" : "pending" },
-      { name: "batch_assets", label: "Batch Asset Generation", status: ((batchJob.batchAssets || []) as any[]).length > 0 ? "completed" : "pending" },
-      { name: "delivery", label: "Delivery", status: batchJob.deliveredAt ? "completed" : "pending" },
-    ];
-
-    // Parse synthesis highlights
-    const synthesis = batchJob.synthesisData as any;
-    const synthesisHighlights = synthesis ? {
-      topPriorityAccount: synthesis.priorityRanking?.[0]?.company || synthesis.priorityRanking?.[0]?.account || undefined,
-      territoryStrategySummary: synthesis.territoryStrategy?.substring(0, 300) || undefined,
-    } : undefined;
-
-    // Parse batch assets into URL map
-    const assets = (batchJob.batchAssets || []) as any[];
-    const batchAssetUrls = assets.length > 0 ? {
-      scorecardUrl: assets.find((a: any) => a.label === "scorecard")?.url,
-      landscapeUrl: assets.find((a: any) => a.label === "landscape")?.url,
-      strategyBriefUrl: assets.find((a: any) => a.label === "strategy_brief")?.url,
-    } : undefined;
-
-    // Map batch status to frontend-expected status
+    // Map backend status to frontend status
     const statusMap: Record<string, string> = {
       submitted: "processing",
       researching: "processing",
@@ -97,30 +49,130 @@ export async function GET(
       delivered: "completed",
       failed: "failed",
     };
-    const frontendStatus = statusMap[batchJob.status] || batchJob.status;
 
-    return NextResponse.json({
+    const children = batchJob.childRequests || [];
+    const completedCount = children.filter(
+      (r: any) => r.status === "ready" || r.status === "delivered"
+    ).length;
+    const failedCount = children.filter(
+      (r: any) => r.status === "failed"
+    ).length;
+    const totalCount = children.length;
+
+    // Calculate percent complete
+    let percentComplete = 0;
+    if (totalCount > 0) {
+      percentComplete = Math.round((completedCount / totalCount) * 100);
+    }
+    if (statusMap[batchJob.status] === "completed") {
+      percentComplete = 100;
+    }
+
+    // Build account statuses from child requests
+    const accountStatuses = children.map((r: any) => ({
+      requestId: r.id,
+      targetName: r.targetName,
+      targetCompany: r.targetCompany,
+      status: statusMap[r.status] || "processing",
+      percentComplete:
+        r.status === "ready" || r.status === "delivered" ? 100 :
+        r.status === "failed" ? 0 : 50,
+    }));
+
+    // Parse steps - use batch steps if present, otherwise generate defaults
+    let batchSteps: any[] = [];
+    try {
+      const rawSteps = batchJob.steps;
+      if (Array.isArray(rawSteps) && rawSteps.length > 0) {
+        batchSteps = rawSteps;
+      }
+    } catch (e) {
+      console.log("[BATCH GET] Error parsing steps:", e);
+    }
+
+    if (batchSteps.length === 0) {
+      const bStatus = statusMap[batchJob.status] || "processing";
+      batchSteps = [
+        {
+          id: "per_account_research",
+          label: "Per-Account Research",
+          status: bStatus === "completed" ? "completed" : "in_progress",
+        },
+        {
+          id: "comparative_synthesis",
+          label: "Comparative Synthesis",
+          status: bStatus === "completed" ? "completed" : "pending",
+        },
+        {
+          id: "asset_generation",
+          label: "Asset Generation",
+          status: bStatus === "completed" ? "completed" : "pending",
+        },
+        {
+          id: "delivery",
+          label: "Delivery",
+          status: bStatus === "completed" ? "completed" : "pending",
+        },
+      ];
+    }
+
+    // Parse synthesis highlights
+    let synthesisHighlights: any = null;
+    try {
+      if (batchJob.synthesisData) {
+        const sd = batchJob.synthesisData as any;
+        if (sd.priorityRanking || sd.keyInsight || sd.highlights) {
+          synthesisHighlights = sd;
+        }
+      }
+    } catch (e) {
+      console.log("[BATCH GET] Error parsing synthesis:", e);
+    }
+
+    // Parse batch asset URLs
+    let batchAssetUrls: any[] = [];
+    try {
+      const rawAssets = batchJob.batchAssets;
+      if (Array.isArray(rawAssets)) {
+        batchAssetUrls = rawAssets;
+      }
+    } catch (e) {
+      console.log("[BATCH GET] Error parsing assets:", e);
+    }
+
+    // Build merged response matching frontend interface
+    const response = {
       batchJob: {
         id: batchJob.id,
-        toolName: batchJob.toolName,
+        status: statusMap[batchJob.status] || "processing",
         batchType: batchJob.batchType,
-        status: frontendStatus,
-        totalAccounts,
-        completedAccounts,
-        failedAccounts,
-        percentComplete: frontendStatus === "completed" ? 100 : percentComplete,
-        steps: defaultSteps,
-        accountStatuses,
+        toolName: batchJob.toolName,
+        accounts: batchJob.accounts,
+        sharedContext: batchJob.sharedContext,
+        priority: batchJob.priority,
+        errorMessage: batchJob.errorMessage,
         createdAt: batchJob.createdAt,
         updatedAt: batchJob.updatedAt,
+        completedAt: batchJob.completedAt,
+        deliveredAt: batchJob.deliveredAt,
+        // Merged progress fields
+        totalAccounts: totalCount,
+        completedAccounts: completedCount,
+        failedAccounts: failedCount,
+        percentComplete,
+        steps: batchSteps,
+        accountStatuses,
         synthesisHighlights,
-        batchAssets: batchAssetUrls,
+        batchAssetUrls,
       },
-    });
-  } catch (err) {
-    console.error("[BATCH GET]", err);
+    };
+
+    console.log("[BATCH GET] Success, status:", response.batchJob.status);
+    return NextResponse.json(response);
+  } catch (error: any) {
+    console.error("[BATCH GET]", error?.constructor?.name, error?.message);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Internal server error", details: error?.message },
       { status: 500 }
     );
   }
