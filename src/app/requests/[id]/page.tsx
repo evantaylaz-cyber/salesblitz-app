@@ -19,6 +19,7 @@ import {
   Package,
   Download,
   MessageCircleQuestion,
+  RefreshCw,
 } from "lucide-react";
 
 interface StepData {
@@ -113,6 +114,7 @@ export default function RequestDetailPage() {
   const [request, setRequest] = useState<RequestDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [retrying, setRetrying] = useState(false);
 
   const fetchRequest = useCallback(async () => {
     try {
@@ -129,6 +131,27 @@ export default function RequestDetailPage() {
       setLoading(false);
     }
   }, [requestId]);
+
+  const retryRequest = useCallback(async () => {
+    setRetrying(true);
+    try {
+      const res = await fetch(`/api/requests/${requestId}/retry`, {
+        method: "POST",
+      });
+      if (res.ok) {
+        // Reset local state and start polling
+        setError(null);
+        await fetchRequest();
+      } else {
+        const data = await res.json();
+        setError(data.error || "Retry failed");
+      }
+    } catch {
+      setError("Network error — retry failed");
+    } finally {
+      setRetrying(false);
+    }
+  }, [requestId, fetchRequest]);
 
   useEffect(() => {
     if (isLoaded) fetchRequest();
@@ -375,9 +398,24 @@ export default function RequestDetailPage() {
           <div className="rounded-xl border border-red-200 bg-red-50 p-6">
             <div className="flex items-start gap-3">
               <AlertCircle className="h-5 w-5 text-red-500 mt-0.5" />
-              <div>
+              <div className="flex-1">
                 <h3 className="font-semibold text-red-800">Execution Failed</h3>
                 <p className="mt-1 text-sm text-red-700">{request.errorMessage}</p>
+                <div className="mt-4 flex items-center gap-3">
+                  <button
+                    onClick={retryRequest}
+                    disabled={retrying}
+                    className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50 transition"
+                  >
+                    {retrying ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <RefreshCw className="h-4 w-4" />
+                    )}
+                    {retrying ? "Retrying..." : "Retry This Run"}
+                  </button>
+                  <span className="text-xs text-gray-500">No additional credits consumed</span>
+                </div>
                 <p className="mt-3 text-xs text-red-600">
                   Our team has been notified. You can also reach us at support@alternativeinvestments.io
                 </p>
