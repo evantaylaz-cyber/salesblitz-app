@@ -27,6 +27,7 @@ model User {
   runPacks                RunPack[]
   runLogs                 RunLog[]
   runRequests             RunRequest[]
+  batchJobs               BatchJob[]
 }
 
 model RunPack {
@@ -99,6 +100,11 @@ model RunRequest {
   startedAt       DateTime? // When execution begins
   completedAt     DateTime? // When assets are ready
   deliveredAt     DateTime? // When customer is notified
+
+  // Batch mode fields
+  batchJobId              String?
+  batchJob                BatchJob?  @relation(fields: [batchJobId], references: [id], onDelete: SetNull)
+  batchIndex              Int?
 }
 
 model UserProfile {
@@ -134,4 +140,29 @@ model UserProfile {
   updatedAt             DateTime @default(now()) @updatedAt @map("updated_at")
 
   @@map("user_profile")
+}
+
+model BatchJob {
+  id                      String       @id @default(uuid())
+  userId                  String
+  user                    User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status                  String       @default("submitted")
+  batchType               String       @default("territory_mapping")
+  toolName                String       @default("prospect_prep")
+  accounts                Json         @default("[]")
+  sharedContext           Json?
+  synthesisData           Json?
+  batchAssets             Json         @default("[]")
+  steps                   Json         @default("[]")
+  priority                Boolean      @default(false)
+  errorMessage            String?
+  createdAt               DateTime     @default(now())
+  updatedAt               DateTime     @updatedAt
+  completedAt             DateTime?
+  deliveredAt             DateTime?
+
+  childRequests           RunRequest[]
+
+  @@index([userId])
+  @@index([status])
 }
