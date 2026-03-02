@@ -69,12 +69,33 @@ export async function GET(
 
     const totalCount = children.length;
 
-    // Calculate percent complete
+    // Derive batch status from children aggregate state
+    // Children states take priority over parent batch job status
+    let derivedStatus: string;
+    if (totalCount === 0) {
+      // No children yet - use parent status
+      derivedStatus = statusMap[batchJob.status] || "processing";
+    } else if (awaitingCount > 0) {
+      // Any children awaiting clarification = batch awaiting
+      derivedStatus = "awaiting_clarification";
+    } else if (completedCount === totalCount) {
+      derivedStatus = "completed";
+    } else if (failedCount === totalCount) {
+      derivedStatus = "failed";
+    } else if (failedCount > 0 && completedCount > 0) {
+      derivedStatus = "partial";
+    } else {
+      // Still processing
+      derivedStatus = statusMap[batchJob.status] || "processing";
+    }
+
+    // Calculate percent complete based on actual children states
     let percentComplete = 0;
     if (totalCount > 0) {
       percentComplete = Math.round((completedCount / totalCount) * 100);
     }
-    if (statusMap[batchJob.status] === "completed") {
+    // Only force 100% if no children exist and parent says completed
+    if (derivedStatus === "completed" && totalCount === 0) {
       percentComplete = 100;
     }
 
@@ -106,7 +127,7 @@ export async function GET(
     }
 
     if (batchSteps.length === 0) {
-      const bStatus = statusMap[batchJob.status] || "processing";
+      const bStatus = derivedStatus;
       batchSteps = [
         {
           id: "per_account_research",
@@ -159,7 +180,7 @@ export async function GET(
     const response = {
       batchJob: {
         id: batchJob.id,
-        status: statusMap[batchJob.status] || "processing",
+        status: derivedStatus,
         batchType: batchJob.batchType,
         toolName: batchJob.toolName,
         accounts: batchJob.accounts,
