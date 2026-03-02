@@ -134,7 +134,9 @@ export async function POST(req: NextRequest) {
 
     // Trigger worker batch execution
     try {
-      const workerRes = await fetch(process.env.WORKER_WEBHOOK_URL!, {
+      // Use /execute-batch endpoint instead of /execute
+      const batchWebhookUrl = (process.env.WORKER_WEBHOOK_URL || "").replace("/execute", "/execute-batch");
+      const workerRes = await fetch(batchWebhookUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
