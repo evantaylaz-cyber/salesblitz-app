@@ -148,6 +148,7 @@ export async function POST(req: NextRequest) {
           isBatch: true,
         }),
       });
+
       console.log("Worker batch trigger response:", workerRes.status, "for batch:", batchJob.id);
     } catch (err) {
       console.error("Failed to trigger worker for batch:", batchJob.id, err);
@@ -167,6 +168,57 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+// Status map: backend status → frontend display status
+const statusMap: Record<string, string> = {
+  submitted: "processing",
+  researching: "processing",
+  synthesizing: "processing",
+  awaiting_clarification: "awaiting_clarification",
+  ready: "completed",
+  delivered: "completed",
+  failed: "failed",
+};
+
+// Derive batch status from children aggregate state
+function deriveBatchStatus(
+  parentStatus: string,
+  children: { status: string }[]
+): { derivedStatus: string; percentComplete: number; completedCount: number; failedCount: number; awaitingCount: number } {
+  const totalCount = children.length;
+  const completedCount = children.filter(
+    (r) => r.status === "ready" || r.status === "delivered"
+  ).length;
+  const failedCount = children.filter((r) => r.status === "failed").length;
+  const awaitingCount = children.filter(
+    (r) => r.status === "awaiting_clarification"
+  ).length;
+
+  let derivedStatus: string;
+  if (totalCount === 0) {
+    derivedStatus = statusMap[parentStatus] || "processing";
+  } else if (awaitingCount > 0) {
+    derivedStatus = "awaiting_clarification";
+  } else if (completedCount === totalCount) {
+    derivedStatus = "completed";
+  } else if (failedCount === totalCount) {
+    derivedStatus = "failed";
+  } else if (failedCount > 0 && completedCount > 0) {
+    derivedStatus = "partial";
+  } else {
+    derivedStatus = statusMap[parentStatus] || "processing";
+  }
+
+  let percentComplete = 0;
+  if (totalCount > 0) {
+    percentComplete = Math.round((completedCount / totalCount) * 100);
+  }
+  if (derivedStatus === "completed" && totalCount === 0) {
+    percentComplete = 100;
+  }
+
+  return { derivedStatus, percentComplete, completedCount, failedCount, awaitingCount };
 }
 
 // GET — list current user's batch jobs
@@ -202,7 +254,23 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: "desc" },
     });
 
-    return NextResponse.json({ batchJobs });
+    // Derive status for each batch job from children aggregate state
+    const enrichedBatchJobs = batchJobs.map((job) => {
+      const { derivedStatus, percentComplete, completedCount, failedCount, awaitingCount } =
+        deriveBatchStatus(job.status, job.childRequests);
+
+      return {
+        ...job,
+        status: derivedStatus,
+        percentComplete,
+        totalAccounts: job.childRequests.length,
+        completedAccounts: completedCount,
+        failedAccounts: failedCount,
+        awaitingAccounts: awaitingCount,
+      };
+    });
+
+    return NextResponse.json({ batchJobs: enrichedBatchJobs });
   } catch (err: unknown) {
     console.error("Batch list error:", err);
     return NextResponse.json(
