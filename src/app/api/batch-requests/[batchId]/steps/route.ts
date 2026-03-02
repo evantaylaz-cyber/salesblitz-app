@@ -1,79 +1,85 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/db";
 
-// PATCH - worker updates batch-level step progress
+// PATCH — Worker calls this to update batch-level step status
+// Auth: x-api-key header (same as worker webhook auth)
 export async function PATCH(
-  request: NextRequest,
-  context: { params: Promise<{ batchId: string }> }
+  req: NextRequest,
+  { params }: { params: { batchId: string } }
 ) {
   try {
-    const apiKey = request.headers.get("x-api-key");
+    // Verify internal API key
+    const apiKey = req.headers.get("x-api-key");
     if (apiKey !== process.env.INTERNAL_API_KEY) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { batchId } = await context.params;
-    const body = await request.json();
-    const {
-      stepId,
-      status: stepStatus,
-      data: stepData,
-      batchStatus,
-      synthesisData,
-      batchAssets,
-      errorMessage,
-    } = body;
+    const { batchId } = await params;
+    const body = await req.json();
+    const { stepId, status, error: stepError, batchStatus, synthesisData, batchAssets } = body;
 
-    const updateData: any = {};
-
-    if (batchStatus) {
-      updateData.status = batchStatus;
-      if (batchStatus === "ready" || batchStatus === "delivered") {
-        updateData.completedAt = new Date();
-      }
-      if (batchStatus === "delivered") {
-        updateData.deliveredAt = new Date();
-      }
-    }
-
-    if (synthesisData) {
-      updateData.synthesisData = synthesisData;
-    }
-
-    if (batchAssets) {
-      updateData.batchAssets = batchAssets;
-    }
-
-    if (errorMessage) {
-      updateData.errorMessage = errorMessage;
-    }
-
-    if (stepId && stepStatus) {
-      const batchJob = await prisma.batchJob.findUnique({
-        where: { id: batchId },
-        select: { steps: true },
-      });
-      const currentSteps = ((batchJob?.steps || []) as any[]);
-      const existingIdx = currentSteps.findIndex((s: any) => s.name === stepId);
-      const stepEntry = { name: stepId, status: stepStatus, ...(stepData && { data: stepData }) };
-      if (existingIdx >= 0) {
-        currentSteps[existingIdx] = stepEntry;
-      } else {
-        currentSteps.push(stepEntry);
-      }
-      updateData.steps = currentSteps;
-    }
-
-    const updated = await prisma.batchJob.update({
+    const batchJob = await prisma.batchJob.findUnique({
       where: { id: batchId },
-      data: updateData,
     });
 
-    return NextResponse.json({ success: true, status: updated.status });
-  } catch (err) {
-    console.error("[BATCH STEPS PATCH]", err);
+    if (!batchJob) {
+      return NextResponse.json({ error: "Batch job not found" }, { status: 404 });
+    }
+
+    const updates: Record<string, any> = {};
+
+    // Update a specific step
+    if (stepId && status) {
+      const steps = (batchJob.steps as any[]) || [];
+      const stepIndex = steps.findIndex((s: any) => s.id === stepId);
+      if (stepIndex >= 0) {
+        steps[stepIndex].status = status;
+        if (status === "in_progress") {
+          steps[stepIndex].startedAt = new Date().toISOString();
+        }
+        if (status === "completed" || status === "failed") {
+          steps[stepIndex].completedAt = new Date().toISOString();
+        }
+        if (stepError) {
+          steps[stepIndex].error = stepError;
+        }
+        updates.steps = steps;
+      }
+    }
+
+    // Update batch-level status
+    if (batchStatus) {
+      updates.status = batchStatus;
+      if (batchStatus === "ready") {
+        updates.completedAt = new Date();
+      }
+      if (batchStatus === "delivered") {
+        updates.deliveredAt = new Date();
+      }
+    }
+
+    // Store synthesis data
+    if (synthesisData) {
+      updates.synthesisData = synthesisData;
+    }
+
+    // Update batch assets
+    if (batchAssets) {
+      updates.batchAssets = batchAssets;
+    }
+
+    if (Object.keys(updates).length > 0) {
+      await prisma.batchJob.update({
+        where: { id: batchId },
+        data: updates,
+      });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Update batch steps error:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Failed to update batch steps" },
       { status: 500 }
     );
   }

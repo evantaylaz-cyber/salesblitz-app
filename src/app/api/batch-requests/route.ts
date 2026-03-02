@@ -3,12 +3,71 @@ import { currentUser } from "@clerk/nextjs/server";
 import prisma from "@/lib/db";
 import { consumeRun } from "@/lib/runs";
 import { ToolName } from "@/lib/tools";
+import { initializeSteps, getExpectedAssets } from "@/lib/job-steps";
 
-// POST — create a batch job with multiple accounts
+// Batch-level step templates
+function initializeBatchSteps(accountCount: number) {
+  return [
+    { id: "parallel_research", label: `Researching ${accountCount} accounts in parallel`, status: "pending" },
+    { id: "comparative_synthesis", label: "Running comparative analysis", status: "pending" },
+    { id: "per_account_assets", label: "Generating per-account deliverables", status: "pending" },
+    { id: "batch_assets", label: "Building batch-level scorecard & landscape", status: "pending" },
+    { id: "qa", label: "Quality assurance check", status: "pending" },
+    { id: "delivery", label: "Delivering to your inbox", status: "pending" },
+  ];
+}
+
+// GET — list current user's batch jobs
+export async function GET() {
+  try {
+    const clerkUser = await currentUser();
+    if (!clerkUser) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { clerkId: clerkUser.id },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const batchJobs = await prisma.batchJob.findMany({
+      where: { userId: user.id },
+      orderBy: { createdAt: "desc" },
+      take: 20,
+      include: {
+        childRequests: {
+          select: {
+            id: true,
+            status: true,
+            targetName: true,
+            targetCompany: true,
+            batchIndex: true,
+            currentStep: true,
+            assets: true,
+          },
+          orderBy: { batchIndex: "asc" },
+        },
+      },
+    });
+
+    return NextResponse.json({ batchJobs });
+  } catch (error) {
+    console.error("Fetch batch jobs error:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch batch jobs" },
+      { status: 500 }
+    );
+  }
+}
+
+// POST — submit a new batch request (consumes N runs, creates BatchJob + N child RunRequests)
 export async function POST(req: NextRequest) {
   try {
-    const user = await currentUser();
-    if (!user) {
+    const clerkUser = await currentUser();
+    if (!clerkUser) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -20,18 +79,21 @@ export async function POST(req: NextRequest) {
       sharedContext,
     } = body;
 
-    // Validate tool
-    if (!toolName || !["prospect_prep", "interview_prep"].includes(toolName)) {
+    // Validate required fields
+    if (!toolName) {
+      return NextResponse.json({ error: "toolName is required" }, { status: 400 });
+    }
+
+    if (!Array.isArray(accounts) || accounts.length < 2) {
       return NextResponse.json(
-        { error: "Invalid or unsupported tool for batch mode" },
+        { error: "accounts must be an array with at least 2 entries" },
         { status: 400 }
       );
     }
 
-    // Validate accounts array
-    if (!accounts || !Array.isArray(accounts) || accounts.length < 2 || accounts.length > 10) {
+    if (accounts.length > 10) {
       return NextResponse.json(
-        { error: "Batch requires 2-10 accounts" },
+        { error: "Maximum 10 accounts per batch" },
         { status: 400 }
       );
     }
@@ -41,90 +103,88 @@ export async function POST(req: NextRequest) {
       const acct = accounts[i];
       if (!acct.targetName || !acct.targetCompany) {
         return NextResponse.json(
-          { error: `Account ${i + 1} missing required fields (targetName, targetCompany)` },
+          { error: `Account ${i + 1} is missing targetName or targetCompany` },
           { status: 400 }
         );
       }
     }
 
-    // Validate batch type
-    if (!["territory_mapping", "multi_threading", "competitive_sweep"].includes(batchType)) {
-      return NextResponse.json(
-        { error: "Invalid batchType. Must be territory_mapping, multi_threading, or competitive_sweep" },
-        { status: 400 }
-      );
-    }
-
-    // Find internal user
-    const dbUser = await prisma.user.findUnique({
-      where: { clerkId: user.id },
+    const user = await prisma.user.findUnique({
+      where: { clerkId: clerkUser.id },
     });
 
-    if (!dbUser) {
+    if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Consume N runs (one per account) — Option 1 pricing
-    const runsNeeded = accounts.length;
+    // Consume N runs (one per account) — fail fast if insufficient
     const runResults = [];
-    for (let i = 0; i < runsNeeded; i++) {
-      const result = await consumeRun(dbUser.id, toolName as ToolName);
+    for (let i = 0; i < accounts.length; i++) {
+      const result = await consumeRun(user.id, toolName as ToolName);
       if (!result.success) {
+        // Refund already-consumed runs by incrementing back
+        // Note: consumeRun already decremented, so we need to add back
+        if (i > 0) {
+          // Best-effort refund: increment subscription runs back
+          // In production, this should be a transaction. For now, log the issue.
+          console.error(
+            `[BATCH] Partial run consumption: consumed ${i} of ${accounts.length} runs for user ${user.id}. ` +
+            `Manual refund may be needed.`
+          );
+        }
         return NextResponse.json(
           {
-            error: `Insufficient runs. Consumed ${i} of ${runsNeeded} needed. ${result.error}`,
-            runsConsumed: i,
-            runsNeeded,
+            error: `Insufficient runs. Need ${accounts.length} runs, only ${i} were available. ${result.error}`,
           },
-          { status: 402 }
+          { status: 403 }
         );
       }
       runResults.push(result);
     }
 
-    // Define batch-level orchestration steps
-    const batchSteps = [
-      { id: "per_account_research", label: "Per-Account Research", status: "pending" },
-      { id: "comparative_synthesis", label: "Comparative Synthesis", status: "pending" },
-      { id: "per_account_assets", label: "Per-Account Asset Generation", status: "pending" },
-      { id: "batch_assets", label: "Batch Asset Generation", status: "pending" },
-      { id: "formatting_qa", label: "Formatting & QA", status: "pending" },
-      { id: "delivery", label: "Delivery", status: "pending" },
-    ];
+    // Initialize per-account steps and assets
+    const perAccountSteps = initializeSteps(toolName as ToolName);
+    const perAccountAssets = getExpectedAssets(toolName as ToolName);
 
     // Create BatchJob
     const batchJob = await prisma.batchJob.create({
       data: {
-        userId: dbUser.id,
-        status: "submitted",
-        batchType,
+        userId: user.id,
         toolName,
-        accounts,
-        sharedContext: sharedContext || null,
-        steps: batchSteps,
-        priority: dbUser.priorityProcessing || false,
+        batchType,
+        accounts: JSON.parse(JSON.stringify(accounts)),
+        sharedContext: sharedContext ? JSON.parse(JSON.stringify(sharedContext)) : null,
+        priority: user.priorityProcessing,
+        status: "submitted",
+        steps: JSON.parse(JSON.stringify(initializeBatchSteps(accounts.length))),
+        batchAssets: JSON.parse(JSON.stringify([])),
       },
     });
 
-    // Create child RunRequests for each account
+    // Create N child RunRequests
     const childRequestIds: string[] = [];
     for (let i = 0; i < accounts.length; i++) {
       const acct = accounts[i];
       const childRequest = await prisma.runRequest.create({
         data: {
-          userId: dbUser.id,
+          userId: user.id,
           toolName,
           targetName: acct.targetName,
           targetCompany: acct.targetCompany,
           targetRole: acct.targetRole || null,
+          jobDescription: acct.jobDescription || null,
           linkedinUrl: acct.linkedinUrl || null,
           linkedinText: acct.linkedinText || null,
+          additionalNotes: acct.additionalNotes || sharedContext?.additionalNotes || null,
           targetCompanyUrl: acct.targetCompanyUrl || null,
-          additionalNotes: sharedContext?.additionalNotes || acct.additionalNotes || null,
-          engagementType: sharedContext?.engagementType || acct.engagementType || "cold_outreach",
-          priority: dbUser.priorityProcessing || false,
+          engagementType: sharedContext?.engagementType || "cold_outreach",
+          meetingDate: acct.meetingDate || null,
+          priorInteractions: acct.priorInteractions || null,
+          priority: user.priorityProcessing,
           status: "submitted",
-          steps: [],
+          steps: JSON.parse(JSON.stringify(perAccountSteps)),
+          assets: JSON.parse(JSON.stringify(perAccountAssets.map(a => ({ ...a, url: null, size: null })))),
+          currentStep: null,
           batchJobId: batchJob.id,
           batchIndex: i,
         },
@@ -132,149 +192,47 @@ export async function POST(req: NextRequest) {
       childRequestIds.push(childRequest.id);
     }
 
-    // Trigger worker batch execution
-    try {
-      // Use /execute-batch endpoint instead of /execute
-      const batchWebhookUrl = (process.env.WORKER_WEBHOOK_URL || "").replace("/execute", "/execute-batch");
-      const workerRes = await fetch(batchWebhookUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": process.env.INTERNAL_API_KEY || "",
-        },
-        body: JSON.stringify({
-          batchJobId: batchJob.id,
-          childRequestIds,
-          isBatch: true,
-        }),
-      });
-
-      console.log("Worker batch trigger response:", workerRes.status, "for batch:", batchJob.id);
-    } catch (err) {
-      console.error("Failed to trigger worker for batch:", batchJob.id, err);
+    // Trigger the worker's batch execution endpoint
+    if (process.env.WORKER_WEBHOOK_URL) {
+      try {
+        // Worker batch endpoint is at /execute-batch (same base, different path)
+        const batchUrl = process.env.WORKER_WEBHOOK_URL.replace("/execute", "/execute-batch");
+        const workerRes = await fetch(batchUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": process.env.INTERNAL_API_KEY || "",
+          },
+          body: JSON.stringify({
+            batchJobId: batchJob.id,
+            childRequestIds,
+          }),
+        });
+        console.log(
+          "Worker batch trigger response:",
+          workerRes.status,
+          "for batch:",
+          batchJob.id,
+          `(${childRequestIds.length} accounts)`
+        );
+      } catch (err) {
+        console.error("Worker batch trigger failed:", err);
+      }
+    } else {
+      console.warn("WORKER_WEBHOOK_URL not set — skipping worker trigger");
     }
 
     return NextResponse.json({
+      success: true,
       batchJobId: batchJob.id,
       childRequestIds,
-      runsConsumed: runsNeeded,
-      status: "submitted",
-      accountCount: accounts.length,
+      runsConsumed: accounts.length,
+      runsRemaining: runResults[runResults.length - 1]?.runsRemaining ?? 0,
     });
-  } catch (err: unknown) {
-    console.error("Batch request creation error:", err);
+  } catch (error) {
+    console.error("Create batch request error:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
-  }
-}
-
-// Status map: backend status → frontend display status
-const statusMap: Record<string, string> = {
-  submitted: "processing",
-  researching: "processing",
-  synthesizing: "processing",
-  awaiting_clarification: "awaiting_clarification",
-  ready: "completed",
-  delivered: "completed",
-  failed: "failed",
-};
-
-// Derive batch status from children aggregate state
-function deriveBatchStatus(
-  parentStatus: string,
-  children: { status: string }[]
-): { derivedStatus: string; percentComplete: number; completedCount: number; failedCount: number; awaitingCount: number } {
-  const totalCount = children.length;
-  const completedCount = children.filter(
-    (r) => r.status === "ready" || r.status === "delivered"
-  ).length;
-  const failedCount = children.filter((r) => r.status === "failed").length;
-  const awaitingCount = children.filter(
-    (r) => r.status === "awaiting_clarification"
-  ).length;
-
-  let derivedStatus: string;
-  if (totalCount === 0) {
-    derivedStatus = statusMap[parentStatus] || "processing";
-  } else if (awaitingCount > 0) {
-    derivedStatus = "awaiting_clarification";
-  } else if (completedCount === totalCount) {
-    derivedStatus = "completed";
-  } else if (failedCount === totalCount) {
-    derivedStatus = "failed";
-  } else if (failedCount > 0 && completedCount > 0) {
-    derivedStatus = "partial";
-  } else {
-    derivedStatus = statusMap[parentStatus] || "processing";
-  }
-
-  let percentComplete = 0;
-  if (totalCount > 0) {
-    percentComplete = Math.round((completedCount / totalCount) * 100);
-  }
-  if (derivedStatus === "completed" && totalCount === 0) {
-    percentComplete = 100;
-  }
-
-  return { derivedStatus, percentComplete, completedCount, failedCount, awaitingCount };
-}
-
-// GET — list current user's batch jobs
-export async function GET(req: NextRequest) {
-  try {
-    const user = await currentUser();
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const dbUser = await prisma.user.findUnique({
-      where: { clerkId: user.id },
-    });
-
-    if (!dbUser) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    const batchJobs = await prisma.batchJob.findMany({
-      where: { userId: dbUser.id },
-      include: {
-        childRequests: {
-          select: {
-            id: true,
-            targetName: true,
-            targetCompany: true,
-            status: true,
-            batchIndex: true,
-          },
-          orderBy: { batchIndex: "asc" },
-        },
-      },
-      orderBy: { createdAt: "desc" },
-    });
-
-    // Derive status for each batch job from children aggregate state
-    const enrichedBatchJobs = batchJobs.map((job) => {
-      const { derivedStatus, percentComplete, completedCount, failedCount, awaitingCount } =
-        deriveBatchStatus(job.status, job.childRequests);
-
-      return {
-        ...job,
-        status: derivedStatus,
-        percentComplete,
-        totalAccounts: job.childRequests.length,
-        completedAccounts: completedCount,
-        failedAccounts: failedCount,
-        awaitingAccounts: awaitingCount,
-      };
-    });
-
-    return NextResponse.json({ batchJobs: enrichedBatchJobs });
-  } catch (err: unknown) {
-    console.error("Batch list error:", err);
-    return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Failed to create batch request" },
       { status: 500 }
     );
   }
