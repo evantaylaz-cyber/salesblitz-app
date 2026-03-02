@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
+import { Prisma } from "@prisma/client";
 import prisma from "@/lib/db";
 import { initializeSteps, getExpectedAssets } from "@/lib/job-steps";
 import { ToolName } from "@/lib/tools";
@@ -57,7 +58,7 @@ export async function POST(
         steps: JSON.parse(JSON.stringify(steps)),
         assets: JSON.parse(JSON.stringify(expectedAssets.map(a => ({ ...a, url: null, size: null })))),
         currentStep: null,
-        researchData: null,
+        researchData: Prisma.DbNull,
       },
     });
 
