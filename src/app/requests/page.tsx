@@ -47,15 +47,21 @@ interface RunRequest {
   deliveredAt: string | null;
 }
 
+interface BatchChildRequest {
+  id: string;
+  targetName: string;
+  targetCompany: string;
+  status: string;
+  batchIndex: number;
+}
+
 interface BatchJob {
   id: string;
   toolName: string;
   batchType: string;
   status: string;
-  totalAccounts: number;
-  completedAccounts: number;
-  failedAccounts: number;
-  percentComplete: number;
+  accounts: Array<{ targetName: string; targetCompany: string; targetRole?: string }>;
+  childRequests: BatchChildRequest[];
   createdAt: string;
   updatedAt: string;
 }
@@ -83,6 +89,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; 
 const BATCH_STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: React.ElementType }> = {
   processing: { label: "Processing", color: "text-amber-700", bg: "bg-amber-50 border-amber-200", icon: Loader2 },
   completed: { label: "Completed", color: "text-emerald-700", bg: "bg-emerald-50 border-emerald-200", icon: CheckCircle2 },
+  delivered: { label: "Delivered", color: "text-emerald-700", bg: "bg-emerald-50 border-emerald-200", icon: CheckCircle2 },
   failed: { label: "Failed", color: "text-red-700", bg: "bg-red-50 border-red-200", icon: AlertCircle },
   partial: { label: "Partial", color: "text-amber-700", bg: "bg-amber-50 border-amber-200", icon: AlertCircle },
   submitted: { label: "Queued", color: "text-blue-700", bg: "bg-blue-50 border-blue-200", icon: Clock },
@@ -179,7 +186,11 @@ export default function RequestsPage() {
                     const statusInfo = BATCH_STATUS_CONFIG[batch.status] || BATCH_STATUS_CONFIG.submitted;
                     const StatusIcon = statusInfo.icon;
                     const isActive = batch.status === "processing" || batch.status === "submitted";
-                    const progress = batch.percentComplete || 0;
+                    const totalAccounts = Array.isArray(batch.accounts) ? batch.accounts.length : 0;
+                    const children = Array.isArray(batch.childRequests) ? batch.childRequests : [];
+                    const completedAccounts = children.filter((c) => c.status === "delivered" || c.status === "ready" || c.status === "completed").length;
+                    const failedAccounts = children.filter((c) => c.status === "failed").length;
+                    const progress = totalAccounts > 0 ? Math.round((completedAccounts / totalAccounts) * 100) : 0;
 
                     return (
                       <a
@@ -201,7 +212,7 @@ export default function RequestsPage() {
                               </span>
                               <span className="inline-flex items-center gap-1 rounded-full bg-gray-50 border border-gray-200 px-2 py-0.5 text-xs font-medium text-gray-600">
                                 <Users className="h-3 w-3" />
-                                {batch.totalAccounts} accounts
+                                {totalAccounts} accounts
                               </span>
                             </div>
 
@@ -209,9 +220,9 @@ export default function RequestsPage() {
                             <div className="mt-3">
                               <div className="flex items-center gap-2 mb-1.5">
                                 <span className="text-xs text-gray-500">
-                                  {batch.completedAccounts} of {batch.totalAccounts} completed
-                                  {batch.failedAccounts > 0 && (
-                                    <span className="text-red-500 ml-1">({batch.failedAccounts} failed)</span>
+                                  {completedAccounts} of {totalAccounts} completed
+                                  {failedAccounts > 0 && (
+                                    <span className="text-red-500 ml-1">({failedAccounts} failed)</span>
                                   )}
                                 </span>
                                 <span className="text-xs text-gray-400 ml-auto">
