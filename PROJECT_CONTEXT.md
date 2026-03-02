@@ -68,12 +68,13 @@ The PATCH endpoint accepts `x-api-key` header for worker auth (`INTERNAL_API_KEY
 ## Phase Status
 - [x] Phase 1: Job queue + status tracking (COMPLETE, deployed)
 - [x] Phase 2: Execution engine (single-account research + generation) — DEPLOYED on Railway
-- [x] Phase 2.5a: Batch data model + API endpoints — DEPLOYED
+- [x] Phase 2.5a: Batch data model + API endpoints — DEPLOYED (commit 64146f3)
+- [x] Phase 2.5b: Worker batch executor — DEPLOYED on Railway (commit f0a4cd7)
 - [x] Phase 2.5c: Batch frontend (submission form, progress page, list integration) — DEPLOYED
-- [ ] Phase 2.5b: Worker batch executor (parallel research, comparative synthesis, batch assets)
-- [ ] Phase 2.5d: Testing + polish (E2E test, error handling, budget guardian integration)
+- [x] Phase 2.5d: E2E tested 2026-03-02 — batch submission → worker processing → delivery confirmed
+- [ ] Phase 3: Landing page, polish, batch PDF scorecard (IN PROGRESS)
 
-### Batch Mode Status (as of 2026-03-02)
+### Batch Mode Status (as of 2026-03-02) — ALL COMPLETE
 - BatchJob model + child RunRequest linkage: DONE
 - POST /api/batch-requests (create batch, consume N runs, trigger worker): DONE
 - GET /api/batch-requests (list with derived status from children aggregate): DONE
@@ -81,18 +82,23 @@ The PATCH endpoint accepts `x-api-key` header for worker auth (`INTERNAL_API_KEY
 - /request/batch submission form (multi-account, shared context, run cost preview): DONE
 - /batch/[batchId] progress page (status badges, clarification banner, per-account cards): DONE
 - /requests page batch list integration (Your Input Needed badge, Review button): DONE
-- Worker /execute-batch endpoint: STUBBED (returns 200, does not yet process)
+- Worker /execute-batch endpoint: DEPLOYED (batch-executor.js — parallel research, comparative synthesis, batch assets, QA, delivery)
+- Worker health endpoint confirms batch queue: batchQueueLength + isBatchProcessing fields
+- E2E test passed: 2-account batch submitted, worker processed, batch status "delivered", children "awaiting_clarification"
 - Batch status derivation: children aggregate state takes priority over parent DB status
 - Key fix: awaiting_clarification derived when ANY child is in that state
+- Known MVP gap: batch scorecard is JSON (rendered by frontend), no PDF artifact yet
 
-## Batch Pipeline (planned — Phase 2.5b)
+### Batch Pipeline (DEPLOYED — Phase 2.5b)
 ```
-Phase A: Per-account research (parallel) — reuses existing Executor per account
-Phase B: Comparative synthesis (sequential, needs all Phase A complete)
-Phase C: Asset generation (parallel per-account + batch-level assets)
-Phase D: Delivery (single email with all assets organized by account)
+Phase A: Per-account research (parallel, concurrency 5) — reuses existing Executor per account
+Phase B: Comparative synthesis (sequential via Claude, needs all Phase A complete)
+Phase C: Per-account asset verification + Phase C2: Batch-level scorecard/insights
+Phase D: QA pass
+Phase E: Styled HTML email delivery via Resend (unified email with all accounts + rankings)
 ```
-Batch-level deliverables (NEW): Account Prioritization Scorecard, Comparative Landscape, Territory Strategy Brief.
+Batch-level deliverables: Account Prioritization Scorecard (JSON, frontend-rendered), synthesis data.
+MVP gap: No batch-level PDF scorecard yet (Phase 3 item).
 See PHASE_2_5_SPEC.md for full architecture.
 
 ## Known Gotchas
