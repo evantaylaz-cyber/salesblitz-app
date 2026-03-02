@@ -21,6 +21,7 @@ export async function GET(
     const dbUser = await prisma.user.findUnique({
       where: { clerkId: clerkUser.id },
     });
+
     if (!dbUser) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
@@ -30,6 +31,7 @@ export async function GET(
       where: { id: batchId },
       include: { childRequests: true },
     });
+
     console.log("[BATCH GET] batchJob found:", !!batchJob);
 
     if (!batchJob) {
@@ -45,18 +47,26 @@ export async function GET(
       submitted: "processing",
       researching: "processing",
       synthesizing: "processing",
+      awaiting_clarification: "awaiting_clarification",
       ready: "completed",
       delivered: "completed",
       failed: "failed",
     };
 
     const children = batchJob.childRequests || [];
+
     const completedCount = children.filter(
       (r: any) => r.status === "ready" || r.status === "delivered"
     ).length;
+
     const failedCount = children.filter(
       (r: any) => r.status === "failed"
     ).length;
+
+    const awaitingCount = children.filter(
+      (r: any) => r.status === "awaiting_clarification"
+    ).length;
+
     const totalCount = children.length;
 
     // Calculate percent complete
@@ -75,8 +85,13 @@ export async function GET(
       targetCompany: r.targetCompany,
       status: statusMap[r.status] || "processing",
       percentComplete:
-        r.status === "ready" || r.status === "delivered" ? 100 :
-        r.status === "failed" ? 0 : 50,
+        r.status === "ready" || r.status === "delivered"
+          ? 100
+          : r.status === "failed"
+          ? 0
+          : r.status === "awaiting_clarification"
+          ? 25
+          : 50,
     }));
 
     // Parse steps - use batch steps if present, otherwise generate defaults
@@ -155,10 +170,12 @@ export async function GET(
         updatedAt: batchJob.updatedAt,
         completedAt: batchJob.completedAt,
         deliveredAt: batchJob.deliveredAt,
+
         // Merged progress fields
         totalAccounts: totalCount,
         completedAccounts: completedCount,
         failedAccounts: failedCount,
+        awaitingAccounts: awaitingCount,
         percentComplete,
         steps: batchSteps,
         accountStatuses,
