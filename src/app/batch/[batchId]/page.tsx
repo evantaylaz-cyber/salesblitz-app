@@ -17,16 +17,17 @@ import {
 } from "lucide-react";
 
 interface AccountStatus {
-  id: string;
+  requestId: string;
   targetName: string;
   targetCompany: string;
-  status: "submitted" | "researching" | "ready" | "delivered" | "failed";
+  status: string;
+  percentComplete: number;
   currentStep?: string;
-  childRequestId: string;
 }
 
 interface StepProgress {
-  name: string;
+  id?: string;
+  name?: string;
   label: string;
   status: "pending" | "in_progress" | "completed" | "failed";
 }
@@ -44,34 +45,31 @@ interface BatchJobData {
   accountStatuses: AccountStatus[];
   createdAt: string;
   updatedAt: string;
-  synthesisHighlights?: {
-    topPriorityAccount?: string;
-    territoryStrategySummary?: string;
-  };
-  batchAssets?: {
-    scorecardUrl?: string;
-    landscapeUrl?: string;
-    strategyBriefUrl?: string;
-  };
+  synthesisHighlights?: any;
+  batchAssetUrls?: any[];
 }
 
 const STATUS_ICON: Record<string, React.ElementType> = {
   submitted: Clock,
   researching: Loader2,
+  processing: Loader2,
   ready: CheckCircle2,
   delivered: CheckCircle2,
+  completed: CheckCircle2,
   failed: AlertCircle,
 };
 
 const STATUS_COLOR: Record<string, { text: string; bg: string }> = {
   submitted: { text: "text-blue-400", bg: "bg-blue-950/40 border-blue-500/20" },
   researching: { text: "text-amber-400", bg: "bg-amber-950/40 border-amber-500/20" },
+  processing: { text: "text-amber-400", bg: "bg-amber-950/40 border-amber-500/20" },
   ready: { text: "text-emerald-400", bg: "bg-emerald-950/40 border-emerald-500/20" },
   delivered: { text: "text-emerald-400", bg: "bg-emerald-950/40 border-emerald-500/20" },
+  completed: { text: "text-emerald-400", bg: "bg-emerald-950/40 border-emerald-500/20" },
   failed: { text: "text-red-400", bg: "bg-red-950/40 border-red-500/20" },
 };
 
-const STEP_ORDER = ["per_account_research", "comparative_synthesis", "batch_assets", "delivery"];
+const STEP_ORDER = ["per_account_research", "comparative_synthesis", "asset_generation", "batch_assets", "delivery"];
 
 export default function BatchProgressPage() {
   const { isLoaded, user } = useUser();
@@ -104,6 +102,7 @@ export default function BatchProgressPage() {
         setBatchJob(data.batchJob);
         setError(null);
 
+        // Stop polling if batch is complete
         if (data.batchJob.status === "completed" || data.batchJob.status === "failed" || data.batchJob.status === "partial") {
           if (pollIntervalRef.current) {
             clearInterval(pollIntervalRef.current);
@@ -118,6 +117,8 @@ export default function BatchProgressPage() {
     };
 
     fetchBatch();
+
+    // Set up polling
     pollIntervalRef.current = setInterval(fetchBatch, 5000);
 
     return () => {
@@ -262,9 +263,9 @@ export default function BatchProgressPage() {
           <div className="space-y-3">
             {batchJob.steps &&
               batchJob.steps
-                .sort((a, b) => STEP_ORDER.indexOf(a.name) - STEP_ORDER.indexOf(b.name))
+                .sort((a, b) => STEP_ORDER.indexOf(a.name || a.id) - STEP_ORDER.indexOf(b.name || b.id))
                 .map((step, idx) => (
-                  <div key={step.name}>
+                  <div key={step.name || step.id || idx}>
                     <div className="flex items-center justify-between mb-1.5">
                       <span className="text-sm text-zinc-300">{step.label}</span>
                       <span
@@ -307,12 +308,12 @@ export default function BatchProgressPage() {
             {batchJob.accountStatuses && batchJob.accountStatuses.length > 0 ? (
               batchJob.accountStatuses.map((account) => {
                 const StatusIcon = STATUS_ICON[account.status] || Clock;
-                const statusColor = STATUS_COLOR[account.status];
+                const statusColor = STATUS_COLOR[account.status] || STATUS_COLOR.submitted;
 
                 return (
                   <button
-                    key={account.id}
-                    onClick={() => router.push(`/requests/${account.childRequestId}`)}
+                    key={account.requestId}
+                    onClick={() => account.requestId ? router.push(`/requests/${account.requestId}`) : undefined}
                     className={`w-full text-left rounded-lg border px-4 py-3 transition hover:border-indigo-500/50 ${statusColor.bg}`}
                   >
                     <div className="flex items-center justify-between">
@@ -360,24 +361,28 @@ export default function BatchProgressPage() {
               <h3 className="text-sm font-semibold text-emerald-300">Synthesis Highlights</h3>
             </div>
 
-            {batchJob.synthesisHighlights.topPriorityAccount && (
+            {(batchJob.synthesisHighlights.topPriorityAccount || batchJob.synthesisHighlights.priorityRanking) && (
               <div>
                 <p className="text-xs text-emerald-400/70 uppercase tracking-wide mb-1">
                   Top Priority Account
                 </p>
                 <p className="text-white">
-                  {batchJob.synthesisHighlights.topPriorityAccount}
+                  {batchJob.synthesisHighlights.topPriorityAccount ||
+                    (Array.isArray(batchJob.synthesisHighlights.priorityRanking) && batchJob.synthesisHighlights.priorityRanking[0]?.account) ||
+                    "See full report"}
                 </p>
               </div>
             )}
 
-            {batchJob.synthesisHighlights.territoryStrategySummary && (
+            {(batchJob.synthesisHighlights.territoryStrategySummary || batchJob.synthesisHighlights.keyInsight) && (
               <div>
                 <p className="text-xs text-emerald-400/70 uppercase tracking-wide mb-1">
                   Territory Strategy
                 </p>
                 <p className="text-white text-sm leading-relaxed">
-                  {batchJob.synthesisHighlights.territoryStrategySummary}
+                  {batchJob.synthesisHighlights.territoryStrategySummary ||
+                    batchJob.synthesisHighlights.keyInsight ||
+                    "See full report"}
                 </p>
               </div>
             )}
@@ -385,48 +390,23 @@ export default function BatchProgressPage() {
         )}
 
         {/* Batch Assets (when complete) */}
-        {isComplete && batchJob.batchAssets && (
+        {isComplete && batchJob.batchAssetUrls && batchJob.batchAssetUrls.length > 0 && (
           <div className="rounded-xl border border-zinc-800/60 bg-zinc-900/30 p-6 space-y-4">
             <h3 className="text-sm font-semibold text-white">Batch Assets</h3>
             <div className="space-y-2">
-              {batchJob.batchAssets.scorecardUrl && (
+              {batchJob.batchAssetUrls.map((asset: any, idx: number) => (
                 <a
-                  href={batchJob.batchAssets.scorecardUrl}
+                  key={idx}
+                  href={asset.url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 rounded-lg border border-zinc-800/60 bg-zinc-800/20 px-4 py-3 hover:bg-zinc-800/40 transition"
                 >
                   <FileText className="h-5 w-5 text-indigo-400" />
-                  <span className="flex-1 text-sm font-medium text-white">Batch Scorecard</span>
+                  <span className="flex-1 text-sm font-medium text-white">{asset.label || asset.id || `Asset ${idx + 1}`}</span>
                   <span className="text-zinc-500">↗</span>
                 </a>
-              )}
-
-              {batchJob.batchAssets.landscapeUrl && (
-                <a
-                  href={batchJob.batchAssets.landscapeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 rounded-lg border border-zinc-800/60 bg-zinc-800/20 px-4 py-3 hover:bg-zinc-800/40 transition"
-                >
-                  <Map className="h-5 w-5 text-indigo-400" />
-                  <span className="flex-1 text-sm font-medium text-white">Competitive Landscape</span>
-                  <span className="text-zinc-500">↗</span>
-                </a>
-              )}
-
-              {batchJob.batchAssets.strategyBriefUrl && (
-                <a
-                  href={batchJob.batchAssets.strategyBriefUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 rounded-lg border border-zinc-800/60 bg-zinc-800/20 px-4 py-3 hover:bg-zinc-800/40 transition"
-                >
-                  <Zap className="h-5 w-5 text-indigo-400" />
-                  <span className="flex-1 text-sm font-medium text-white">Strategy Brief</span>
-                  <span className="text-zinc-500">↗</span>
-                </a>
-              )}
+              ))}
             </div>
           </div>
         )}
