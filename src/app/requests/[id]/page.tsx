@@ -79,6 +79,7 @@ const STEP_ICONS: Record<string, React.ElementType> = {
   company_deep_dive: Search,
   generating_assets: Sparkles,
   building_landscape_app: Globe,
+  building_competitive_playbook: Zap,
   formatting: Package,
   delivery: Download,
 };

@@ -17,6 +17,7 @@ const WORKER_KEY_TO_ASSET_ID: Record<string, string> = {
   callSheet2ImgA: "handwritten_callsheet_2",
   callSheet2ImgB: "handwritten_callsheet_2b",
   landscape: "competitive_landscape_app",
+  competitivePlaybook: "competitive_playbook",
   callPrepSheet: "call_prep_sheet",
   auditReport: "audit_report",
   atsResume: "ats_resume",

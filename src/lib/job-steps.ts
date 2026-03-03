@@ -34,6 +34,7 @@ const STEP_TEMPLATES: Record<ToolName, Omit<JobStep, "status" | "startedAt" | "c
     { id: "generating_pov_deck", label: "Generating POV Deck", description: "Building your 5-slide business case deck." },
     { id: "generating_handwritten", label: "Creating handwritten cards", description: "Generating 3 Gemini handwritten reference cards: POV card, 1-image call sheet, 2-image call sheet." },
     { id: "building_landscape_app", label: "Building interactive landscape", description: "Creating your interactive competitive landscape visualization." },
+    { id: "building_competitive_playbook", label: "Building competitive playbook", description: "Creating interactive competitive playbook with CotM positioning cards and talk tracks." },
     { id: "delivery", label: "Delivering to your inbox", description: "Sending your complete prep package via email. Expect a polished presentation deck within 24 hours." },
   ],
   prospect_prep: [
@@ -44,6 +45,7 @@ const STEP_TEMPLATES: Record<ToolName, Omit<JobStep, "status" | "startedAt" | "c
     { id: "generating_pov_deck", label: "Generating POV Deck", description: "Building your 5-slide business case deck." },
     { id: "generating_handwritten", label: "Creating handwritten cards", description: "Generating 3 Gemini handwritten reference cards: POV card, 1-image call sheet, 2-image call sheet." },
     { id: "building_landscape_app", label: "Building interactive landscape", description: "Creating your prospect's interactive competitive landscape visualization." },
+    { id: "building_competitive_playbook", label: "Building competitive playbook", description: "Creating interactive competitive playbook with CotM positioning cards and talk tracks." },
     { id: "delivery", label: "Delivering to your inbox", description: "Sending your complete prep package via email. Expect a polished presentation deck within 24 hours." },
   ],
   deal_audit: [
@@ -62,6 +64,7 @@ const STEP_TEMPLATES: Record<ToolName, Omit<JobStep, "status" | "startedAt" | "c
     { id: "generating_pov_deck", label: "Generating POV Deck", description: "Building your 5-slide business case deck." },
     { id: "generating_handwritten", label: "Creating handwritten cards", description: "Generating 3 Gemini handwritten reference cards: POV card, 1-image call sheet, 2-image call sheet." },
     { id: "building_landscape_app", label: "Building interactive landscape", description: "Creating your interactive competitive landscape visualization." },
+    { id: "building_competitive_playbook", label: "Building competitive playbook", description: "Creating interactive competitive playbook with CotM positioning cards and talk tracks." },
     { id: "delivery", label: "Delivering to your inbox", description: "Sending your complete outreach package via email. Expect a polished presentation deck within 24 hours." },
   ],
   prospect_outreach: [
@@ -71,6 +74,7 @@ const STEP_TEMPLATES: Record<ToolName, Omit<JobStep, "status" | "startedAt" | "c
     { id: "generating_pov_deck", label: "Generating POV Deck", description: "Building your 5-slide business case deck." },
     { id: "generating_handwritten", label: "Creating handwritten cards", description: "Generating 3 Gemini handwritten reference cards: POV card, 1-image call sheet, 2-image call sheet." },
     { id: "building_landscape_app", label: "Building interactive landscape", description: "Creating your prospect's competitive landscape visualization." },
+    { id: "building_competitive_playbook", label: "Building competitive playbook", description: "Creating interactive competitive playbook with CotM positioning cards and talk tracks." },
     { id: "delivery", label: "Delivering to your inbox", description: "Sending your complete outreach package via email. Expect a polished presentation deck within 24 hours." },
   ],
   champion_builder: [
@@ -79,6 +83,7 @@ const STEP_TEMPLATES: Record<ToolName, Omit<JobStep, "status" | "startedAt" | "c
     { id: "generating_brief", label: "Building Champion Strategy Brief", description: "Compiling champion profile, stakeholder map, development plan, internal selling kit, and coaching notes into one comprehensive document." },
     { id: "generating_handwritten", label: "Creating handwritten cards", description: "Generating 3 Gemini handwritten reference cards: champion POV card, 1-image call sheet, 2-image call sheet." },
     { id: "building_landscape_app", label: "Building competitive landscape", description: "Creating the account's competitive landscape visualization." },
+    { id: "building_competitive_playbook", label: "Building competitive playbook", description: "Creating interactive competitive playbook with CotM positioning cards and talk tracks." },
     { id: "delivery", label: "Delivering to your inbox", description: "Sending your complete champion toolkit via email." },
   ],
 };
@@ -119,6 +124,7 @@ export function getExpectedAssets(toolName: ToolName): Omit<Asset, "url" | "size
       { id: "handwritten_callsheet_2b", label: "Handwritten Call Sheet (2-image B)", format: "png", category: "deliverable" },
       { id: "call_prep_sheet", label: "Call Prep Cheat Sheet", format: "pdf", category: "deliverable" },
       { id: "competitive_landscape_app", label: "Interactive Competitive Landscape", format: "html", category: "interactive" },
+      { id: "competitive_playbook", label: "Competitive Playbook", format: "html", category: "interactive" },
     ],
     prospect_prep: [
       { id: "research_brief", label: "Research Brief", format: "pdf", category: "research" },
@@ -129,6 +135,7 @@ export function getExpectedAssets(toolName: ToolName): Omit<Asset, "url" | "size
       { id: "handwritten_callsheet_2b", label: "Handwritten Call Sheet (2-image B)", format: "png", category: "deliverable" },
       { id: "call_prep_sheet", label: "Call Prep Cheat Sheet", format: "pdf", category: "deliverable" },
       { id: "competitive_landscape_app", label: "Interactive Competitive Landscape", format: "html", category: "interactive" },
+      { id: "competitive_playbook", label: "Competitive Playbook", format: "html", category: "interactive" },
     ],
     deal_audit: [
       { id: "audit_report", label: "Deal Audit Report", format: "pdf", category: "research" },
@@ -147,6 +154,7 @@ export function getExpectedAssets(toolName: ToolName): Omit<Asset, "url" | "size
       { id: "handwritten_callsheet_2b", label: "Handwritten Call Sheet (2-image B)", format: "png", category: "deliverable" },
       { id: "call_prep_sheet", label: "Call Prep Cheat Sheet", format: "pdf", category: "deliverable" },
       { id: "competitive_landscape_app", label: "Interactive Competitive Landscape", format: "html", category: "interactive" },
+      { id: "competitive_playbook", label: "Competitive Playbook", format: "html", category: "interactive" },
     ],
     prospect_outreach: [
       { id: "research_brief", label: "Research Brief", format: "pdf", category: "research" },
@@ -157,6 +165,7 @@ export function getExpectedAssets(toolName: ToolName): Omit<Asset, "url" | "size
       { id: "handwritten_callsheet_2b", label: "Handwritten Call Sheet (2-image B)", format: "png", category: "deliverable" },
       { id: "call_prep_sheet", label: "Call Prep Cheat Sheet", format: "pdf", category: "deliverable" },
       { id: "competitive_landscape_app", label: "Interactive Competitive Landscape", format: "html", category: "interactive" },
+      { id: "competitive_playbook", label: "Competitive Playbook", format: "html", category: "interactive" },
     ],
     champion_builder: [
       { id: "strategy_brief", label: "Champion Strategy Brief", format: "pdf", category: "research" },
@@ -165,6 +174,7 @@ export function getExpectedAssets(toolName: ToolName): Omit<Asset, "url" | "size
       { id: "handwritten_callsheet_2", label: "Handwritten Call Sheet (2-image A)", format: "png", category: "deliverable" },
       { id: "handwritten_callsheet_2b", label: "Handwritten Call Sheet (2-image B)", format: "png", category: "deliverable" },
       { id: "competitive_landscape_app", label: "Interactive Competitive Landscape", format: "html", category: "interactive" },
+      { id: "competitive_playbook", label: "Competitive Playbook", format: "html", category: "interactive" },
     ],
   };
 
