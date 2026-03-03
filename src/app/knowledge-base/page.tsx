@@ -1,0 +1,563 @@
+"use client";
+
+import { useEffect, useState, useCallback } from "react";
+import { useUser } from "@clerk/nextjs";
+import { UserButton } from "@clerk/nextjs";
+import {
+  ArrowLeft,
+  Plus,
+  Trash2,
+  Edit3,
+  Save,
+  X,
+  Loader2,
+  FileText,
+  BookOpen,
+  Target,
+  Shield,
+  Users,
+  Lightbulb,
+  MessageSquare,
+  FolderOpen,
+  Search,
+  Check,
+} from "lucide-react";
+
+interface KnowledgeDoc {
+  id: string;
+  title: string;
+  content: string;
+  contentPreview?: string;
+  contentLength?: number;
+  category: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+const CATEGORIES = [
+  { value: "product_docs", label: "Product Docs", icon: FileText, color: "blue" },
+  { value: "competitive_intel", label: "Competitive Intel", icon: Shield, color: "red" },
+  { value: "deal_stories", label: "Deal Stories", icon: Target, color: "green" },
+  { value: "icp_definitions", label: "ICP Definitions", icon: Users, color: "purple" },
+  { value: "methodology", label: "Methodology", icon: Lightbulb, color: "amber" },
+  { value: "objection_handling", label: "Objection Handling", icon: MessageSquare, color: "orange" },
+  { value: "custom", label: "Custom", icon: FolderOpen, color: "gray" },
+];
+
+const CATEGORY_COLORS: Record<string, string> = {
+  blue: "bg-blue-50 text-blue-700 border-blue-200",
+  red: "bg-red-50 text-red-700 border-red-200",
+  green: "bg-green-50 text-green-700 border-green-200",
+  purple: "bg-purple-50 text-purple-700 border-purple-200",
+  amber: "bg-amber-50 text-amber-700 border-amber-200",
+  orange: "bg-orange-50 text-orange-700 border-orange-200",
+  gray: "bg-gray-50 text-gray-700 border-gray-200",
+};
+
+function getCategoryMeta(category: string) {
+  return CATEGORIES.find((c) => c.value === category) || CATEGORIES[CATEGORIES.length - 1];
+}
+
+export default function KnowledgeBasePage() {
+  const { isLoaded } = useUser();
+  const [docs, setDocs] = useState<KnowledgeDoc[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Create/edit state
+  const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [formTitle, setFormTitle] = useState("");
+  const [formContent, setFormContent] = useState("");
+  const [formCategory, setFormCategory] = useState("custom");
+  const [formSaving, setFormSaving] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+
+  // View state
+  const [viewingDoc, setViewingDoc] = useState<KnowledgeDoc | null>(null);
+  const [filterCategory, setFilterCategory] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Delete state
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const fetchDocs = useCallback(async () => {
+    try {
+      const res = await fetch("/api/knowledge-base");
+      if (res.ok) {
+        const data = await res.json();
+        setDocs(data.documents || []);
+      } else {
+        setError("Failed to load documents");
+      }
+    } catch {
+      setError("Network error");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isLoaded) fetchDocs();
+  }, [isLoaded, fetchDocs]);
+
+  function openCreate() {
+    setEditingId(null);
+    setFormTitle("");
+    setFormContent("");
+    setFormCategory("custom");
+    setFormError(null);
+    setShowForm(true);
+    setViewingDoc(null);
+  }
+
+  function openEdit(doc: KnowledgeDoc) {
+    setEditingId(doc.id);
+    setFormTitle(doc.title);
+    setFormContent(doc.content);
+    setFormCategory(doc.category);
+    setFormError(null);
+    setShowForm(true);
+    setViewingDoc(null);
+  }
+
+  async function handleSave() {
+    if (!formTitle.trim() || !formContent.trim()) {
+      setFormError("Title and content are required");
+      return;
+    }
+    setFormSaving(true);
+    setFormError(null);
+
+    try {
+      const url = editingId
+        ? `/api/knowledge-base/${editingId}`
+        : "/api/knowledge-base";
+      const method = editingId ? "PATCH" : "POST";
+
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: formTitle.trim(),
+          content: formContent.trim(),
+          category: formCategory,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setShowForm(false);
+        setEditingId(null);
+        fetchDocs();
+      } else {
+        setFormError(data.error || "Failed to save");
+      }
+    } catch {
+      setFormError("Network error");
+    } finally {
+      setFormSaving(false);
+    }
+  }
+
+  async function handleDelete(id: string) {
+    setDeletingId(id);
+    try {
+      const res = await fetch(`/api/knowledge-base/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        setDocs((prev) => prev.filter((d) => d.id !== id));
+        if (viewingDoc?.id === id) setViewingDoc(null);
+      }
+    } catch {
+      // Silent fail
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
+  async function viewFullDoc(doc: KnowledgeDoc) {
+    // If we already have full content from the list, use it
+    if (doc.content && doc.content.length > 0) {
+      setViewingDoc(doc);
+      setShowForm(false);
+      return;
+    }
+    // Otherwise fetch it
+    try {
+      const res = await fetch(`/api/knowledge-base/${doc.id}`);
+      if (res.ok) {
+        const data = await res.json();
+        setViewingDoc(data.document);
+        setShowForm(false);
+      }
+    } catch {
+      // Silent fail
+    }
+  }
+
+  // Filtered docs
+  const filteredDocs = docs.filter((doc) => {
+    if (filterCategory && doc.category !== filterCategory) return false;
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      return (
+        doc.title.toLowerCase().includes(q) ||
+        (doc.contentPreview || doc.content || "").toLowerCase().includes(q)
+      );
+    }
+    return true;
+  });
+
+  if (!isLoaded || loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="border-b bg-white sticky top-0 z-10">
+        <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
+          <div className="flex items-center gap-3">
+            <a
+              href="/dashboard"
+              className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900 transition"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Dashboard
+            </a>
+            <span className="text-gray-300">/</span>
+            <h1 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+              <BookOpen className="h-5 w-5 text-indigo-600" />
+              Knowledge Base
+            </h1>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={openCreate}
+              className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-700"
+            >
+              <Plus className="h-4 w-4" />
+              Add Document
+            </button>
+            <UserButton afterSignOutUrl="/sign-in" />
+          </div>
+        </div>
+      </header>
+
+      <main className="mx-auto max-w-5xl px-6 py-8">
+        {error && (
+          <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            {error}
+          </div>
+        )}
+
+        {/* Intro */}
+        <div className="mb-6 rounded-xl border border-indigo-100 bg-indigo-50/50 p-4">
+          <p className="text-sm text-indigo-800">
+            <strong>Your Knowledge Base</strong> feeds directly into every run.
+            Add product docs, competitive intel, ICP definitions, deal stories, or
+            methodology notes — the more context you provide, the more personalized
+            and accurate your deliverables become.
+          </p>
+        </div>
+
+        {/* Search + Filter */}
+        <div className="mb-6 flex flex-col sm:flex-row gap-3">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search documents..."
+              className="w-full rounded-lg border border-gray-300 pl-10 pr-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+            />
+          </div>
+          <div className="flex gap-2 flex-wrap">
+            <button
+              onClick={() => setFilterCategory(null)}
+              className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
+                !filterCategory
+                  ? "bg-indigo-600 text-white border-indigo-600"
+                  : "bg-white text-gray-600 border-gray-300 hover:bg-gray-50"
+              }`}
+            >
+              All ({docs.length})
+            </button>
+            {CATEGORIES.map((cat) => {
+              const count = docs.filter((d) => d.category === cat.value).length;
+              if (count === 0) return null;
+              return (
+                <button
+                  key={cat.value}
+                  onClick={() =>
+                    setFilterCategory(filterCategory === cat.value ? null : cat.value)
+                  }
+                  className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
+                    filterCategory === cat.value
+                      ? "bg-indigo-600 text-white border-indigo-600"
+                      : "bg-white text-gray-600 border-gray-300 hover:bg-gray-50"
+                  }`}
+                >
+                  {cat.label} ({count})
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Document List */}
+          <div className={`${showForm || viewingDoc ? "lg:col-span-1" : "lg:col-span-3"}`}>
+            {filteredDocs.length === 0 && !showForm ? (
+              <div className="rounded-xl border-2 border-dashed border-gray-200 p-12 text-center">
+                <BookOpen className="mx-auto h-12 w-12 text-gray-300" />
+                <h3 className="mt-4 text-lg font-medium text-gray-900">
+                  {docs.length === 0
+                    ? "No documents yet"
+                    : "No matching documents"}
+                </h3>
+                <p className="mt-2 text-sm text-gray-500">
+                  {docs.length === 0
+                    ? "Add product docs, competitive intel, or deal stories to supercharge your runs."
+                    : "Try adjusting your search or filter."}
+                </p>
+                {docs.length === 0 && (
+                  <button
+                    onClick={openCreate}
+                    className="mt-4 inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add Your First Document
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {filteredDocs.map((doc) => {
+                  const meta = getCategoryMeta(doc.category);
+                  const CatIcon = meta.icon;
+                  const isActive = viewingDoc?.id === doc.id;
+                  return (
+                    <div
+                      key={doc.id}
+                      onClick={() => viewFullDoc(doc)}
+                      className={`rounded-xl border bg-white p-4 cursor-pointer transition hover:shadow-sm ${
+                        isActive
+                          ? "border-indigo-300 ring-1 ring-indigo-200"
+                          : "border-gray-200 hover:border-gray-300"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span
+                              className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium ${
+                                CATEGORY_COLORS[meta.color]
+                              }`}
+                            >
+                              <CatIcon className="h-3 w-3" />
+                              {meta.label}
+                            </span>
+                            <span className="text-[10px] text-gray-400">
+                              {doc.contentLength
+                                ? `${Math.round(doc.contentLength / 100) / 10}K chars`
+                                : ""}
+                            </span>
+                          </div>
+                          <h4 className="font-medium text-gray-900 truncate">
+                            {doc.title}
+                          </h4>
+                          <p className="mt-1 text-xs text-gray-500 line-clamp-2">
+                            {doc.contentPreview || doc.content?.slice(0, 200)}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-1 shrink-0">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openEdit(doc);
+                            }}
+                            className="p-1.5 text-gray-400 hover:text-indigo-600 transition rounded-lg hover:bg-indigo-50"
+                            title="Edit"
+                          >
+                            <Edit3 className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (confirm("Delete this document?")) {
+                                handleDelete(doc.id);
+                              }
+                            }}
+                            disabled={deletingId === doc.id}
+                            className="p-1.5 text-gray-400 hover:text-red-600 transition rounded-lg hover:bg-red-50 disabled:opacity-50"
+                            title="Delete"
+                          >
+                            {deletingId === doc.id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="h-4 w-4" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Right Panel: Create/Edit Form or Document Viewer */}
+          {(showForm || viewingDoc) && (
+            <div className="lg:col-span-2">
+              {showForm ? (
+                <div className="rounded-xl border bg-white shadow-sm">
+                  <div className="flex items-center justify-between border-b px-6 py-4">
+                    <h3 className="font-semibold text-gray-900">
+                      {editingId ? "Edit Document" : "New Document"}
+                    </h3>
+                    <button
+                      onClick={() => {
+                        setShowForm(false);
+                        setEditingId(null);
+                      }}
+                      className="p-1 text-gray-400 hover:text-gray-600 transition"
+                    >
+                      <X className="h-5 w-5" />
+                    </button>
+                  </div>
+                  <div className="p-6 space-y-4">
+                    {formError && (
+                      <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                        {formError}
+                      </div>
+                    )}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Title
+                      </label>
+                      <input
+                        type="text"
+                        value={formTitle}
+                        onChange={(e) => setFormTitle(e.target.value)}
+                        placeholder="e.g., Product Overview — Enterprise Features"
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                        autoFocus
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Category
+                      </label>
+                      <select
+                        value={formCategory}
+                        onChange={(e) => setFormCategory(e.target.value)}
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                      >
+                        {CATEGORIES.map((cat) => (
+                          <option key={cat.value} value={cat.value}>
+                            {cat.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Content
+                      </label>
+                      <textarea
+                        value={formContent}
+                        onChange={(e) => setFormContent(e.target.value)}
+                        placeholder="Paste your document content here. This will be injected into your run prompts for personalized, accurate deliverables."
+                        rows={16}
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none resize-y font-mono"
+                      />
+                      <p className="mt-1 text-xs text-gray-400">
+                        {formContent.length.toLocaleString()} / 50,000 characters
+                      </p>
+                    </div>
+                    <div className="flex justify-end gap-3">
+                      <button
+                        onClick={() => {
+                          setShowForm(false);
+                          setEditingId(null);
+                        }}
+                        className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={handleSave}
+                        disabled={formSaving || !formTitle.trim() || !formContent.trim()}
+                        className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition disabled:opacity-50"
+                      >
+                        {formSaving ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Save className="h-4 w-4" />
+                        )}
+                        {formSaving ? "Saving..." : editingId ? "Update" : "Save"}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : viewingDoc ? (
+                <div className="rounded-xl border bg-white shadow-sm">
+                  <div className="flex items-center justify-between border-b px-6 py-4">
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        {(() => {
+                          const meta = getCategoryMeta(viewingDoc.category);
+                          const CatIcon = meta.icon;
+                          return (
+                            <span
+                              className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium ${
+                                CATEGORY_COLORS[meta.color]
+                              }`}
+                            >
+                              <CatIcon className="h-3 w-3" />
+                              {meta.label}
+                            </span>
+                          );
+                        })()}
+                      </div>
+                      <h3 className="font-semibold text-gray-900">
+                        {viewingDoc.title}
+                      </h3>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => openEdit(viewingDoc)}
+                        className="flex items-center gap-1.5 rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 transition"
+                      >
+                        <Edit3 className="h-3.5 w-3.5" />
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => setViewingDoc(null)}
+                        className="p-1 text-gray-400 hover:text-gray-600 transition"
+                      >
+                        <X className="h-5 w-5" />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <pre className="whitespace-pre-wrap text-sm text-gray-700 font-sans leading-relaxed max-h-[600px] overflow-y-auto">
+                      {viewingDoc.content}
+                    </pre>
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          )}
+        </div>
+      </main>
+    </div>
+  );
+}

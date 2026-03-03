@@ -27,6 +27,8 @@ model User {
   runPacks                RunPack[]
   runLogs                 RunLog[]
   runRequests             RunRequest[]
+  batchJobs               BatchJob[]
+  knowledgeDocs           KnowledgeDocument[]
 }
 
 model RunPack {
@@ -53,6 +55,27 @@ model RunLog {
   priority  Boolean  @default(false)
 }
 
+model BatchJob {
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status          String   @default("submitted") // submitted | researching | synthesizing | ready | delivered | failed
+  batchType       String   @default("territory_mapping") // territory_mapping | multi_threading | competitive_sweep
+  toolName        String   @default("prospect_prep")
+  accounts        Json     @default("[]") // Array of account input objects
+  sharedContext   Json?    // Shared context across all accounts
+  synthesisData   Json?    // Comparative analysis output
+  batchAssets     Json     @default("[]") // Batch-level deliverables
+  steps           Json     @default("[]") // Batch-level orchestration steps
+  priority        Boolean  @default(false)
+  errorMessage    String?  @db.Text
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  completedAt     DateTime?
+  deliveredAt     DateTime?
+  childRequests   RunRequest[]
+}
+
 model RunRequest {
   id              String   @id @default(uuid())
   userId          String
@@ -60,6 +83,11 @@ model RunRequest {
   toolName        String   // interview_prep | interview_outreach | prospect_prep | prospect_outreach | deal_audit | champion_builder
   status          String   @default("submitted") // submitted | researching | generating | ready | delivered | failed
   priority        Boolean  @default(false)
+
+  // Batch relationship
+  batchJobId      String?
+  batchJob        BatchJob? @relation(fields: [batchJobId], references: [id], onDelete: SetNull)
+  batchIndex      Int?     // Position in batch (0-indexed)
 
   // Customer inputs
   targetName      String   // Name of person or account
@@ -134,4 +162,15 @@ model UserProfile {
   updatedAt             DateTime @default(now()) @updatedAt @map("updated_at")
 
   @@map("user_profile")
+}
+
+model KnowledgeDocument {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  content   String   @db.Text
+  category  String   @default("custom") // product_docs | competitive_intel | deal_stories | icp_definitions | methodology | objection_handling | custom
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

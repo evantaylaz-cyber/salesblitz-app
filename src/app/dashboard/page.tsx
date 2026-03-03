@@ -222,6 +222,9 @@ export default function DashboardPage() {
             <a href="/profile" className="text-sm text-gray-600 hover:text-gray-900">
               Profile
             </a>
+            <a href="/knowledge-base" className="text-sm text-gray-600 hover:text-gray-900">
+              Knowledge Base
+            </a>
             {hasSubscription && (
               <button
                 onClick={handleManageBilling}

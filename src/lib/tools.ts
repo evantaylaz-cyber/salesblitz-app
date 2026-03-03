@@ -21,13 +21,14 @@ export const TOOLS: ToolDefinition[] = [
   {
     id: "interview_outreach",
     name: "Interview Outreach",
-    description: "Research brief, ATS resume, POV deck, handwritten cards, competitive landscape",
+    description: "Research brief, ATS resume, POV deck, handwritten cards, competitive landscape, outreach sequence",
     deliverables: [
       "Research Brief (PDF) — company intel, role analysis, outreach sequence",
       "ATS-Optimized Resume (PDF)",
       "POV Deck (PDF, 5 slides)",
       "3 Handwritten Reference Cards (Gemini)",
       "Interactive Competitive Landscape",
+      "Multi-Touch Outreach Sequence (7 touches, 14-21 days)",
       "Polished Presentation Deck (24hr)",
     ],
     minimumTier: "launch",
@@ -36,12 +37,13 @@ export const TOOLS: ToolDefinition[] = [
   {
     id: "prospect_outreach",
     name: "Prospect Outreach",
-    description: "Research brief, POV deck, handwritten cards, competitive landscape",
+    description: "Research brief, POV deck, handwritten cards, competitive landscape, outreach sequence",
     deliverables: [
       "Research Brief (PDF) — account intel, pain mapping, outreach sequence",
       "POV Deck (PDF, 5 slides)",
       "3 Handwritten Reference Cards (Gemini)",
       "Interactive Competitive Landscape",
+      "Multi-Touch Outreach Sequence (7 touches, 14-21 days)",
       "Polished Presentation Deck (24hr)",
     ],
     minimumTier: "launch",
@@ -50,12 +52,13 @@ export const TOOLS: ToolDefinition[] = [
   {
     id: "interview_prep",
     name: "Interview Prep",
-    description: "Complete prep package: research brief, POV deck, handwritten cards, competitive landscape",
+    description: "Complete prep package: research brief, POV deck, handwritten cards, competitive landscape, outreach sequence",
     deliverables: [
       "Research Brief (PDF) — MEDDPICC, story bank, call sheet, 30/60/90, competitive positioning",
       "POV Deck (PDF, 5 slides)",
       "3 Handwritten Reference Cards (Gemini)",
       "Interactive Competitive Landscape",
+      "Multi-Touch Outreach Sequence (7 touches, 14-21 days)",
       "Polished Presentation Deck (24hr)",
     ],
     minimumTier: "pro",
@@ -70,6 +73,7 @@ export const TOOLS: ToolDefinition[] = [
       "POV Deck (PDF, 5 slides)",
       "3 Handwritten Reference Cards (Gemini)",
       "Interactive Competitive Landscape",
+      "Multi-Touch Outreach Sequence (7 touches, 14-21 days)",
       "Polished Presentation Deck (24hr)",
     ],
     minimumTier: "pro",
