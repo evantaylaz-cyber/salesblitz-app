@@ -28,6 +28,7 @@ model User {
   runLogs                 RunLog[]
   runRequests             RunRequest[]
   batchJobs               BatchJob[]
+  knowledgeDocs           KnowledgeDocument[]
 }
 
 model RunPack {
@@ -161,4 +162,15 @@ model UserProfile {
   updatedAt             DateTime @default(now()) @updatedAt @map("updated_at")
 
   @@map("user_profile")
+}
+
+model KnowledgeDocument {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  content   String   @db.Text
+  category  String   @default("custom") // product_docs | competitive_intel | deal_stories | icp_definitions | methodology | objection_handling | custom
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

@@ -892,6 +892,21 @@ export default function ProfilePage() {
           </CollapsibleSection>
         </div>
 
+        {/* Knowledge Base link */}
+        <div className="mt-6 rounded-xl border border-indigo-100 bg-indigo-50/50 p-4 flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-indigo-900">Want even better results?</p>
+            <p className="text-xs text-indigo-700 mt-0.5">Add product docs, competitive intel, and deal stories to your Knowledge Base.</p>
+          </div>
+          <a
+            href="/knowledge-base"
+            className="shrink-0 flex items-center gap-1.5 rounded-lg border border-indigo-200 bg-white px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-50 transition"
+          >
+            <BookOpen className="h-4 w-4" />
+            Knowledge Base
+          </a>
+        </div>
+
         {/* Bottom save bar */}
         <div className="mt-8 flex items-center justify-between rounded-xl border bg-white p-4 shadow-sm">
           <p className="text-sm text-gray-500">
