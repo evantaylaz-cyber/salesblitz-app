@@ -55,15 +55,16 @@ AI-powered competitive intelligence SaaS for B2B sales professionals. Users subm
 - `GET /api/knowledge-base/[id]` — Single knowledge base document
 - `PATCH /api/knowledge-base/[id]` — Update knowledge base document
 - `DELETE /api/knowledge-base/[id]` — Delete knowledge base document
+- `GET /api/playbooks` — List playbook-eligible run requests grouped by company
 
 ## Execution Pipeline (per run)
 ```
 submitted → [awaiting_clarification →] researching → generating → ready → delivered
 ```
-Steps: competitive_research → market_intel → company_deep_dive → strategic_synthesis → generating_assets → [building_landscape_app] → [generating_outreach_sequence] → formatting → delivery
+Steps: competitive_research → market_intel → company_deep_dive → strategic_synthesis → generating_assets → [building_landscape_app] → [building_competitive_playbook] → [generating_outreach_sequence] → formatting → delivery
 
 Research steps use Claude Sonnet 4.5 (standard) or Opus 4.6 (high-context tools).
-Asset generation: PDFs via PDFKit, handwritten cards via Gemini, landscape via HTML generator, outreach sequence via Claude + HTML viewer.
+Asset generation: PDFs via PDFKit, handwritten cards via Gemini, landscape via HTML generator, competitive playbook via PlaybookGenerator, outreach sequence via Claude + HTML viewer.
 Delivery: styled email via Resend with asset links, then status → "delivered".
 Pre-execution: sparse inputs trigger clarification questions (Haiku) + email to user.
 Budget: BudgetGuardian tracks daily spend via `api_usage` table, alerts at 50/75/90%.
@@ -79,7 +80,7 @@ The PATCH endpoint accepts `x-api-key` header for worker auth (`INTERNAL_API_KEY
 - [x] Phase 2.5d: E2E tested 2026-03-02 — batch submission → worker processing → delivery confirmed
 - [x] Phase 3: Outreach Sequence Generation — DEPLOYED (worker + app pushed 2026-03-03)
 - [x] Phase 3.1: Seller Knowledge Base — BUILT (pending deploy, 2026-03-03)
-- [ ] Phase 3.2: Competitive Playbook (structured per-competitor positioning cards)
+- [x] Phase 3.2: Competitive Playbook — BUILT (pending deploy, 2026-03-03)
 - [ ] Phase 3.3: Outreach Personalization Layer (depends on 3 + 3.1 + 3.2)
 - [ ] Phase 3.4: Gamma Deck Automation + landing page + batch PDF scorecard (original Phase 3 polish items)
 - [ ] Phase 4: Team Accounts (multi-user orgs, shared knowledge base, team billing)
@@ -106,6 +107,19 @@ The PATCH endpoint accepts `x-api-key` header for worker auth (`INTERNAL_API_KEY
 - **Frontend**: `/knowledge-base` page — search, category filter, create/edit/delete, document viewer panel
 - **Navigation**: Dashboard nav + Profile page CTA both link to Knowledge Base
 - **Repos**: Pending push — worker (altvest-worker) + app (altvest-subscriber-app)
+- **E2E verification**: pending deploy + first live run
+
+### Competitive Playbook Status (as of 2026-03-03) — BUILT, PENDING DEPLOY
+- **Architecture**: No new DB model — playbook is a self-contained HTML asset stored in R2/S3, same pattern as landscape and outreach sequence
+- **Worker**: New `PlaybookGenerator` class (`playbook-generator.js`) generates interactive HTML from `researchData.competitive`
+- **Pipeline step**: `building_competitive_playbook` runs after `building_landscape_app`, before outreach sequence
+- **Eligible tools**: Same as LANDSCAPE_TOOLS — interview_outreach, interview_prep, prospect_outreach, prospect_prep, champion_builder, competitor_research
+- **HTML features**: React 18 + Tailwind. Per-competitor cards with expandable sections (CotM Deconstruction, Talk Track & Counter, Multi-Threading Play, Competitive Intel). Status Quo tab with cost-of-inaction breakdown. Discovery Question Bank with persona-specific Orlob questions. Search/filter by competitor name and threat level. Copy-to-clipboard on talk tracks.
+- **Frontend**: `/playbooks` page — lists all playbook-eligible runs grouped by company. "Open Playbook" button links to HTML asset. Expandable per-company run history.
+- **API**: `GET /api/playbooks` — queries RunRequests with competitive assets, groups by company, returns sorted
+- **Asset mapping**: `competitivePlaybook` worker key → `competitive_playbook` template ID in normalize-assets.ts
+- **Navigation**: Dashboard nav links to `/playbooks`, playbooks page has nav to Knowledge Base, Requests, Profile
+- **Delivery email**: `competitivePlaybook` label added → "Competitive Playbook (Interactive)"
 - **E2E verification**: pending deploy + first live run
 
 ### Batch Mode Status (as of 2026-03-02) — ALL COMPLETE
@@ -156,7 +170,7 @@ ANTHROPIC_API_KEY, SUPABASE_URL, SUPABASE_SERVICE_KEY, ALTVEST_APP_URL, INTERNAL
 - **Repo**: `evantaylaz-cyber/altvest-worker`
 - **Hosting**: Railway (`fa4c5482-3d40-482a-9da3-60fa5bbc01c6`)
 - **Entrypoint**: `src/index.js` — Express server with /execute, /health, /status
-- **Key files**: executor.js (pipeline + outreach sequence), budget-guardian.js (spend tracking), step-client.js (PATCH proxy), pdf-generator.js, gemini-cards.js, landscape-generator.js
+- **Key files**: executor.js (pipeline + outreach sequence), budget-guardian.js (spend tracking), step-client.js (PATCH proxy), pdf-generator.js, gemini-cards.js, landscape-generator.js, playbook-generator.js (Phase 3.2)
 - **Storage**: Supabase storage bucket "assets" (PRIVATE — accessed via service key)
 - **Database tables used**: RunRequest, User, user_profile, KnowledgeDocument, api_usage
 
