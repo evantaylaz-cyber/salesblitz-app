@@ -210,10 +210,11 @@ export default function OnboardingChatPage() {
             // For assistant messages, filter out tool call parts
             // Only render text content
             let textContent = "";
-            if (typeof message.content === "string") {
-              textContent = message.content;
-            } else if (Array.isArray(message.content)) {
-              textContent = message.content
+            const content: any = message.content;
+            if (typeof content === "string") {
+              textContent = content;
+            } else if (Array.isArray(content)) {
+              textContent = content
                 .filter((part: any) => part.type === "text")
                 .map((part: any) => part.text)
                 .join("");
