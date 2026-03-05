@@ -34,10 +34,22 @@ export async function POST(req: Request) {
     // Parse request body
     const { messages } = await req.json();
 
-    // Stream response
+    // Stream response with prompt caching enabled
+    // The system prompt is ~2K tokens and identical across calls for the same user.
+    // Anthropic caches matching prefixes at 90% discount on input tokens.
     const result = streamText({
-      model: anthropic("claude-sonnet-4-5-20250929"),
-      system: systemPrompt,
+      model: anthropic("claude-sonnet-4-5-20250929", {
+        cacheControl: true,
+      }),
+      system: [
+        {
+          type: "text" as const,
+          text: systemPrompt,
+          providerOptions: {
+            anthropic: { cacheControl: { type: "ephemeral" } },
+          },
+        },
+      ],
       messages,
       tools,
       maxSteps: 5, // Allow multiple tool calls per response

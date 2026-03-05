@@ -13,7 +13,10 @@ import {
   MessageSquare,
   Sparkles,
   ChevronDown,
+  Mic,
+  MicOff,
 } from "lucide-react";
+import { useVoiceInput } from "@/hooks/useVoiceInput";
 
 const PHASES = [
   { id: "identity", label: "Identity & Role" },
@@ -62,6 +65,25 @@ export default function OnboardingChatBubble({
           setOnboardingDone(true);
           onComplete?.();
         }
+      },
+    });
+
+  const { isListening, isSupported: voiceSupported, interimTranscript, toggleListening } =
+    useVoiceInput({
+      onTranscript: (text) => {
+        // When speech ends, populate the input field for review before sending
+        setInput((prev: string) => {
+          const combined = prev ? prev + " " + text : text;
+          return combined;
+        });
+        // Resize the textarea after voice input
+        setTimeout(() => {
+          if (inputRef.current) {
+            inputRef.current.style.height = "auto";
+            inputRef.current.style.height =
+              Math.min(inputRef.current.scrollHeight, 96) + "px";
+          }
+        }, 50);
       },
     });
 
@@ -317,6 +339,24 @@ export default function OnboardingChatBubble({
 
       {/* Input */}
       <div className="border-t border-gray-100 px-4 py-3 bg-white">
+        {/* Voice transcript preview */}
+        {isListening && interimTranscript && (
+          <div className="mb-2 px-3 py-1.5 bg-red-50 border border-red-100 rounded-lg">
+            <p className="text-xs text-red-600 font-medium flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
+              Listening...
+            </p>
+            <p className="text-xs text-gray-600 mt-0.5 italic">{interimTranscript}</p>
+          </div>
+        )}
+        {isListening && !interimTranscript && (
+          <div className="mb-2 px-3 py-1.5 bg-red-50 border border-red-100 rounded-lg">
+            <p className="text-xs text-red-600 font-medium flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
+              Listening... start speaking
+            </p>
+          </div>
+        )}
         <form
           id="bubble-chat-form"
           onSubmit={(e) => { setHasInteracted(true); handleSubmit(e); }}
@@ -341,6 +381,24 @@ export default function OnboardingChatBubble({
               }}
             />
           </div>
+          {voiceSupported && (
+            <button
+              type="button"
+              onClick={toggleListening}
+              className={`flex items-center justify-center w-9 h-9 rounded-xl transition-colors flex-shrink-0 ${
+                isListening
+                  ? "bg-red-500 text-white hover:bg-red-600 animate-pulse"
+                  : "bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700"
+              }`}
+              title={isListening ? "Stop recording" : "Voice input"}
+            >
+              {isListening ? (
+                <MicOff className="w-3.5 h-3.5" />
+              ) : (
+                <Mic className="w-3.5 h-3.5" />
+              )}
+            </button>
+          )}
           <button
             type="submit"
             disabled={!input.trim() || isLoading}
