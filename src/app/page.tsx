@@ -4,57 +4,47 @@ import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { UserButton } from "@clerk/nextjs";
 import {
-  Zap,
-  Lock,
-  ArrowUpRight,
-  Package,
-  Clock,
-  CheckCircle2,
-  XCircle,
   Loader2,
-  ChevronRight,
-  Sparkles,
+  CheckCircle2,
+  Clock,
+  AlertCircle,
+  Play,
+  Send,
+  ChevronDown,
+  ChevronUp,
+  Zap,
+  ExternalLink,
+  Copy,
+  User as UserIcon,
 } from "lucide-react";
 
-interface UserData {
-  currentTier: string | null;
-  billingCycle: string | null;
-  subscriptionRunsRemaining: number;
-  subscriptionRunsTotal: number;
-  subscriptionStatus: string;
-  currentPeriodEnd: string | null;
-  priorityProcessing: boolean;
-  runPacks: {
-    id: string;
-    runsRemaining: number;
-    runsTotal: number;
-    expiresAt: string;
-    type: string;
-    allowedTools: string[];
-  }[];
-  runLogs: {
-    id: string;
-    toolName: string;
-    createdAt: string;
-    source: string;
-    status: string;
-  }[];
-}
-
-interface Tool {
+interface AdminRequest {
   id: string;
-  name: string;
-  description: string;
-  deliverables: string[];
-  minimumTier: string;
+  toolName: string;
+  status: string;
+  priority: boolean;
+  targetName: string;
+  targetCompany: string;
+  targetRole: string | null;
+  jobDescription: string | null;
+  linkedinUrl: string | null;
+  linkedinText: string | null;
+  additionalNotes: string | null;
+  deliveryUrl: string | null;
+  deliveryNotes: string | null;
+  adminNotes: string | null;
+  createdAt: string;
+  startedAt: string | null;
+  completedAt: string | null;
+  deliveredAt: string | null;
+  user: {
+    email: string;
+    name: string | null;
+    currentTier: string | null;
+    priorityProcessing: boolean;
+  };
 }
 
-const TIER_RANK: Record<string, number> = { launch: 1, pro: 2, closer: 3 };
-const TIER_NAMES: Record<string, string> = {
-  launch: "Launch",
-  pro: "Pro",
-  closer: "Closer",
-};
 const TOOL_NAMES: Record<string, string> = {
   interview_outreach: "Interview Outreach",
   prospect_outreach: "Prospect Outreach",
@@ -64,123 +54,80 @@ const TOOL_NAMES: Record<string, string> = {
   champion_builder: "Champion Builder",
 };
 
-const TOOLS: Tool[] = [
-  {
-    id: "interview_outreach",
-    name: "Interview Outreach",
-    description: "Research brief, ATS resume, POV deck, handwritten cards, competitive landscape",
-    deliverables: ["Research Brief (PDF)", "ATS-Optimized Resume", "POV Deck (5 slides)", "3 Handwritten Cards", "Competitive Landscape", "Polished Deck (24hr)"],
-    minimumTier: "launch",
-  },
-  {
-    id: "prospect_outreach",
-    name: "Prospect Outreach",
-    description: "Research brief, POV deck, handwritten cards, competitive landscape",
-    deliverables: ["Research Brief (PDF)", "POV Deck (5 slides)", "3 Handwritten Cards", "Competitive Landscape", "Polished Deck (24hr)"],
-    minimumTier: "launch",
-  },
-  {
-    id: "interview_prep",
-    name: "Interview Prep",
-    description: "Complete prep package: research brief, POV deck, handwritten cards, landscape",
-    deliverables: ["Research Brief (PDF)", "POV Deck (5 slides)", "3 Handwritten Cards", "Competitive Landscape", "Polished Deck (24hr)"],
-    minimumTier: "pro",
-  },
-  {
-    id: "prospect_prep",
-    name: "Prospect Prep",
-    description: "Deep account research, discovery plan, POV deck, handwritten cards, landscape",
-    deliverables: ["Research Brief (PDF)", "POV Deck (5 slides)", "3 Handwritten Cards", "Competitive Landscape", "Polished Deck (24hr)"],
-    minimumTier: "pro",
-  },
-  {
-    id: "deal_audit",
-    name: "Deal Audit",
-    description: "Qualification scorecard, risk assessment, strategy brief, handwritten cards",
-    deliverables: ["Deal Audit Report (PDF)", "3 Handwritten Cards", "Interactive Landscape (Coming Soon)", "Risk Playbook (Coming Soon)"],
-    minimumTier: "pro",
-  },
-  {
-    id: "champion_builder",
-    name: "Champion Builder",
-    description: "Champion strategy brief, handwritten cards, competitive landscape",
-    deliverables: ["Champion Strategy Brief (PDF)", "3 Handwritten Cards", "Competitive Landscape", "Internal Selling Deck (Coming Soon)"],
-    minimumTier: "closer",
-  },
-];
+const STATUS_ACTIONS: Record<string, { next: string; label: string; icon: React.ElementType; color: string }> = {
+  submitted: { next: "in_progress", label: "Start Working", icon: Play, color: "bg-amber-600 hover:bg-amber-700" },
+  in_progress: { next: "ready", label: "Mark Ready", icon: CheckCircle2, color: "bg-emerald-600 hover:bg-emerald-700" },
+  ready: { next: "delivered", label: "Mark Delivered", icon: Send, color: "bg-indigo-600 hover:bg-indigo-700" },
+};
 
-export default function DashboardPage() {
+export default function AdminPage() {
   const { user: clerkUser, isLoaded } = useUser();
-  const [userData, setUserData] = useState<UserData | null>(null);
+  const [requests, setRequests] = useState<AdminRequest[]>([]);
   const [loading, setLoading] = useState(true);
-  const [pendingRequests, setPendingRequests] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string>("submitted");
+  const [updating, setUpdating] = useState<string | null>(null);
+
+  // Delivery form state
+  const [deliveryUrl, setDeliveryUrl] = useState("");
+  const [deliveryNotes, setDeliveryNotes] = useState("");
+  const [adminNotes, setAdminNotes] = useState("");
 
   useEffect(() => {
-    if (isLoaded && clerkUser) {
-      fetchUserData();
-      fetchRequests();
-    }
-  }, [isLoaded, clerkUser?.id]);
+    if (isLoaded) fetchRequests();
+  }, [isLoaded, statusFilter]);
 
   async function fetchRequests() {
+    setLoading(true);
     try {
-      const res = await fetch("/api/requests");
-      if (res.ok) {
-        const data = await res.json();
-        const active = data.requests.filter(
-          (r: { status: string }) => r.status === "submitted" || r.status === "in_progress" || r.status === "ready"
-        );
-        setPendingRequests(active.length);
+      const params = statusFilter ? `?status=${statusFilter}` : "";
+      const res = await fetch(`/api/admin/requests${params}`);
+      if (res.status === 403) {
+        setError("Access denied. Admin only.");
+        return;
       }
-    } catch {}
-  }
-
-  async function fetchUserData() {
-    try {
-      const res = await fetch("/api/user");
       if (res.ok) {
         const data = await res.json();
-        setUserData(data);
+        setRequests(data.requests);
       }
     } catch (e) {
-      console.error("Failed to fetch user data:", e);
+      setError("Failed to load requests");
     } finally {
       setLoading(false);
     }
   }
 
-  function handleRunTool(toolId: string) {
-    window.location.href = `/request?tool=${toolId}`;
+  async function updateStatus(requestId: string, newStatus: string) {
+    setUpdating(requestId);
+    try {
+      const body: Record<string, unknown> = { requestId, status: newStatus };
+      if (deliveryUrl) body.deliveryUrl = deliveryUrl;
+      if (deliveryNotes) body.deliveryNotes = deliveryNotes;
+      if (adminNotes) body.adminNotes = adminNotes;
+
+      const res = await fetch("/api/admin/requests", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      if (res.ok) {
+        setDeliveryUrl("");
+        setDeliveryNotes("");
+        setAdminNotes("");
+        setExpandedId(null);
+        await fetchRequests();
+      }
+    } catch (e) {
+      console.error("Update failed:", e);
+    } finally {
+      setUpdating(null);
+    }
   }
 
-  async function handleManageBilling() {
-    const res = await fetch("/api/portal", { method: "POST" });
-    const data = await res.json();
-    if (data.url) window.location.href = data.url;
-  }
-
-  function canAccess(toolMinTier: string): boolean {
-    if (!userData?.currentTier || userData.subscriptionStatus !== "active") return false;
-    return (TIER_RANK[userData.currentTier] || 0) >= (TIER_RANK[toolMinTier] || 0);
-  }
-
-  function hasSprintAccess(toolId: string): boolean {
-    if (!userData) return false;
-    return userData.runPacks.some(
-      (p) => p.type === "interview_sprint" && p.allowedTools.includes(toolId) && p.runsRemaining > 0
-    );
-  }
-
-  function totalAvailableRuns(): number {
-    if (!userData) return 0;
-    const subRuns = userData.subscriptionStatus === "active" ? userData.subscriptionRunsRemaining : 0;
-    const packRuns = userData.runPacks
-      .filter((p) => p.type !== "interview_sprint")
-      .reduce((sum, p) => sum + p.runsRemaining, 0);
-    const sprintRuns = userData.runPacks
-      .filter((p) => p.type === "interview_sprint")
-      .reduce((sum, p) => sum + p.runsRemaining, 0);
-    return subRuns + packRuns + sprintRuns;
+  function copyToClipboard(text: string) {
+    navigator.clipboard.writeText(text);
   }
 
   if (!isLoaded || loading) {
@@ -191,289 +138,263 @@ export default function DashboardPage() {
     );
   }
 
-  const hasSubscription = userData?.subscriptionStatus === "active" && userData?.currentTier;
+  if (error) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <AlertCircle className="mx-auto h-12 w-12 text-red-400" />
+          <p className="mt-3 text-gray-600">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <header className="border-b bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-3">
-            <h1 className="text-xl font-bold text-gray-900">AltVest</h1>
-            {hasSubscription && (
-              <span className="rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-700">
-                {TIER_NAMES[userData!.currentTier!]} Plan
-              </span>
-            )}
-            {userData?.priorityProcessing && (
-              <span className="rounded-full bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-700">
-                ⚡ Priority
-              </span>
-            )}
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+          <div>
+            <h1 className="text-lg font-bold text-gray-900">Fulfillment Queue</h1>
+            <p className="text-sm text-gray-500">{requests.length} requests</p>
           </div>
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 lg:gap-x-8">
-            <a href="/requests" className="relative text-sm text-gray-600 hover:text-gray-900">
-              My Requests
-              {pendingRequests > 0 && (
-                <span className="absolute -top-1.5 -right-3 flex h-4 w-4 items-center justify-center rounded-full bg-indigo-600 text-[10px] font-bold text-white">
-                  {pendingRequests}
-                </span>
-              )}
-            </a>
-            <a href="/profile" className="text-sm text-gray-600 hover:text-gray-900">
-              Profile
-            </a>
-            <a href="/knowledge-base" className="text-sm text-gray-600 hover:text-gray-900">
-              Knowledge Base
-            </a>
-            <a href="/playbooks" className="text-sm text-gray-600 hover:text-gray-900">
-              Playbooks
-            </a>
-            {hasSubscription && (
-              <button
-                onClick={handleManageBilling}
-                className="text-sm text-gray-600 hover:text-gray-900"
-              >
-                Billing
-              </button>
-            )}
-            <a
-              href="/subscribe"
-              className="text-sm font-medium text-indigo-600 hover:text-indigo-800"
-            >
-              {hasSubscription ? "Upgrade" : "Subscribe"}
-            </a>
+          <div className="flex items-center gap-4">
+            <a href="/dashboard" className="text-sm text-gray-600 hover:text-gray-900">Dashboard</a>
             <UserButton afterSignOutUrl="/sign-in" />
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl px-6 py-8">
-        {/* Run Stats */}
-        <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {/* Subscription Runs */}
-          <div className="rounded-xl border bg-white p-5 shadow-sm">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-500">Subscription Runs</span>
-              <Zap className="h-4 w-4 text-indigo-500" />
-            </div>
-            <p className="mt-2 text-2xl font-bold text-gray-900">
-              {hasSubscription ? userData!.subscriptionRunsRemaining : 0}
-              <span className="text-base font-normal text-gray-400">
-                /{hasSubscription ? userData!.subscriptionRunsTotal : 0}
-              </span>
-            </p>
-            {hasSubscription && userData!.subscriptionRunsTotal > 0 && (
-              <div className="mt-3 h-2 rounded-full bg-gray-100">
-                <div
-                  className="h-2 rounded-full bg-indigo-500 transition-all"
-                  style={{
-                    width: `${(userData!.subscriptionRunsRemaining / userData!.subscriptionRunsTotal) * 100}%`,
-                  }}
-                />
-              </div>
-            )}
-            {hasSubscription && userData!.currentPeriodEnd && (
-              <p className="mt-2 text-xs text-gray-400">
-                Resets {new Date(userData!.currentPeriodEnd).toLocaleDateString()}
-              </p>
-            )}
-          </div>
-
-          {/* Pack Runs */}
-          <div className="rounded-xl border bg-white p-5 shadow-sm">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-500">Run Pack Balance</span>
-              <Package className="h-4 w-4 text-emerald-500" />
-            </div>
-            <p className="mt-2 text-2xl font-bold text-gray-900">
-              {userData?.runPacks
-                .filter((p) => p.type !== "interview_sprint")
-                .reduce((sum, p) => sum + p.runsRemaining, 0) || 0}
-            </p>
-            {userData?.runPacks
-              .filter((p) => p.type !== "interview_sprint" && p.runsRemaining > 0)
-              .map((p) => (
-                <p key={p.id} className="mt-1 text-xs text-gray-400">
-                  {p.runsRemaining} runs · expires{" "}
-                  {new Date(p.expiresAt).toLocaleDateString()}
-                </p>
-              ))}
-          </div>
-
-          {/* Sprint Runs */}
-          <div className="rounded-xl border bg-white p-5 shadow-sm">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-500">Interview Sprint</span>
-              <Clock className="h-4 w-4 text-orange-500" />
-            </div>
-            <p className="mt-2 text-2xl font-bold text-gray-900">
-              {userData?.runPacks
-                .filter((p) => p.type === "interview_sprint")
-                .reduce((sum, p) => sum + p.runsRemaining, 0) || 0}
-            </p>
-            {userData?.runPacks
-              .filter((p) => p.type === "interview_sprint" && p.runsRemaining > 0)
-              .map((p) => (
-                <p key={p.id} className="mt-1 text-xs text-gray-400">
-                  {p.runsRemaining} runs · expires{" "}
-                  {new Date(p.expiresAt).toLocaleDateString()}
-                </p>
-              ))}
-          </div>
-
-          {/* Total */}
-          <div className="rounded-xl border bg-white p-5 shadow-sm">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-500">Total Available</span>
-              <CheckCircle2 className="h-4 w-4 text-blue-500" />
-            </div>
-            <p className="mt-2 text-2xl font-bold text-gray-900">{totalAvailableRuns()}</p>
-            <a
-              href="/subscribe#packs"
-              className="mt-2 inline-flex items-center text-xs font-medium text-indigo-600 hover:text-indigo-800"
+      <main className="mx-auto max-w-6xl px-6 py-6">
+        {/* Filter tabs */}
+        <div className="mb-6 flex gap-2 flex-wrap">
+          {["submitted", "in_progress", "ready", "delivered", "failed", ""].map((s) => (
+            <button
+              key={s || "all"}
+              onClick={() => setStatusFilter(s)}
+              className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
+                statusFilter === s
+                  ? "bg-indigo-600 text-white"
+                  : "bg-white border border-gray-300 text-gray-600 hover:bg-gray-50"
+              }`}
             >
-              Buy Run Packs <ChevronRight className="ml-0.5 h-3 w-3" />
-            </a>
-          </div>
+              {s === "" ? "All" : s === "in_progress" ? "In Progress" : s.charAt(0).toUpperCase() + s.slice(1)}
+            </button>
+          ))}
         </div>
 
-        {/* AI Profile Setup Banner */}
-        <a
-          href="/onboarding/ai-setup"
-          className="mb-8 flex items-center justify-between rounded-xl border border-indigo-200 bg-gradient-to-r from-indigo-50 to-white p-5 shadow-sm hover:shadow-md transition group"
-        >
-          <div className="flex items-center gap-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 group-hover:bg-indigo-200 transition">
-              <Sparkles className="h-5 w-5 text-indigo-600" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-900">Set Up Your Profile with AI</h3>
-              <p className="text-sm text-gray-500">
-                Use ChatGPT, Claude, or Gemini to quickly fill out your profile and build your knowledge base.
-              </p>
-            </div>
+        {requests.length === 0 ? (
+          <div className="text-center py-16">
+            <CheckCircle2 className="mx-auto h-12 w-12 text-gray-300" />
+            <p className="mt-4 text-gray-500">No requests with this status.</p>
           </div>
-          <ChevronRight className="h-5 w-5 text-indigo-400 group-hover:text-indigo-600 transition" />
-        </a>
+        ) : (
+          <div className="space-y-3">
+            {requests.map((req) => {
+              const isExpanded = expandedId === req.id;
+              const action = STATUS_ACTIONS[req.status];
+              const isUpdating = updating === req.id;
 
-        {/* Tools Grid */}
-        <h2 className="mb-4 text-lg font-semibold text-gray-900">Your Tools</h2>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {TOOLS.map((tool) => {
-            const accessible = canAccess(tool.minimumTier) || hasSprintAccess(tool.id);
-
-            return (
-              <div
-                key={tool.id}
-                className={`flex flex-col rounded-xl border bg-white p-6 shadow-sm transition ${
-                  accessible ? "hover:shadow-md" : "opacity-70"
-                }`}
-              >
-                <div className="flex items-start justify-between">
-                  <h3 className="font-semibold text-gray-900">{tool.name}</h3>
-                  {!accessible && <Lock className="h-4 w-4 text-gray-400" />}
-                </div>
-                <p className="mt-1 text-sm text-gray-500">{tool.description}</p>
-
-                <div className="mt-3 flex-1">
-                  <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">
-                    Deliverables
-                  </p>
-                  <ul className="mt-1 space-y-1">
-                    {tool.deliverables.slice(0, 4).map((d) => {
-                      const isComingSoon = d.includes("(Coming Soon)");
-                      return (
-                        <li key={d} className={`flex items-center text-xs ${isComingSoon ? "text-gray-400 italic" : "text-gray-600"}`}>
-                          {isComingSoon ? (
-                            <Clock className="mr-1.5 h-3 w-3 text-gray-300 shrink-0" />
-                          ) : (
-                            <CheckCircle2 className="mr-1.5 h-3 w-3 text-emerald-400 shrink-0" />
-                          )}
-                          {d}
-                        </li>
-                      );
-                    })}
-                    {tool.deliverables.length > 4 && (
-                      <li className="text-xs text-gray-400">
-                        +{tool.deliverables.length - 4} more
-                      </li>
-                    )}
-                  </ul>
-                </div>
-
-                <div className="mt-4">
-                  {accessible ? (
-                    <button
-                      onClick={() => handleRunTool(tool.id)}
-                      disabled={totalAvailableRuns() === 0}
-                      className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                    >
-                      {totalAvailableRuns() === 0 ? (
-                        "No Runs Remaining"
+              return (
+                <div key={req.id} className="rounded-xl border bg-white shadow-sm">
+                  {/* Summary row */}
+                  <button
+                    onClick={() => {
+                      setExpandedId(isExpanded ? null : req.id);
+                      setAdminNotes(req.adminNotes || "");
+                      setDeliveryUrl(req.deliveryUrl || "");
+                      setDeliveryNotes(req.deliveryNotes || "");
+                    }}
+                    className="w-full px-5 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition rounded-xl"
+                  >
+                    <div className="flex items-center gap-4 flex-1 min-w-0">
+                      {req.priority && <Zap className="h-4 w-4 text-amber-500 shrink-0" />}
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-gray-900 text-sm">
+                            {TOOL_NAMES[req.toolName]}
+                          </span>
+                          <span className="text-gray-400 text-sm">·</span>
+                          <span className="text-sm text-gray-600 truncate">
+                            {req.targetName} @ {req.targetCompany}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <span className="text-xs text-gray-400">
+                            {req.user.email} · {req.user.currentTier || "no plan"}
+                          </span>
+                          <span className="text-xs text-gray-400">
+                            · {new Date(req.createdAt).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 shrink-0 ml-4">
+                      <span
+                        className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                          req.status === "submitted"
+                            ? "bg-blue-50 text-blue-700"
+                            : req.status === "in_progress"
+                            ? "bg-amber-50 text-amber-700"
+                            : req.status === "ready" || req.status === "delivered"
+                            ? "bg-emerald-50 text-emerald-700"
+                            : "bg-red-50 text-red-700"
+                        }`}
+                      >
+                        {req.status === "in_progress" ? "In Progress" : req.status.charAt(0).toUpperCase() + req.status.slice(1)}
+                      </span>
+                      {isExpanded ? (
+                        <ChevronUp className="h-4 w-4 text-gray-400" />
                       ) : (
-                        <>
-                          <Zap className="h-4 w-4" /> New Request
-                        </>
+                        <ChevronDown className="h-4 w-4 text-gray-400" />
                       )}
-                    </button>
-                  ) : (
-                    <a
-                      href="/subscribe"
-                      className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-indigo-200 bg-indigo-50 px-4 py-2.5 text-sm font-medium text-indigo-700 transition hover:bg-indigo-100"
-                    >
-                      <ArrowUpRight className="h-4 w-4" />
-                      Upgrade to {TIER_NAMES[tool.minimumTier]} to Unlock
-                    </a>
+                    </div>
+                  </button>
+
+                  {/* Expanded detail */}
+                  {isExpanded && (
+                    <div className="border-t px-5 py-4 space-y-4">
+                      {/* Customer inputs */}
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div>
+                          <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                            Target Details
+                          </h4>
+                          <div className="rounded-lg bg-gray-50 p-3 space-y-1.5 text-sm">
+                            <p><strong>Name:</strong> {req.targetName}</p>
+                            <p><strong>Company:</strong> {req.targetCompany}</p>
+                            {req.targetRole && <p><strong>Role:</strong> {req.targetRole}</p>}
+                            {req.linkedinUrl && (
+                              <p>
+                                <strong>LinkedIn:</strong>{" "}
+                                <a href={req.linkedinUrl} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline inline-flex items-center gap-1">
+                                  Profile <ExternalLink className="h-3 w-3" />
+                                </a>
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        {req.linkedinText && (
+                          <div>
+                            <div className="flex items-center justify-between mb-2">
+                              <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                                LinkedIn Text
+                              </h4>
+                              <button
+                                onClick={() => copyToClipboard(req.linkedinText!)}
+                                className="inline-flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800"
+                              >
+                                <Copy className="h-3 w-3" /> Copy
+                              </button>
+                            </div>
+                            <div className="rounded-lg bg-gray-50 p-3 text-sm text-gray-700 max-h-40 overflow-y-auto whitespace-pre-wrap">
+                              {req.linkedinText}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {req.jobDescription && (
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                              Job Description / Context
+                            </h4>
+                            <button
+                              onClick={() => copyToClipboard(req.jobDescription!)}
+                              className="inline-flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800"
+                            >
+                              <Copy className="h-3 w-3" /> Copy
+                            </button>
+                          </div>
+                          <div className="rounded-lg bg-gray-50 p-3 text-sm text-gray-700 max-h-48 overflow-y-auto whitespace-pre-wrap">
+                            {req.jobDescription}
+                          </div>
+                        </div>
+                      )}
+
+                      {req.additionalNotes && (
+                        <div>
+                          <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                            Additional Notes from Customer
+                          </h4>
+                          <div className="rounded-lg bg-gray-50 p-3 text-sm text-gray-700 whitespace-pre-wrap">
+                            {req.additionalNotes}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Admin controls */}
+                      <div className="border-t pt-4 space-y-3">
+                        <div>
+                          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                            Delivery URL (Google Drive link)
+                          </label>
+                          <input
+                            type="url"
+                            value={deliveryUrl}
+                            onChange={(e) => setDeliveryUrl(e.target.value)}
+                            placeholder="https://drive.google.com/drive/folders/..."
+                            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                            Delivery Notes (visible to customer)
+                          </label>
+                          <textarea
+                            value={deliveryNotes}
+                            onChange={(e) => setDeliveryNotes(e.target.value)}
+                            rows={2}
+                            placeholder="e.g., Your Interview Prep package is ready. Includes POV deck, prep sheet, and outreach sequence."
+                            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-y"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                            Admin Notes (internal only)
+                          </label>
+                          <textarea
+                            value={adminNotes}
+                            onChange={(e) => setAdminNotes(e.target.value)}
+                            rows={2}
+                            placeholder="Internal notes..."
+                            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-y"
+                          />
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                          {action && (
+                            <button
+                              onClick={() => updateStatus(req.id, action.next)}
+                              disabled={isUpdating}
+                              className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white transition ${action.color} disabled:opacity-50`}
+                            >
+                              {isUpdating ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <action.icon className="h-4 w-4" />
+                              )}
+                              {action.label}
+                            </button>
+                          )}
+                          {req.status !== "failed" && req.status !== "delivered" && (
+                            <button
+                              onClick={() => updateStatus(req.id, "failed")}
+                              disabled={isUpdating}
+                              className="inline-flex items-center gap-2 rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 transition disabled:opacity-50"
+                            >
+                              <AlertCircle className="h-4 w-4" />
+                              Mark Failed
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   )}
                 </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Recent Runs */}
-        {userData?.runLogs && userData.runLogs.length > 0 && (
-          <div className="mt-10">
-            <h2 className="mb-4 text-lg font-semibold text-gray-900">Recent Runs</h2>
-            <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
-              <table className="w-full text-sm">
-                <thead className="bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  <tr>
-                    <th className="px-6 py-3">Tool</th>
-                    <th className="px-6 py-3">Date</th>
-                    <th className="px-6 py-3">Source</th>
-                    <th className="px-6 py-3">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {userData.runLogs.map((log) => (
-                    <tr key={log.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-3 font-medium text-gray-900">
-                        {TOOL_NAMES[log.toolName] || log.toolName}
-                      </td>
-                      <td className="px-6 py-3 text-gray-500">
-                        {new Date(log.createdAt).toLocaleDateString()}
-                      </td>
-                      <td className="px-6 py-3">
-                        <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600 capitalize">
-                          {log.source}
-                        </span>
-                      </td>
-                      <td className="px-6 py-3">
-                        {log.status === "completed" ? (
-                          <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                        ) : log.status === "failed" ? (
-                          <XCircle className="h-4 w-4 text-red-500" />
-                        ) : (
-                          <Loader2 className="h-4 w-4 animate-spin text-amber-500" />
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+              );
+            })}
           </div>
         )}
       </main>
