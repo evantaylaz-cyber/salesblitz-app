@@ -41,10 +41,13 @@ export default function OnboardingChatBubble({
   const [onboardingDone, setOnboardingDone] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading, setInput } =
+  const { messages, input, handleInputChange, handleSubmit, isLoading, setInput, append, error } =
     useChat({
       api: "/api/chat/onboarding",
       initialMessages: [],
+      onError: (err) => {
+        console.error("[OnboardingChat] Error:", err);
+      },
       onToolCall: ({ toolCall }) => {
         if (toolCall.toolName === "save_profile_section") {
           const args = toolCall.args as any;
@@ -87,12 +90,8 @@ export default function OnboardingChatBubble({
   };
 
   const handleSuggestion = (text: string) => {
-    setInput(text);
     setHasInteracted(true);
-    setTimeout(() => {
-      const form = document.getElementById("bubble-chat-form") as HTMLFormElement;
-      if (form) form.requestSubmit();
-    }, 50);
+    append({ role: "user", content: text });
   };
 
   const showSuggestions = messages.length === 0;
@@ -280,6 +279,14 @@ export default function OnboardingChatBubble({
             </div>
           );
         })}
+
+        {/* Error display */}
+        {error && (
+          <div className="mx-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-xs text-red-700 font-medium">Something went wrong</p>
+            <p className="text-xs text-red-500 mt-1">{error.message}</p>
+          </div>
+        )}
 
         {/* Loading */}
         {isLoading && (
