@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
     const isSubscription = !!tierInfo;
 
     // Build metadata (userId for personal, teamId for team)
-    const checkoutMetadata = team
+    const checkoutMetadata: Record<string, string> = team
       ? { teamId: team.id, priceKey }
       : { userId: user.id, priceKey };
 
