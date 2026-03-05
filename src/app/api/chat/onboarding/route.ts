@@ -45,9 +45,13 @@ export async function POST(req: Request) {
 
     return result.toDataStreamResponse();
   } catch (err: any) {
-    console.error("[ONBOARDING CHAT] Error:", err.message);
+    console.error("[ONBOARDING CHAT] Error:", err.message, err.stack);
     return new Response(
-      JSON.stringify({ error: "Failed to process chat request" }),
+      JSON.stringify({
+        error: err.message || "Failed to process chat request",
+        type: err.name || "UnknownError",
+        detail: err.cause?.message || err.responseBody || null,
+      }),
       { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
