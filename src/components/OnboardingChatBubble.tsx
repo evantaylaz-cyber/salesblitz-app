@@ -68,14 +68,19 @@ export default function OnboardingChatBubble({
       },
     });
 
+  // Track input value in a ref so the voice callback always sees current state
+  const inputValueRef = useRef(input);
+  useEffect(() => {
+    inputValueRef.current = input;
+  }, [input]);
+
   const { isListening, isSupported: voiceSupported, interimTranscript, toggleListening } =
     useVoiceInput({
       onTranscript: (text) => {
         // When speech ends, populate the input field for review before sending
-        setInput((prev: string) => {
-          const combined = prev ? prev + " " + text : text;
-          return combined;
-        });
+        const current = inputValueRef.current;
+        const combined = current ? current + " " + text : text;
+        setInput(combined);
         // Resize the textarea after voice input
         setTimeout(() => {
           if (inputRef.current) {

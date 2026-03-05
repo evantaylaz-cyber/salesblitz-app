@@ -41,15 +41,7 @@ export async function POST(req: Request) {
       model: anthropic("claude-sonnet-4-5-20250929", {
         cacheControl: true,
       }),
-      system: [
-        {
-          type: "text" as const,
-          text: systemPrompt,
-          providerOptions: {
-            anthropic: { cacheControl: { type: "ephemeral" } },
-          },
-        },
-      ],
+      system: systemPrompt,
       messages,
       tools,
       maxSteps: 5, // Allow multiple tool calls per response
