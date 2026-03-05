@@ -25,7 +25,7 @@ const TOOL_DELIVERABLES: Record<string, string[]> = {
     "Objection handling",
   ],
   interview_prep: [
-    "MEDDPICC mapping",
+    "Qualification mapping",
     "STAR story library",
     "Objection scripts",
     "Competitive intel",
@@ -39,7 +39,7 @@ const TOOL_DELIVERABLES: Record<string, string[]> = {
     "Business case frameworks",
   ],
   deal_audit: [
-    "MEDDPICC scorecard",
+    "Qualification scorecard",
     "Risk report",
     "Deal health card",
     "Strategy brief",
