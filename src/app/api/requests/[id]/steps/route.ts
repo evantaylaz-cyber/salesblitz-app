@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import prisma from "@/lib/db";
+import { stepEventBus } from "@/lib/step-events";
 
 // Admin email — only admin or the execution engine can update steps
 const ADMIN_EMAIL = "evan.tay.laz@gmail.com";
@@ -170,6 +171,34 @@ export async function PATCH(
     const progress = updatedSteps.length > 0
       ? Math.round((completedSteps / updatedSteps.length) * 100)
       : 0;
+
+    // Broadcast to any connected SSE clients
+    const updatedAssets = (Array.isArray(updated.assets) ? updated.assets : []) as unknown as AssetData[];
+    stepEventBus.publish(params.id, {
+      requestId: params.id,
+      stepId: stepId || "",
+      stepStatus: stepStatus || "",
+      status: updated.status,
+      currentStep: updated.currentStep,
+      progress,
+      completedSteps,
+      totalSteps: updatedSteps.length,
+      steps: updatedSteps.map((s) => ({
+        id: s.id,
+        label: s.label,
+        status: s.status,
+        startedAt: s.startedAt,
+        completedAt: s.completedAt,
+        error: s.error,
+      })),
+      assets: updatedAssets.map((a) => ({
+        id: a.id,
+        label: a.label,
+        format: a.format,
+        url: a.url,
+      })),
+      timestamp: new Date().toISOString(),
+    });
 
     return NextResponse.json({
       success: true,

@@ -14,6 +14,7 @@ import {
   Loader2,
   ChevronRight,
   Sparkles,
+  Eye,
 } from "lucide-react";
 import dynamic from "next/dynamic";
 
@@ -250,6 +251,12 @@ export default function DashboardPage() {
             <a href="/playbooks" className="text-sm text-gray-600 hover:text-gray-900">
               Playbooks
             </a>
+            <a href="/teams" className="text-sm text-gray-600 hover:text-gray-900">
+              Teams
+            </a>
+            <a href="/analytics" className="text-sm text-gray-600 hover:text-gray-900">
+              Analytics
+            </a>
             {hasSubscription && (
               <button
                 onClick={handleManageBilling}
@@ -387,6 +394,34 @@ export default function DashboardPage() {
                 <Sparkles className="h-4 w-4" />
                 Start Chat
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* Sample Run Banner - shown when user has no run history */}
+        {userData && (!userData.runLogs || userData.runLogs.length === 0) && (
+          <div className="mb-8 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100">
+                  <Eye className="h-5 w-5 text-gray-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900">See what you get before you buy</h3>
+                  <p className="text-sm text-gray-500">
+                    Preview a completed Prospect Prep &amp; Interview Prep run with sample data.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <a
+                  href="/demo/prospect_prep"
+                  className="flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-100 transition whitespace-nowrap"
+                >
+                  <Eye className="h-4 w-4" />
+                  View Sample Run
+                </a>
+              </div>
             </div>
           </div>
         )}

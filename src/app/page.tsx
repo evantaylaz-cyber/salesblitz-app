@@ -90,12 +90,12 @@ export default async function LandingPage() {
               >
                 Get Started <ArrowRight className="h-5 w-5" />
               </Link>
-              <a
-                href="#how-it-works"
+              <Link
+                href="/demo/prospect_prep"
                 className="flex items-center gap-2 rounded-xl border-2 border-gray-200 bg-white px-8 py-4 text-base font-semibold text-gray-700 transition hover:border-gray-300 hover:bg-gray-50"
               >
-                See How It Works
-              </a>
+                View Sample Run
+              </Link>
             </div>
             <p className="mt-6 text-sm text-gray-400">
               6 tools. Results in under 15 minutes.

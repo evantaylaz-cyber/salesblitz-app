@@ -15,8 +15,8 @@ const VALID_CATEGORIES = [
 const MAX_DOCS_PER_USER = 50;
 const MAX_CONTENT_LENGTH = 50000; // ~50K chars per doc
 
-// GET — list all knowledge base documents for current user
-export async function GET() {
+// GET — list knowledge base documents for current user (personal + team)
+export async function GET(req: NextRequest) {
   try {
     const clerkUser = await currentUser();
     if (!clerkUser) {
@@ -31,8 +31,38 @@ export async function GET() {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    // Optional teamId filter from query params
+    const { searchParams } = new URL(req.url);
+    const teamId = searchParams.get("teamId");
+
+    let whereClause;
+    if (teamId) {
+      // Verify membership
+      const membership = await prisma.teamMember.findFirst({
+        where: { teamId, userId: user.id, inviteStatus: "accepted" },
+      });
+      if (!membership) {
+        return NextResponse.json({ error: "Not a team member" }, { status: 403 });
+      }
+      whereClause = { teamId };
+    } else {
+      // Personal docs + docs from all teams user belongs to
+      const teamMemberships = await prisma.teamMember.findMany({
+        where: { userId: user.id, inviteStatus: "accepted" },
+        select: { teamId: true },
+      });
+      const teamIds = teamMemberships.map((m) => m.teamId);
+
+      whereClause = {
+        OR: [
+          { userId: user.id, teamId: null },
+          ...(teamIds.length > 0 ? [{ teamId: { in: teamIds } }] : []),
+        ],
+      };
+    }
+
     const documents = await prisma.knowledgeDocument.findMany({
-      where: { userId: user.id },
+      where: whereClause,
       orderBy: { updatedAt: "desc" },
       select: {
         id: true,
@@ -40,8 +70,9 @@ export async function GET() {
         category: true,
         createdAt: true,
         updatedAt: true,
-        // Return content length instead of full content for list view
         content: true,
+        userId: true,
+        teamId: true,
       },
     });
 
@@ -79,7 +110,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { title, content, category } = body;
+    const { title, content, category, teamId } = body;
 
     // Validate required fields
     if (!title || !title.trim()) {
@@ -87,6 +118,16 @@ export async function POST(req: NextRequest) {
     }
     if (!content || !content.trim()) {
       return NextResponse.json({ error: "Content is required" }, { status: 400 });
+    }
+
+    // If teamId, verify membership
+    if (teamId) {
+      const membership = await prisma.teamMember.findFirst({
+        where: { teamId, userId: user.id, inviteStatus: "accepted" },
+      });
+      if (!membership) {
+        return NextResponse.json({ error: "Not a team member" }, { status: 403 });
+      }
     }
 
     // Validate category
@@ -100,9 +141,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Check doc count limit
+    // Check doc count limit (per user for personal, per team for team docs)
+    const countWhere = teamId
+      ? { teamId }
+      : { userId: user.id, teamId: null };
     const existingCount = await prisma.knowledgeDocument.count({
-      where: { userId: user.id },
+      where: countWhere,
     });
     if (existingCount >= MAX_DOCS_PER_USER) {
       return NextResponse.json(
@@ -113,7 +157,8 @@ export async function POST(req: NextRequest) {
 
     const doc = await prisma.knowledgeDocument.create({
       data: {
-        userId: user.id,
+        userId: teamId ? null : user.id,
+        teamId: teamId || null,
         title: title.trim(),
         content: content.trim(),
         category: cat,

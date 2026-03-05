@@ -31,8 +31,19 @@ export async function GET(
       return NextResponse.json({ error: "Request not found" }, { status: 404 });
     }
 
-    // Ensure user can only see their own requests
-    if (request.userId !== user.id) {
+    // Ensure user can see this request (personal or team)
+    let canAccess = request.userId === user.id;
+    if (!canAccess && request.teamId) {
+      const membership = await prisma.teamMember.findFirst({
+        where: {
+          teamId: request.teamId,
+          userId: user.id,
+          inviteStatus: "accepted",
+        },
+      });
+      canAccess = !!membership;
+    }
+    if (!canAccess) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

@@ -23,8 +23,20 @@ export async function GET() {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    // Get user's team memberships for team-scoped queries
+    const teamMemberships = await prisma.teamMember.findMany({
+      where: { userId: user.id, inviteStatus: "accepted" },
+      select: { teamId: true },
+    });
+    const teamIds = teamMemberships.map((m) => m.teamId);
+
     const requests = await prisma.runRequest.findMany({
-      where: { userId: user.id },
+      where: {
+        OR: [
+          { userId: user.id, teamId: null }, // personal
+          ...(teamIds.length > 0 ? [{ teamId: { in: teamIds } }] : []),
+        ],
+      },
       orderBy: { createdAt: "desc" },
       take: 50,
     });
@@ -67,6 +79,7 @@ export async function POST(req: NextRequest) {
       engagementType,
       meetingDate,
       priorInteractions,
+      teamId,
     } = body;
 
     if (!toolName || !targetName || !targetCompany) {
@@ -84,8 +97,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    // If teamId provided, verify user is an active member
+    if (teamId) {
+      const membership = await prisma.teamMember.findFirst({
+        where: {
+          teamId,
+          userId: user.id,
+          inviteStatus: "accepted",
+        },
+      });
+      if (!membership) {
+        return NextResponse.json(
+          { error: "Not a member of this team" },
+          { status: 403 }
+        );
+      }
+    }
+
     // Consume a run first — if they don't have runs, fail early
-    const runResult = await consumeRun(user.id, toolName as ToolName);
+    const runResult = await consumeRun(user.id, toolName as ToolName, teamId || null);
     if (!runResult.success) {
       return NextResponse.json({ error: runResult.error }, { status: 403 });
     }
@@ -98,6 +128,7 @@ export async function POST(req: NextRequest) {
     const request = await prisma.runRequest.create({
       data: {
         userId: user.id,
+        teamId: teamId || null,
         toolName,
         targetName,
         targetCompany,
@@ -110,7 +141,7 @@ export async function POST(req: NextRequest) {
         engagementType: engagementType || 'cold_outreach',
         meetingDate: meetingDate || null,
         priorInteractions: priorInteractions || null,
-        priority: user.priorityProcessing,
+        priority: teamId ? false : user.priorityProcessing,
         status: "submitted",
         steps: JSON.parse(JSON.stringify(steps)),
         assets: JSON.parse(JSON.stringify(expectedAssets.map(a => ({ ...a, url: null, size: null })))),

@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useUser } from "@clerk/nextjs";
 import { UserButton } from "@clerk/nextjs";
 import { useParams } from "next/navigation";
+import { useStepStream } from "@/hooks/useStepStream";
 import {
   ArrowLeft,
   Loader2,
@@ -160,15 +161,32 @@ export default function RequestDetailPage() {
     if (isLoaded) fetchRequest();
   }, [isLoaded, fetchRequest]);
 
-  // Poll for updates while request is in progress
-  useEffect(() => {
-    if (!request) return;
-    const isActive = ["submitted", "researching", "generating", "awaiting_clarification"].includes(request.status);
-    if (!isActive) return;
+  // Real-time step updates via SSE (falls back to polling if SSE fails)
+  const isActive = !!request && ["submitted", "researching", "generating", "awaiting_clarification"].includes(request.status);
 
-    const interval = setInterval(fetchRequest, 3000); // Poll every 3 seconds
-    return () => clearInterval(interval);
-  }, [request, fetchRequest]);
+  useStepStream({
+    requestId: requestId,
+    enabled: isActive,
+    onUpdate: useCallback((data) => {
+      setRequest((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          status: data.status || prev.status,
+          currentStep: data.currentStep ?? prev.currentStep,
+          progress: data.progress ?? prev.progress,
+          completedSteps: data.completedSteps ?? prev.completedSteps,
+          totalSteps: data.totalSteps ?? prev.totalSteps,
+          steps: (data.steps as StepData[]) || prev.steps,
+          assets: (data.assets as AssetData[]) || prev.assets,
+        };
+      });
+    }, []),
+    onComplete: useCallback((status: string) => {
+      // Do a final full fetch to get all data (delivery URL, notes, etc.)
+      fetchRequest();
+    }, [fetchRequest]),
+  });
 
   if (!isLoaded || loading) {
     return (

@@ -57,8 +57,10 @@ export async function POST(req: NextRequest) {
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const userId = session.metadata?.userId;
-  if (!userId) {
-    console.warn("checkout.session.completed: No userId in metadata", { sessionId: session.id, metadata: session.metadata });
+  const teamId = session.metadata?.teamId;
+
+  if (!userId && !teamId) {
+    console.warn("checkout.session.completed: No userId or teamId in metadata", { sessionId: session.id, metadata: session.metadata });
     return;
   }
 
@@ -66,21 +68,20 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     // One-time purchase: Interview Sprint or Run Pack
     const priceKey = session.metadata?.priceKey;
     if (!priceKey) {
-      console.warn("checkout.session.completed (payment): No priceKey in metadata", { sessionId: session.id, userId });
+      console.warn("checkout.session.completed (payment): No priceKey in metadata", { sessionId: session.id, userId, teamId });
       return;
     }
 
-    // We need to look up the price to determine what was purchased
     const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
     const priceId = lineItems.data[0]?.price?.id;
     if (!priceId) {
-      console.warn("checkout.session.completed (payment): No priceId in line items", { sessionId: session.id, userId });
+      console.warn("checkout.session.completed (payment): No priceId in line items", { sessionId: session.id, userId, teamId });
       return;
     }
 
     const packInfo = getPackFromPriceId(priceId);
     if (!packInfo) {
-      console.warn("checkout.session.completed (payment): Unknown priceId", { sessionId: session.id, priceId, userId });
+      console.warn("checkout.session.completed (payment): Unknown priceId", { sessionId: session.id, priceId, userId, teamId });
       return;
     }
 
@@ -89,7 +90,8 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 
     await prisma.runPack.create({
       data: {
-        userId,
+        userId: teamId ? null : userId,
+        teamId: teamId || null,
         runsRemaining: packInfo.runs,
         runsTotal: packInfo.runs,
         expiresAt,
@@ -98,12 +100,11 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         stripePaymentId: session.payment_intent as string,
       },
     });
-    console.log("checkout.session.completed: RunPack created", { userId, type: packInfo.type, runs: packInfo.runs });
+    console.log("checkout.session.completed: RunPack created", { userId, teamId, type: packInfo.type, runs: packInfo.runs });
   }
 
   if (session.mode === "subscription") {
-    // Subscription — handled by subscription.updated webhook
-    // But we ensure the subscription ID is linked
+    // Subscription handled by subscription.updated webhook
     const subscriptionId = session.subscription as string;
     if (subscriptionId) {
       const subscription = await stripe.subscriptions.retrieve(subscriptionId);
@@ -114,36 +115,65 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   const userId = subscription.metadata?.userId;
-  if (!userId) {
-    console.warn("subscription.updated: No userId in metadata", { subscriptionId: subscription.id, metadata: subscription.metadata });
+  const teamId = subscription.metadata?.teamId;
+
+  if (!userId && !teamId) {
+    console.warn("subscription.updated: No userId or teamId in metadata", { subscriptionId: subscription.id, metadata: subscription.metadata });
     return;
   }
 
   const priceId = subscription.items.data[0]?.price?.id;
   if (!priceId) {
-    console.warn("subscription.updated: No priceId in subscription items", { subscriptionId: subscription.id, userId });
+    console.warn("subscription.updated: No priceId in subscription items", { subscriptionId: subscription.id, userId, teamId });
     return;
   }
 
   const tierInfo = getTierFromPriceId(priceId);
   if (!tierInfo) {
-    console.warn("subscription.updated: Unknown priceId", { subscriptionId: subscription.id, priceId, userId });
+    console.warn("subscription.updated: Unknown priceId", { subscriptionId: subscription.id, priceId, userId, teamId });
     return;
   }
 
-  const user = await prisma.user.findUnique({ where: { id: userId } });
+  // Team subscription
+  if (teamId) {
+    const team = await prisma.team.findUnique({ where: { id: teamId } });
+    if (!team) {
+      console.warn("subscription.updated: Team not found in DB", { subscriptionId: subscription.id, teamId });
+      return;
+    }
+
+    const isNewOrUpgraded =
+      team.stripeSubscriptionId !== subscription.id ||
+      team.currentTier !== tierInfo.tier;
+
+    await prisma.team.update({
+      where: { id: teamId },
+      data: {
+        stripeSubscriptionId: subscription.id,
+        currentTier: tierInfo.tier,
+        billingCycle: tierInfo.cycle,
+        subscriptionStatus: subscription.status,
+        subscriptionRunsTotal: tierInfo.runsTotal,
+        ...(isNewOrUpgraded && { subscriptionRunsRemaining: tierInfo.runsTotal }),
+        currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+      },
+    });
+    return;
+  }
+
+  // Personal subscription
+  const user = await prisma.user.findUnique({ where: { id: userId! } });
   if (!user) {
     console.warn("subscription.updated: User not found in DB", { subscriptionId: subscription.id, userId });
     return;
   }
 
-  // Only reset runs if this is a new subscription or tier change
   const isNewOrUpgraded =
     user.stripeSubscriptionId !== subscription.id ||
     user.currentTier !== tierInfo.tier;
 
   await prisma.user.update({
-    where: { id: userId },
+    where: { id: userId! },
     data: {
       stripeSubscriptionId: subscription.id,
       currentTier: tierInfo.tier,
@@ -159,13 +189,30 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
 
 async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   const userId = subscription.metadata?.userId;
-  if (!userId) {
-    console.warn("subscription.deleted: No userId in metadata", { subscriptionId: subscription.id, metadata: subscription.metadata });
+  const teamId = subscription.metadata?.teamId;
+
+  if (!userId && !teamId) {
+    console.warn("subscription.deleted: No userId or teamId in metadata", { subscriptionId: subscription.id, metadata: subscription.metadata });
+    return;
+  }
+
+  if (teamId) {
+    await prisma.team.update({
+      where: { id: teamId },
+      data: {
+        currentTier: null,
+        billingCycle: null,
+        subscriptionStatus: "canceled",
+        subscriptionRunsRemaining: 0,
+        subscriptionRunsTotal: 0,
+        stripeSubscriptionId: null,
+      },
+    });
     return;
   }
 
   await prisma.user.update({
-    where: { id: userId },
+    where: { id: userId! },
     data: {
       currentTier: null,
       billingCycle: null,
@@ -189,32 +236,44 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
     invoice.subscription as string
   );
   const userId = subscription.metadata?.userId;
-  if (!userId) {
-    console.warn("invoice.paid: No userId in subscription metadata", { invoiceId: invoice.id, subscriptionId: subscription.id });
+  const teamId = subscription.metadata?.teamId;
+
+  if (!userId && !teamId) {
+    console.warn("invoice.paid: No userId or teamId in subscription metadata", { invoiceId: invoice.id, subscriptionId: subscription.id });
     return;
   }
 
   const priceId = subscription.items.data[0]?.price?.id;
   if (!priceId) {
-    console.warn("invoice.paid: No priceId in subscription items", { invoiceId: invoice.id, subscriptionId: subscription.id, userId });
+    console.warn("invoice.paid: No priceId in subscription items", { invoiceId: invoice.id, subscriptionId: subscription.id, userId, teamId });
     return;
   }
 
   const tierInfo = getTierFromPriceId(priceId);
   if (!tierInfo) {
-    console.warn("invoice.paid: Unknown priceId", { invoiceId: invoice.id, priceId, userId });
+    console.warn("invoice.paid: Unknown priceId", { invoiceId: invoice.id, priceId, userId, teamId });
     return;
   }
 
   // Only reset runs for renewal invoices (not the first invoice)
   if (invoice.billing_reason === "subscription_cycle") {
-    await prisma.user.update({
-      where: { id: userId },
-      data: {
-        subscriptionRunsRemaining: tierInfo.runsTotal,
-        subscriptionStatus: "active",
-      },
-    });
+    if (teamId) {
+      await prisma.team.update({
+        where: { id: teamId },
+        data: {
+          subscriptionRunsRemaining: tierInfo.runsTotal,
+          subscriptionStatus: "active",
+        },
+      });
+    } else {
+      await prisma.user.update({
+        where: { id: userId! },
+        data: {
+          subscriptionRunsRemaining: tierInfo.runsTotal,
+          subscriptionStatus: "active",
+        },
+      });
+    }
   }
 }
 
@@ -228,13 +287,22 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
     invoice.subscription as string
   );
   const userId = subscription.metadata?.userId;
-  if (!userId) {
-    console.warn("invoice.payment_failed: No userId in subscription metadata", { invoiceId: invoice.id, subscriptionId: subscription.id });
+  const teamId = subscription.metadata?.teamId;
+
+  if (!userId && !teamId) {
+    console.warn("invoice.payment_failed: No userId or teamId in subscription metadata", { invoiceId: invoice.id, subscriptionId: subscription.id });
     return;
   }
 
-  await prisma.user.update({
-    where: { id: userId },
-    data: { subscriptionStatus: "past_due" },
-  });
+  if (teamId) {
+    await prisma.team.update({
+      where: { id: teamId },
+      data: { subscriptionStatus: "past_due" },
+    });
+  } else {
+    await prisma.user.update({
+      where: { id: userId! },
+      data: { subscriptionStatus: "past_due" },
+    });
+  }
 }

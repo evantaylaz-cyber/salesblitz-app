@@ -83,7 +83,9 @@ The PATCH endpoint accepts `x-api-key` header for worker auth (`INTERNAL_API_KEY
 - [x] Phase 3.2: Competitive Playbook — BUILT (pending deploy, 2026-03-03)
 - [x] Phase 3.3: Outreach Personalization Layer ✅ BUILT 2026-03-03 (worker-only change — no app changes needed)
 - [x] Phase 3.4: Gamma Deck Automation ✅ BUILT 2026-03-03 (GammaDeckGenerator class, new pipeline step, frontend asset+step. Requires GAMMA_API_KEY env var on Railway.)
-- [ ] Phase 4: Team Accounts (multi-user orgs, shared knowledge base, team billing)
+- [x] Phase 4: Team Accounts ✅ BUILT 2026-03-05 (DB migration, API CRUD, team pages, invite email via Resend, invite acceptance page, team-scoped billing/runs/analytics)
+- [x] Phase 4.1: Usage Analytics ✅ BUILT 2026-03-05 (API + dashboard with daily chart, tool breakdown, top companies, member usage, avg completion time)
+- [x] Phase 4.2: Pipeline Speed Optimization ✅ BUILT 2026-03-05 (parallelization, Sonnet default, Haiku for low-stakes, token budget right-sizing)
 
 ### Outreach Sequence Status (as of 2026-03-03) — DEPLOYED
 - Worker: `stepGenerateOutreachSequence` added to executor.js (lines 634-693)
