@@ -15,6 +15,12 @@ import {
   ChevronRight,
   Sparkles,
 } from "lucide-react";
+import dynamic from "next/dynamic";
+
+const OnboardingChatBubble = dynamic(
+  () => import("@/components/OnboardingChatBubble"),
+  { ssr: false }
+);
 
 interface UserData {
   currentTier: string | null;
@@ -114,13 +120,28 @@ export default function DashboardPage() {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [pendingRequests, setPendingRequests] = useState(0);
+  const [chatOpen, setChatOpen] = useState(false);
+  const [onboardingComplete, setOnboardingComplete] = useState(false);
 
   useEffect(() => {
     if (isLoaded && clerkUser) {
       fetchUserData();
       fetchRequests();
+      checkOnboardingStatus();
     }
   }, [isLoaded, clerkUser?.id]);
+
+  async function checkOnboardingStatus() {
+    try {
+      const res = await fetch("/api/profile");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.profile?.onboardingCompleted) {
+          setOnboardingComplete(true);
+        }
+      }
+    } catch {}
+  }
 
   async function fetchRequests() {
     try {
@@ -339,23 +360,36 @@ export default function DashboardPage() {
         </div>
 
         {/* AI Profile Setup Banner */}
-        <a
-          href="/onboarding/ai-setup"
-          className="mb-8 flex items-center justify-between rounded-xl border border-indigo-200 bg-gradient-to-r from-indigo-50 to-white p-5 shadow-sm hover:shadow-md transition group"
-        >
-          <div className="flex items-center gap-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 group-hover:bg-indigo-200 transition">
-              <Sparkles className="h-5 w-5 text-indigo-600" />
+        {!onboardingComplete && (
+          <div className="mb-8 flex items-center justify-between rounded-xl border border-indigo-200 bg-gradient-to-r from-indigo-50 to-white p-5 shadow-sm">
+            <div className="flex items-center gap-4">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100">
+                <Sparkles className="h-5 w-5 text-indigo-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900">Set Up Your Profile with AI</h3>
+                <p className="text-sm text-gray-500">
+                  Chat with AltVest to build your profile, deal stories, and knowledge base. Takes ~10 min.
+                </p>
+              </div>
             </div>
-            <div>
-              <h3 className="font-semibold text-gray-900">Set Up Your Profile with AI</h3>
-              <p className="text-sm text-gray-500">
-                Use ChatGPT, Claude, or Gemini to quickly fill out your profile and build your knowledge base.
-              </p>
+            <div className="flex items-center gap-3">
+              <a
+                href="/onboarding/ai-setup"
+                className="text-xs text-gray-400 hover:text-gray-600 transition whitespace-nowrap"
+              >
+                Manual setup
+              </a>
+              <button
+                onClick={() => setChatOpen(true)}
+                className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition whitespace-nowrap"
+              >
+                <Sparkles className="h-4 w-4" />
+                Start Chat
+              </button>
             </div>
           </div>
-          <ChevronRight className="h-5 w-5 text-indigo-400 group-hover:text-indigo-600 transition" />
-        </a>
+        )}
 
         {/* Tools Grid */}
         <h2 className="mb-4 text-lg font-semibold text-gray-900">Your Tools</h2>
@@ -477,6 +511,18 @@ export default function DashboardPage() {
           </div>
         )}
       </main>
+
+      {/* Floating onboarding chat */}
+      {chatOpen && (
+        <OnboardingChatBubble
+          defaultOpen={true}
+          onComplete={() => {
+            setOnboardingComplete(true);
+            // Refresh user data to reflect profile changes
+            fetchUserData();
+          }}
+        />
+      )}
     </div>
   );
 }
