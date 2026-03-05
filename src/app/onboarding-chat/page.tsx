@@ -201,8 +201,8 @@ export default function OnboardingChatPage() {
 
           {/* Conversation messages */}
           {messages.map((message) => {
-            // Skip tool results from rendering
-            if (message.role === "tool") return null;
+            // Skip tool/data results from rendering
+            if ((message.role as string) === "tool" || message.role === "data") return null;
 
             const isUser = message.role === "user";
             const isAssistant = message.role === "assistant";
