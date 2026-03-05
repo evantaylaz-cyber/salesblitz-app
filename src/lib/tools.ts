@@ -54,7 +54,7 @@ export const TOOLS: ToolDefinition[] = [
     name: "Interview Prep",
     description: "Complete prep package: research brief, POV deck, handwritten cards, competitive landscape, outreach sequence",
     deliverables: [
-      "Research Brief (PDF) — MEDDPICC, story bank, call sheet, 30/60/90, competitive positioning",
+      "Research Brief (PDF) — qualification mapping, story bank, call sheet, 30/60/90, competitive positioning",
       "POV Deck (PDF, 5 slides)",
       "3 Handwritten Reference Cards (Gemini)",
       "Interactive Competitive Landscape",
@@ -82,9 +82,9 @@ export const TOOLS: ToolDefinition[] = [
   {
     id: "deal_audit",
     name: "Deal Audit",
-    description: "MEDDPICC scorecard, risk assessment, strategy brief, handwritten cards",
+    description: "Qualification scorecard, risk assessment, strategy brief, handwritten cards",
     deliverables: [
-      "Deal Audit Report (PDF) — MEDDPICC scorecard, risk assessment, strategy brief",
+      "Deal Audit Report (PDF) — qualification scorecard, risk assessment, strategy brief",
       "3 Handwritten Reference Cards (Gemini)",
     ],
     minimumTier: "pro",

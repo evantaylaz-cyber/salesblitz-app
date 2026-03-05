@@ -347,6 +347,8 @@ export default function RequestPage() {
                     <option value="">Select...</option>
                     <option value="Cold Outreach">Cold Outreach</option>
                     <option value="Warm Introduction">Warm Introduction</option>
+                    <option value="Discovery Call">Discovery Call</option>
+                    <option value="Closing Call">Closing Call</option>
                     <option value="Interview">Interview</option>
                     <option value="Follow-Up">Follow-Up</option>
                     <option value="Multi-Threading">Multi-Threading</option>

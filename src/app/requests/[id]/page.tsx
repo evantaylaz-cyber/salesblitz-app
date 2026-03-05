@@ -80,6 +80,8 @@ const STEP_ICONS: Record<string, React.ElementType> = {
   generating_assets: Sparkles,
   building_landscape_app: Globe,
   building_competitive_playbook: Zap,
+  generating_gamma_deck: Sparkles,
+  generating_outreach_sequence: MessageCircleQuestion,
   formatting: Package,
   delivery: Download,
 };

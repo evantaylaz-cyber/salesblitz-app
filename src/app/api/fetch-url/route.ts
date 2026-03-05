@@ -81,10 +81,12 @@ export async function POST(req: NextRequest) {
 
     if (pageText.length < 50) {
       return NextResponse.json(
-        { error: "Page appears to be empty or requires login." },
+        { error: "Page appears to be empty or requires login. This site may use JavaScript rendering — try pasting the job description manually instead." },
         { status: 400 }
       );
     }
+
+    console.log(`[fetch-url] Extracted ${pageText.length} chars from ${parsedUrl.hostname} (type: ${type})`);
 
     // Build extraction prompt based on type
     let extractionPrompt: string;
@@ -191,7 +193,7 @@ Return ONLY valid JSON, no markdown fencing, no explanation.`;
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
-        model: "claude-sonnet-4-5-20250929",
+        model: process.env.ANTHROPIC_MODEL || "claude-3-5-sonnet-20241022",
         max_tokens: 2000,
         messages: [
           {
@@ -203,9 +205,28 @@ Return ONLY valid JSON, no markdown fencing, no explanation.`;
     });
 
     if (!claudeRes.ok) {
-      console.error("Claude API error:", await claudeRes.text());
+      const errBody = await claudeRes.text();
+      console.error("Claude API error:", claudeRes.status, errBody);
+      // Surface a more useful error message
+      let detail = "AI extraction failed";
+      if (claudeRes.status === 401) {
+        detail = "AI extraction failed — invalid API key";
+      } else if (claudeRes.status === 429) {
+        detail = "AI extraction failed — rate limited. Try again in a minute.";
+      } else if (claudeRes.status === 529 || claudeRes.status === 503) {
+        detail = "AI extraction failed — service temporarily overloaded. Try again shortly.";
+      } else {
+        try {
+          const parsed = JSON.parse(errBody);
+          if (parsed?.error?.message) {
+            detail = `AI extraction failed — ${parsed.error.message}`;
+          }
+        } catch {
+          // keep generic message
+        }
+      }
       return NextResponse.json(
-        { error: "AI extraction failed" },
+        { error: detail },
         { status: 500 }
       );
     }

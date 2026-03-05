@@ -13,6 +13,7 @@ import {
   XCircle,
   Loader2,
   ChevronRight,
+  Sparkles,
 } from "lucide-react";
 
 interface UserData {
@@ -95,15 +96,15 @@ const TOOLS: Tool[] = [
   {
     id: "deal_audit",
     name: "Deal Audit",
-    description: "MEDDPICC scorecard, risk assessment, strategy brief, handwritten cards",
-    deliverables: ["Deal Audit Report (PDF)", "3 Handwritten Cards"],
+    description: "Qualification scorecard, risk assessment, strategy brief, handwritten cards",
+    deliverables: ["Deal Audit Report (PDF)", "3 Handwritten Cards", "Interactive Landscape (Coming Soon)", "Risk Playbook (Coming Soon)"],
     minimumTier: "pro",
   },
   {
     id: "champion_builder",
     name: "Champion Builder",
     description: "Champion strategy brief, handwritten cards, competitive landscape",
-    deliverables: ["Champion Strategy Brief (PDF)", "3 Handwritten Cards", "Competitive Landscape"],
+    deliverables: ["Champion Strategy Brief (PDF)", "3 Handwritten Cards", "Competitive Landscape", "Internal Selling Deck (Coming Soon)"],
     minimumTier: "closer",
   },
 ];
@@ -210,7 +211,7 @@ export default function DashboardPage() {
               </span>
             )}
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 lg:gap-x-8">
             <a href="/requests" className="relative text-sm text-gray-600 hover:text-gray-900">
               My Requests
               {pendingRequests > 0 && (
@@ -337,6 +338,25 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* AI Profile Setup Banner */}
+        <a
+          href="/onboarding/ai-setup"
+          className="mb-8 flex items-center justify-between rounded-xl border border-indigo-200 bg-gradient-to-r from-indigo-50 to-white p-5 shadow-sm hover:shadow-md transition group"
+        >
+          <div className="flex items-center gap-4">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100 group-hover:bg-indigo-200 transition">
+              <Sparkles className="h-5 w-5 text-indigo-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-900">Set Up Your Profile with AI</h3>
+              <p className="text-sm text-gray-500">
+                Use ChatGPT, Claude, or Gemini to quickly fill out your profile and build your knowledge base.
+              </p>
+            </div>
+          </div>
+          <ChevronRight className="h-5 w-5 text-indigo-400 group-hover:text-indigo-600 transition" />
+        </a>
+
         {/* Tools Grid */}
         <h2 className="mb-4 text-lg font-semibold text-gray-900">Your Tools</h2>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -346,7 +366,7 @@ export default function DashboardPage() {
             return (
               <div
                 key={tool.id}
-                className={`rounded-xl border bg-white p-6 shadow-sm transition ${
+                className={`flex flex-col rounded-xl border bg-white p-6 shadow-sm transition ${
                   accessible ? "hover:shadow-md" : "opacity-70"
                 }`}
               >
@@ -356,17 +376,24 @@ export default function DashboardPage() {
                 </div>
                 <p className="mt-1 text-sm text-gray-500">{tool.description}</p>
 
-                <div className="mt-3">
+                <div className="mt-3 flex-1">
                   <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">
                     Deliverables
                   </p>
                   <ul className="mt-1 space-y-1">
-                    {tool.deliverables.slice(0, 4).map((d) => (
-                      <li key={d} className="flex items-center text-xs text-gray-600">
-                        <CheckCircle2 className="mr-1.5 h-3 w-3 text-emerald-400 shrink-0" />
-                        {d}
-                      </li>
-                    ))}
+                    {tool.deliverables.slice(0, 4).map((d) => {
+                      const isComingSoon = d.includes("(Coming Soon)");
+                      return (
+                        <li key={d} className={`flex items-center text-xs ${isComingSoon ? "text-gray-400 italic" : "text-gray-600"}`}>
+                          {isComingSoon ? (
+                            <Clock className="mr-1.5 h-3 w-3 text-gray-300 shrink-0" />
+                          ) : (
+                            <CheckCircle2 className="mr-1.5 h-3 w-3 text-emerald-400 shrink-0" />
+                          )}
+                          {d}
+                        </li>
+                      );
+                    })}
                     {tool.deliverables.length > 4 && (
                       <li className="text-xs text-gray-400">
                         +{tool.deliverables.length - 4} more

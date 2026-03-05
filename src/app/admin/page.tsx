@@ -346,7 +346,7 @@ export default function AdminPage() {
                             value={deliveryNotes}
                             onChange={(e) => setDeliveryNotes(e.target.value)}
                             rows={2}
-                            placeholder="e.g., Your Interview Prep package is ready. Includes POV deck, cheat sheet, and outreach sequence."
+                            placeholder="e.g., Your Interview Prep package is ready. Includes POV deck, prep sheet, and outreach sequence."
                             className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-y"
                           />
                         </div>

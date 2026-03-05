@@ -57,7 +57,7 @@ export default async function LandingPage() {
               href="/sign-up"
               className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700"
             >
-              Start Free
+              Get Started
             </Link>
           </div>
         </div>
@@ -98,7 +98,7 @@ export default async function LandingPage() {
               </a>
             </div>
             <p className="mt-6 text-sm text-gray-400">
-              No credit card required. 6 tools. Results in under 15 minutes.
+              6 tools. Results in under 15 minutes.
             </p>
           </div>
         </div>
@@ -146,7 +146,7 @@ export default async function LandingPage() {
                 icon: FileText,
                 title: "Research Briefs (PDF)",
                 description:
-                  "Deep-dive intelligence on the company, competitive landscape, MEDDPICC qualification, and strategic positioning — 15-20 pages of weaponized research.",
+                  "Deep-dive intelligence on the company, competitive landscape, qualification mapping, and strategic positioning — 15-20 pages of weaponized research.",
               },
               {
                 icon: BarChart3,
@@ -168,9 +168,9 @@ export default async function LandingPage() {
               },
               {
                 icon: Brain,
-                title: "Discovery Plans & Cheat Sheets",
+                title: "Discovery Plans & Prep Sheets",
                 description:
-                  "Pre-built discovery question flows, objection handling matrices, and one-page cheat sheets you can glance at before a call.",
+                  "Pre-built discovery question flows, objection handling matrices, and one-page prep sheets you can glance at before a call.",
               },
               {
                 icon: TrendingUp,
@@ -221,7 +221,7 @@ export default async function LandingPage() {
               {
                 name: "Interview Prep",
                 tier: "Pro",
-                description: "Crush the interview. MEDDPICC map, STAR stories, 30/60/90, discovery questions, cheat sheet, landscape app.",
+                description: "Crush the interview. Qualification map, STAR stories, 30/60/90, discovery questions, prep sheet, landscape app.",
                 price: "$12/run",
               },
               {
@@ -233,7 +233,7 @@ export default async function LandingPage() {
               {
                 name: "Deal Audit",
                 tier: "Pro",
-                description: "Stress-test your deal. MEDDPICC scorecard, risk report, health card, strategy brief, landscape app.",
+                description: "Stress-test your deal. Qualification scorecard, risk report, health card, strategy brief, landscape app.",
                 price: "$12/run",
               },
               {
@@ -300,7 +300,7 @@ export default async function LandingPage() {
                 icon: Mail,
                 title: "Deliverables hit your inbox",
                 description:
-                  "Research brief PDF, POV deck, interactive landscape, handwritten cards, and cheat sheets — all formatted and ready to use.",
+                  "Research brief PDF, POV deck, interactive landscape, handwritten cards, and prep sheets — all formatted and ready to use.",
               },
             ].map((item) => (
               <div key={item.step} className="text-center">
@@ -469,10 +469,10 @@ export default async function LandingPage() {
               href="/sign-up"
               className="mt-8 inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-8 py-4 text-base font-semibold text-white shadow-lg shadow-indigo-200 transition hover:bg-indigo-700 hover:shadow-xl"
             >
-              Get Started Free <ArrowRight className="h-5 w-5" />
+              Get Started <ArrowRight className="h-5 w-5" />
             </Link>
             <p className="mt-4 text-sm text-gray-400">
-              No credit card required. Cancel anytime.
+              Cancel anytime.
             </p>
           </div>
         </div>

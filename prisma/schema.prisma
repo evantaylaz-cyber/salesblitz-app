@@ -29,6 +29,7 @@ model User {
   runRequests             RunRequest[]
   batchJobs               BatchJob[]
   knowledgeDocs           KnowledgeDocument[]
+  userProfile             UserProfile?
 }
 
 model RunPack {
@@ -132,7 +133,8 @@ model RunRequest {
 model UserProfile {
   id                    String   @id @default(uuid())
   userId                String   @unique @map("user_id")
-  
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   // Company context
   companyName           String?  @map("company_name")
   companyProduct        String?  @map("company_product") @db.Text

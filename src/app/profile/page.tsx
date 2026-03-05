@@ -467,6 +467,13 @@ export default function ProfilePage() {
             <h1 className="text-lg font-bold text-gray-900">Your Profile</h1>
           </div>
           <div className="flex items-center gap-3">
+            <a
+              href="/onboarding/ai-setup"
+              className="flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700 transition hover:bg-indigo-100"
+            >
+              <Sparkles className="h-4 w-4" />
+              Fill with AI
+            </a>
             <button
               onClick={saveProfile}
               disabled={saving}

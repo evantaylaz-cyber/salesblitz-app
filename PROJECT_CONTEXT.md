@@ -27,9 +27,9 @@ AI-powered competitive intelligence SaaS for B2B sales professionals. Users subm
 |------|----------|-----------|-------------|
 | Interview Outreach | Launch | $15 | Resume, outreach sequences, target mapping, networking playbook, 7-touch outreach sequence |
 | Prospect Outreach | Launch | $15 | ICP mapping, multi-channel sequences, personalization, objection handling, 7-touch outreach sequence |
-| Interview Prep | Pro | $12 | MEDDPICC map, STAR stories, 30/60/90, discovery Qs, cheat sheet, landscape app, 7-touch outreach sequence |
+| Interview Prep | Pro | $12 | Qualification map, STAR stories, 30/60/90, discovery Qs, prep sheet, landscape app, 7-touch outreach sequence |
 | Prospect Prep | Pro | $12 | Account research, discovery plan, competitive positioning, business case, landscape app, 7-touch outreach sequence |
-| Deal Audit | Pro | $12 | MEDDPICC scorecard, risk report, health card, strategy brief, landscape app |
+| Deal Audit | Pro | $12 | Qualification scorecard, risk report, health card, strategy brief, landscape app |
 | Champion Builder | Closer | $10 | Champion profile, stakeholder map, dev plan, internal selling kit, coaching card |
 
 ## Subscription Tiers
@@ -81,8 +81,8 @@ The PATCH endpoint accepts `x-api-key` header for worker auth (`INTERNAL_API_KEY
 - [x] Phase 3: Outreach Sequence Generation — DEPLOYED (worker + app pushed 2026-03-03)
 - [x] Phase 3.1: Seller Knowledge Base — BUILT (pending deploy, 2026-03-03)
 - [x] Phase 3.2: Competitive Playbook — BUILT (pending deploy, 2026-03-03)
-- [ ] Phase 3.3: Outreach Personalization Layer (depends on 3 + 3.1 + 3.2)
-- [ ] Phase 3.4: Gamma Deck Automation + landing page + batch PDF scorecard (original Phase 3 polish items)
+- [x] Phase 3.3: Outreach Personalization Layer ✅ BUILT 2026-03-03 (worker-only change — no app changes needed)
+- [x] Phase 3.4: Gamma Deck Automation ✅ BUILT 2026-03-03 (GammaDeckGenerator class, new pipeline step, frontend asset+step. Requires GAMMA_API_KEY env var on Railway.)
 - [ ] Phase 4: Team Accounts (multi-user orgs, shared knowledge base, team billing)
 
 ### Outreach Sequence Status (as of 2026-03-03) — DEPLOYED
