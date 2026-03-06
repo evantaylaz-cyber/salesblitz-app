@@ -161,6 +161,7 @@ model RunRequest {
   additionalNotes String?  @db.Text // Any extra context from customer
   targetCompanyUrl String?  // Target company website URL
   caseStudies     String?  @db.Text // Customer stories & case studies for social proof in outreach
+  interviewInstructions String? @db.Text // Specific interview prep instructions or assignment the candidate was given
 
   // Meeting type (controls which call prep docs are generated)
   // interview_prep: "mock_pitch" | "hiring_manager"

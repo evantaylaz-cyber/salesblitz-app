@@ -58,6 +58,7 @@ export default function RequestPage() {
   const [jobDescription, setJobDescription] = useState("");
   const [additionalNotes, setAdditionalNotes] = useState("");
   const [caseStudies, setCaseStudies] = useState("");
+  const [interviewInstructions, setInterviewInstructions] = useState("");
 
   // UI state
   const [engagementExpanded, setEngagementExpanded] = useState(false);
@@ -137,6 +138,7 @@ export default function RequestPage() {
           priorInteractions: priorInteractions || undefined,
           additionalNotes: additionalNotes || undefined,
           caseStudies: caseStudies || undefined,
+          interviewInstructions: interviewInstructions || undefined,
         }),
       });
 
@@ -548,6 +550,32 @@ export default function RequestPage() {
                   placeholder="Paste the complete job description here, or use the Fetch button above..."
                   className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none resize-y"
                 />
+              </div>
+            </div>
+          )}
+
+          {/* Interview Instructions — interview tools only */}
+          {isInterview && (
+            <div className="rounded-xl border bg-white p-6 shadow-sm">
+              <h2 className="text-base font-semibold text-gray-900 mb-1">Interview Instructions</h2>
+              <p className="text-sm text-gray-500 mb-4">
+                Were you given specific instructions to prepare? Paste the assignment, prompt, or prep details here. This gets injected directly into your deliverables.
+              </p>
+              <div>
+                <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-gray-700">
+                  <FileText className="h-3.5 w-3.5 text-gray-400" />
+                  Prep Instructions / Assignment
+                </label>
+                <textarea
+                  value={interviewInstructions}
+                  onChange={(e) => setInterviewInstructions(e.target.value)}
+                  rows={6}
+                  placeholder={"Example:\n\n\"Prepare a 10-minute mock first call as if you're selling to a mid-market prospect. You'll present to the hiring manager and AVP. Be ready for Q&A on how you handle objections and multi-thread.\""}
+                  className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none resize-y"
+                />
+                <p className="mt-1.5 text-xs text-gray-400">
+                  The more detail you give, the more tailored your speaker notes, arsenal, and call flow will be.
+                </p>
               </div>
             </div>
           )}

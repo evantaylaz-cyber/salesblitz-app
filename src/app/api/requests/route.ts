@@ -81,6 +81,7 @@ export async function POST(req: NextRequest) {
       meetingDate,
       priorInteractions,
       caseStudies,
+      interviewInstructions,
       teamId,
     } = body;
 
@@ -154,6 +155,7 @@ export async function POST(req: NextRequest) {
         meetingDate: meetingDate || null,
         priorInteractions: priorInteractions || null,
         caseStudies: caseStudies || null,
+        interviewInstructions: interviewInstructions || null,
         priority: teamId ? false : user.priorityProcessing,
         status: "submitted",
         steps: JSON.parse(JSON.stringify(steps)),
