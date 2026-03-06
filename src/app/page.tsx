@@ -6,6 +6,7 @@ import {
   ArrowRight,
   Check,
 } from "lucide-react";
+import ProductMockup from "@/components/ProductMockup";
 
 export default async function LandingPage() {
   const { userId } = auth();
@@ -79,6 +80,11 @@ export default async function LandingPage() {
               </Link>
             </div>
           </div>
+
+          {/* Product visual */}
+          <div className="mt-16 md:mt-24">
+            <ProductMockup />
+          </div>
         </div>
       </section>
 
@@ -143,19 +149,19 @@ export default async function LandingPage() {
                 description: "Resume, outreach sequence, and a research package that gets you noticed.",
               },
               {
-                name: "Prospect Outreach",
-                hook: "Get the meeting.",
-                description: "Multi-channel sequences backed by deep account intelligence.",
-              },
-              {
-                name: "Champion Builder",
-                hook: "Arm your champion.",
-                description: "Stakeholder maps, internal selling kits, and the ammo they need to advocate for you.",
-              },
-              {
                 name: "Interview Prep",
                 hook: "Win the interview.",
                 description: "Call playbooks, competitive intel, and prep docs tailored to your meeting.",
+              },
+              {
+                name: "Deal Audit",
+                hook: "Stress-test your deal.",
+                description: "Qualification scorecard, risk flags, and a strategy to close the gaps.",
+              },
+              {
+                name: "Prospect Outreach",
+                hook: "Get the meeting.",
+                description: "Multi-channel sequences backed by deep account intelligence.",
               },
               {
                 name: "Prospect Prep",
@@ -163,9 +169,9 @@ export default async function LandingPage() {
                 description: "Discovery plans, stakeholder maps, and competitive positioning for any meeting type.",
               },
               {
-                name: "Deal Audit",
-                hook: "Stress-test your deal.",
-                description: "Qualification scorecard, risk flags, and a strategy to close the gaps.",
+                name: "Champion Builder",
+                hook: "Arm your champion.",
+                description: "Stakeholder maps, internal selling kits, and the ammo they need to advocate for you.",
               },
             ].map((tool) => (
               <div

@@ -75,7 +75,7 @@ const TOOL_NAMES: Record<string, string> = {
 };
 
 const TOOLS: Tool[] = [
-  // Row 1: Outreach & proactive tools (top of funnel)
+  // Row 1: Interview workflow + deal diagnostic
   {
     id: "interview_outreach",
     name: "Interview Outreach",
@@ -84,27 +84,26 @@ const TOOLS: Tool[] = [
     minimumTier: "launch",
   },
   {
-    id: "prospect_outreach",
-    name: "Prospect Outreach",
-    hook: "Get the meeting.",
-    description: "Multi-channel sequences backed by deep account intelligence.",
-    minimumTier: "launch",
-  },
-  {
-    id: "champion_builder",
-    name: "Champion Builder",
-    hook: "Arm your champion.",
-    description: "Stakeholder maps, internal selling kits, and competitive ammo.",
-    minimumTier: "closer",
-    comingSoon: true,
-  },
-  // Row 2: Prep & diagnostic tools (deeper engagement)
-  {
     id: "interview_prep",
     name: "Interview Prep",
     hook: "Win the interview.",
     description: "Call playbooks, competitive intel, and prep docs tailored to your meeting.",
     minimumTier: "pro",
+  },
+  {
+    id: "deal_audit",
+    name: "Deal Audit",
+    hook: "Stress-test your deal.",
+    description: "Qualification scorecard, risk flags, and a strategy to close the gaps.",
+    minimumTier: "pro",
+  },
+  // Row 2: Prospect workflow + champion strategy
+  {
+    id: "prospect_outreach",
+    name: "Prospect Outreach",
+    hook: "Get the meeting.",
+    description: "Multi-channel sequences backed by deep account intelligence.",
+    minimumTier: "launch",
   },
   {
     id: "prospect_prep",
@@ -114,12 +113,11 @@ const TOOLS: Tool[] = [
     minimumTier: "pro",
   },
   {
-    id: "deal_audit",
-    name: "Deal Audit",
-    hook: "Stress-test your deal.",
-    description: "Qualification scorecard, risk flags, and a strategy to close the gaps.",
-    minimumTier: "pro",
-    comingSoon: true,
+    id: "champion_builder",
+    name: "Champion Builder",
+    hook: "Arm your champion.",
+    description: "Stakeholder maps, internal selling kits, and competitive ammo.",
+    minimumTier: "closer",
   },
 ];
 
