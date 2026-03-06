@@ -577,16 +577,15 @@ export default function DashboardPage() {
         )}
       </main>
 
-      {/* Floating onboarding chat */}
-      {chatOpen && (
-        <OnboardingChatBubble
-          defaultOpen={true}
-          onComplete={() => {
-            setOnboardingComplete(true);
-            fetchUserData();
-          }}
-        />
-      )}
+      {/* Floating onboarding chat — always rendered so the bubble is visible */}
+      <OnboardingChatBubble
+        defaultOpen={chatOpen}
+        key={chatOpen ? "forced-open" : "default"}
+        onComplete={() => {
+          setOnboardingComplete(true);
+          fetchUserData();
+        }}
+      />
     </div>
   );
 }
