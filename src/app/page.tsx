@@ -3,19 +3,8 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import {
   Target,
-  Zap,
-  BarChart3,
-  FileText,
-  Users,
-  Shield,
   ArrowRight,
   Check,
-  Clock,
-  Star,
-  Layers,
-  Brain,
-  Mail,
-  TrendingUp,
 } from "lucide-react";
 
 export default async function LandingPage() {
@@ -36,9 +25,6 @@ export default async function LandingPage() {
             <span className="text-xl font-bold text-gray-900">AltVest</span>
           </div>
           <div className="hidden items-center gap-8 md:flex">
-            <a href="#tools" className="text-sm text-gray-600 hover:text-gray-900">
-              Tools
-            </a>
             <a href="#how-it-works" className="text-sm text-gray-600 hover:text-gray-900">
               How It Works
             </a>
@@ -66,12 +52,8 @@ export default async function LandingPage() {
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-white to-purple-50" />
-        <div className="relative mx-auto max-w-7xl px-6 py-24 md:py-32">
+        <div className="relative mx-auto max-w-7xl px-6 py-24 md:py-36">
           <div className="mx-auto max-w-3xl text-center">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-indigo-100 px-4 py-1.5 text-sm font-medium text-indigo-700">
-              <Zap className="h-4 w-4" />
-              AI-Powered Sales Intelligence
-            </div>
             <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl md:text-6xl">
               Walk into every deal{" "}
               <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
@@ -79,9 +61,8 @@ export default async function LandingPage() {
               </span>
             </h1>
             <p className="mt-6 text-lg text-gray-600 md:text-xl">
-              Submit a prospect, company, or job opportunity. Get back a complete intelligence
-              package — research briefs, POV decks, competitive playbooks, and battle-tested
-              talk tracks — delivered to your inbox in minutes.
+              Submit a prospect. Get back a complete intelligence package, ready
+              to use in your next meeting. Delivered in minutes, not days.
             </p>
             <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
               <Link
@@ -94,213 +75,41 @@ export default async function LandingPage() {
                 href="/demo/prospect_prep"
                 className="flex items-center gap-2 rounded-xl border-2 border-gray-200 bg-white px-8 py-4 text-base font-semibold text-gray-700 transition hover:border-gray-300 hover:bg-gray-50"
               >
-                View Sample Run
+                See a Sample Run
               </Link>
             </div>
-            <p className="mt-6 text-sm text-gray-400">
-              6 tools. Results in under 15 minutes.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Social Proof Bar */}
-      <section className="border-y border-gray-100 bg-gray-50 py-8">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">6</div>
-              <div className="mt-1 text-sm text-gray-500">Specialized Tools</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">5-10</div>
-              <div className="mt-1 text-sm text-gray-500">Deliverables Per Run</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">&lt;15 min</div>
-              <div className="mt-1 text-sm text-gray-500">Average Delivery</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">10x</div>
-              <div className="mt-1 text-sm text-gray-500">Faster Than Manual Research</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* What You Get */}
-      <section className="py-20">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold text-gray-900">
-              Every deliverable a top seller needs
-            </h2>
-            <p className="mt-4 text-lg text-gray-500">
-              Each run produces a complete intelligence package — not templates, not outlines,
-              but finished assets ready to use in your next meeting.
-            </p>
-          </div>
-          <div className="mt-16 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              {
-                icon: FileText,
-                title: "Research Briefs (PDF)",
-                description:
-                  "Deep-dive intelligence on the company, competitive landscape, qualification mapping, and strategic positioning — 15-20 pages of weaponized research.",
-              },
-              {
-                icon: BarChart3,
-                title: "POV Decks (PDF)",
-                description:
-                  "5-slide executive presentation: the challenge they face, your approach, proof points, and a clear next step. Ready to send or present.",
-              },
-              {
-                icon: Layers,
-                title: "Interactive Landscape",
-                description:
-                  "A live HTML competitive positioning map showing where every competitor sits on the axes that matter. Click to expand any rival.",
-              },
-              {
-                icon: Mail,
-                title: "Handwritten Cards (PNG)",
-                description:
-                  "Client POV cards and call sheets designed to look hand-drawn — personal, memorable, impossible to ignore.",
-              },
-              {
-                icon: Brain,
-                title: "Discovery Plans & Prep Sheets",
-                description:
-                  "Pre-built discovery question flows, objection handling matrices, and one-page prep sheets you can glance at before a call.",
-              },
-              {
-                icon: TrendingUp,
-                title: "Batch Territory Analysis",
-                description:
-                  "Submit 2-10 accounts at once. Get per-account deliverables plus a comparative scorecard ranking your best opportunities.",
-              },
-            ].map((item) => (
-              <div
-                key={item.title}
-                className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition hover:shadow-md"
-              >
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-50">
-                  <item.icon className="h-5 w-5 text-indigo-600" />
-                </div>
-                <h3 className="mt-4 font-semibold text-gray-900">{item.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-gray-500">{item.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Tools Grid */}
-      <section id="tools" className="border-y border-gray-100 bg-gray-50 py-20">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold text-gray-900">6 tools built for sellers</h2>
-            <p className="mt-4 text-lg text-gray-500">
-              Whether you&apos;re interviewing, prospecting, or closing — there&apos;s a tool
-              purpose-built for that moment in the sales cycle.
-            </p>
-          </div>
-          <div className="mt-16 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {[
-              {
-                name: "Interview Outreach",
-                tier: "Launch",
-                description: "Land the interview. Resume polish, outreach sequences, target mapping, and networking playbook.",
-                price: "$15/run",
-              },
-              {
-                name: "Prospect Outreach",
-                tier: "Launch",
-                description: "Get the meeting. ICP mapping, multi-channel sequences, personalization frameworks, objection handling.",
-                price: "$15/run",
-              },
-              {
-                name: "Interview Prep",
-                tier: "Pro",
-                description: "Crush the interview. Qualification map, STAR stories, 30/60/90, discovery questions, prep sheet, landscape app.",
-                price: "$12/run",
-              },
-              {
-                name: "Prospect Prep",
-                tier: "Pro",
-                description: "Own the discovery call. Account research, competitive positioning, business case framework, landscape app.",
-                price: "$12/run",
-              },
-              {
-                name: "Deal Audit",
-                tier: "Pro",
-                description: "Stress-test your deal. Qualification scorecard, risk report, health card, strategy brief, landscape app.",
-                price: "$12/run",
-              },
-              {
-                name: "Champion Builder",
-                tier: "Closer",
-                description: "Build your internal champion. Stakeholder map, development plan, internal selling kit, coaching card.",
-                price: "$10/run",
-              },
-            ].map((tool) => (
-              <div
-                key={tool.name}
-                className="rounded-xl border border-gray-200 bg-white p-6 transition hover:border-indigo-200 hover:shadow-sm"
-              >
-                <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-gray-900">{tool.name}</h3>
-                  <span
-                    className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                      tool.tier === "Launch"
-                        ? "bg-emerald-100 text-emerald-700"
-                        : tool.tier === "Pro"
-                        ? "bg-indigo-100 text-indigo-700"
-                        : "bg-amber-100 text-amber-700"
-                    }`}
-                  >
-                    {tool.tier}
-                  </span>
-                </div>
-                <p className="mt-3 text-sm text-gray-500">{tool.description}</p>
-                <p className="mt-3 text-sm font-medium text-gray-700">{tool.price}</p>
-              </div>
-            ))}
           </div>
         </div>
       </section>
 
       {/* How It Works */}
-      <section id="how-it-works" className="py-20">
+      <section id="how-it-works" className="border-y border-gray-100 bg-gray-50 py-20">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold text-gray-900">Three steps. Fifteen minutes.</h2>
+            <h2 className="text-3xl font-bold text-gray-900">How it works</h2>
             <p className="mt-4 text-lg text-gray-500">
-              From zero context to a complete intelligence package — faster than you can read a
-              10-K.
+              Three steps. Under fifteen minutes.
             </p>
           </div>
           <div className="mt-16 grid grid-cols-1 gap-12 md:grid-cols-3">
             {[
               {
                 step: "01",
-                icon: Target,
-                title: "Submit your target",
+                title: "Pick a tool, drop in a name",
                 description:
-                  "Pick a tool, enter the company name and prospect LinkedIn. That's it — our AI auto-fills the rest from public data.",
+                  "Company name, prospect LinkedIn, role context. That's all we need.",
               },
               {
                 step: "02",
-                icon: Brain,
-                title: "AI does the heavy lifting",
+                title: "We build your package",
                 description:
-                  "Claude runs deep competitive research, market analysis, and company intelligence. Synthesizes everything into a strategic narrative.",
+                  "Deep research, competitive analysis, strategic positioning. Synthesized into finished assets.",
               },
               {
                 step: "03",
-                icon: Mail,
-                title: "Deliverables hit your inbox",
+                title: "Open your inbox",
                 description:
-                  "Research brief PDF, POV deck, interactive landscape, handwritten cards, and prep sheets — all formatted and ready to use.",
+                  "Everything's there. Research briefs, decks, talk tracks, interactive playbooks. Ready to use.",
               },
             ].map((item) => (
               <div key={item.step} className="text-center">
@@ -315,13 +124,72 @@ export default async function LandingPage() {
         </div>
       </section>
 
+      {/* Tools */}
+      <section className="py-20">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="text-3xl font-bold text-gray-900">
+              A tool for every stage of the deal
+            </h2>
+            <p className="mt-4 text-lg text-gray-500">
+              Whether you&apos;re landing the meeting, prepping for it, or closing the deal.
+            </p>
+          </div>
+          <div className="mt-16 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {[
+              {
+                name: "Interview Outreach",
+                hook: "Land the interview.",
+                description: "Resume, outreach sequence, and a research package that gets you noticed.",
+              },
+              {
+                name: "Prospect Outreach",
+                hook: "Get the meeting.",
+                description: "Multi-channel sequences backed by deep account intelligence.",
+              },
+              {
+                name: "Interview Prep",
+                hook: "Win the interview.",
+                description: "Call playbooks, competitive intel, and prep docs tailored to your meeting.",
+              },
+              {
+                name: "Prospect Prep",
+                hook: "Own the call.",
+                description: "Discovery plans, stakeholder maps, and competitive positioning for any meeting type.",
+              },
+              {
+                name: "Deal Audit",
+                hook: "Stress-test your deal.",
+                description: "Qualification scorecard, risk flags, and a strategy to close the gaps.",
+              },
+              {
+                name: "Champion Builder",
+                hook: "Arm your champion.",
+                description: "Stakeholder maps, internal selling kits, and the ammo they need to advocate for you.",
+              },
+            ].map((tool) => (
+              <div
+                key={tool.name}
+                className="rounded-xl border border-gray-200 bg-white p-6 transition hover:border-indigo-200 hover:shadow-sm"
+              >
+                <h3 className="font-semibold text-gray-900">{tool.name}</h3>
+                <p className="mt-2 text-sm text-gray-500">
+                  <span className="font-medium text-gray-700">{tool.hook}</span>{" "}
+                  {tool.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Pricing */}
       <section id="pricing" className="border-y border-gray-100 bg-gray-50 py-20">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold text-gray-900">Simple pricing. No surprises.</h2>
+            <h2 className="text-3xl font-bold text-gray-900">Simple pricing</h2>
             <p className="mt-4 text-lg text-gray-500">
-              Each run produces a full deliverable package. Pick the tier that matches your role.
+              Every run produces a complete deliverable package. No per-asset charges.
             </p>
           </div>
           <div className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -331,37 +199,42 @@ export default async function LandingPage() {
                 price: 49,
                 annual: 39,
                 runs: 4,
-                tools: ["Interview Outreach", "Prospect Outreach"],
+                features: [
+                  "Interview Outreach",
+                  "Prospect Outreach",
+                  "4 runs/month",
+                ],
                 highlight: false,
-                cta: "Get Launch",
+                cta: "Get Started",
               },
               {
                 name: "Pro",
                 price: 99,
                 annual: 79,
                 runs: 12,
-                tools: [
-                  "Interview Outreach",
-                  "Prospect Outreach",
+                features: [
+                  "Everything in Launch",
                   "Interview Prep",
                   "Prospect Prep",
                   "Deal Audit",
+                  "12 runs/month",
                 ],
                 highlight: true,
-                cta: "Get Pro",
+                cta: "Get Started",
               },
               {
                 name: "Closer",
                 price: 179,
                 annual: 149,
                 runs: 25,
-                tools: [
-                  "All 6 tools",
+                features: [
+                  "Everything in Pro",
+                  "Champion Builder",
+                  "25 runs/month",
                   "Priority processing",
-                  "Quarterly strategy call",
                 ],
                 highlight: false,
-                cta: "Get Closer",
+                cta: "Get Started",
               },
             ].map((tier) => (
               <div
@@ -386,7 +259,7 @@ export default async function LandingPage() {
                   </span>
                 </div>
                 <p className="mt-2 text-sm text-gray-500">
-                  {tier.runs} runs/month · Billed annually
+                  Billed annually
                 </p>
                 <Link
                   href="/sign-up"
@@ -399,10 +272,10 @@ export default async function LandingPage() {
                   {tier.cta}
                 </Link>
                 <div className="mt-6 space-y-2.5">
-                  {tier.tools.map((t) => (
-                    <div key={t} className="flex items-center text-sm text-gray-700">
+                  {tier.features.map((f) => (
+                    <div key={f} className="flex items-center text-sm text-gray-700">
                       <Check className="mr-2 h-4 w-4 shrink-0 text-emerald-500" />
-                      {t}
+                      {f}
                     </div>
                   ))}
                 </div>
@@ -411,59 +284,29 @@ export default async function LandingPage() {
           </div>
           <div className="mt-10 text-center">
             <p className="text-sm text-gray-500">
-              Need more runs? Add{" "}
+              Need more runs?{" "}
               <Link href="/sign-up" className="font-medium text-indigo-600 hover:text-indigo-700">
-                run packs
+                Run packs
               </Link>{" "}
-              starting at $8/run. Or grab the{" "}
+              start at $8/run.{" "}
               <Link href="/sign-up" className="font-medium text-indigo-600 hover:text-indigo-700">
                 Interview Sprint
               </Link>{" "}
-              — 6 runs for $149 (no subscription required).
+              is 6 runs for $149, no subscription needed.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Batch Mode Highlight */}
-      <section className="py-20">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="rounded-3xl bg-gradient-to-br from-indigo-600 to-purple-700 p-10 md:p-16">
-            <div className="mx-auto max-w-2xl text-center">
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-1.5 text-sm font-medium text-white">
-                <Users className="h-4 w-4" />
-                Batch Mode
-              </div>
-              <h2 className="text-3xl font-bold text-white md:text-4xl">
-                Map an entire territory in one shot
-              </h2>
-              <p className="mt-4 text-lg text-indigo-100">
-                Submit 2-10 accounts. Get per-account intelligence plus a comparative analysis
-                that ranks your best opportunities and tells you where to start. One submission,
-                one price, exponentially more insight.
-              </p>
-              <Link
-                href="/sign-up"
-                className="mt-8 inline-flex items-center gap-2 rounded-xl bg-white px-8 py-4 text-base font-semibold text-indigo-700 shadow-lg transition hover:bg-gray-50"
-              >
-                Try Batch Mode <ArrowRight className="h-5 w-5" />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Final CTA */}
-      <section className="border-t border-gray-100 py-20">
+      <section className="py-20">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-3xl font-bold text-gray-900">
               Stop showing up unprepared
             </h2>
             <p className="mt-4 text-lg text-gray-500">
-              Your competitors are walking into calls with half the context. You&apos;ll walk in
-              with a 20-page brief, a POV deck, and a competitive playbook you can pull up
-              mid-conversation.
+              Your next meeting is too important to wing it.
             </p>
             <Link
               href="/sign-up"

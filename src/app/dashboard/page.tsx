@@ -53,8 +53,8 @@ interface UserData {
 interface Tool {
   id: string;
   name: string;
+  hook: string;
   description: string;
-  deliverables: string[];
   minimumTier: string;
   comingSoon?: boolean;
 }
@@ -78,44 +78,44 @@ const TOOLS: Tool[] = [
   {
     id: "interview_outreach",
     name: "Interview Outreach",
-    description: "Land the interview. ATS resume, outreach sequence, and a research package that makes your application impossible to ignore.",
-    deliverables: ["ATS-Optimized Resume (PDF)", "7-Touch Outreach Sequence", "Research Brief (PDF)", "POV Deck (5 slides)", "3 Handwritten Cards", "Polished Deck (24hr)"],
+    hook: "Land the interview.",
+    description: "Resume, outreach sequence, and a research package that gets you noticed.",
     minimumTier: "launch",
   },
   {
     id: "prospect_outreach",
     name: "Prospect Outreach",
-    description: "Get the meeting. Multi-channel outreach sequence backed by deep account research and competitive positioning.",
-    deliverables: ["7-Touch Outreach Sequence", "Research Brief (PDF)", "POV Deck (5 slides)", "3 Handwritten Cards", "Competitive Playbook", "Polished Deck (24hr)"],
+    hook: "Get the meeting.",
+    description: "Multi-channel sequences backed by deep account intelligence.",
     minimumTier: "launch",
   },
   {
     id: "interview_prep",
     name: "Interview Prep",
-    description: "Win the interview. Call prep docs, competitive playbook, and a full research package tailored to your meeting type.",
-    deliverables: ["Call Prep Docs (3-5 PDFs)", "Competitive Playbook", "Research Brief (PDF)", "POV Deck (5 slides)", "3 Handwritten Cards", "Polished Deck (Gamma)"],
+    hook: "Win the interview.",
+    description: "Call playbooks, competitive intel, and prep docs tailored to your meeting.",
     minimumTier: "pro",
   },
   {
     id: "prospect_prep",
     name: "Prospect Prep",
-    description: "Own the call. Meeting-specific speaker notes, discovery plan, and competitive arsenal for any meeting type.",
-    deliverables: ["Call Prep Docs (3 PDFs)", "Discovery Question Map", "Competitive Playbook", "Research Brief (PDF)", "POV Deck (5 slides)", "Polished Deck (Gamma)"],
+    hook: "Own the call.",
+    description: "Discovery plans, stakeholder maps, and competitive positioning for any meeting type.",
     minimumTier: "pro",
   },
   {
     id: "deal_audit",
     name: "Deal Audit",
-    description: "Stress-test your deal. MEDDPICC qualification scorecard, risk flags, and a strategy to close the gaps.",
-    deliverables: ["Deal Audit Report (PDF)", "Risk Assessment", "3 Handwritten Cards", "Strategy Playbook"],
+    hook: "Stress-test your deal.",
+    description: "Qualification scorecard, risk flags, and a strategy to close the gaps.",
     minimumTier: "pro",
     comingSoon: true,
   },
   {
     id: "champion_builder",
     name: "Champion Builder",
-    description: "Arm your champion. Internal selling kit, stakeholder map, and the competitive ammo they need to sell for you.",
-    deliverables: ["Champion Strategy Brief (PDF)", "Stakeholder Map", "3 Handwritten Cards", "Competitive Playbook"],
+    hook: "Arm your champion.",
+    description: "Stakeholder maps, internal selling kits, and competitive ammo.",
     minimumTier: "closer",
     comingSoon: true,
   },
@@ -230,12 +230,12 @@ export default function DashboardPage() {
             <h1 className="text-xl font-bold text-gray-900">AltVest</h1>
             {hasSubscription && (
               <span className="rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-700">
-                {TIER_NAMES[userData!.currentTier!]} Plan
+                {TIER_NAMES[userData!.currentTier!]}
               </span>
             )}
             {userData?.priorityProcessing && (
               <span className="rounded-full bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-700">
-                ⚡ Priority
+                Priority
               </span>
             )}
           </div>
@@ -243,7 +243,7 @@ export default function DashboardPage() {
           {/* Desktop nav */}
           <div className="hidden lg:flex items-center gap-x-8">
             <a href="/requests" className="relative text-sm text-gray-600 hover:text-gray-900">
-              My Requests
+              Requests
               {pendingRequests > 0 && (
                 <span className="absolute -top-1.5 -right-3 flex h-4 w-4 items-center justify-center rounded-full bg-indigo-600 text-[10px] font-bold text-white">
                   {pendingRequests}
@@ -282,10 +282,10 @@ export default function DashboardPage() {
             <UserButton afterSignOutUrl="/sign-in" />
           </div>
 
-          {/* Mobile nav: priority items + hamburger */}
+          {/* Mobile nav */}
           <div className="flex lg:hidden items-center gap-4">
             <a href="/requests" className="relative text-sm text-gray-600 hover:text-gray-900">
-              My Requests
+              Requests
               {pendingRequests > 0 && (
                 <span className="absolute -top-1.5 -right-3 flex h-4 w-4 items-center justify-center rounded-full bg-indigo-600 text-[10px] font-bold text-white">
                   {pendingRequests}
@@ -302,7 +302,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Mobile dropdown menu */}
+        {/* Mobile dropdown */}
         {mobileMenuOpen && (
           <div className="lg:hidden border-t bg-white px-6 py-3 space-y-1">
             <a href="/profile" className="block rounded-lg px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50">
@@ -340,11 +340,11 @@ export default function DashboardPage() {
 
       <main className="mx-auto max-w-7xl px-6 py-8">
         {/* Run Stats */}
-        <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
           {/* Subscription Runs */}
           <div className="rounded-xl border bg-white p-5 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-500">Subscription Runs</span>
+              <span className="text-sm font-medium text-gray-500">Subscription</span>
               <Zap className="h-4 w-4 text-indigo-500" />
             </div>
             <p className="mt-2 text-2xl font-bold text-gray-900">
@@ -354,9 +354,9 @@ export default function DashboardPage() {
               </span>
             </p>
             {hasSubscription && userData!.subscriptionRunsTotal > 0 && (
-              <div className="mt-3 h-2 rounded-full bg-gray-100">
+              <div className="mt-3 h-1.5 rounded-full bg-gray-100">
                 <div
-                  className="h-2 rounded-full bg-indigo-500 transition-all"
+                  className="h-1.5 rounded-full bg-indigo-500 transition-all"
                   style={{
                     width: `${(userData!.subscriptionRunsRemaining / userData!.subscriptionRunsTotal) * 100}%`,
                   }}
@@ -373,7 +373,7 @@ export default function DashboardPage() {
           {/* Pack Runs */}
           <div className="rounded-xl border bg-white p-5 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-500">Run Pack Balance</span>
+              <span className="text-sm font-medium text-gray-500">Run Packs</span>
               <Package className="h-4 w-4 text-emerald-500" />
             </div>
             <p className="mt-2 text-2xl font-bold text-gray-900">
@@ -381,20 +381,12 @@ export default function DashboardPage() {
                 .filter((p) => p.type !== "interview_sprint")
                 .reduce((sum, p) => sum + p.runsRemaining, 0) || 0}
             </p>
-            {userData?.runPacks
-              .filter((p) => p.type !== "interview_sprint" && p.runsRemaining > 0)
-              .map((p) => (
-                <p key={p.id} className="mt-1 text-xs text-gray-400">
-                  {p.runsRemaining} runs · expires{" "}
-                  {new Date(p.expiresAt).toLocaleDateString()}
-                </p>
-              ))}
           </div>
 
           {/* Sprint Runs */}
           <div className="rounded-xl border bg-white p-5 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-500">Interview Sprint</span>
+              <span className="text-sm font-medium text-gray-500">Sprint</span>
               <Clock className="h-4 w-4 text-orange-500" />
             </div>
             <p className="mt-2 text-2xl font-bold text-gray-900">
@@ -402,20 +394,12 @@ export default function DashboardPage() {
                 .filter((p) => p.type === "interview_sprint")
                 .reduce((sum, p) => sum + p.runsRemaining, 0) || 0}
             </p>
-            {userData?.runPacks
-              .filter((p) => p.type === "interview_sprint" && p.runsRemaining > 0)
-              .map((p) => (
-                <p key={p.id} className="mt-1 text-xs text-gray-400">
-                  {p.runsRemaining} runs · expires{" "}
-                  {new Date(p.expiresAt).toLocaleDateString()}
-                </p>
-              ))}
           </div>
 
           {/* Total */}
           <div className="rounded-xl border bg-white p-5 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-500">Total Available</span>
+              <span className="text-sm font-medium text-gray-500">Total</span>
               <CheckCircle2 className="h-4 w-4 text-blue-500" />
             </div>
             <p className="mt-2 text-2xl font-bold text-gray-900">{totalAvailableRuns()}</p>
@@ -423,7 +407,7 @@ export default function DashboardPage() {
               href="/subscribe#packs"
               className="mt-2 inline-flex items-center text-xs font-medium text-indigo-600 hover:text-indigo-800"
             >
-              Buy Run Packs <ChevronRight className="ml-0.5 h-3 w-3" />
+              Buy more <ChevronRight className="ml-0.5 h-3 w-3" />
             </a>
           </div>
         </div>
@@ -436,9 +420,9 @@ export default function DashboardPage() {
                 <Sparkles className="h-5 w-5 text-indigo-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">Set Up Your Profile with AI</h3>
+                <h3 className="font-semibold text-gray-900">Complete your profile</h3>
                 <p className="text-sm text-gray-500">
-                  Chat with AltVest to build your profile, deal stories, and knowledge base. Takes ~10 min.
+                  Personalize your AI so every run matches your selling style.
                 </p>
               </div>
             </div>
@@ -454,13 +438,13 @@ export default function DashboardPage() {
                 className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition whitespace-nowrap"
               >
                 <Sparkles className="h-4 w-4" />
-                Start Chat
+                Start
               </button>
             </div>
           </div>
         )}
 
-        {/* Sample Run Banner - shown when user has no run history */}
+        {/* Sample Run Banner */}
         {userData && (!userData.runLogs || userData.runLogs.length === 0) && (
           <div className="mb-8 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
             <div className="flex items-center justify-between">
@@ -469,21 +453,19 @@ export default function DashboardPage() {
                   <Eye className="h-5 w-5 text-gray-600" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">See what you get before you buy</h3>
+                  <h3 className="font-semibold text-gray-900">See a sample run</h3>
                   <p className="text-sm text-gray-500">
-                    Preview a completed Prospect Prep &amp; Interview Prep run with sample data.
+                    Preview a completed package before you buy.
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <a
-                  href="/demo/prospect_prep"
-                  className="flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-100 transition whitespace-nowrap"
-                >
-                  <Eye className="h-4 w-4" />
-                  View Sample Run
-                </a>
-              </div>
+              <a
+                href="/demo/prospect_prep"
+                className="flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-100 transition whitespace-nowrap"
+              >
+                <Eye className="h-4 w-4" />
+                View
+              </a>
             </div>
           </div>
         )}
@@ -514,35 +496,12 @@ export default function DashboardPage() {
                   <h3 className="font-semibold text-gray-900">{tool.name}</h3>
                   {!accessible && !tool.comingSoon && <Lock className="h-4 w-4 text-gray-400" />}
                 </div>
-                <p className="mt-1 text-sm text-gray-500">{tool.description}</p>
+                <p className="mt-2 flex-1 text-sm text-gray-500">
+                  <span className="font-medium text-gray-700">{tool.hook}</span>{" "}
+                  {tool.description}
+                </p>
 
-                <div className="mt-3 flex-1">
-                  <p className="text-xs font-medium text-gray-400 uppercase tracking-wide">
-                    Deliverables
-                  </p>
-                  <ul className="mt-1 space-y-1">
-                    {tool.deliverables.slice(0, 4).map((d) => {
-                      const isComingSoonItem = d.includes("(Coming Soon)");
-                      return (
-                        <li key={d} className={`flex items-center text-xs ${isComingSoonItem ? "text-gray-400 italic" : "text-gray-600"}`}>
-                          {isComingSoonItem ? (
-                            <Clock className="mr-1.5 h-3 w-3 text-gray-300 shrink-0" />
-                          ) : (
-                            <CheckCircle2 className="mr-1.5 h-3 w-3 text-emerald-400 shrink-0" />
-                          )}
-                          {d}
-                        </li>
-                      );
-                    })}
-                    {tool.deliverables.length > 4 && (
-                      <li className="text-xs text-gray-400">
-                        +{tool.deliverables.length - 4} more
-                      </li>
-                    )}
-                  </ul>
-                </div>
-
-                <div className="mt-4">
+                <div className="mt-5">
                   {tool.comingSoon ? (
                     <div className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm font-medium text-gray-400 text-center">
                       Coming Soon
@@ -557,7 +516,7 @@ export default function DashboardPage() {
                         "No Runs Remaining"
                       ) : (
                         <>
-                          <Zap className="h-4 w-4" /> New Request
+                          <Zap className="h-4 w-4" /> New Run
                         </>
                       )}
                     </button>
@@ -567,7 +526,7 @@ export default function DashboardPage() {
                       className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-indigo-200 bg-indigo-50 px-4 py-2.5 text-sm font-medium text-indigo-700 transition hover:bg-indigo-100"
                     >
                       <ArrowUpRight className="h-4 w-4" />
-                      Upgrade to {TIER_NAMES[tool.minimumTier]} to Unlock
+                      Unlock with {TIER_NAMES[tool.minimumTier]}
                     </a>
                   )}
                 </div>
@@ -586,7 +545,6 @@ export default function DashboardPage() {
                   <tr>
                     <th className="px-6 py-3">Tool</th>
                     <th className="px-6 py-3">Date</th>
-                    <th className="px-6 py-3">Source</th>
                     <th className="px-6 py-3">Status</th>
                   </tr>
                 </thead>
@@ -598,11 +556,6 @@ export default function DashboardPage() {
                       </td>
                       <td className="px-6 py-3 text-gray-500">
                         {new Date(log.createdAt).toLocaleDateString()}
-                      </td>
-                      <td className="px-6 py-3">
-                        <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600 capitalize">
-                          {log.source}
-                        </span>
                       </td>
                       <td className="px-6 py-3">
                         {log.status === "completed" ? (
@@ -628,7 +581,6 @@ export default function DashboardPage() {
           defaultOpen={true}
           onComplete={() => {
             setOnboardingComplete(true);
-            // Refresh user data to reflect profile changes
             fetchUserData();
           }}
         />
