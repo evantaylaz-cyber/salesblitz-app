@@ -12,6 +12,7 @@ import {
   ThumbsDown,
   Clock,
 } from "lucide-react";
+import VoiceTextarea from "@/components/VoiceTextarea";
 
 interface Debrief {
   id: string;
@@ -259,12 +260,11 @@ export default function DebriefSection({ requestId }: { requestId: string }) {
               <label className="block text-xs font-medium text-gray-500 mb-1.5">
                 What happened? What landed, what didn&apos;t, key intel, objections?
               </label>
-              <textarea
+              <VoiceTextarea
                 value={content}
-                onChange={(e) => setContent(e.target.value)}
+                onChange={setContent}
                 rows={4}
                 placeholder="e.g. Discovery went well. They're evaluating 3 vendors, budget approved Q2. Champion is VP Ops (Sarah). Main objection: integration timeline..."
-                className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 placeholder:text-gray-400 focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100 transition resize-none"
               />
             </div>
 
@@ -273,12 +273,11 @@ export default function DebriefSection({ requestId }: { requestId: string }) {
               <label className="block text-xs font-medium text-gray-500 mb-1.5">
                 Next steps (optional)
               </label>
-              <textarea
+              <VoiceTextarea
                 value={nextSteps}
-                onChange={(e) => setNextSteps(e.target.value)}
+                onChange={setNextSteps}
                 rows={2}
                 placeholder="e.g. Send ROI calculator by Friday, schedule technical deep dive with their IT lead..."
-                className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 placeholder:text-gray-400 focus:border-indigo-300 focus:ring-2 focus:ring-indigo-100 transition resize-none"
               />
             </div>
 

@@ -21,6 +21,7 @@ import {
   Globe,
   Sparkles,
 } from "lucide-react";
+import VoiceTextarea from "@/components/VoiceTextarea";
 
 const TOOL_INFO: Record<string, { name: string; category: "interview" | "prospect" | "deal" }> = {
   interview_outreach: { name: "Interview Outreach", category: "interview" },
@@ -415,12 +416,11 @@ export default function RequestPage() {
                 <UserIcon className="h-3.5 w-3.5 text-gray-400" />
                 Paste LinkedIn Profile
               </label>
-              <textarea
+              <VoiceTextarea
                 value={linkedinText}
-                onChange={(e) => setLinkedinText(e.target.value)}
+                onChange={setLinkedinText}
                 rows={6}
                 placeholder="Go to their LinkedIn profile → select all (Ctrl+A / Cmd+A) → paste here. Include their About, Experience, Education — everything helps."
-                className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none resize-y"
               />
             </div>
           </div>
@@ -484,12 +484,11 @@ export default function RequestPage() {
                     <FileText className="h-3.5 w-3.5 text-gray-400" />
                     Prior Interactions
                   </label>
-                  <textarea
+                  <VoiceTextarea
                     value={priorInteractions}
-                    onChange={(e) => setPriorInteractions(e.target.value)}
+                    onChange={setPriorInteractions}
                     rows={3}
                     placeholder="Any previous emails, calls, or meetings with this person?"
-                    className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none resize-y"
                   />
                 </div>
               </div>
@@ -542,13 +541,12 @@ export default function RequestPage() {
                   <FileText className="h-3.5 w-3.5 text-gray-400" />
                   Full Job Description *
                 </label>
-                <textarea
+                <VoiceTextarea
                   required
                   value={jobDescription}
-                  onChange={(e) => setJobDescription(e.target.value)}
+                  onChange={setJobDescription}
                   rows={10}
                   placeholder="Paste the complete job description here, or use the Fetch button above..."
-                  className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none resize-y"
                 />
               </div>
             </div>
@@ -566,12 +564,11 @@ export default function RequestPage() {
                   <FileText className="h-3.5 w-3.5 text-gray-400" />
                   Prep Instructions / Assignment
                 </label>
-                <textarea
+                <VoiceTextarea
                   value={interviewInstructions}
-                  onChange={(e) => setInterviewInstructions(e.target.value)}
+                  onChange={setInterviewInstructions}
                   rows={6}
                   placeholder={"Example:\n\n\"Prepare a 10-minute mock first call as if you're selling to a mid-market prospect. You'll present to the hiring manager and AVP. Be ready for Q&A on how you handle objections and multi-thread.\""}
-                  className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none resize-y"
                 />
                 <p className="mt-1.5 text-xs text-gray-400">
                   The more detail you give, the more tailored your speaker notes, arsenal, and call flow will be.
@@ -594,16 +591,15 @@ export default function RequestPage() {
                   <FileText className="h-3.5 w-3.5 text-gray-400" />
                   {isDeal ? "Deal Context" : "Account / Product Context"}
                 </label>
-                <textarea
+                <VoiceTextarea
                   value={jobDescription}
-                  onChange={(e) => setJobDescription(e.target.value)}
+                  onChange={setJobDescription}
                   rows={6}
                   placeholder={
                     isDeal
                       ? "What stage is the deal? Who are the stakeholders? What's blocking progress?"
                       : "What product are you selling? What do you know about this account?"
                   }
-                  className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none resize-y"
                 />
               </div>
             </div>
@@ -621,12 +617,11 @@ export default function RequestPage() {
                   <FileText className="h-3.5 w-3.5 text-gray-400" />
                   Case Studies (optional)
                 </label>
-                <textarea
+                <VoiceTextarea
                   value={caseStudies}
-                  onChange={(e) => setCaseStudies(e.target.value)}
+                  onChange={setCaseStudies}
                   rows={6}
                   placeholder={"Example:\n\nAccenture - Reduced procurement cycle time by 40% in 6 months. $2.3M annual savings. VP of Procurement quoted: \"This transformed how we buy.\"\n\nDeloitte - 3x pipeline coverage in Q1 after deploying our platform across 12 practice areas. Expanded from pilot to enterprise in 90 days."}
-                  className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none resize-y"
                 />
                 <p className="mt-1.5 text-xs text-gray-400">
                   These will be woven into your outreach sequence, POV deck, and research brief as social proof.
@@ -642,12 +637,11 @@ export default function RequestPage() {
                 <MessageSquare className="h-3.5 w-3.5 text-gray-400" />
                 Additional Notes (optional)
               </label>
-              <textarea
+              <VoiceTextarea
                 value={additionalNotes}
-                onChange={(e) => setAdditionalNotes(e.target.value)}
+                onChange={setAdditionalNotes}
                 rows={3}
                 placeholder="Anything else we should know? Specific areas to focus on, upcoming deadlines, etc."
-                className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none resize-y"
               />
             </div>
           </div>

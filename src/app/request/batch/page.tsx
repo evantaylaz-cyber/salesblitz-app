@@ -11,7 +11,10 @@ import {
   Trash2,
   AlertCircle,
   Zap,
+  Mic,
+  MicOff,
 } from "lucide-react";
+import { useVoiceInput } from "@/hooks/useVoiceInput";
 
 interface AccountInput {
   id: string;
@@ -63,6 +66,18 @@ export default function BatchRequestPage() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const { isListening, isSupported: voiceSupported, toggleListening } =
+    useVoiceInput({
+      onTranscript: (text) => {
+        setSharedContext((prev) => ({
+          ...prev,
+          additionalNotes: prev.additionalNotes
+            ? prev.additionalNotes.trimEnd() + " " + text
+            : text,
+        }));
+      },
+    });
 
   useEffect(() => {
     if (!isLoaded) return;
@@ -349,13 +364,31 @@ export default function BatchRequestPage() {
               <label className="block text-xs font-medium text-zinc-400 mb-2">
                 Additional Notes
               </label>
-              <textarea
-                value={sharedContext.additionalNotes}
-                onChange={(e) => updateSharedContext("additionalNotes", e.target.value)}
-                placeholder="Any additional context for the batch (optional)"
-                rows={4}
-                className="w-full rounded-lg border border-zinc-800/60 bg-zinc-900/50 px-3 py-2 text-sm text-white placeholder-zinc-600 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition resize-none"
-              />
+              <div className="relative">
+                <textarea
+                  value={sharedContext.additionalNotes}
+                  onChange={(e) => updateSharedContext("additionalNotes", e.target.value)}
+                  placeholder="Any additional context for the batch (optional)"
+                  rows={4}
+                  className={`w-full rounded-lg border bg-zinc-900/50 px-3 py-2 text-sm text-white placeholder-zinc-600 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition resize-none ${
+                    isListening ? "border-red-500/50" : "border-zinc-800/60"
+                  } ${voiceSupported ? "pr-10" : ""}`}
+                />
+                {voiceSupported && (
+                  <button
+                    type="button"
+                    onClick={toggleListening}
+                    title={isListening ? "Stop listening" : "Voice input"}
+                    className={`absolute right-2 top-2 rounded-md p-1.5 transition ${
+                      isListening
+                        ? "bg-red-900/50 text-red-400 animate-pulse"
+                        : "bg-zinc-800 text-zinc-500 hover:bg-zinc-700 hover:text-zinc-300"
+                    }`}
+                  >
+                    {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 

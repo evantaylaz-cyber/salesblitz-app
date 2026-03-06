@@ -19,6 +19,7 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
+import VoiceTextarea from "@/components/VoiceTextarea";
 import { QUICK_INTERVIEW_PROMPTS, ONE_SHOT_PROMPT } from "@/lib/onboarding-prompts";
 import type { ParsedProfileData } from "@/lib/parse-ai-profile";
 
@@ -702,48 +703,43 @@ export default function AISetupPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Product/Service</label>
-                <textarea
+                <VoiceTextarea
                   value={reviewData.companyProduct || ""}
-                  onChange={(e) => setReviewData({ ...reviewData, companyProduct: e.target.value })}
+                  onChange={(val) => setReviewData({ ...reviewData, companyProduct: val })}
                   rows={2}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Company Description</label>
-                <textarea
+                <VoiceTextarea
                   value={reviewData.companyDescription || ""}
-                  onChange={(e) => setReviewData({ ...reviewData, companyDescription: e.target.value })}
+                  onChange={(val) => setReviewData({ ...reviewData, companyDescription: val })}
                   rows={3}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Differentiators</label>
-                <textarea
+                <VoiceTextarea
                   value={reviewData.companyDifferentiators || ""}
-                  onChange={(e) => setReviewData({ ...reviewData, companyDifferentiators: e.target.value })}
+                  onChange={(val) => setReviewData({ ...reviewData, companyDifferentiators: val })}
                   rows={2}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                 />
               </div>
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Competitors</label>
-                  <textarea
+                  <VoiceTextarea
                     value={reviewData.companyCompetitors || ""}
-                    onChange={(e) => setReviewData({ ...reviewData, companyCompetitors: e.target.value })}
+                    onChange={(val) => setReviewData({ ...reviewData, companyCompetitors: val })}
                     rows={2}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Target Market</label>
-                  <textarea
+                  <VoiceTextarea
                     value={reviewData.companyTargetMarket || ""}
-                    onChange={(e) => setReviewData({ ...reviewData, companyTargetMarket: e.target.value })}
+                    onChange={(val) => setReviewData({ ...reviewData, companyTargetMarket: val })}
                     rows={2}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                   />
                 </div>
               </div>
@@ -754,29 +750,26 @@ export default function AISetupPage() {
               <h3 className="font-semibold text-gray-900">LinkedIn Profile</h3>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">About / Summary</label>
-                <textarea
+                <VoiceTextarea
                   value={reviewData.linkedinAbout || ""}
-                  onChange={(e) => setReviewData({ ...reviewData, linkedinAbout: e.target.value })}
+                  onChange={(val) => setReviewData({ ...reviewData, linkedinAbout: val })}
                   rows={4}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Experience</label>
-                <textarea
+                <VoiceTextarea
                   value={reviewData.linkedinExperience || ""}
-                  onChange={(e) => setReviewData({ ...reviewData, linkedinExperience: e.target.value })}
+                  onChange={(val) => setReviewData({ ...reviewData, linkedinExperience: val })}
                   rows={4}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Education</label>
-                <textarea
+                <VoiceTextarea
                   value={reviewData.linkedinEducation || ""}
-                  onChange={(e) => setReviewData({ ...reviewData, linkedinEducation: e.target.value })}
+                  onChange={(val) => setReviewData({ ...reviewData, linkedinEducation: val })}
                   rows={2}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                 />
               </div>
             </div>
@@ -822,28 +815,26 @@ export default function AISetupPage() {
                     </div>
                     <div>
                       <label className="block text-xs font-medium text-gray-500 mb-1">Challenge</label>
-                      <textarea
+                      <VoiceTextarea
                         value={story.challenge}
-                        onChange={(e) => {
+                        onChange={(val) => {
                           const updated = [...(reviewData.dealStories || [])];
-                          updated[i] = { ...updated[i], challenge: e.target.value };
+                          updated[i] = { ...updated[i], challenge: val };
                           setReviewData({ ...reviewData, dealStories: updated });
                         }}
                         rows={2}
-                        className="w-full rounded border border-gray-200 px-2 py-1.5 text-sm"
                       />
                     </div>
                     <div>
                       <label className="block text-xs font-medium text-gray-500 mb-1">Result</label>
-                      <textarea
+                      <VoiceTextarea
                         value={story.result}
-                        onChange={(e) => {
+                        onChange={(val) => {
                           const updated = [...(reviewData.dealStories || [])];
-                          updated[i] = { ...updated[i], result: e.target.value };
+                          updated[i] = { ...updated[i], result: val };
                           setReviewData({ ...reviewData, dealStories: updated });
                         }}
                         rows={2}
-                        className="w-full rounded border border-gray-200 px-2 py-1.5 text-sm"
                       />
                     </div>
                   </div>
@@ -873,15 +864,14 @@ export default function AISetupPage() {
                     </div>
                     <div>
                       <label className="block text-xs font-medium text-gray-500 mb-1">Description</label>
-                      <textarea
+                      <VoiceTextarea
                         value={vp.description}
-                        onChange={(e) => {
+                        onChange={(val) => {
                           const updated = [...(reviewData.valueProps || [])];
-                          updated[i] = { ...updated[i], description: e.target.value };
+                          updated[i] = { ...updated[i], description: val };
                           setReviewData({ ...reviewData, valueProps: updated });
                         }}
                         rows={2}
-                        className="w-full rounded border border-gray-200 px-2 py-1.5 text-sm"
                       />
                     </div>
                     <div>

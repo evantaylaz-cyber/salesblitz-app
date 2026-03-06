@@ -11,7 +11,10 @@ import {
   Circle,
   Loader2,
   ArrowRight,
+  Mic,
+  MicOff,
 } from "lucide-react";
+import { useVoiceInput } from "@/hooks/useVoiceInput";
 
 // Phase tracking for the sidebar progress indicator
 const PHASES = [
@@ -27,6 +30,13 @@ export default function OnboardingChatPage() {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [completedPhases, setCompletedPhases] = useState<Set<string>>(new Set());
   const [onboardingDone, setOnboardingDone] = useState(false);
+
+  const { isListening, isSupported: voiceSupported, interimTranscript, toggleListening } =
+    useVoiceInput({
+      onTranscript: (text) => {
+        setInput((prev: string) => (prev ? prev.trimEnd() + " " + text : text));
+      },
+    });
 
   const { messages, input, handleInputChange, handleSubmit, isLoading, setInput } =
     useChat({
@@ -271,6 +281,13 @@ export default function OnboardingChatPage() {
 
         {/* Input Area */}
         <div className="border-t border-gray-200 bg-white px-4 md:px-6 py-4">
+          {isListening && interimTranscript && (
+            <div className="max-w-2xl mx-auto mb-2">
+              <p className="truncate rounded bg-gray-100 px-3 py-1.5 text-xs text-gray-500 italic">
+                {interimTranscript}
+              </p>
+            </div>
+          )}
           <form
             id="chat-form"
             onSubmit={handleSubmit}
@@ -300,6 +317,20 @@ export default function OnboardingChatPage() {
                 }}
               />
             </div>
+            {voiceSupported && (
+              <button
+                type="button"
+                onClick={toggleListening}
+                title={isListening ? "Stop listening" : "Voice input"}
+                className={`flex items-center justify-center w-10 h-10 rounded-xl transition-colors flex-shrink-0 ${
+                  isListening
+                    ? "bg-red-100 text-red-600 animate-pulse"
+                    : "bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-600"
+                }`}
+              >
+                {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+              </button>
+            )}
             <button
               type="submit"
               disabled={!input.trim() || isLoading}

@@ -14,6 +14,7 @@ import {
   User as UserIcon,
   Clock,
 } from "lucide-react";
+import VoiceTextarea from "@/components/VoiceTextarea";
 
 interface ClarificationQuestion {
   id: string;
@@ -318,12 +319,11 @@ export default function ClarifyPage() {
                 </div>
               ) : (
                 <div className="ml-10">
-                  <textarea
+                  <VoiceTextarea
                     value={answers[q.id] || ""}
-                    onChange={(e) => setAnswer(q.id, e.target.value)}
+                    onChange={(val) => setAnswer(q.id, val)}
                     rows={3}
-                    placeholder="Type your answer..."
-                    className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none resize-y"
+                    placeholder="Type your answer or tap the mic to speak..."
                   />
                 </div>
               )}

@@ -21,6 +21,7 @@ import {
   Sparkles,
   LinkIcon,
 } from "lucide-react";
+import VoiceTextarea from "@/components/VoiceTextarea";
 
 interface DealStory {
   title: string;
@@ -203,12 +204,11 @@ function TextArea({
       <label className="block text-sm font-medium text-gray-700 mb-1">
         {label}
       </label>
-      <textarea
+      <VoiceTextarea
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={onChange}
         placeholder={placeholder}
         rows={rows}
-        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition resize-y"
       />
       {hint && <p className="mt-1 text-xs text-gray-400">{hint}</p>}
     </div>
@@ -777,32 +777,23 @@ export default function ProfilePage() {
                           className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
                         />
                       </div>
-                      <textarea
+                      <VoiceTextarea
                         value={story.challenge}
-                        onChange={(e) =>
-                          updateDealStory(i, "challenge", e.target.value)
-                        }
+                        onChange={(val) => updateDealStory(i, "challenge", val)}
                         placeholder="What was the challenge?"
                         rows={2}
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none resize-y"
                       />
-                      <textarea
+                      <VoiceTextarea
                         value={story.solution}
-                        onChange={(e) =>
-                          updateDealStory(i, "solution", e.target.value)
-                        }
+                        onChange={(val) => updateDealStory(i, "solution", val)}
                         placeholder="What did you sell / how did you solve it?"
                         rows={2}
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none resize-y"
                       />
-                      <textarea
+                      <VoiceTextarea
                         value={story.result}
-                        onChange={(e) =>
-                          updateDealStory(i, "result", e.target.value)
-                        }
+                        onChange={(val) => updateDealStory(i, "result", val)}
                         placeholder="What was the outcome?"
                         rows={2}
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none resize-y"
                       />
                       <input
                         type="text"
@@ -873,14 +864,11 @@ export default function ProfilePage() {
                         placeholder="Headline (e.g., '60% faster time-to-detection')"
                         className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
                       />
-                      <textarea
+                      <VoiceTextarea
                         value={prop.description}
-                        onChange={(e) =>
-                          updateValueProp(i, "description", e.target.value)
-                        }
+                        onChange={(val) => updateValueProp(i, "description", val)}
                         placeholder="Why this matters to the buyer"
                         rows={2}
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none resize-y"
                       />
                       <input
                         type="text"
