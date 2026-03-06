@@ -18,18 +18,18 @@ export default async function LandingPage() {
     <div className="min-h-screen bg-white">
       {/* Navigation */}
       <nav className="sticky top-0 z-50 border-b border-gray-100 bg-white/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+        <div className="relative mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600">
               <Target className="h-5 w-5 text-white" />
             </div>
             <span className="text-xl font-bold text-gray-900">AltVest</span>
           </div>
-          <div className="hidden items-center gap-8 md:flex">
-            <a href="#how-it-works" className="text-sm text-gray-600 hover:text-gray-900">
+          <div className="absolute inset-x-0 hidden items-center justify-center gap-8 md:flex pointer-events-none">
+            <a href="#how-it-works" className="text-sm text-gray-600 hover:text-gray-900 pointer-events-auto">
               How It Works
             </a>
-            <a href="#pricing" className="text-sm text-gray-600 hover:text-gray-900">
+            <a href="#pricing" className="text-sm text-gray-600 hover:text-gray-900 pointer-events-auto">
               Pricing
             </a>
           </div>
