@@ -18,7 +18,6 @@ export async function GET() {
       subscriptionRunsRemaining: user.subscriptionRunsRemaining,
       subscriptionRunsTotal: user.subscriptionRunsTotal,
       priorityProcessing: user.priorityProcessing,
-      onboardingComplete: user.onboardingComplete,
       runPacks: user.runPacks,
       runLogs: user.runLogs,
       createdAt: user.createdAt,
