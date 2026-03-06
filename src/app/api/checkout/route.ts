@@ -27,6 +27,10 @@ export async function POST(req: NextRequest) {
           clerkId: clerkUser.id,
           email: clerkUser.emailAddresses[0]?.emailAddress ?? "",
           name: `${clerkUser.firstName ?? ""} ${clerkUser.lastName ?? ""}`.trim() || null,
+          currentTier: "pro",
+          subscriptionRunsRemaining: 3,
+          subscriptionRunsTotal: 3,
+          subscriptionStatus: "active",
         },
       });
     }
