@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import prisma from "@/lib/db";
 import { consumeRun } from "@/lib/runs";
-import { ToolName } from "@/lib/tools";
+import { ToolName, TOOLS } from "@/lib/tools";
 import { sendOrderNotification } from "@/lib/email";
 import { initializeSteps, getExpectedAssets } from "@/lib/job-steps";
 import { normalizeAssets } from "@/lib/normalize-assets";
@@ -80,12 +80,22 @@ export async function POST(req: NextRequest) {
       engagementType,
       meetingDate,
       priorInteractions,
+      caseStudies,
       teamId,
     } = body;
 
     if (!toolName || !targetName || !targetCompany) {
       return NextResponse.json(
         { error: "toolName, targetName, and targetCompany are required" },
+        { status: 400 }
+      );
+    }
+
+    // Block comingSoon tools from being submitted
+    const toolDef = TOOLS.find((t) => t.id === toolName);
+    if (toolDef?.comingSoon) {
+      return NextResponse.json(
+        { error: "This tool is coming soon and not yet available." },
         { status: 400 }
       );
     }
@@ -143,6 +153,7 @@ export async function POST(req: NextRequest) {
         engagementType: engagementType || 'cold_outreach',
         meetingDate: meetingDate || null,
         priorInteractions: priorInteractions || null,
+        caseStudies: caseStudies || null,
         priority: teamId ? false : user.priorityProcessing,
         status: "submitted",
         steps: JSON.parse(JSON.stringify(steps)),

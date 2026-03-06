@@ -57,6 +57,7 @@ export default function RequestPage() {
   const [jobPostingUrl, setJobPostingUrl] = useState("");
   const [jobDescription, setJobDescription] = useState("");
   const [additionalNotes, setAdditionalNotes] = useState("");
+  const [caseStudies, setCaseStudies] = useState("");
 
   // UI state
   const [engagementExpanded, setEngagementExpanded] = useState(false);
@@ -135,6 +136,7 @@ export default function RequestPage() {
           meetingDate: meetingDate || undefined,
           priorInteractions: priorInteractions || undefined,
           additionalNotes: additionalNotes || undefined,
+          caseStudies: caseStudies || undefined,
         }),
       });
 
@@ -575,6 +577,32 @@ export default function RequestPage() {
                   }
                   className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none resize-y"
                 />
+              </div>
+            </div>
+          )}
+
+          {/* Case Studies — prospect tools only */}
+          {isProspect && (
+            <div className="rounded-xl border bg-white p-6 shadow-sm">
+              <h2 className="text-base font-semibold text-gray-900 mb-1">Customer Stories &amp; Case Studies</h2>
+              <p className="text-sm text-gray-500 mb-4">
+                Paste any case studies, customer wins, or proof points you want referenced in your outreach and materials. The more specific the better: include metrics, customer names, and outcomes.
+              </p>
+              <div>
+                <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-gray-700">
+                  <FileText className="h-3.5 w-3.5 text-gray-400" />
+                  Case Studies (optional)
+                </label>
+                <textarea
+                  value={caseStudies}
+                  onChange={(e) => setCaseStudies(e.target.value)}
+                  rows={6}
+                  placeholder={"Example:\n\nAccenture - Reduced procurement cycle time by 40% in 6 months. $2.3M annual savings. VP of Procurement quoted: \"This transformed how we buy.\"\n\nDeloitte - 3x pipeline coverage in Q1 after deploying our platform across 12 practice areas. Expanded from pilot to enterprise in 90 days."}
+                  className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none resize-y"
+                />
+                <p className="mt-1.5 text-xs text-gray-400">
+                  These will be woven into your outreach sequence, POV deck, and research brief as social proof.
+                </p>
               </div>
             </div>
           )}

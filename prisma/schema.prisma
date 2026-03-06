@@ -160,6 +160,7 @@ model RunRequest {
   linkedinText    String?  @db.Text // Pasted LinkedIn summary + experience
   additionalNotes String?  @db.Text // Any extra context from customer
   targetCompanyUrl String?  // Target company website URL
+  caseStudies     String?  @db.Text // Customer stories & case studies for social proof in outreach
 
   // Meeting type (controls which call prep docs are generated)
   // interview_prep: "mock_pitch" | "hiring_manager"

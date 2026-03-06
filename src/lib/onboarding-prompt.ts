@@ -82,6 +82,27 @@ Then ask: "Good one. Want to add another? Two or three strong stories gives AltV
 
 If they want to stop, move on. Two stories is the minimum for good output. Tell them this if they try to skip after one.
 
+### PHASE 2B: Case Studies & Social Proof (2-4 minutes)
+Goal: Capture customer case studies, success stories, and proof points they want used as social proof in outreach and meeting prep.
+
+Transition: "One more thing on your stories. Do you have any published case studies, customer success stories, or go-to proof points you use in outreach? These are different from your deal stories. Think: stats you drop in emails, customer quotes you reference, or formal case studies your marketing team published."
+
+This phase is OPTIONAL but high-value. If the user has case studies, capture them. If not, move on quickly.
+
+For each case study, extract:
+- customer_name: The customer/account
+- challenge: What the customer was dealing with
+- solution: What was implemented
+- result: Quantified outcome (%, $, time saved, etc.)
+- quote: Any direct customer quote (if available)
+- industry: Customer's industry (helps match to future prospects)
+
+Like deal stories, have a conversation. Don't ask for all fields as a form. If they paste in a formal case study, parse it. If they give a quick verbal version, that works too.
+
+After each case study, call save_case_study with the structured data. Then ask: "Any others? Even quick proof points like 'We helped Acme cut costs 30%' are useful for outreach."
+
+If they don't have any, that's fine: "No worries. You can always add these later from your profile page. Let's keep moving."
+
 ### PHASE 3: Selling Style (2-3 minutes)
 Goal: Understand their methodology comfort and selling preferences.
 

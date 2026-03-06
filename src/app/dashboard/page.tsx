@@ -56,6 +56,7 @@ interface Tool {
   description: string;
   deliverables: string[];
   minimumTier: string;
+  comingSoon?: boolean;
 }
 
 const TIER_RANK: Record<string, number> = { launch: 1, pro: 2, closer: 3 };
@@ -106,8 +107,9 @@ const TOOLS: Tool[] = [
     id: "deal_audit",
     name: "Deal Audit",
     description: "Stress-test your deal. MEDDPICC qualification scorecard, risk flags, and a strategy to close the gaps.",
-    deliverables: ["Deal Audit Report (PDF)", "Risk Assessment", "3 Handwritten Cards", "Strategy Playbook (Coming Soon)"],
+    deliverables: ["Deal Audit Report (PDF)", "Risk Assessment", "3 Handwritten Cards", "Strategy Playbook"],
     minimumTier: "pro",
+    comingSoon: true,
   },
   {
     id: "champion_builder",
@@ -115,6 +117,7 @@ const TOOLS: Tool[] = [
     description: "Arm your champion. Internal selling kit, stakeholder map, and the competitive ammo they need to sell for you.",
     deliverables: ["Champion Strategy Brief (PDF)", "Stakeholder Map", "3 Handwritten Cards", "Competitive Landscape"],
     minimumTier: "closer",
+    comingSoon: true,
   },
 ];
 
@@ -489,18 +492,27 @@ export default function DashboardPage() {
         <h2 className="mb-4 text-lg font-semibold text-gray-900">Your Tools</h2>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {TOOLS.map((tool) => {
-            const accessible = canAccess(tool.minimumTier) || hasSprintAccess(tool.id);
+            const accessible = !tool.comingSoon && (canAccess(tool.minimumTier) || hasSprintAccess(tool.id));
 
             return (
               <div
                 key={tool.id}
-                className={`flex flex-col rounded-xl border bg-white p-6 shadow-sm transition ${
-                  accessible ? "hover:shadow-md" : "opacity-70"
+                className={`relative flex flex-col rounded-xl border bg-white p-6 shadow-sm transition ${
+                  tool.comingSoon ? "opacity-60" : accessible ? "hover:shadow-md" : "opacity-70"
                 }`}
               >
+                {/* Coming Soon overlay */}
+                {tool.comingSoon && (
+                  <div className="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-white/60 backdrop-blur-[1px]">
+                    <span className="rounded-full bg-gray-900 px-4 py-1.5 text-xs font-semibold text-white tracking-wide uppercase shadow-lg">
+                      Coming Soon
+                    </span>
+                  </div>
+                )}
+
                 <div className="flex items-start justify-between">
                   <h3 className="font-semibold text-gray-900">{tool.name}</h3>
-                  {!accessible && <Lock className="h-4 w-4 text-gray-400" />}
+                  {!accessible && !tool.comingSoon && <Lock className="h-4 w-4 text-gray-400" />}
                 </div>
                 <p className="mt-1 text-sm text-gray-500">{tool.description}</p>
 
@@ -510,10 +522,10 @@ export default function DashboardPage() {
                   </p>
                   <ul className="mt-1 space-y-1">
                     {tool.deliverables.slice(0, 4).map((d) => {
-                      const isComingSoon = d.includes("(Coming Soon)");
+                      const isComingSoonItem = d.includes("(Coming Soon)");
                       return (
-                        <li key={d} className={`flex items-center text-xs ${isComingSoon ? "text-gray-400 italic" : "text-gray-600"}`}>
-                          {isComingSoon ? (
+                        <li key={d} className={`flex items-center text-xs ${isComingSoonItem ? "text-gray-400 italic" : "text-gray-600"}`}>
+                          {isComingSoonItem ? (
                             <Clock className="mr-1.5 h-3 w-3 text-gray-300 shrink-0" />
                           ) : (
                             <CheckCircle2 className="mr-1.5 h-3 w-3 text-emerald-400 shrink-0" />
@@ -531,7 +543,11 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="mt-4">
-                  {accessible ? (
+                  {tool.comingSoon ? (
+                    <div className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm font-medium text-gray-400 text-center">
+                      Coming Soon
+                    </div>
+                  ) : accessible ? (
                     <button
                       onClick={() => handleRunTool(tool.id)}
                       disabled={totalAvailableRuns() === 0}

@@ -15,6 +15,7 @@ export interface ToolDefinition {
   deliverables: string[];
   minimumTier: "launch" | "pro" | "closer";
   overageRate: number; // per-run overage cost for display
+  comingSoon?: boolean; // if true, show greyed out with "Coming Soon" overlay
 }
 
 export const TOOLS: ToolDefinition[] = [
@@ -91,6 +92,7 @@ export const TOOLS: ToolDefinition[] = [
     ],
     minimumTier: "pro",
     overageRate: 12,
+    comingSoon: true,
   },
   {
     id: "champion_builder",
@@ -103,6 +105,7 @@ export const TOOLS: ToolDefinition[] = [
     ],
     minimumTier: "closer",
     overageRate: 10,
+    comingSoon: true,
   },
 ];
 

@@ -216,6 +216,81 @@ export function createOnboardingTools(userId: string) {
       },
     }),
 
+    save_case_study: tool({
+      description:
+        "Save a customer case study or proof point from the conversation. These are used as social proof in outreach sequences, POV decks, and research briefs for prospect tools.",
+      parameters: z.object({
+        customer_name: z.string().describe("Customer/account name"),
+        challenge: z.string().describe("What the customer was dealing with before"),
+        solution: z.string().describe("What was implemented or delivered"),
+        result: z.string().describe("Quantified outcome: %, $, time saved, etc."),
+        quote: z.string().optional().describe("Direct customer quote if available"),
+        industry: z.string().optional().describe("Customer's industry"),
+        summary: z.string().describe("1-2 sentence summary for quick reference in outreach"),
+      }),
+      execute: async (caseStudy) => {
+        try {
+          const docContent = [
+            `# Case Study: ${caseStudy.customer_name}`,
+            "",
+            caseStudy.summary,
+            "",
+            caseStudy.industry ? `Industry: ${caseStudy.industry}` : "",
+            "",
+            `## Challenge`,
+            caseStudy.challenge,
+            "",
+            `## Solution`,
+            caseStudy.solution,
+            "",
+            `## Result`,
+            caseStudy.result,
+            "",
+            caseStudy.quote ? `## Customer Quote\n"${caseStudy.quote}"` : "",
+          ]
+            .filter(Boolean)
+            .join("\n");
+
+          // Check for existing case study for this customer
+          const existingDoc = await prisma.knowledgeDocument.findFirst({
+            where: {
+              userId,
+              title: `Case Study: ${caseStudy.customer_name}`,
+              category: "case_studies",
+            },
+          });
+
+          if (existingDoc) {
+            await prisma.knowledgeDocument.update({
+              where: { id: existingDoc.id },
+              data: { content: docContent },
+            });
+          } else {
+            await prisma.knowledgeDocument.create({
+              data: {
+                userId,
+                title: `Case Study: ${caseStudy.customer_name}`,
+                content: docContent,
+                category: "case_studies",
+              },
+            });
+          }
+
+          return {
+            success: true,
+            customer: caseStudy.customer_name,
+          };
+        } catch (err: any) {
+          console.error(`[ONBOARDING] Failed to save case study:`, err.message);
+          return {
+            success: false,
+            customer: caseStudy.customer_name,
+            error: err.message,
+          };
+        }
+      },
+    }),
+
     mark_onboarding_complete: tool({
       description: "Mark the user's onboarding as complete. Call this after all phases are done.",
       parameters: z.object({}),
