@@ -6,100 +6,117 @@
 |-----|-----|------|--------|--------|
 | Radiant Logic / Tre Menzel | 6ff42b84 | prospect_prep | delivered | 8 (briefPdf, povDeck, povDeckPptx, gammaDeck, notebookCard, callPrepSheet, stakeholderMap, competitivePlaybook) |
 | Cognisen / Phil Lan | 69fff79d | deal_audit | delivered | 4 (briefPdf, notebookCard, callPrepSheet, stakeholderMap) |
+| Zip / Cody Barnes | d3e67e81 | interview_outreach | delivered | 13 (briefPdf, povDeck, povDeckPptx, gammaDeck, landscape, notebookCard, callPrepSheet, callSheet1Img, clientPovCard, callSheet2ImgA, callSheet2ImgB, outreachSequence, competitivePlaybook) |
 
 ---
 
-## CRITICAL FINDINGS (Must Fix in Code)
+## CRITICAL FINDINGS & FIX STATUS
 
-### F1: Stakeholder Map Only Shows Primary Contact
-**Severity:** High
-**Affects:** Both runs
-**Issue:** Stakeholder maps only populate the single primary contact (Tre for Radiant Logic, Phil for Cognisen). Known stakeholders from research data are not included. MEDDPICC roles all show "Unknown" despite being identifiable from input data.
-**Evidence:**
-- Radiant Logic: Only Tre shown. Missing John Pritchard (CEO since Jan 2025), Michel Prompt (Chairman/Founder). Tre's MEDDPICC role shows "Unknown" but should be Champion + Economic Buyer per Knowledge_Base.md.
-- Cognisen: Only Phil shown. Missing Tom Westfall (CEO, Economic Buyer), Ben Miller (COO), Eddie Rau (CTO). Phil's role shows "Unknown" but clarification answers explicitly state he's an Influencer.
-**Root Cause:** The stakeholder map generator likely only uses the `targetName`/`targetRole` input fields and doesn't extract additional stakeholders from `researchData.company` or `clarificationAnswers`.
-**Fix:** Worker's stakeholder map builder should parse `researchData.company` for leadership/stakeholder mentions and populate the map. Clarification answers should also be mined for stakeholder intel.
+### F1: Stakeholder Map Only Shows Primary Contact — FIXED
+**Severity:** High | **Status:** Code fix applied, pending deployment
+**Issue:** Stakeholder maps only populate the single primary contact. Known stakeholders from research data not included. MEDDPICC roles show "Unknown."
+**Fix Applied:** Refactored `stakeholder-map-generator.js`:
+- Added `_extractPeopleFromResearch()` method that parses `company.stakeholder_map` MEDDPICC role keys
+- Extracts named people via regex from role descriptions
+- Maps extracted names to MEDDPICC roles (champion, economic_buyer, blocker, user)
+- Template updated with two new data source blocks (Research badge + Role badge)
+- Primary contact now gets correct MEDDPICC role from research data
 
-### F2: engagementType Defaults to "cold_outreach"
-**Severity:** Medium
-**Affects:** Both runs
-**Issue:** Both runs submitted with `engagementType: "cold_outreach"` despite:
-- Radiant Logic: Tre is friend/mentor, $10K pre-approved, warm relationship
-- Cognisen: Active deal, agreed terms ($1K/meeting, 90 days), multiple calls completed
-**Root Cause:** Likely the submission form defaults to `cold_outreach` and users don't change it, OR the field isn't prominently surfaced.
-**Impact:** Research prompts may be miscalibrated (cold outreach framing vs. warm/active deal framing), affecting tone and recommendations.
-**Fix:** Either auto-detect from `priorInteractions`/`additionalNotes` content, or make the field more prominent with better defaults.
+### F2: engagementType Defaults to "cold_outreach" — FIXED
+**Severity:** Medium | **Status:** Code fix applied, pending deployment
+**Issue:** Both runs submitted with `engagementType: "cold_outreach"` regardless of context.
+**Fix Applied (3 files):**
+- `request/page.tsx`: Form option values normalized to snake_case (`cold_outreach`, `warm_intro`, `discovery_call`, etc.) to match worker expectations
+- `api/requests/route.ts`: Added `inferEngagementType()` function that auto-detects from toolName + meetingType (interview tools default to "interview", discovery to "cold_outreach", follow_up to "follow_up", etc.)
+- `api/batch-requests/route.ts`: Same inference logic for batch submissions
 
-### F3: PDF Title Has Underscore Bug
-**Severity:** Low
-**Affects:** Both runs (confirmed on Radiant Logic)
-**Issue:** Research brief PDF header shows "Prospect_prep Brief" with an underscore between "Prospect" and "prep" instead of a space.
-**Root Cause:** The `toolName` value (`prospect_prep` / `deal_audit`) is being used directly in the PDF title without converting underscores to spaces and title-casing.
-**Fix:** In `pdf-generator.js`, transform `toolName` before inserting into PDF header: `toolName.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())`.
+### F3: PDF Title Has Underscore Bug — FIXED
+**Severity:** Low | **Status:** Code fix applied, pending deployment
+**Issue:** Research brief PDF shows "Prospect_prep Brief" with underscore.
+**Fix Applied:** `pdf-generator.js` `_formatToolName()` now normalizes underscores to hyphens before lookup. Also fixed 5 additional tool name comparison points throughout the file that had the same underscore/hyphen mismatch.
 
-### F4: Step 9 (generating_call_docs) Shows Pending Despite Asset Existing
-**Severity:** Low
-**Affects:** Radiant Logic run
-**Issue:** Call Prep Sheet PDF exists and is accessible, but step 9 "Generating Call Prep Docs" shows as pending (empty circle). Run shows 91% / 10 of 11 steps.
-**Root Cause:** Known step tracking bug. The CallDocGenerator completes and uploads the asset, but the PATCH to update step status either fails silently or the step ID doesn't match.
-**Fix:** Verify step ID consistency between worker's `stepGenerateCallDocs` and the step array initialized on submission.
+### F4: Step 9 (generating_call_docs) Never Dispatched — FIXED
+**Severity:** Medium | **Status:** Code fix applied, pending deployment
+**Issue:** `generating_call_docs` step defined in `executeStep` switch case but never dispatched by any execution phase. Step shows "pending" forever. Call prep PDFs (playbook, arsenal, live scenario, Q&A) were never generated.
+**Root Cause:** The execution phases (A through E) didn't include `generating_call_docs`. Only the call prep *sheet* was generated (inside `stepGenerateAssets`), not the full call doc suite.
+**Fix Applied:** Added Phase C2 between asset generation and outreach:
+```javascript
+// --- Phase C2: Call docs (depends on research + brief content from Phase C) ---
+if (stepIds.includes("generating_call_docs")) {
+  await this.executeStep("generating_call_docs", context);
+}
+```
+**Impact:** `prospect_prep` with discovery/follow_up/pitch/closing meeting types + `interview_prep` with mock_pitch will now generate call playbook, arsenal, and (for mock_pitch) live scenario + Q&A docs.
+
+### F5: Synthesis Truncation (NEW) — FIXED
+**Severity:** Medium | **Status:** Code fix applied, pending deployment
+**Issue:** Radiant Logic synthesis (63KB raw) was truncated mid-JSON due to 8000 max_tokens limit. Response cut off without closing braces. Stored as `{ raw: "..." }` fallback, making `synthesis.signals`, `synthesis.call_strategy`, etc. unavailable to downstream consumers (Gamma deck data, brief generation).
+**Fix Applied:**
+- Increased synthesis max_tokens from 8000 to 16000
+- Added truncation-aware JSON repair to `salvageRawResponse()`: counts unclosed braces/brackets, trims trailing partial values, closes structures
+- Also bumped outreach_sequence max_tokens from 8000 to 12000 as preventive measure
+
+---
+
+## INFRASTRUCTURE FIXES
+
+### I1: Stale Run Recovery — NEW
+**Status:** Code fix applied, pending deployment
+**Issue:** Worker uses in-memory job queue. If worker restarts between webhook receipt and job processing, jobs are permanently lost. Found 3 runs stuck at "submitted" and 1 at "researching" (Datadog prospect_outreach) with zero progress.
+**Fix Applied:** `index.js`:
+- Startup recovery: queries for runs stuck at "submitted" (>5 min) or "researching"/"generating" (>15 min)
+- Resets stuck processing runs back to "submitted" status
+- Re-enqueues recovered runs
+- Periodic check every 10 minutes (not just startup)
 
 ---
 
 ## QUALITY FINDINGS (Content/Voice Issues)
 
-### Q1: Em Dashes Throughout All Assets
-**Severity:** High (brand voice)
-**Affects:** Both runs, all text-based assets
-**Issue:** Em dashes ("--") appear extensively in competitive playbook HTML, Gamma deck slides, call prep sheet PDF, and notebook cards. This directly violates CLAUDE.md Rule 3B and brand-voice.md "AI Writing Tells" section.
-**Examples:**
-- Competitive playbook: "pre-call vs post-call" should use commas or semicolons
-- Gamma deck: "mandatory capabilities -- raising the bar"
-- Call prep sheet: "competes vs Okta/Microsoft Entra/SailPoint" uses em dashes for breaks
-**Root Cause:** Worker prompts to Claude don't include the anti-AI-writing instructions from brand-voice.md. The worker's system prompts need the em dash prohibition added.
-**Fix:** Add to worker prompt templates: "CRITICAL: Never use em dashes (--) in any output. Use commas, periods, or semicolons instead. Use '&' instead of 'and' where natural."
+### Q1: Em Dashes Throughout All Assets — FIXED
+**Severity:** High (brand voice) | **Status:** Code fix applied, pending deployment
+**Issue:** Em dashes appear in all text-based assets. 128 instances in Cognisen run, 148 in Radiant Logic.
+**Fix Applied (4 files):**
+- `executor.js` voiceBlock: Added comprehensive anti-AI writing rules block (em dashes, "&" preference, banned words, filler openers, rhythm variation). This is the central injection point used by 7+ prompt builders via `buildMethodologyContext()`.
+- `executor.js` callDocPrompt: Added standalone anti-AI rule (doesn't use voiceBlock)
+- `gemini-cards.js`: Added anti-AI rule to `generateCardContent` prompt
+- `batch-executor.js`: Added anti-AI rule to `buildComparativeSynthesisPrompt`
+- Also fixed a literal em dash in executor.js interviewInstructions template
 
 ### Q2: Sparse Input Data Limits Output Quality
-**Severity:** Medium
-**Affects:** Both runs
-**Issue:** Both runs were submitted with minimal inputs:
-- No `linkedinText` (LinkedIn profile data for prospect)
-- No `priorInteractions` (history context)
-- No `additionalNotes` (deal context)
-- Wrong `engagementType`
-**Impact:** Stakeholder maps are thin, competitive positioning is generic rather than tailored to known deal dynamics, and engagement framing assumes cold outreach.
-**Recommendation:** This is partially a UX issue. The submission form should either require more fields for higher-quality output, or the clarification engine should ask for this context if missing.
+**Severity:** Medium | **Status:** UX improvement needed (no code fix yet)
+**Issue:** Runs submitted with minimal inputs (no linkedinText, priorInteractions, additionalNotes). Partially addressed by F2 fix (better engagementType inference) and F1 fix (stakeholder map parsing from research data).
 
 ### Q3: Call Prep Sheet Date Shows Mar 8 (Future Date)
-**Severity:** Low
-**Affects:** Radiant Logic run
-**Issue:** Call prep sheet header shows "Mar 8, 2026" which is 2 days ahead of generation date (Mar 6).
-**Root Cause:** Unclear. Possibly the PDF generator uses a future date for "delivery" or there's a timezone issue.
+**Severity:** Low | **Status:** Not yet investigated
+**Issue:** Call prep sheet header shows date 2 days ahead of generation.
 
 ---
 
 ## POSITIVE FINDINGS (What Worked Well)
 
 ### P1: CotM Structure Consistent Across All Assets
-The Gamma deck follows Before State, Cost of Inaction, Required Capabilities, How We Deliver, Social Proof, Next Step. The competitive playbook uses CotM deconstruction per competitor. The notebook card uses CotM framing for cost-of-inaction math. This is the core methodology working as designed.
+Gamma deck follows Before State, Cost of Inaction, Required Capabilities, How We Deliver, Social Proof, Next Step. Competitive playbook uses CotM deconstruction per competitor. Notebook card uses CotM framing for cost-of-inaction math.
 
 ### P2: Research Data Quality is Strong
-- Radiant Logic synthesis includes SWOT with CotM mapping, specific counter-narratives, and accurate competitive positioning (Gong, Clari, Clay, Regie, Status Quo)
-- Cognisen synthesis includes CJIS compliance differentiation, Tyler Technologies threat analysis, and accurate market sizing ($590M TAM, 2,000 counties, 0.45% penetration)
-- Numbers cross-reference correctly against source Knowledge Base files
+- Radiant Logic: 165KB research, structured MEDDPICC stakeholder map (Tre as champion, CRO/CEO as economic buyer, Sales Enablement as blocker, AEs as users). Detailed motivations per role.
+- Cognisen: 140KB research, accurate SWOT with seller land mines, Tyler Technologies threat correctly identified.
+- Cross-reference: All 13 factual claims verified against source files. Zero hallucinations.
 
 ### P3: Competitive Playbook (Radiant Logic) is High Quality
-5 competitors mapped with threat levels, landscape chart positioning, CotM deconstruction, land mine handlers, and multi-threading angles. Status Quo correctly identified as primary threat. Gong correctly positioned as complementary (post-call) vs. AltVest (pre-call).
+5 competitors mapped with threat levels, CotM deconstruction, land mine handlers, multi-threading angles. Status Quo correctly identified as primary threat.
 
 ### P4: Cognisen Deal Audit Notebook Card is Excellent
-Deal health status (YELLOW) is accurate. MEDDPICC qualification gaps correctly identified. Biggest risk (Tom's skepticism) properly flagged. Next actions are specific and actionable. Win condition is well-framed.
+Deal health YELLOW. MEDDPICC gaps correctly identified. Biggest risk (Tom's skepticism) flagged. Actionable next steps.
 
-### P5: Clarification Engine Added Real Value for Cognisen
-The 3 questions asked (Tom's re-engagement, title targeting rationale, target list status) were precisely the right gaps to fill. Evan's detailed answers significantly improved the deal audit quality. Confidence went from 0.62 to much higher with the answers.
+### P5: Clarification Engine Added Real Value
+Cognisen: 3 questions precisely targeted the right gaps. Confidence improved significantly with answers.
 
-### P6: Gamma Deck is Presentation-Ready
-8 slides, professional layout, specific data points ($11M to $248M Tre reference, Cognisen social proof, $468K-$702K prep cost math). CotM structure clear. Vuori case study accurately sourced from deal-stories.md.
+### P6: Gamma Deck Presentation-Ready
+8 slides, professional layout, specific data points, CotM structure. Vuori case study accurately sourced.
+
+### P7: Zip Interview Outreach is the Richest Run
+13 assets delivered including handwritten call sheets (PNG), client POV card, outreach sequence (HTML + JSON), competitive landscape. Full 11/11 steps completed. Most comprehensive output of the 3 delivered runs.
 
 ---
 
@@ -121,21 +138,38 @@ The 3 questions asked (Tom's re-engagement, title targeting rationale, target li
 | Evan: 13 years B2B, $25M+ closed | about-me.md | YES |
 | $1K/meeting, 90 days, 4 titles (Cognisen deal) | clarificationAnswers | YES |
 
-All factual claims verified. No hallucinations detected in the deliverable content.
+All factual claims verified. No hallucinations detected.
 
 ---
 
-## PRIORITY FIX LIST
+## STALLED RUNS
 
-| Priority | Finding | Fix Location | Effort |
-|----------|---------|-------------|--------|
-| 1 | Q1: Em dashes in all outputs | Worker prompt templates | Low (add instruction) |
-| 2 | F1: Stakeholder map only shows primary | Worker stakeholder-map builder | Medium (parse research data) |
-| 3 | F2: engagementType defaults wrong | Frontend submission form | Low (UX change) |
-| 4 | F3: PDF title underscore | pdf-generator.js | Low (string transform) |
-| 5 | F4: Step 9 tracking bug | Worker step PATCH logic | Low (verify step ID) |
-| 6 | Q3: Future date on call prep | CallDocGenerator | Low (date logic) |
+| Run | ID | Tool | Status | Root Cause |
+|-----|-----|------|--------|-----------|
+| Cognisen / Phil Hernandez | c778ec84 | prospect_prep | submitted (stuck) | Worker restart lost in-memory job. Never processed. |
+| Zip / Justin Darby | 7e6b469d | interview_prep | submitted (stuck) | Same as above |
+| Affirm / Parul Patel | 21111d17 | interview_prep | submitted (stuck) | Same as above |
+| Datadog / Sarah Mitchell | c69f68c5 | prospect_outreach | researching (stuck) | Worker crashed mid-research. 0/8 steps completed. |
+
+All 4 will be auto-recovered after stale run recovery mechanism is deployed.
 
 ---
 
-*QA performed by Claude, March 6, 2026. Both runs reviewed against source Knowledge Base files, clarification answers, and brand voice requirements.*
+## COMPLETE FIX MANIFEST
+
+| # | Fix | File(s) Modified | Lines Changed | Priority |
+|---|-----|-----------------|---------------|----------|
+| P1 | Anti-AI writing rules (em dashes, banned words) | executor.js, gemini-cards.js, batch-executor.js | ~40 | Critical |
+| P2 | Stakeholder map MEDDPICC parsing | stakeholder-map-generator.js | ~120 | Critical |
+| P3 | engagementType form values + API inference | request/page.tsx, api/requests/route.ts, api/batch-requests/route.ts | ~20 | Medium |
+| P4 | PDF title underscore normalization | pdf-generator.js | ~15 | Low |
+| P5 | generating_call_docs phase dispatch | executor.js | ~8 | Medium |
+| P6 | Synthesis max_tokens 8K->16K + truncation repair | executor.js | ~35 | Medium |
+| P7 | Outreach sequence max_tokens 8K->12K | executor.js | 1 | Low |
+| I1 | Stale run recovery (startup + periodic) | index.js | ~50 | Critical |
+
+**Total: 8 fixes across 8 files, ~290 lines changed. All syntax-checked. Pending deployment.**
+
+---
+
+*QA performed by Claude, March 6, 2026. Three delivered runs + four stalled runs reviewed. All fixes applied locally, awaiting deployment to Railway (worker) and Vercel (app).*
