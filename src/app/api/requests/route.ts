@@ -172,6 +172,7 @@ export async function POST(req: NextRequest) {
       jobDescription,
       linkedinUrl,
       additionalNotes,
+      caseStudies,
       priority: user.priorityProcessing,
       customerEmail: clerkUser.emailAddresses?.[0]?.emailAddress || null,
       customerName: `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`.trim() || null,

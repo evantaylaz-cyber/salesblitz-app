@@ -63,6 +63,7 @@ interface OrderDetails {
   jobDescription?: string | null;
   linkedinUrl?: string | null;
   additionalNotes?: string | null;
+  caseStudies?: string | null;
   priority: boolean;
   customerEmail?: string | null;
   customerName?: string | null;
@@ -116,6 +117,11 @@ export async function sendOrderNotification(order: OrderDetails) {
         ${order.additionalNotes ? `
         <h2 style="margin:20px 0 8px;font-size:16px;color:#111827;">Additional Notes</h2>
         <div style="background:#f9fafb;padding:12px;border-radius:8px;font-size:13px;color:#374151;">${order.additionalNotes}</div>
+        ` : ""}
+
+        ${order.caseStudies ? `
+        <h2 style="margin:20px 0 8px;font-size:16px;color:#111827;">Case Studies &amp; Proof Points</h2>
+        <div style="background:#f9fafb;padding:12px;border-radius:8px;font-size:13px;color:#374151;white-space:pre-wrap;max-height:300px;overflow:auto;">${order.caseStudies}</div>
         ` : ""}
 
         <h2 style="margin:20px 0 8px;font-size:16px;color:#111827;">Deliverables to Fulfill</h2>

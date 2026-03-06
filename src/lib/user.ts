@@ -26,30 +26,57 @@ export async function getOrCreateUser() {
   });
 
   if (!user) {
-    user = await prisma.user.create({
-      data: {
-        clerkId: clerkUser.id,
-        email: clerkUser.emailAddresses[0]?.emailAddress ?? "",
-        name: `${clerkUser.firstName ?? ""} ${clerkUser.lastName ?? ""}`.trim() || null,
-        currentTier: "pro",
-        subscriptionRunsRemaining: 3,
-        subscriptionRunsTotal: 3,
-        subscriptionStatus: "active",
-      },
-      include: {
-        runPacks: {
-          where: {
-            runsRemaining: { gt: 0 },
-            expiresAt: { gt: new Date() },
+    const email = clerkUser.emailAddresses[0]?.emailAddress ?? "";
+    const name = `${clerkUser.firstName ?? ""} ${clerkUser.lastName ?? ""}`.trim() || null;
+
+    // Try to find by email first (handles Clerk key rotation where clerkId changes but email stays the same)
+    const existingByEmail = email ? await prisma.user.findUnique({ where: { email } }) : null;
+
+    if (existingByEmail) {
+      // Update the existing record with the new clerkId
+      user = await prisma.user.update({
+        where: { id: existingByEmail.id },
+        data: { clerkId: clerkUser.id, name: name ?? existingByEmail.name },
+        include: {
+          runPacks: {
+            where: {
+              runsRemaining: { gt: 0 },
+              expiresAt: { gt: new Date() },
+            },
+            orderBy: { expiresAt: "asc" },
           },
-          orderBy: { expiresAt: "asc" },
+          runLogs: {
+            orderBy: { createdAt: "desc" },
+            take: 20,
+          },
         },
-        runLogs: {
-          orderBy: { createdAt: "desc" },
-          take: 20,
+      });
+    } else {
+      user = await prisma.user.create({
+        data: {
+          clerkId: clerkUser.id,
+          email,
+          name,
+          currentTier: "pro",
+          subscriptionRunsRemaining: 3,
+          subscriptionRunsTotal: 3,
+          subscriptionStatus: "active",
         },
-      },
-    });
+        include: {
+          runPacks: {
+            where: {
+              runsRemaining: { gt: 0 },
+              expiresAt: { gt: new Date() },
+            },
+            orderBy: { expiresAt: "asc" },
+          },
+          runLogs: {
+            orderBy: { createdAt: "desc" },
+            take: 20,
+          },
+        },
+      });
+    }
   }
 
   return user;
