@@ -7,6 +7,16 @@ import { sendOrderNotification } from "@/lib/email";
 import { initializeSteps, getExpectedAssets } from "@/lib/job-steps";
 import { normalizeAssets } from "@/lib/normalize-assets";
 
+// Infer engagement type from tool + meeting context when user doesn't specify
+function inferEngagementType(toolName: string, meetingType?: string): string {
+  if (toolName?.startsWith("interview_")) return "interview";
+  if (meetingType === "discovery") return "cold_outreach";
+  if (meetingType === "follow_up") return "follow_up";
+  if (meetingType === "closing") return "closing_call";
+  if (meetingType === "pitch") return "cold_outreach";
+  return "cold_outreach";
+}
+
 // GET — list current user's run requests
 export async function GET() {
   try {
@@ -151,7 +161,7 @@ export async function POST(req: NextRequest) {
         additionalNotes: additionalNotes || null,
         targetCompanyUrl: targetCompanyUrl || null,
         meetingType: meetingType || null,
-        engagementType: engagementType || 'cold_outreach',
+        engagementType: engagementType || inferEngagementType(toolName, meetingType),
         meetingDate: meetingDate || null,
         priorInteractions: priorInteractions || null,
         caseStudies: caseStudies || null,

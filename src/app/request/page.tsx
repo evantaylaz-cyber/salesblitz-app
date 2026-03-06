@@ -458,13 +458,13 @@ export default function RequestPage() {
                     className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
                   >
                     <option value="">Select...</option>
-                    <option value="Cold Outreach">Cold Outreach</option>
-                    <option value="Warm Introduction">Warm Introduction</option>
-                    <option value="Discovery Call">Discovery Call</option>
-                    <option value="Closing Call">Closing Call</option>
-                    <option value="Interview">Interview</option>
-                    <option value="Follow-Up">Follow-Up</option>
-                    <option value="Multi-Threading">Multi-Threading</option>
+                    <option value="cold_outreach">Cold Outreach</option>
+                    <option value="warm_intro">Warm Introduction</option>
+                    <option value="discovery_call">Discovery Call</option>
+                    <option value="closing_call">Closing Call</option>
+                    <option value="interview">Interview</option>
+                    <option value="follow_up">Follow-Up</option>
+                    <option value="multi_threading">Multi-Threading</option>
                   </select>
                 </div>
                 <div>

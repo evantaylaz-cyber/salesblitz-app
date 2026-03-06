@@ -177,7 +177,7 @@ export async function POST(req: NextRequest) {
           linkedinText: acct.linkedinText || null,
           additionalNotes: acct.additionalNotes || sharedContext?.additionalNotes || null,
           targetCompanyUrl: acct.targetCompanyUrl || null,
-          engagementType: sharedContext?.engagementType || "cold_outreach",
+          engagementType: sharedContext?.engagementType || (toolName?.startsWith("interview_") ? "interview" : "cold_outreach"),
           meetingDate: acct.meetingDate || null,
           priorInteractions: acct.priorInteractions || null,
           priority: user.priorityProcessing,
