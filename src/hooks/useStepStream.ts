@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useCallback, useState } from "react";
 
-interface StepUpdate {
+export interface StepUpdate {
   type: "connected" | "step_update" | "complete";
   requestId?: string;
   stepId?: string;

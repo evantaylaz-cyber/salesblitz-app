@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useUser } from "@clerk/nextjs";
 import { UserButton } from "@clerk/nextjs";
 import { useParams } from "next/navigation";
-import { useStepStream } from "@/hooks/useStepStream";
+import { useStepStream, StepUpdate } from "@/hooks/useStepStream";
 import {
   ArrowLeft,
   Loader2,
@@ -167,7 +167,7 @@ export default function RequestDetailPage() {
   useStepStream({
     requestId: requestId,
     enabled: isActive,
-    onUpdate: useCallback((data: Record<string, unknown>) => {
+    onUpdate: useCallback((data: StepUpdate) => {
       setRequest((prev) => {
         if (!prev) return prev;
         return {
