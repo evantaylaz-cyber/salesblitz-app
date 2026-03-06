@@ -276,6 +276,35 @@ export default function RequestDetailPage() {
           </p>
         </div>
 
+        {/* Stalled Run Detection */}
+        {(request.status === "submitted" || (request.status === "researching" && !request.startedAt)) &&
+         request.createdAt &&
+         (Date.now() - new Date(request.createdAt).getTime() > 5 * 60 * 1000) && (
+          <div className="rounded-xl border border-amber-200 bg-amber-50 p-6">
+            <div className="flex items-start gap-3">
+              <Clock className="h-5 w-5 text-amber-500 mt-0.5" />
+              <div className="flex-1">
+                <h3 className="font-semibold text-amber-800">This run appears stalled</h3>
+                <p className="mt-1 text-sm text-amber-700">
+                  It&apos;s been queued longer than expected. You can retry it at no extra cost.
+                </p>
+                <button
+                  onClick={retryRequest}
+                  disabled={retrying}
+                  className="mt-3 inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50 transition"
+                >
+                  {retrying ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <RefreshCw className="h-4 w-4" />
+                  )}
+                  {retrying ? "Retrying..." : "Retry This Run"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Clarification Banner */}
         {request.status === "awaiting_clarification" && (
           <div className="rounded-xl border border-indigo-200 bg-indigo-50 p-6">

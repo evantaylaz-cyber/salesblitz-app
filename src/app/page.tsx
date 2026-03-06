@@ -148,6 +148,11 @@ export default async function LandingPage() {
                 description: "Multi-channel sequences backed by deep account intelligence.",
               },
               {
+                name: "Champion Builder",
+                hook: "Arm your champion.",
+                description: "Stakeholder maps, internal selling kits, and the ammo they need to advocate for you.",
+              },
+              {
                 name: "Interview Prep",
                 hook: "Win the interview.",
                 description: "Call playbooks, competitive intel, and prep docs tailored to your meeting.",
@@ -161,11 +166,6 @@ export default async function LandingPage() {
                 name: "Deal Audit",
                 hook: "Stress-test your deal.",
                 description: "Qualification scorecard, risk flags, and a strategy to close the gaps.",
-              },
-              {
-                name: "Champion Builder",
-                hook: "Arm your champion.",
-                description: "Stakeholder maps, internal selling kits, and the ammo they need to advocate for you.",
               },
             ].map((tool) => (
               <div

@@ -75,6 +75,7 @@ const TOOL_NAMES: Record<string, string> = {
 };
 
 const TOOLS: Tool[] = [
+  // Row 1: Outreach & proactive tools (top of funnel)
   {
     id: "interview_outreach",
     name: "Interview Outreach",
@@ -89,6 +90,15 @@ const TOOLS: Tool[] = [
     description: "Multi-channel sequences backed by deep account intelligence.",
     minimumTier: "launch",
   },
+  {
+    id: "champion_builder",
+    name: "Champion Builder",
+    hook: "Arm your champion.",
+    description: "Stakeholder maps, internal selling kits, and competitive ammo.",
+    minimumTier: "closer",
+    comingSoon: true,
+  },
+  // Row 2: Prep & diagnostic tools (deeper engagement)
   {
     id: "interview_prep",
     name: "Interview Prep",
@@ -109,14 +119,6 @@ const TOOLS: Tool[] = [
     hook: "Stress-test your deal.",
     description: "Qualification scorecard, risk flags, and a strategy to close the gaps.",
     minimumTier: "pro",
-    comingSoon: true,
-  },
-  {
-    id: "champion_builder",
-    name: "Champion Builder",
-    hook: "Arm your champion.",
-    description: "Stakeholder maps, internal selling kits, and competitive ammo.",
-    minimumTier: "closer",
     comingSoon: true,
   },
 ];
