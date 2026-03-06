@@ -30,11 +30,14 @@ interface OnboardingChatBubbleProps {
   defaultOpen?: boolean;
   /** Callback when onboarding completes */
   onComplete?: () => void;
+  /** Whether user already completed onboarding (from DB) */
+  alreadyCompleted?: boolean;
 }
 
 export default function OnboardingChatBubble({
   defaultOpen = false,
   onComplete,
+  alreadyCompleted = false,
 }: OnboardingChatBubbleProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const [isMinimized, setIsMinimized] = useState(false);
@@ -123,6 +126,8 @@ export default function OnboardingChatBubble({
 
   const showSuggestions = messages.length === 0;
 
+  const profileDone = alreadyCompleted || onboardingDone;
+
   // Floating button when closed
   if (!isOpen) {
     return (
@@ -130,15 +135,21 @@ export default function OnboardingChatBubble({
         onClick={() => setIsOpen(true)}
         className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full bg-indigo-600 px-5 py-3 text-white shadow-lg hover:bg-indigo-700 transition-all hover:shadow-xl group"
       >
-        <Sparkles className="h-5 w-5" />
-        <span className="text-sm font-medium">Set Up Profile</span>
-        {completedPhases.size > 0 && !onboardingDone && (
-          <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-white/20 text-xs">
-            {completedPhases.size}/4
-          </span>
-        )}
-        {onboardingDone && (
-          <CheckCircle2 className="h-4 w-4 text-green-300" />
+        {profileDone ? (
+          <>
+            <MessageSquare className="h-5 w-5" />
+            <span className="text-sm font-medium">AI Assistant</span>
+          </>
+        ) : (
+          <>
+            <Sparkles className="h-5 w-5" />
+            <span className="text-sm font-medium">Set Up Profile</span>
+            {completedPhases.size > 0 && (
+              <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-white/20 text-xs">
+                {completedPhases.size}/4
+              </span>
+            )}
+          </>
         )}
       </button>
     );
@@ -180,25 +191,29 @@ export default function OnboardingChatBubble({
             <Bot className="h-4 w-4 text-indigo-600" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-gray-900">Profile Setup</h3>
+            <h3 className="text-sm font-semibold text-gray-900">
+              {profileDone ? "AI Assistant" : "Profile Setup"}
+            </h3>
             <p className="text-xs text-gray-500">
-              {onboardingDone ? "All set!" : `${completedPhases.size}/4 complete`}
+              {profileDone ? "Ask anything about your runs or profile" : `${completedPhases.size}/4 complete`}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-1">
-          {/* Progress dots */}
-          <div className="flex gap-1 mr-2">
-            {PHASES.map((phase) => (
-              <div
-                key={phase.id}
-                className={`h-2 w-2 rounded-full transition-colors ${
-                  completedPhases.has(phase.id) ? "bg-green-500" : "bg-gray-200"
-                }`}
-                title={phase.label}
-              />
-            ))}
-          </div>
+          {/* Progress dots — only during onboarding */}
+          {!profileDone && (
+            <div className="flex gap-1 mr-2">
+              {PHASES.map((phase) => (
+                <div
+                  key={phase.id}
+                  className={`h-2 w-2 rounded-full transition-colors ${
+                    completedPhases.has(phase.id) ? "bg-green-500" : "bg-gray-200"
+                  }`}
+                  title={phase.label}
+                />
+              ))}
+            </div>
+          )}
           <button
             onClick={() => setIsMinimized(true)}
             className="p-1 text-gray-400 hover:text-gray-600 rounded-md hover:bg-gray-100"
@@ -229,31 +244,64 @@ export default function OnboardingChatBubble({
                 <Bot className="w-3.5 h-3.5 text-white" />
               </div>
               <div className="bg-gray-50 border border-gray-100 rounded-2xl rounded-tl-md px-3.5 py-2.5 max-w-[300px]">
-                <p className="text-sm text-gray-800 leading-relaxed">
-                  Let's get you set up. This takes about 10 minutes and makes everything AltVest generates specific to you.
-                </p>
-                <p className="text-sm text-gray-800 leading-relaxed mt-1.5">
-                  First, tell me what you sell and who you sell it to.
-                </p>
+                {profileDone ? (
+                  <>
+                    <p className="text-sm text-gray-800 leading-relaxed">
+                      Hey! Need to update your profile, add deal stories, or tweak your selling style?
+                    </p>
+                    <p className="text-sm text-gray-800 leading-relaxed mt-1.5">
+                      Just tell me what to change.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-sm text-gray-800 leading-relaxed">
+                      Let's get you set up. This takes about 10 minutes and makes everything AltVest generates specific to you.
+                    </p>
+                    <p className="text-sm text-gray-800 leading-relaxed mt-1.5">
+                      First, tell me what you sell and who you sell it to.
+                    </p>
+                  </>
+                )}
               </div>
             </div>
 
             {/* Suggestion chips */}
             {showSuggestions && (
               <div className="ml-9 flex flex-wrap gap-1.5">
-                {[
-                  "I sell enterprise SaaS",
-                  "Tech sales, mostly F500",
-                  "Between roles, prepping for interviews",
-                ].map((suggestion) => (
-                  <button
-                    key={suggestion}
-                    onClick={() => handleSuggestion(suggestion)}
-                    className="text-xs px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-full transition-colors border border-indigo-100"
-                  >
-                    {suggestion}
-                  </button>
-                ))}
+                {profileDone ? (
+                  <>
+                    {[
+                      "Add a new deal story",
+                      "Update my current situation",
+                      "Change my selling style",
+                    ].map((suggestion) => (
+                      <button
+                        key={suggestion}
+                        onClick={() => handleSuggestion(suggestion)}
+                        className="text-xs px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-full transition-colors border border-indigo-100"
+                      >
+                        {suggestion}
+                      </button>
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    {[
+                      "I sell enterprise SaaS",
+                      "Tech sales, mostly F500",
+                      "Between roles, prepping for interviews",
+                    ].map((suggestion) => (
+                      <button
+                        key={suggestion}
+                        onClick={() => handleSuggestion(suggestion)}
+                        className="text-xs px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-full transition-colors border border-indigo-100"
+                      >
+                        {suggestion}
+                      </button>
+                    ))}
+                  </>
+                )}
               </div>
             )}
           </>

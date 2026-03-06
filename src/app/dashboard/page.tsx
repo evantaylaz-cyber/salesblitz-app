@@ -575,10 +575,11 @@ export default function DashboardPage() {
         )}
       </main>
 
-      {/* Floating onboarding chat — always rendered so the bubble is visible */}
+      {/* Floating AI chat — always rendered so the bubble is visible */}
       <OnboardingChatBubble
         defaultOpen={chatOpen}
         key={chatOpen ? "forced-open" : "default"}
+        alreadyCompleted={onboardingComplete}
         onComplete={() => {
           setOnboardingComplete(true);
           fetchUserData();
