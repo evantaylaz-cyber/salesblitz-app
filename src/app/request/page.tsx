@@ -50,6 +50,7 @@ export default function RequestPage() {
   const [targetCompanyUrl, setTargetCompanyUrl] = useState("");
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [linkedinText, setLinkedinText] = useState("");
+  const [meetingType, setMeetingType] = useState("");
   const [engagementType, setEngagementType] = useState("");
   const [meetingDate, setMeetingDate] = useState("");
   const [priorInteractions, setPriorInteractions] = useState("");
@@ -129,6 +130,7 @@ export default function RequestPage() {
           jobDescription: jobDescription || undefined,
           linkedinUrl: linkedinUrl || undefined,
           linkedinText: linkedinText || undefined,
+          meetingType: meetingType || undefined,
           engagementType: engagementType || undefined,
           meetingDate: meetingDate || undefined,
           priorInteractions: priorInteractions || undefined,
@@ -277,6 +279,113 @@ export default function RequestPage() {
               </div>
             </div>
           </div>
+
+          {/* Meeting Type Selector — interview_prep & prospect_prep only */}
+          {(toolId === "interview_prep" || toolId === "prospect_prep") && (
+            <div className="rounded-xl border bg-white p-6 shadow-sm">
+              <h2 className="text-base font-semibold text-gray-900 mb-1">
+                {toolId === "interview_prep" ? "Interview Type" : "Meeting Type"}
+              </h2>
+              <p className="text-sm text-gray-500 mb-4">
+                {toolId === "interview_prep"
+                  ? "What kind of interview are you prepping for? This determines which call prep docs we generate."
+                  : "What stage is this meeting? We tailor your speaker notes, arsenal, and call flow to match."}
+              </p>
+              <div className={`grid gap-3 ${toolId === "interview_prep" ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1 sm:grid-cols-2"}`}>
+                {toolId === "interview_prep" ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setMeetingType("mock_pitch")}
+                      className={`rounded-lg border p-4 text-left transition ${
+                        meetingType === "mock_pitch"
+                          ? "border-indigo-500 bg-indigo-50 ring-1 ring-indigo-500"
+                          : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                      }`}
+                    >
+                      <div className="font-medium text-sm text-gray-900">Mock Pitch</div>
+                      <div className="mt-1 text-xs text-gray-500">
+                        Practice selling to a fictional prospect. Speaker notes, arsenal, call flow, live scenario, Q&amp;A doc.
+                      </div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMeetingType("hiring_manager")}
+                      className={`rounded-lg border p-4 text-left transition ${
+                        meetingType === "hiring_manager"
+                          ? "border-indigo-500 bg-indigo-50 ring-1 ring-indigo-500"
+                          : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                      }`}
+                    >
+                      <div className="font-medium text-sm text-gray-900">Hiring Manager</div>
+                      <div className="mt-1 text-xs text-gray-500">
+                        Prep for the actual interview conversation. Speaker notes, arsenal, and call flow.
+                      </div>
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setMeetingType("discovery")}
+                      className={`rounded-lg border p-4 text-left transition ${
+                        meetingType === "discovery"
+                          ? "border-indigo-500 bg-indigo-50 ring-1 ring-indigo-500"
+                          : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                      }`}
+                    >
+                      <div className="font-medium text-sm text-gray-900">Discovery</div>
+                      <div className="mt-1 text-xs text-gray-500">
+                        First call. 80% listening, qualify MEDDPICC, map pain.
+                      </div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMeetingType("follow_up")}
+                      className={`rounded-lg border p-4 text-left transition ${
+                        meetingType === "follow_up"
+                          ? "border-indigo-500 bg-indigo-50 ring-1 ring-indigo-500"
+                          : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                      }`}
+                    >
+                      <div className="font-medium text-sm text-gray-900">Follow-Up</div>
+                      <div className="mt-1 text-xs text-gray-500">
+                        Go deeper on pain, map stakeholders, develop champion.
+                      </div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMeetingType("pitch")}
+                      className={`rounded-lg border p-4 text-left transition ${
+                        meetingType === "pitch"
+                          ? "border-indigo-500 bg-indigo-50 ring-1 ring-indigo-500"
+                          : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                      }`}
+                    >
+                      <div className="font-medium text-sm text-gray-900">Pitch / Demo</div>
+                      <div className="mt-1 text-xs text-gray-500">
+                        Present your solution. CotM narrative, handle objections.
+                      </div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMeetingType("closing")}
+                      className={`rounded-lg border p-4 text-left transition ${
+                        meetingType === "closing"
+                          ? "border-indigo-500 bg-indigo-50 ring-1 ring-indigo-500"
+                          : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                      }`}
+                    >
+                      <div className="font-medium text-sm text-gray-900">Closing</div>
+                      <div className="mt-1 text-xs text-gray-500">
+                        Recap value, negotiate, build mutual action plan, get commitment.
+                      </div>
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* LinkedIn */}
           <div className="rounded-xl border bg-white p-6 shadow-sm">

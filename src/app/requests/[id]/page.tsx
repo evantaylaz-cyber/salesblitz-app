@@ -167,7 +167,7 @@ export default function RequestDetailPage() {
   useStepStream({
     requestId: requestId,
     enabled: isActive,
-    onUpdate: useCallback((data) => {
+    onUpdate: useCallback((data: Record<string, unknown>) => {
       setRequest((prev) => {
         if (!prev) return prev;
         return {

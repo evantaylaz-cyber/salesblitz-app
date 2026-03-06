@@ -161,6 +161,11 @@ model RunRequest {
   additionalNotes String?  @db.Text // Any extra context from customer
   targetCompanyUrl String?  // Target company website URL
 
+  // Meeting type (controls which call prep docs are generated)
+  // interview_prep: "mock_pitch" | "hiring_manager"
+  // prospect_prep: "discovery" | "follow_up" | "pitch" | "closing"
+  meetingType     String?
+
   // Engagement context
   engagementType           String   @default("cold_outreach")
   meetingDate              DateTime?
