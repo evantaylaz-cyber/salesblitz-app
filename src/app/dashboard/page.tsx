@@ -15,6 +15,8 @@ import {
   ChevronRight,
   Sparkles,
   Eye,
+  Menu,
+  X,
 } from "lucide-react";
 import dynamic from "next/dynamic";
 
@@ -123,6 +125,7 @@ export default function DashboardPage() {
   const [pendingRequests, setPendingRequests] = useState(0);
   const [chatOpen, setChatOpen] = useState(false);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (isLoaded && clerkUser) {
@@ -218,7 +221,7 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="border-b bg-white">
+      <header className="border-b bg-white relative">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-3">
             <h1 className="text-xl font-bold text-gray-900">AltVest</h1>
@@ -233,7 +236,9 @@ export default function DashboardPage() {
               </span>
             )}
           </div>
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 lg:gap-x-8">
+
+          {/* Desktop nav */}
+          <div className="hidden lg:flex items-center gap-x-8">
             <a href="/requests" className="relative text-sm text-gray-600 hover:text-gray-900">
               My Requests
               {pendingRequests > 0 && (
@@ -273,7 +278,61 @@ export default function DashboardPage() {
             </a>
             <UserButton afterSignOutUrl="/sign-in" />
           </div>
+
+          {/* Mobile nav: priority items + hamburger */}
+          <div className="flex lg:hidden items-center gap-4">
+            <a href="/requests" className="relative text-sm text-gray-600 hover:text-gray-900">
+              My Requests
+              {pendingRequests > 0 && (
+                <span className="absolute -top-1.5 -right-3 flex h-4 w-4 items-center justify-center rounded-full bg-indigo-600 text-[10px] font-bold text-white">
+                  {pendingRequests}
+                </span>
+              )}
+            </a>
+            <UserButton afterSignOutUrl="/sign-in" />
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+            >
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile dropdown menu */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden border-t bg-white px-6 py-3 space-y-1">
+            <a href="/profile" className="block rounded-lg px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50">
+              Profile
+            </a>
+            <a href="/knowledge-base" className="block rounded-lg px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50">
+              Knowledge Base
+            </a>
+            <a href="/playbooks" className="block rounded-lg px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50">
+              Playbooks
+            </a>
+            <a href="/teams" className="block rounded-lg px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50">
+              Teams
+            </a>
+            <a href="/analytics" className="block rounded-lg px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50">
+              Analytics
+            </a>
+            {hasSubscription && (
+              <button
+                onClick={() => { handleManageBilling(); setMobileMenuOpen(false); }}
+                className="block w-full text-left rounded-lg px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
+              >
+                Billing
+              </button>
+            )}
+            <a
+              href="/subscribe"
+              className="block rounded-lg px-3 py-2.5 text-sm font-medium text-indigo-600 hover:bg-indigo-50"
+            >
+              {hasSubscription ? "Upgrade" : "Subscribe"}
+            </a>
+          </div>
+        )}
       </header>
 
       <main className="mx-auto max-w-7xl px-6 py-8">
