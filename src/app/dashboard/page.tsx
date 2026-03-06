@@ -86,7 +86,7 @@ const TOOLS: Tool[] = [
     id: "prospect_outreach",
     name: "Prospect Outreach",
     description: "Get the meeting. Multi-channel outreach sequence backed by deep account research and competitive positioning.",
-    deliverables: ["7-Touch Outreach Sequence", "Research Brief (PDF)", "POV Deck (5 slides)", "3 Handwritten Cards", "Competitive Landscape", "Polished Deck (24hr)"],
+    deliverables: ["7-Touch Outreach Sequence", "Research Brief (PDF)", "POV Deck (5 slides)", "3 Handwritten Cards", "Competitive Playbook", "Polished Deck (24hr)"],
     minimumTier: "launch",
   },
   {
@@ -115,7 +115,7 @@ const TOOLS: Tool[] = [
     id: "champion_builder",
     name: "Champion Builder",
     description: "Arm your champion. Internal selling kit, stakeholder map, and the competitive ammo they need to sell for you.",
-    deliverables: ["Champion Strategy Brief (PDF)", "Stakeholder Map", "3 Handwritten Cards", "Competitive Landscape"],
+    deliverables: ["Champion Strategy Brief (PDF)", "Stakeholder Map", "3 Handwritten Cards", "Competitive Playbook"],
     minimumTier: "closer",
     comingSoon: true,
   },

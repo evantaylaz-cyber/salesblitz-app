@@ -31,7 +31,6 @@ const STEP_ICONS: Record<string, React.ElementType> = {
   market_intel: Globe,
   company_deep_dive: Search,
   generating_assets: Sparkles,
-  building_landscape_app: Globe,
   building_competitive_playbook: Zap,
   generating_gamma_deck: Sparkles,
   generating_outreach_sequence: FileText,

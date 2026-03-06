@@ -87,7 +87,7 @@ export async function PATCH(
         }
 
         // If we're past research steps, update to "generating"
-        if (stepId === "generating_assets" || stepId === "building_landscape_app" || stepId === "formatting") {
+        if (stepId === "generating_assets" || stepId === "formatting") {
           updateData.status = "generating";
         }
       }

@@ -59,10 +59,8 @@ export async function GET() {
         // Check for playbook asset (worker stores as competitivePlaybook)
         const playbookUrl =
           assets.competitivePlaybook || assets.competitive_playbook;
-        const landscapeUrl = assets.landscape || assets.competitive_landscape_app;
-
-        // Include if has playbook OR landscape (landscape = pre-3.2 runs)
-        if (!playbookUrl && !landscapeUrl) return null;
+        // Include if has playbook
+        if (!playbookUrl) return null;
 
         return {
           id: req.id,
@@ -72,7 +70,6 @@ export async function GET() {
           targetRole: req.targetRole,
           status: req.status,
           playbookUrl: playbookUrl || null,
-          landscapeUrl: landscapeUrl || null,
           createdAt: req.createdAt,
           completedAt: req.completedAt,
           deliveredAt: req.deliveredAt,

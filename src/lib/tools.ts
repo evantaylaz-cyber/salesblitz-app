@@ -22,13 +22,13 @@ export const TOOLS: ToolDefinition[] = [
   {
     id: "interview_outreach",
     name: "Interview Outreach",
-    description: "Research brief, ATS resume, POV deck, handwritten cards, competitive landscape, outreach sequence",
+    description: "Research brief, ATS resume, POV deck, handwritten cards, competitive playbook, outreach sequence",
     deliverables: [
       "Research Brief (PDF) — company intel, role analysis, outreach sequence",
       "ATS-Optimized Resume (PDF)",
       "POV Deck (PDF, 5 slides)",
       "3 Handwritten Reference Cards (Gemini)",
-      "Interactive Competitive Landscape",
+      "Interactive Competitive Playbook",
       "Multi-Touch Outreach Sequence (7 touches, 14-21 days)",
       "Polished Presentation Deck (24hr)",
     ],
@@ -38,12 +38,12 @@ export const TOOLS: ToolDefinition[] = [
   {
     id: "prospect_outreach",
     name: "Prospect Outreach",
-    description: "Research brief, POV deck, handwritten cards, competitive landscape, outreach sequence",
+    description: "Research brief, POV deck, handwritten cards, competitive playbook, outreach sequence",
     deliverables: [
       "Research Brief (PDF) — account intel, pain mapping, outreach sequence",
       "POV Deck (PDF, 5 slides)",
       "3 Handwritten Reference Cards (Gemini)",
-      "Interactive Competitive Landscape",
+      "Interactive Competitive Playbook",
       "Multi-Touch Outreach Sequence (7 touches, 14-21 days)",
       "Polished Presentation Deck (24hr)",
     ],
@@ -53,13 +53,12 @@ export const TOOLS: ToolDefinition[] = [
   {
     id: "interview_prep",
     name: "Interview Prep",
-    description: "Complete prep package: research brief, POV deck, call prep docs, handwritten cards, competitive landscape",
+    description: "Complete prep package: research brief, POV deck, call prep docs, handwritten cards, competitive playbook",
     deliverables: [
       "Research Brief (PDF) — qualification mapping, story bank, call sheet, 30/60/90, competitive positioning",
       "POV Deck (PDF, 5 slides)",
       "Call Prep Docs (PDF) — Speaker Notes, Arsenal, Call Flow (+ Live Scenario & Q&A for mock pitch)",
       "3 Handwritten Reference Cards (Gemini)",
-      "Interactive Competitive Landscape",
       "Interactive Competitive Playbook",
       "Polished Presentation Deck (Gamma)",
     ],
@@ -69,13 +68,12 @@ export const TOOLS: ToolDefinition[] = [
   {
     id: "prospect_prep",
     name: "Prospect Prep",
-    description: "Deep account research, meeting-specific call prep docs, POV deck, handwritten cards, landscape",
+    description: "Deep account research, meeting-specific call prep docs, POV deck, handwritten cards, competitive playbook",
     deliverables: [
       "Research Brief (PDF) — account deep dive, discovery plan, competitive positioning",
       "POV Deck (PDF, 5 slides)",
       "Call Prep Docs (PDF) — Speaker Notes, Arsenal, Call Flow tailored to your meeting type",
       "3 Handwritten Reference Cards (Gemini)",
-      "Interactive Competitive Landscape",
       "Interactive Competitive Playbook",
       "Polished Presentation Deck (Gamma)",
     ],
@@ -97,11 +95,11 @@ export const TOOLS: ToolDefinition[] = [
   {
     id: "champion_builder",
     name: "Champion Builder",
-    description: "Champion strategy brief, handwritten cards, competitive landscape",
+    description: "Champion strategy brief, handwritten cards, competitive playbook",
     deliverables: [
       "Champion Strategy Brief (PDF) — profile, stakeholder map, development plan, internal selling kit",
       "3 Handwritten Reference Cards (Gemini)",
-      "Interactive Competitive Landscape",
+      "Interactive Competitive Playbook",
     ],
     minimumTier: "closer",
     overageRate: 10,

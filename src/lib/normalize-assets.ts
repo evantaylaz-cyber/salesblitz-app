@@ -12,19 +12,18 @@ import { ToolName } from "./tools";
 const WORKER_KEY_TO_ASSET_ID: Record<string, string> = {
   briefPdf: "research_brief",
   povDeck: "pov_deck",
-  clientPovCard: "handwritten_pov",
-  callSheet1Img: "handwritten_callsheet_1",
-  callSheet2ImgA: "handwritten_callsheet_2",
-  callSheet2ImgB: "handwritten_callsheet_2b",
-  landscape: "competitive_landscape_app",
+  notebookCard: "notebook_card",
   competitivePlaybook: "competitive_playbook",
   gammaDeck: "gamma_deck",
   callPrepSheet: "call_prep_sheet",
   auditReport: "audit_report",
   atsResume: "ats_resume",
-  dealHealthCard: "handwritten_health",
   strategyBrief: "strategy_brief",
-  championPovCard: "handwritten_pov",
+  outreachSequence: "outreach_sequence",
+  // Legacy keys (4-card system) — map to notebook_card for backward compat
+  clientPovCard: "notebook_card",
+  dealHealthCard: "notebook_card",
+  championPovCard: "notebook_card",
 };
 
 export interface NormalizedAsset {

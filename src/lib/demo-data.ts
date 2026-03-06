@@ -89,14 +89,6 @@ const DEMO_TOOLS: Record<string, DemoRun> = {
         completedAt: "2026-03-04T10:10:00Z",
       },
       {
-        id: "building_landscape_app",
-        label: "Building Landscape App",
-        description: "Creating interactive competitive positioning map",
-        status: "completed",
-        startedAt: "2026-03-04T10:10:00Z",
-        completedAt: "2026-03-04T10:12:00Z",
-      },
-      {
         id: "generating_gamma_deck",
         label: "Building POV Deck",
         description: "Generating executive presentation via Gamma",
@@ -129,14 +121,6 @@ const DEMO_TOOLS: Record<string, DemoRun> = {
         url: null,
         size: 180000,
         category: "deliverable",
-      },
-      {
-        id: "competitive_landscape",
-        label: "Competitive Landscape",
-        format: "html",
-        url: null,
-        size: 95000,
-        category: "interactive",
       },
       {
         id: "pov_card",
@@ -218,14 +202,6 @@ const DEMO_TOOLS: Record<string, DemoRun> = {
         completedAt: "2026-03-04T11:10:00Z",
       },
       {
-        id: "building_landscape_app",
-        label: "Building Landscape App",
-        description: "Creating interactive competitive positioning map",
-        status: "completed",
-        startedAt: "2026-03-04T11:10:00Z",
-        completedAt: "2026-03-04T11:12:00Z",
-      },
-      {
         id: "generating_gamma_deck",
         label: "Building POV Deck",
         description: "Generating executive presentation via Gamma",
@@ -258,14 +234,6 @@ const DEMO_TOOLS: Record<string, DemoRun> = {
         url: null,
         size: 195000,
         category: "deliverable",
-      },
-      {
-        id: "competitive_landscape",
-        label: "Competitive Landscape",
-        format: "html",
-        url: null,
-        size: 88000,
-        category: "interactive",
       },
       {
         id: "cheat_sheet",

@@ -22,7 +22,6 @@ interface PlaybookRun {
   targetRole: string | null;
   status: string;
   playbookUrl: string | null;
-  landscapeUrl: string | null;
   createdAt: string;
   completedAt: string | null;
   deliveredAt: string | null;
@@ -230,7 +229,6 @@ function CompanyCard({ group }: { group: CompanyGroup }) {
 
   // Find the latest playbook URL
   const latestPlaybook = group.runs.find((r) => r.playbookUrl);
-  const latestLandscape = group.runs.find((r) => r.landscapeUrl);
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:border-gray-300 transition-colors">
@@ -277,15 +275,11 @@ function CompanyCard({ group }: { group: CompanyGroup }) {
               <ExternalLink className="h-3 w-3" />
             </a>
           )}
-          {latestLandscape?.landscapeUrl && (
+          {false && (
             <a
-              href={latestLandscape.landscapeUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
+              href="#"
+              className="hidden"
             >
-              <Globe className="h-3.5 w-3.5" />
-              Landscape
               <ExternalLink className="h-3 w-3" />
             </a>
           )}
@@ -337,17 +331,6 @@ function CompanyCard({ group }: { group: CompanyGroup }) {
                   >
                     <Shield className="h-3 w-3" />
                     Playbook
-                  </a>
-                )}
-                {run.landscapeUrl && (
-                  <a
-                    href={run.landscapeUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1"
-                  >
-                    <Globe className="h-3 w-3" />
-                    Landscape
                   </a>
                 )}
                 <a

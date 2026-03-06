@@ -80,7 +80,7 @@ export default async function LandingPage() {
             </h1>
             <p className="mt-6 text-lg text-gray-600 md:text-xl">
               Submit a prospect, company, or job opportunity. Get back a complete intelligence
-              package — research briefs, POV decks, competitive landscapes, and battle-tested
+              package — research briefs, POV decks, competitive playbooks, and battle-tested
               talk tracks — delivered to your inbox in minutes.
             </p>
             <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
@@ -462,7 +462,7 @@ export default async function LandingPage() {
             </h2>
             <p className="mt-4 text-lg text-gray-500">
               Your competitors are walking into calls with half the context. You&apos;ll walk in
-              with a 20-page brief, a POV deck, and a competitive landscape you can pull up
+              with a 20-page brief, a POV deck, and a competitive playbook you can pull up
               mid-conversation.
             </p>
             <Link
