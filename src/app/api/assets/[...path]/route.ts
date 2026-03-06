@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
+import prisma from "@/lib/db";
 
 /**
  * Asset proxy route — serves files from Supabase storage bucket "assets".
@@ -39,9 +40,24 @@ export async function GET(
   const pathSegments = params.path;
   if (!pathSegments || pathSegments.length < 2) {
     return NextResponse.json(
-      { error: "Invalid path — expected /api/assets/{requestId}/{filename}" },
+      { error: "Invalid path - expected /api/assets/{requestId}/{filename}" },
       { status: 400 }
     );
+  }
+
+  // Ownership check: first segment is the requestId
+  const requestId = pathSegments[0];
+  const runRequest = await prisma.runRequest.findUnique({
+    where: { id: requestId },
+    select: { user: { select: { clerkId: true } } },
+  });
+
+  if (!runRequest) {
+    return NextResponse.json({ error: "Request not found" }, { status: 404 });
+  }
+
+  if (runRequest.user.clerkId !== userId) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const supabaseUrl = process.env.SUPABASE_URL;

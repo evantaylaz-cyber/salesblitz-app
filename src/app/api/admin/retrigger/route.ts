@@ -2,13 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import prisma from "@/lib/db";
 
-const ADMIN_EMAIL = "evan.tay.laz@gmail.com";
+const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || "evan.tay.laz@gmail.com")
+  .split(",")
+  .map((e) => e.trim().toLowerCase());
 
 async function isAdmin(): Promise<boolean> {
   const clerkUser = await currentUser();
   if (!clerkUser) return false;
   const email = clerkUser.emailAddresses?.[0]?.emailAddress;
-  return email === ADMIN_EMAIL;
+  return !!email && ADMIN_EMAILS.includes(email.toLowerCase());
 }
 
 /**

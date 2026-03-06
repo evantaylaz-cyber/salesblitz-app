@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 import prisma from "@/lib/db";
 import { stepEventBus, StepEventPayload } from "@/lib/step-events";
 
@@ -9,16 +10,27 @@ export async function GET(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  // Auth check — must be logged in
+  const { userId } = await auth();
+  if (!userId) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
   const requestId = params.id;
 
-  // Verify request exists
+  // Verify request exists AND belongs to this user
   const request = await prisma.runRequest.findUnique({
     where: { id: requestId },
-    select: { id: true, status: true },
+    select: { id: true, status: true, user: { select: { clerkId: true } } },
   });
 
   if (!request) {
     return new Response("Request not found", { status: 404 });
+  }
+
+  // Ownership check — only the request owner can stream updates
+  if (request.user.clerkId !== userId) {
+    return new Response("Forbidden", { status: 403 });
   }
 
   // If request is already terminal, no point streaming

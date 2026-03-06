@@ -3,8 +3,10 @@ import { currentUser } from "@clerk/nextjs/server";
 import prisma from "@/lib/db";
 import { stepEventBus } from "@/lib/step-events";
 
-// Admin email — only admin or the execution engine can update steps
-const ADMIN_EMAIL = "evan.tay.laz@gmail.com";
+// Admin emails from env (comma-separated for multiple admins)
+const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || "evan.tay.laz@gmail.com")
+  .split(",")
+  .map((e) => e.trim().toLowerCase());
 
 interface StepData {
   id: string;
@@ -45,7 +47,7 @@ export async function PATCH(
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }
       const email = clerkUser.emailAddresses?.[0]?.emailAddress;
-      if (email !== ADMIN_EMAIL) {
+      if (!email || !ADMIN_EMAILS.includes(email.toLowerCase())) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
     }

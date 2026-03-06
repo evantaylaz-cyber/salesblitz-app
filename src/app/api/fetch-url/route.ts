@@ -37,6 +37,31 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // SSRF protection: block private/internal IP ranges & localhost
+    const hostname = parsedUrl.hostname.toLowerCase();
+    const blockedPatterns = [
+      /^localhost$/,
+      /^127\./,
+      /^10\./,
+      /^172\.(1[6-9]|2\d|3[01])\./,
+      /^192\.168\./,
+      /^0\./,
+      /^169\.254\./,           // link-local
+      /^\[?::1\]?$/,           // IPv6 loopback
+      /^\[?fe80:/i,            // IPv6 link-local
+      /^\[?fc00:/i,            // IPv6 private
+      /^\[?fd/i,               // IPv6 private
+      /\.internal$/,
+      /\.local$/,
+      /\.localhost$/,
+    ];
+    if (blockedPatterns.some((p) => p.test(hostname))) {
+      return NextResponse.json(
+        { error: "URLs targeting internal networks are not allowed." },
+        { status: 400 }
+      );
+    }
+
     // Fetch the page
     let pageText: string;
     try {

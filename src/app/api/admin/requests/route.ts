@@ -2,14 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import prisma from "@/lib/db";
 
-// Admin email — only this user can access admin routes
-const ADMIN_EMAIL = "evan.tay.laz@gmail.com";
+// Admin email from env (comma-separated for multiple admins)
+const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || "evan.tay.laz@gmail.com")
+  .split(",")
+  .map((e) => e.trim().toLowerCase());
 
 async function isAdmin(): Promise<boolean> {
   const clerkUser = await currentUser();
   if (!clerkUser) return false;
   const email = clerkUser.emailAddresses?.[0]?.emailAddress;
-  return email === ADMIN_EMAIL;
+  return !!email && ADMIN_EMAILS.includes(email.toLowerCase());
 }
 
 // GET — list all run requests (admin only)

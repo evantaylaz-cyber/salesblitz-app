@@ -7,7 +7,22 @@ export async function GET() {
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    return NextResponse.json(user);
+
+    // Return only what the frontend needs; strip Stripe IDs & internal fields
+    return NextResponse.json({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      currentTier: user.currentTier,
+      subscriptionStatus: user.subscriptionStatus,
+      subscriptionRunsRemaining: user.subscriptionRunsRemaining,
+      subscriptionRunsTotal: user.subscriptionRunsTotal,
+      priorityProcessing: user.priorityProcessing,
+      onboardingComplete: user.onboardingComplete,
+      runPacks: user.runPacks,
+      runLogs: user.runLogs,
+      createdAt: user.createdAt,
+    });
   } catch (error) {
     console.error("User API error:", error);
     return NextResponse.json(
