@@ -47,6 +47,7 @@ const STEP_TEMPLATES: Record<ToolName, Omit<JobStep, "status" | "startedAt" | "c
     { id: "generating_handwritten", label: "Creating handwritten cards", description: "Generating handwritten notebook card with Side A and Side B reference." },
     { id: "generating_call_docs", label: "Generating call prep docs", description: "Building call playbook and arsenal tailored to your meeting stage." },
     { id: "building_competitive_playbook", label: "Building competitive playbook", description: "Creating interactive competitive playbook with CotM positioning cards and talk tracks." },
+    { id: "building_stakeholder_map", label: "Building stakeholder map", description: "Creating interactive stakeholder map with MEDDPICC roles and action items." },
     { id: "generating_gamma_deck", label: "Generating presentation deck", description: "Creating a polished Gamma presentation with CotM narrative arc." },
     { id: "delivery", label: "Delivering to your inbox", description: "Sending your complete prep package via email." },
   ],
@@ -56,6 +57,7 @@ const STEP_TEMPLATES: Record<ToolName, Omit<JobStep, "status" | "startedAt" | "c
     { id: "company_deep_dive", label: "Deep diving deal context", description: "Prospect's financial health, budget cycles, stakeholder dynamics, and decision process." },
     { id: "generating_brief", label: "Building Deal Audit Report", description: "Compiling qualification scorecard, risk assessment, strategy brief, discovery questions, and deal health summary into one comprehensive document." },
     { id: "generating_handwritten", label: "Creating handwritten cards", description: "Generating handwritten notebook card with deal health scorecard." },
+    { id: "building_stakeholder_map", label: "Building stakeholder map", description: "Creating interactive stakeholder map with MEDDPICC roles and action items." },
     { id: "delivery", label: "Delivering to your inbox", description: "Sending your complete audit package via email." },
   ],
   interview_outreach: [
@@ -85,6 +87,7 @@ const STEP_TEMPLATES: Record<ToolName, Omit<JobStep, "status" | "startedAt" | "c
     { id: "generating_brief", label: "Building Champion Strategy Brief", description: "Compiling champion profile, stakeholder map, development plan, internal selling kit, and coaching notes into one comprehensive document." },
     { id: "generating_handwritten", label: "Creating handwritten cards", description: "Generating handwritten notebook card with champion coaching reference." },
     { id: "building_competitive_playbook", label: "Building competitive playbook", description: "Creating interactive competitive playbook with CotM positioning cards and talk tracks." },
+    { id: "building_stakeholder_map", label: "Building stakeholder map", description: "Creating interactive stakeholder map with MEDDPICC roles and action items." },
     { id: "delivery", label: "Delivering to your inbox", description: "Sending your complete champion toolkit via email." },
   ],
 };
@@ -127,6 +130,7 @@ export function getExpectedAssets(toolName: ToolName): Omit<Asset, "url" | "size
       { id: "callDoc_qaDoc", label: "Q&A Doc (mock pitch)", format: "pdf", category: "deliverable" },
       { id: "competitive_playbook", label: "Competitive Playbook", format: "html", category: "interactive" },
       { id: "gamma_deck", label: "Presentation Deck (Gamma)", format: "url", category: "deliverable" },
+      { id: "assignment_framework", label: "Assignment Framework", format: "pdf", category: "deliverable" },
     ],
     prospect_prep: [
       { id: "research_brief", label: "Research Brief", format: "pdf", category: "research" },
@@ -136,11 +140,14 @@ export function getExpectedAssets(toolName: ToolName): Omit<Asset, "url" | "size
       { id: "callDoc_callPlaybook", label: "Call Playbook", format: "pdf", category: "deliverable" },
       { id: "callDoc_arsenal", label: "Arsenal", format: "pdf", category: "deliverable" },
       { id: "competitive_playbook", label: "Competitive Playbook", format: "html", category: "interactive" },
+      { id: "stakeholder_map", label: "Stakeholder Map", format: "html", category: "interactive" },
       { id: "gamma_deck", label: "Presentation Deck (Gamma)", format: "url", category: "deliverable" },
     ],
     deal_audit: [
-      { id: "audit_report", label: "Deal Audit Report", format: "pdf", category: "research" },
+      { id: "research_brief", label: "Deal Audit Report", format: "pdf", category: "research" },
       { id: "notebook_card", label: "Handwritten Notebook Card", format: "png", category: "deliverable" },
+      { id: "call_prep_sheet", label: "Call Prep Sheet", format: "pdf", category: "deliverable" },
+      { id: "stakeholder_map", label: "Stakeholder Map", format: "html", category: "interactive" },
     ],
     interview_outreach: [
       { id: "research_brief", label: "Research Brief", format: "pdf", category: "research" },
@@ -151,6 +158,7 @@ export function getExpectedAssets(toolName: ToolName): Omit<Asset, "url" | "size
       { id: "outreach_sequence", label: "Outreach Sequence", format: "html", category: "interactive" },
       { id: "competitive_playbook", label: "Competitive Playbook", format: "html", category: "interactive" },
       { id: "gamma_deck", label: "Presentation Deck (Gamma)", format: "url", category: "deliverable" },
+      { id: "assignment_framework", label: "Assignment Framework", format: "pdf", category: "deliverable" },
     ],
     prospect_outreach: [
       { id: "research_brief", label: "Research Brief", format: "pdf", category: "research" },
@@ -162,9 +170,11 @@ export function getExpectedAssets(toolName: ToolName): Omit<Asset, "url" | "size
       { id: "gamma_deck", label: "Presentation Deck (Gamma)", format: "url", category: "deliverable" },
     ],
     champion_builder: [
-      { id: "strategy_brief", label: "Champion Strategy Brief", format: "pdf", category: "research" },
+      { id: "research_brief", label: "Champion Strategy Brief", format: "pdf", category: "research" },
       { id: "notebook_card", label: "Handwritten Notebook Card", format: "png", category: "deliverable" },
+      { id: "call_prep_sheet", label: "Call Prep Sheet", format: "pdf", category: "deliverable" },
       { id: "competitive_playbook", label: "Competitive Playbook", format: "html", category: "interactive" },
+      { id: "stakeholder_map", label: "Stakeholder Map", format: "html", category: "interactive" },
     ],
   };
 

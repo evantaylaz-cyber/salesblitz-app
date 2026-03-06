@@ -16,14 +16,16 @@ const WORKER_KEY_TO_ASSET_ID: Record<string, string> = {
   competitivePlaybook: "competitive_playbook",
   gammaDeck: "gamma_deck",
   callPrepSheet: "call_prep_sheet",
-  auditReport: "audit_report",
   atsResume: "ats_resume",
-  strategyBrief: "strategy_brief",
   outreachSequence: "outreach_sequence",
-  // Legacy keys (4-card system) — map to notebook_card for backward compat
+  stakeholderMap: "stakeholder_map",
+  assignmentFramework: "assignment_framework",
+  // Legacy keys — backward compat
   clientPovCard: "notebook_card",
   dealHealthCard: "notebook_card",
   championPovCard: "notebook_card",
+  auditReport: "research_brief",   // deal_audit used to have separate key
+  strategyBrief: "research_brief", // champion_builder used to have separate key
 };
 
 export interface NormalizedAsset {

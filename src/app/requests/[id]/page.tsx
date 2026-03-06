@@ -22,6 +22,7 @@ import {
   MessageCircleQuestion,
   RefreshCw,
 } from "lucide-react";
+import DebriefSection from "@/components/DebriefSection";
 
 interface StepData {
   id: string;
@@ -411,6 +412,11 @@ export default function RequestDetailPage() {
               })}
             </div>
           </div>
+        )}
+
+        {/* Post-Run Debrief */}
+        {(request.status === "delivered" || request.status === "ready") && (
+          <DebriefSection requestId={request.id} />
         )}
 
         {/* Error State */}

@@ -29,6 +29,7 @@ model User {
   runRequests             RunRequest[]
   batchJobs               BatchJob[]
   knowledgeDocs           KnowledgeDocument[]
+  debriefs                RunDebrief[]
   userProfile             UserProfile?
 
   // Team relationships
@@ -191,6 +192,9 @@ model RunRequest {
   deliveryNotes   String?  @db.Text // Notes about what was delivered
   adminNotes      String?  @db.Text // Internal notes (not visible to customer)
 
+  // Post-run debrief
+  debriefs        RunDebrief[]
+
   // Timestamps
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -246,4 +250,22 @@ model KnowledgeDocument {
   category  String   @default("custom") // product_docs | competitive_intel | deal_stories | icp_definitions | methodology | objection_handling | custom
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// Post-run debrief — captures user feedback after a meeting/interview.
+// Fed into subsequent runs targeting the same company for progressive context building.
+model RunDebrief {
+  id              String     @id @default(uuid())
+  runRequestId    String
+  runRequest      RunRequest @relation(fields: [runRequestId], references: [id], onDelete: Cascade)
+  userId          String
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // What happened
+  content         String     @db.Text // Free-form debrief (what landed, what didn't, next steps, objections, intel)
+  outcome         String?    // positive | neutral | negative | unknown
+  nextSteps       String?    @db.Text // Specific next steps identified
+
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
 }
