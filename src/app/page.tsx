@@ -5,6 +5,10 @@ import {
   Target,
   ArrowRight,
   Check,
+  Video,
+  Mic,
+  BarChart3,
+  MessageSquare,
 } from "lucide-react";
 import ProductMockup from "@/components/ProductMockup";
 
@@ -62,8 +66,9 @@ export default async function LandingPage() {
               </span>
             </h1>
             <p className="mt-6 text-lg text-gray-600 md:text-xl">
-              Submit a prospect. Get back a complete intelligence package, ready
-              to use in your next meeting. Delivered in minutes, not days.
+              Intelligence packages, POV decks, call playbooks & live AI
+              practice for every deal on your calendar. Ready in minutes, not
+              days.
             </p>
             <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
               <Link
@@ -113,9 +118,9 @@ export default async function LandingPage() {
               },
               {
                 step: "03",
-                title: "Open your inbox",
+                title: "Prep, practice, go",
                 description:
-                  "Everything's there. Research briefs, decks, talk tracks, interactive playbooks. Ready to use.",
+                  "Research briefs, decks, talk tracks & playbooks delivered to your inbox. Then practice against an AI buyer before the real thing.",
               },
             ].map((item) => (
               <div key={item.step} className="text-center">
@@ -173,6 +178,11 @@ export default async function LandingPage() {
                 hook: "Arm your champion.",
                 description: "Stakeholder maps, internal selling kits, and the ammo they need to advocate for you.",
               },
+              {
+                name: "AI Practice Mode",
+                hook: "Rehearse before the real thing.",
+                description: "Live video roleplay against an AI buyer persona built from your actual account research.",
+              },
             ].map((tool) => (
               <div
                 key={tool.name}
@@ -185,6 +195,141 @@ export default async function LandingPage() {
                 </p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* AI Practice Mode */}
+      <section className="border-y border-gray-100 bg-gray-900 py-20 overflow-hidden">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
+            {/* Left: Copy */}
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-full bg-indigo-500/10 px-3 py-1 text-sm font-medium text-indigo-400">
+                <Video className="h-3.5 w-3.5" />
+                AI Practice Mode
+              </div>
+              <h2 className="mt-4 text-3xl font-bold text-white">
+                Rehearse against a buyer who knows your deal
+              </h2>
+              <p className="mt-4 text-lg text-gray-400">
+                Name a target company. We generate a buyer persona from real
+                research, your profile & your blitz run data. Then you practice a
+                live conversation against a video avatar who pushes back, asks
+                tough questions & scores you on Command of the Message.
+              </p>
+              <div className="mt-8 space-y-4">
+                {[
+                  {
+                    icon: <Mic className="h-4 w-4 text-indigo-400" />,
+                    text: "Voice-driven conversation with a streaming video avatar",
+                  },
+                  {
+                    icon: <MessageSquare className="h-4 w-4 text-indigo-400" />,
+                    text: "Persona built from your actual account research, not generic scripts",
+                  },
+                  {
+                    icon: <BarChart3 className="h-4 w-4 text-indigo-400" />,
+                    text: "Scored on 8 CotM dimensions with coaching feedback after every session",
+                  },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-start gap-3">
+                    <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-500/10">
+                      {item.icon}
+                    </div>
+                    <span className="text-sm text-gray-300">{item.text}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right: Practice session mockup */}
+            <div className="relative">
+              <div className="rounded-2xl border border-gray-700 bg-gray-800 p-1 shadow-2xl">
+                {/* Top bar */}
+                <div className="flex items-center justify-between rounded-t-xl bg-gray-800 px-4 py-2">
+                  <div className="flex items-center gap-2">
+                    <div className="h-2 w-2 rounded-full bg-emerald-400" />
+                    <span className="text-xs text-gray-400">Live Session</span>
+                  </div>
+                  <span className="text-xs text-gray-500">4:32</span>
+                </div>
+
+                {/* Avatar area */}
+                <div className="relative mx-2 aspect-video rounded-lg bg-gradient-to-br from-gray-700 to-gray-800 overflow-hidden">
+                  {/* Avatar silhouette */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="relative">
+                      <div className="h-24 w-24 rounded-full bg-gradient-to-br from-indigo-500/30 to-purple-500/30 flex items-center justify-center">
+                        <div className="h-16 w-16 rounded-full bg-gradient-to-br from-indigo-400/40 to-purple-400/40" />
+                      </div>
+                      {/* Speaking indicator */}
+                      <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 flex items-center gap-1 rounded-full bg-black/60 px-2 py-0.5">
+                        <div className="h-2 w-0.5 rounded-full bg-indigo-400 animate-pulse" />
+                        <div className="h-3 w-0.5 rounded-full bg-indigo-400 animate-pulse" style={{ animationDelay: "150ms" }} />
+                        <div className="h-2 w-0.5 rounded-full bg-indigo-400 animate-pulse" style={{ animationDelay: "300ms" }} />
+                      </div>
+                    </div>
+                  </div>
+                  {/* Persona label */}
+                  <div className="absolute top-3 left-3 rounded-lg bg-black/50 px-2 py-1">
+                    <p className="text-[10px] font-medium text-white">Sarah Chen</p>
+                    <p className="text-[9px] text-gray-400">VP Sales Enablement, Snowflake</p>
+                  </div>
+                </div>
+
+                {/* Transcript preview */}
+                <div className="mx-2 mt-2 mb-2 space-y-2 rounded-lg bg-gray-900/60 p-3">
+                  <div className="flex justify-start">
+                    <div className="max-w-[75%] rounded-xl bg-gray-700 px-3 py-1.5">
+                      <p className="text-[10px] text-gray-300">
+                        Walk me through how you&apos;d approach our enablement challenges at scale.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex justify-end">
+                    <div className="max-w-[75%] rounded-xl bg-indigo-600 px-3 py-1.5">
+                      <p className="text-[10px] text-white">
+                        Based on what I&apos;m seeing in your 10-K, you&apos;re scaling headcount 40% but enablement...
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Mic control */}
+                <div className="flex items-center justify-center py-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-600 ring-4 ring-red-600/20">
+                    <Mic className="h-4 w-4 text-white" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Floating score card */}
+              <div className="absolute -bottom-4 -right-4 rounded-xl border border-gray-700 bg-gray-800 p-3 shadow-xl lg:-right-8">
+                <div className="flex items-center gap-2 mb-2">
+                  <BarChart3 className="h-3.5 w-3.5 text-indigo-400" />
+                  <span className="text-[10px] font-semibold text-gray-300">CotM Score</span>
+                </div>
+                <div className="space-y-1.5">
+                  {[
+                    { label: "Before State", score: 4.5 },
+                    { label: "Discovery", score: 4.0 },
+                    { label: "Objections", score: 3.5 },
+                  ].map((item) => (
+                    <div key={item.label} className="flex items-center gap-2">
+                      <span className="w-16 text-[9px] text-gray-400">{item.label}</span>
+                      <div className="h-1 w-16 rounded-full bg-gray-700 overflow-hidden">
+                        <div
+                          className="h-full rounded-full bg-indigo-400"
+                          style={{ width: `${(item.score / 5) * 100}%` }}
+                        />
+                      </div>
+                      <span className="text-[9px] font-medium text-gray-300">{item.score}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -222,7 +367,7 @@ export default async function LandingPage() {
                   "Everything in Launch",
                   "Interview Prep",
                   "Prospect Prep",
-                  "Deal Audit",
+                  "AI Practice (3 sessions/mo)",
                   "12 blitzes/month",
                 ],
                 highlight: true,
@@ -235,7 +380,9 @@ export default async function LandingPage() {
                 runs: 25,
                 features: [
                   "Everything in Pro",
+                  "Deal Audit",
                   "Champion Builder",
+                  "AI Practice (10 sessions/mo)",
                   "25 blitzes/month",
                   "Priority processing",
                 ],
@@ -312,7 +459,7 @@ export default async function LandingPage() {
               Stop showing up unprepared
             </h2>
             <p className="mt-4 text-lg text-gray-500">
-              Your next meeting is too important to wing it.
+              Your next meeting is too important to wing it. Research it. Rehearse it. Own it.
             </p>
             <Link
               href="/sign-up"

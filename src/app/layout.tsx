@@ -3,8 +3,25 @@ import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Sales Blitz | Sales Intelligence Platform",
-  description: "AI-powered tools for interview prep, prospecting, and deal management.",
+  title: "Sales Blitz | AI-Powered Sales Prep & Practice",
+  description:
+    "Research, rehearse & close. Get intelligence packages, POV decks, call playbooks & live AI practice for every deal on your calendar. Delivered in minutes.",
+  metadataBase: new URL("https://salesblitz.ai"),
+  openGraph: {
+    title: "Sales Blitz | Research. Rehearse. Close.",
+    description:
+      "AI-powered intelligence packages, call playbooks & live practice for every deal on your calendar.",
+    url: "https://salesblitz.ai",
+    siteName: "Sales Blitz",
+    type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Sales Blitz | Research. Rehearse. Close.",
+    description:
+      "AI-powered intelligence packages, call playbooks & live practice for every deal on your calendar.",
+  },
 };
 
 export default function RootLayout({
