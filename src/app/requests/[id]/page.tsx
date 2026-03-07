@@ -276,9 +276,10 @@ export default function RequestDetailPage() {
           </p>
         </div>
 
-        {/* Stalled Run Detection */}
+        {/* Stalled Run Detection — only show if no steps have completed (active progress = not stalled) */}
         {(request.status === "submitted" || (request.status === "researching" && !request.startedAt)) &&
          request.createdAt &&
+         request.completedSteps === 0 &&
          (Date.now() - new Date(request.createdAt).getTime() > 5 * 60 * 1000) && (
           <div className="rounded-xl border border-amber-200 bg-amber-50 p-6">
             <div className="flex items-start gap-3">

@@ -250,6 +250,7 @@ export default function DashboardPage() {
   }
 
   const hasSubscription = userData?.subscriptionStatus === "active" && userData?.currentTier;
+  const isMaxTier = userData?.currentTier === "closer";
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -303,12 +304,14 @@ export default function DashboardPage() {
                 Billing
               </button>
             )}
-            <a
-              href="/subscribe"
-              className="text-sm font-medium text-emerald-700 hover:text-emerald-900"
-            >
-              {hasSubscription ? "Upgrade" : "Subscribe"}
-            </a>
+            {!isMaxTier && (
+              <a
+                href="/subscribe"
+                className="text-sm font-medium text-emerald-700 hover:text-emerald-900"
+              >
+                {hasSubscription ? "Upgrade" : "Subscribe"}
+              </a>
+            )}
             <UserButton afterSignOutUrl="/sign-in" />
           </div>
 
@@ -358,12 +361,14 @@ export default function DashboardPage() {
                 Billing
               </button>
             )}
-            <a
-              href="/subscribe"
-              className="block rounded-lg px-3 py-2.5 text-sm font-medium text-emerald-700 hover:bg-emerald-50"
-            >
-              {hasSubscription ? "Upgrade" : "Subscribe"}
-            </a>
+            {!isMaxTier && (
+              <a
+                href="/subscribe"
+                className="block rounded-lg px-3 py-2.5 text-sm font-medium text-emerald-700 hover:bg-emerald-50"
+              >
+                {hasSubscription ? "Upgrade" : "Subscribe"}
+              </a>
+            )}
           </div>
         )}
       </header>
