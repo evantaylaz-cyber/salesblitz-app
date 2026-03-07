@@ -90,6 +90,12 @@ const STEP_TEMPLATES: Record<ToolName, Omit<JobStep, "status" | "startedAt" | "c
     { id: "building_stakeholder_map", label: "Building stakeholder map", description: "Creating interactive stakeholder map with MEDDPICC roles and action items." },
     { id: "delivery", label: "Delivering to your inbox", description: "Sending your complete champion toolkit via email." },
   ],
+  practice_mode: [
+    { id: "generating_persona", label: "Building AI buyer persona", description: "Generating a realistic buyer persona from your account research and meeting context." },
+    { id: "initializing_avatar", label: "Initializing video avatar", description: "Starting the HeyGen Streaming Avatar session with your buyer persona." },
+    { id: "live_session", label: "Live practice session", description: "Real-time roleplay conversation with your AI buyer persona." },
+    { id: "generating_scorecard", label: "Scoring your session", description: "Analyzing your conversation against CotM framework and generating actionable feedback." },
+  ],
 };
 
 /**
@@ -175,6 +181,10 @@ export function getExpectedAssets(toolName: ToolName): Omit<Asset, "url" | "size
       { id: "call_prep_sheet", label: "Call Prep Sheet", format: "pdf", category: "deliverable" },
       { id: "competitive_playbook", label: "Competitive Playbook", format: "html", category: "interactive" },
       { id: "stakeholder_map", label: "Stakeholder Map", format: "html", category: "interactive" },
+    ],
+    practice_mode: [
+      { id: "session_transcript", label: "Session Transcript", format: "pdf", category: "research" },
+      { id: "cotm_scorecard", label: "CotM Scorecard", format: "pdf", category: "deliverable" },
     ],
   };
 
