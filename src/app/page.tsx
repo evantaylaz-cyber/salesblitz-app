@@ -486,6 +486,66 @@ export default async function LandingPage() {
         </div>
       </section>
 
+      {/* Sales Blitz Consulting */}
+      <section className="py-20">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="mx-auto max-w-3xl">
+            <div className="rounded-2xl border-2 border-gray-800 bg-gray-900 p-10 md:p-14">
+              <div className="flex flex-col md:flex-row md:items-start md:gap-12">
+                {/* Left: Copy */}
+                <div className="flex-1">
+                  <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500/10 px-3 py-1 text-sm font-medium text-emerald-400">
+                    <Users className="h-3.5 w-3.5" />
+                    Done-For-You
+                  </div>
+                  <h2 className="mt-4 text-2xl font-bold text-white md:text-3xl">
+                    Want us to run it for you?
+                  </h2>
+                  <p className="mt-4 text-gray-400">
+                    The self-serve app handles research, prep & practice.
+                    But if you want a full outbound engine built for your sales team,
+                    we do that too. Custom targeting, sequencing & qualified meeting delivery.
+                  </p>
+                  <div className="mt-6 space-y-3">
+                    {[
+                      {
+                        icon: <Target className="h-4 w-4 text-emerald-400" />,
+                        text: "We build your ICP, research targets & write every touch",
+                      },
+                      {
+                        icon: <Rocket className="h-4 w-4 text-emerald-400" />,
+                        text: "You get qualified meetings on your calendar, not leads in a spreadsheet",
+                      },
+                      {
+                        icon: <Shield className="h-4 w-4 text-emerald-400" />,
+                        text: "Outcome-based pricing. Custom scoped to your team & market.",
+                      },
+                    ].map((item, i) => (
+                      <div key={i} className="flex items-start gap-3">
+                        <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-500/10">
+                          {item.icon}
+                        </div>
+                        <span className="text-sm text-gray-300">{item.text}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <a
+                    href="mailto:evan@salesblitz.ai?subject=Sales%20Blitz%20Consulting"
+                    className="mt-8 inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700"
+                  >
+                    <Mail className="h-4 w-4" />
+                    Talk to Evan
+                  </a>
+                  <p className="mt-3 text-xs text-gray-500">
+                    evan@salesblitz.ai
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Final CTA */}
       <section className="py-20">
         <div className="mx-auto max-w-7xl px-6">

@@ -17,6 +17,8 @@ import {
   Eye,
   Menu,
   X,
+  Mail,
+  Users,
 } from "lucide-react";
 import dynamic from "next/dynamic";
 
@@ -629,6 +631,30 @@ export default function DashboardPage() {
             </div>
           </div>
         )}
+
+        {/* Consulting CTA */}
+        <div className="mt-10 rounded-xl border border-gray-800 bg-gray-900 p-6 md:p-8">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-start gap-4">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/10">
+                <Users className="h-5 w-5 text-emerald-400" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-white">Want us to run it for you?</h3>
+                <p className="mt-1 text-sm text-gray-400">
+                  Custom outbound engine for your sales team. We build targeting, sequencing & deliver qualified meetings. Outcome-based pricing.
+                </p>
+              </div>
+            </div>
+            <a
+              href="mailto:evan@salesblitz.ai?subject=Sales%20Blitz%20Consulting"
+              className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700"
+            >
+              <Mail className="h-4 w-4" />
+              Talk to Evan
+            </a>
+          </div>
+        </div>
       </main>
 
       {/* Floating AI chat — always rendered so the bubble is visible */}
