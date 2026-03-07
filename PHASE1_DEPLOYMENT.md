@@ -58,7 +58,7 @@ git push
 3. Click into the request — you should see the detail page with all steps listed
 4. Test the step update API (simulate execution engine):
 ```bash
-curl -X PATCH https://app.alternativeinvestments.io/api/requests/<REQUEST_ID>/steps \
+curl -X PATCH https://app.salesblitz.ai/api/requests/<REQUEST_ID>/steps \
   -H "Content-Type: application/json" \
   -H "x-api-key: <YOUR_INTERNAL_API_KEY>" \
   -d '{"stepId": "competitive_research", "stepStatus": "in_progress"}'

@@ -1,4 +1,4 @@
-# AltVest Asset QA Report - March 6, 2026
+# Sales Blitz Asset QA Report - March 6, 2026
 
 ## Runs Reviewed
 

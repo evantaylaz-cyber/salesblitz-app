@@ -6,11 +6,11 @@
 
 ## What It Is
 
-Real-time roleplay practice against an AI-rendered video avatar that plays a buyer persona. The persona is built from AltVest's existing research engine output, not from a call recording library. User sees a photorealistic avatar on screen, talks to it via microphone, and the avatar responds in character as the buyer. After the session, a CotM scoring evaluation grades the rep's performance.
+Real-time roleplay practice against an AI-rendered video avatar that plays a buyer persona. The persona is built from Sales Blitz's existing research engine output, not from a call recording library. User sees a photorealistic avatar on screen, talks to it via microphone, and the avatar responds in character as the buyer. After the session, a CotM scoring evaluation grades the rep's performance.
 
 ## Why It Matters
 
-Gong AI Trainer (GA March 2026) does the same thing but requires the company's recorded call library to build personas, costs $100-150/seat/month on enterprise contracts, and all data stays with the company when you leave. AltVest builds personas from real-time research (you just need a company name), works for individuals and small teams, and your practice history is portable.
+Gong AI Trainer (GA March 2026) does the same thing but requires the company's recorded call library to build personas, costs $100-150/seat/month on enterprise contracts, and all data stays with the company when you leave. Sales Blitz builds personas from real-time research (you just need a company name), works for individuals and small teams, and your practice history is portable.
 
 ## Architecture
 
@@ -18,7 +18,7 @@ Gong AI Trainer (GA March 2026) does the same thing but requires the company's r
 
 **Mode 1: Custom LLM (recommended, build this first)**
 - User's microphone audio → browser STT (Deepgram via HeyGen SDK, or custom) → text
-- Text sent to AltVest backend → Claude API with buyer persona system prompt + conversation history
+- Text sent to Sales Blitz backend → Claude API with buyer persona system prompt + conversation history
 - Claude response → sent to HeyGen avatar via `speak()` with `task_type: REPEAT`
 - Avatar renders the response with lip sync, facial expressions, video via WebRTC
 - This gives us FULL CONTROL over the AI's behavior, persona, CotM-awareness, etc.
@@ -27,9 +27,9 @@ Gong AI Trainer (GA March 2026) does the same thing but requires the company's r
 - HeyGen SDK's built-in voice chat mode handles STT + LLM + TTS
 - We provide the persona via HeyGen's "knowledge base" / context field
 - Less control over AI behavior but faster to ship
-- Limitation: can't inject AltVest research data mid-conversation as easily
+- Limitation: can't inject Sales Blitz research data mid-conversation as easily
 
-**Recommendation:** Mode 1. We need full control over the persona's behavior, objection patterns, and the ability to inject AltVest's deep research into the conversation. Mode 2 would use HeyGen's built-in LLM which we can't customize enough.
+**Recommendation:** Mode 1. We need full control over the persona's behavior, objection patterns, and the ability to inject Sales Blitz's deep research into the conversation. Mode 2 would use HeyGen's built-in LLM which we can't customize enough.
 
 ### Flow
 
@@ -37,7 +37,7 @@ Gong AI Trainer (GA March 2026) does the same thing but requires the company's r
 1. User picks a target company (existing flow)
    OR selects a previous run to practice against
 
-2. AltVest research engine runs (existing pipeline, steps 1-4)
+2. Sales Blitz research engine runs (existing pipeline, steps 1-4)
    → Competitive Research, Market Intel, Company Deep Dive, Strategic Synthesis
    → This data already exists if user ran a previous prep/outreach
 
@@ -232,13 +232,13 @@ HEYGEN_API_KEY=xxx          # From HeyGen API (Pay-As-You-Go), NOT the Pro subsc
 
 ## What Makes This Different From Gong AI Trainer
 
-| | Gong AI Trainer | AltVest Practice Mode |
+| | Gong AI Trainer | Sales Blitz Practice Mode |
 |---|---|---|
 | Persona source | Company's recorded call library | Real-time account research |
 | Input required | Thousands of calls | A company name |
 | Data ownership | Company's | Yours |
 | Portability | Gone when you leave | Follows you |
-| Pricing | $100-150/seat/mo enterprise | Included in AltVest subscription |
+| Pricing | $100-150/seat/mo enterprise | Included in Sales Blitz subscription |
 | CRM dependency | Needs clean CRM data | None |
 | Scoring framework | Gong's proprietary | CotM (transparent, customizable) |
 | Available to | Enterprise teams on Gong | Anyone |

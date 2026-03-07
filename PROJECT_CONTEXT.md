@@ -1,4 +1,4 @@
-# AltVest Subscriber App — Project Context
+# Sales Blitz Subscriber App — Project Context
 
 > Cross-session memory file. Read this at the start of every new session.
 > Last updated: 2026-03-07
@@ -6,11 +6,11 @@
 ## What This Is
 AI-powered strategic preparation platform for enterprise B2B sales professionals. The personal intelligence layer that follows YOU across your career. Users submit a target company/person, the system runs deep research via Claude API, and delivers a focused package: Research Brief (PDF), POV Deck (PDF), 3 Handwritten Reference Cards (Gemini PNG), Interactive Competitive Landscape (HTML), and Gamma presentation deck.
 
-**Positioning (locked Mar 7):** Gong serves the org. AltVest serves the seller. AltVest owns the preparation layer: "get armed for this specific conversation." Portable across career transitions (interview → job → next job). No CRM dependency. No enterprise contract required.
+**Positioning (locked Mar 7):** Gong serves the org. Sales Blitz serves the seller. Sales Blitz owns the preparation layer: "get armed for this specific conversation." Portable across career transitions (interview → job → next job). No CRM dependency. No enterprise contract required.
 
 ## Marketing Site
-- Domain: alternativeinvestments.io (Vercel, auto-deploys from GitHub: evantaylaz-cyber/alternativeinvestments-site)
-- App domain: app.alternativeinvestments.io
+- Domain: salesblitz.ai (Vercel, auto-deploys from GitHub: evantaylaz-cyber/alternativeinvestments-site (legacy repo name))
+- App domain: app.salesblitz.ai
 - Vercel project ID (site): prj_zC5Th1edh1DSclIGOTGnh6emOBGn
 
 ## Tech Stack
@@ -25,7 +25,7 @@ AI-powered strategic preparation platform for enterprise B2B sales professionals
 ## Deployment Info
 - **Vercel team**: `team_v8AivDcfMgT9Z3UDAazeLr6p` (slug: `evans-projects-30718325`)
 - **Vercel project**: `prj_KjaRFC7ASHwO7qlXHkhy3J13Iz7S`
-- **GitHub repo**: `evantaylaz-cyber/altvest-subscriber-app` (public)
+- **GitHub repo**: `evantaylaz-cyber/salesblitz-subscriber-app` (public)
 - **Supabase project**: Check Supabase MCP for current project ID
 - **Build command**: `prisma generate && prisma db push --accept-data-loss && next build`
 
@@ -116,7 +116,7 @@ The PATCH endpoint accepts `x-api-key` header for worker auth (`INTERNAL_API_KEY
 - Pipeline integration: new step between building_landscape_app and formatting
 - Delivery: `outreachSequence` and `outreachSequenceJson` labels added to email asset links
 - Frontend: tools.ts updated — all 4 outreach-eligible tools include "Multi-Touch Outreach Sequence (7 touches, 14-21 days)" in deliverables
-- Repos pushed: worker (altvest-worker) + app (altvest-subscriber-app) on 2026-03-03
+- Repos pushed: worker (salesblitz-worker) + app (salesblitz-subscriber-app) on 2026-03-03
 - E2E verification: pending first live run
 
 ### Seller Knowledge Base Status (as of 2026-03-03) — BUILT, PENDING DEPLOY
@@ -127,7 +127,7 @@ The PATCH endpoint accepts `x-api-key` header for worker auth (`INTERNAL_API_KEY
 - **Worker integration**: `loadKnowledgeBase(userId)` queries KnowledgeDocument table via Supabase JS; `buildUserContextPrefix()` expanded to inject KB docs under "SELLER KNOWLEDGE BASE" header with token budget cap
 - **Frontend**: `/knowledge-base` page — search, category filter, create/edit/delete, document viewer panel
 - **Navigation**: Dashboard nav + Profile page CTA both link to Knowledge Base
-- **Repos**: Pending push — worker (altvest-worker) + app (altvest-subscriber-app)
+- **Repos**: Pending push — worker (salesblitz-worker) + app (salesblitz-subscriber-app)
 - **E2E verification**: pending deploy + first live run
 
 ### Competitive Playbook Status (as of 2026-03-03) — BUILT, PENDING DEPLOY
@@ -185,10 +185,10 @@ See PHASE_2_5_SPEC.md for full architecture.
 CLERK_SECRET_KEY, NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY, DATABASE_URL, DIRECT_URL, RESEND_API_KEY, RESEND_FROM_EMAIL, INTERNAL_API_KEY, ANTHROPIC_API_KEY, SUPABASE_URL, SUPABASE_SERVICE_KEY, WORKER_WEBHOOK_URL, NEXT_PUBLIC_APP_URL, plus all Stripe price IDs (LAUNCH_MONTHLY_PRICE_ID, etc.)
 
 ## Environment Variables (Railway — worker)
-ANTHROPIC_API_KEY, SUPABASE_URL, SUPABASE_SERVICE_KEY, ALTVEST_APP_URL, INTERNAL_API_KEY, RESEND_API_KEY, RESEND_FROM_EMAIL, DAILY_SPEND_LIMIT, NOTIFICATION_EMAIL, TAVILY_API_KEY, PORT
+ANTHROPIC_API_KEY, SUPABASE_URL, SUPABASE_SERVICE_KEY, SALESBLITZ_APP_URL, INTERNAL_API_KEY, RESEND_API_KEY, RESEND_FROM_EMAIL, DAILY_SPEND_LIMIT, NOTIFICATION_EMAIL, TAVILY_API_KEY, PORT
 
 ## Worker Architecture
-- **Repo**: `evantaylaz-cyber/altvest-worker`
+- **Repo**: `evantaylaz-cyber/salesblitz-worker`
 - **Hosting**: Railway (`fa4c5482-3d40-482a-9da3-60fa5bbc01c6`)
 - **Entrypoint**: `src/index.js` — Express server with /execute, /health, /status
 - **Key files**: executor.js (pipeline + outreach sequence), budget-guardian.js (spend tracking), step-client.js (PATCH proxy), pdf-generator.js, gemini-cards.js, landscape-generator.js, playbook-generator.js (Phase 3.2)

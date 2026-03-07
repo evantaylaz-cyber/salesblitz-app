@@ -9,7 +9,7 @@
 
 ## The Problem
 
-AltVest currently processes one prospect at a time. A seller mapping into a new territory or prepping for a multi-threading play has to submit 5-10 individual requests, wait for each to finish, then manually cross-reference the results. That's slow, expensive (5-10 runs), and misses the comparative insight that makes batch research valuable — "which of these 8 accounts should I prioritize and why?"
+Sales Blitz currently processes one prospect at a time. A seller mapping into a new territory or prepping for a multi-threading play has to submit 5-10 individual requests, wait for each to finish, then manually cross-reference the results. That's slow, expensive (5-10 runs), and misses the comparative insight that makes batch research valuable — "which of these 8 accounts should I prioritize and why?"
 
 ## What Batch Mode Delivers
 
