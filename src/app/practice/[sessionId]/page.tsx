@@ -16,6 +16,20 @@ import {
   AlertCircle,
 } from "lucide-react";
 
+// Web Speech API type declarations (not in default TS lib)
+type SpeechRecognitionType = typeof window extends { SpeechRecognition: infer T } ? T : never;
+interface ISpeechRecognition extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  start(): void;
+  stop(): void;
+  abort(): void;
+  onresult: ((event: { results: { [index: number]: { [index: number]: { transcript: string }; isFinal: boolean }; length: number } }) => void) | null;
+  onerror: ((event: { error: string }) => void) | null;
+  onend: (() => void) | null;
+}
+
 interface TranscriptEntry {
   role: "user" | "persona";
   text: string;
@@ -47,7 +61,7 @@ export default function PracticeSessionPage() {
   // Refs
   const videoRef = useRef<HTMLVideoElement>(null);
   const avatarRef = useRef<unknown>(null);
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const recognitionRef = useRef<ISpeechRecognition | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const transcriptEndRef = useRef<HTMLDivElement>(null);
 
@@ -161,18 +175,17 @@ export default function PracticeSessionPage() {
       return;
     }
 
-    const SpeechRecognition =
-      (window as unknown as { SpeechRecognition?: typeof window.SpeechRecognition }).SpeechRecognition ||
-      (window as unknown as { webkitSpeechRecognition?: typeof window.SpeechRecognition }).webkitSpeechRecognition;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const SpeechRecognitionCtor = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
-    if (!SpeechRecognition) return;
+    if (!SpeechRecognitionCtor) return;
 
-    const recognition = new SpeechRecognition();
+    const recognition = new SpeechRecognitionCtor() as ISpeechRecognition;
     recognition.continuous = true;
     recognition.interimResults = false;
     recognition.lang = "en-US";
 
-    recognition.onresult = async (event: SpeechRecognitionEvent) => {
+    recognition.onresult = async (event) => {
       const last = event.results[event.results.length - 1];
       if (last.isFinal) {
         const userText = last[0].transcript.trim();
@@ -219,7 +232,7 @@ export default function PracticeSessionPage() {
       }
     };
 
-    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+    recognition.onerror = (event) => {
       if (event.error !== "aborted") {
         console.error("Speech error:", event.error);
       }
