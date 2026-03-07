@@ -17,8 +17,7 @@ import {
 } from "lucide-react";
 
 // Web Speech API type declarations (not in default TS lib)
-type SpeechRecognitionType = typeof window extends { SpeechRecognition: infer T } ? T : never;
-interface ISpeechRecognition extends EventTarget {
+interface ISpeechRecognition {
   continuous: boolean;
   interimResults: boolean;
   lang: string;
