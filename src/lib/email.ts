@@ -145,7 +145,6 @@ export async function sendOrderNotification(order: OrderDetails) {
       from: process.env.RESEND_FROM_EMAIL || "Sales Blitz Orders <onboarding@resend.dev>",
       to: [
         "evan@salesblitz.ai",
-        "evan@salesblitz.ai",
       ],
       subject: `${order.priority ? "⚡ " : ""}New ${toolLabel} Order — ${order.targetName} @ ${order.targetCompany}`,
       html,
