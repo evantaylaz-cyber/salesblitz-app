@@ -282,21 +282,16 @@ export default async function LandingPage() {
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="relative">
                       <div className="h-28 w-28 rounded-full overflow-hidden ring-2 ring-indigo-500/40 ring-offset-2 ring-offset-gray-800">
+                        {/* SVG fallback behind image */}
+                        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-indigo-500/30 to-purple-500/30">
+                          <svg className="h-16 w-16 text-indigo-300/50" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                        </div>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src="/avatar-practice.png"
                           alt="AI Buyer Persona"
-                          className="h-full w-full object-cover"
-                          onError={(e) => {
-                            const target = e.currentTarget;
-                            target.style.display = "none";
-                            const fallback = target.nextElementSibling as HTMLElement;
-                            if (fallback) fallback.style.display = "flex";
-                          }}
+                          className="relative h-full w-full object-cover"
                         />
-                        <div className="h-full w-full bg-gradient-to-br from-indigo-500/30 to-purple-500/30 items-center justify-center hidden">
-                          <svg className="h-16 w-16 text-indigo-300/50" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                        </div>
                       </div>
                       {/* Speaking indicator */}
                       <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 flex items-center gap-1 rounded-full bg-black/60 px-2 py-0.5">
