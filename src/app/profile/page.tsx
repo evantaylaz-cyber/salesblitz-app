@@ -927,7 +927,6 @@ export default function ProfilePage() {
               </div>
             </div>
           </CollapsibleSection>
-        </div>
 
           {/* SECTION 4: Career & Territory */}
           <CollapsibleSection
