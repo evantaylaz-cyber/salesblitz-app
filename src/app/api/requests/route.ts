@@ -6,6 +6,7 @@ import { ToolName, TOOLS } from "@/lib/tools";
 import { sendOrderNotification } from "@/lib/email";
 import { initializeSteps, getExpectedAssets } from "@/lib/job-steps";
 import { normalizeAssets } from "@/lib/normalize-assets";
+import { triggerWorker } from "@/lib/trigger-worker";
 
 // Infer engagement type from tool + meeting context when user doesn't specify
 function inferEngagementType(toolName: string, meetingType?: string): string {
@@ -190,23 +191,13 @@ export async function POST(req: NextRequest) {
       customerName: `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`.trim() || null,
     }).catch((err) => console.error("Order notification failed:", err));
 
-    // Trigger the execution engine (MUST await — unawaited fetch dies on Vercel serverless)
-    if (process.env.WORKER_WEBHOOK_URL) {
-      try {
-        const workerRes = await fetch(process.env.WORKER_WEBHOOK_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-api-key": process.env.INTERNAL_API_KEY || "",
-          },
-          body: JSON.stringify({ requestId: request.id }),
-        });
-        console.log("Worker trigger response:", workerRes.status, "for request:", request.id);
-      } catch (err) {
-        console.error("Worker trigger failed:", err);
-      }
-    } else {
-      console.warn("WORKER_WEBHOOK_URL not set — skipping worker trigger");
+    // Trigger the execution engine with retry (MUST await — unawaited fetch dies on Vercel serverless)
+    const workerResult = await triggerWorker({ requestId: request.id });
+    if (!workerResult.success) {
+      console.error(
+        `Worker trigger failed after ${workerResult.attempt} attempts for request ${request.id}: ${workerResult.error}`
+      );
+      // Don't fail the API response — stale-run recovery will catch it
     }
 
     return NextResponse.json({

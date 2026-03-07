@@ -4,6 +4,7 @@ import prisma from "@/lib/db";
 import { consumeRun } from "@/lib/runs";
 import { ToolName } from "@/lib/tools";
 import { initializeSteps, getExpectedAssets } from "@/lib/job-steps";
+import { triggerWorkerBatch } from "@/lib/trigger-worker";
 
 // Batch-level step templates
 function initializeBatchSteps(accountCount: number) {
@@ -192,34 +193,20 @@ export async function POST(req: NextRequest) {
       childRequestIds.push(childRequest.id);
     }
 
-    // Trigger the worker's batch execution endpoint
-    if (process.env.WORKER_WEBHOOK_URL) {
-      try {
-        // Worker batch endpoint is at /execute-batch (same base, different path)
-        const batchUrl = process.env.WORKER_WEBHOOK_URL.replace("/execute", "/execute-batch");
-        const workerRes = await fetch(batchUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-api-key": process.env.INTERNAL_API_KEY || "",
-          },
-          body: JSON.stringify({
-            batchJobId: batchJob.id,
-            childRequestIds,
-          }),
-        });
-        console.log(
-          "Worker batch trigger response:",
-          workerRes.status,
-          "for batch:",
-          batchJob.id,
-          `(${childRequestIds.length} accounts)`
-        );
-      } catch (err) {
-        console.error("Worker batch trigger failed:", err);
-      }
+    // Trigger the worker's batch execution endpoint with retry
+    const workerResult = await triggerWorkerBatch({
+      batchJobId: batchJob.id,
+      childRequestIds,
+    });
+    if (!workerResult.success) {
+      console.error(
+        `Worker batch trigger failed after ${workerResult.attempt} attempts for batch ${batchJob.id}: ${workerResult.error}`
+      );
+      // Don't fail the response — stale-run recovery will pick up the child requests
     } else {
-      console.warn("WORKER_WEBHOOK_URL not set — skipping worker trigger");
+      console.log(
+        `Worker batch trigger succeeded for batch ${batchJob.id} (${childRequestIds.length} accounts)`
+      );
     }
 
     return NextResponse.json({

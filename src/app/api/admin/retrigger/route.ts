@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import prisma from "@/lib/db";
+import { triggerWorker } from "@/lib/trigger-worker";
 
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || "evan@salesblitz.ai")
   .split(",")
@@ -60,25 +61,13 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  // Trigger worker
-  let workerStatus = "not_configured";
-  if (process.env.WORKER_WEBHOOK_URL) {
-    try {
-      const res = await fetch(process.env.WORKER_WEBHOOK_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": process.env.INTERNAL_API_KEY || "",
-        },
-        body: JSON.stringify({ requestId }),
-      });
-      workerStatus = `triggered (${res.status})`;
-      console.log("Admin retrigger: worker response", res.status, "for request:", requestId);
-    } catch (err) {
-      workerStatus = "trigger_failed";
-      console.error("Admin retrigger: worker trigger failed:", err);
-    }
-  }
+  // Trigger worker with retry
+  const workerResult = await triggerWorker({ requestId });
+  const workerStatus = workerResult.success
+    ? `triggered (${workerResult.status}, attempt ${workerResult.attempt})`
+    : workerResult.attempt === 0
+      ? "not_configured"
+      : `trigger_failed (${workerResult.error})`;
 
   return NextResponse.json({
     success: true,

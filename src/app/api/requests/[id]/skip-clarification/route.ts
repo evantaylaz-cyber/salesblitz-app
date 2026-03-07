@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import prisma from "@/lib/db";
+import { triggerWorker } from "@/lib/trigger-worker";
 
 /**
  * GET — Skip clarification and proceed with best-effort execution.
@@ -55,21 +56,10 @@ export async function GET(
       },
     });
 
-    // Trigger worker re-execution (MUST await — unawaited fetch dies on Vercel serverless)
-    if (process.env.WORKER_WEBHOOK_URL) {
-      try {
-        const res = await fetch(process.env.WORKER_WEBHOOK_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-api-key": process.env.INTERNAL_API_KEY || "",
-          },
-          body: JSON.stringify({ requestId: params.id }),
-        });
-        console.log("Worker re-trigger response:", res.status, "for request:", params.id);
-      } catch (err) {
-        console.error("Worker re-trigger failed:", err);
-      }
+    // Trigger worker re-execution with retry
+    const workerResult = await triggerWorker({ requestId: params.id });
+    if (!workerResult.success) {
+      console.error(`Worker re-trigger failed for skip-clarification ${params.id}: ${workerResult.error}`);
     }
 
     // Redirect to request status page

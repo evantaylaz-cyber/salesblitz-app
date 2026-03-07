@@ -4,6 +4,7 @@ import { Prisma } from "@prisma/client";
 import prisma from "@/lib/db";
 import { initializeSteps, getExpectedAssets } from "@/lib/job-steps";
 import { ToolName } from "@/lib/tools";
+import { triggerWorker } from "@/lib/trigger-worker";
 
 // POST — retry a failed request (does NOT consume another run credit)
 export async function POST(
@@ -62,22 +63,13 @@ export async function POST(
       },
     });
 
-    // Re-trigger the worker
-    if (process.env.WORKER_WEBHOOK_URL) {
-      try {
-        const workerRes = await fetch(process.env.WORKER_WEBHOOK_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-api-key": process.env.INTERNAL_API_KEY || "",
-          },
-          body: JSON.stringify({ requestId: request.id }),
-        });
-        console.log("Worker retry trigger response:", workerRes.status, "for request:", request.id);
-      } catch (err) {
-        console.error("Worker retry trigger failed:", err);
-        // Don't fail the retry — the request is reset, worker polling will pick it up
-      }
+    // Re-trigger the worker with retry logic
+    const workerResult = await triggerWorker({ requestId: request.id });
+    if (!workerResult.success) {
+      console.error(
+        `Worker retry trigger failed after ${workerResult.attempt} attempts for request ${request.id}: ${workerResult.error}`
+      );
+      // Don't fail the retry — the request is reset, worker polling will pick it up
     }
 
     return NextResponse.json({
