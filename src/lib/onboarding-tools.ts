@@ -189,25 +189,25 @@ export function createOnboardingTools(userId: string) {
 
     save_deal_story: tool({
       description:
-        "Save a deal story with triple mapping: CotM (before_state, negative_consequences, required_capabilities, pbos), MEDDPICC (champion, economic_buyer, decision_criteria, competition), and STAR (situation, task, action, result). YOU do the mapping from the user's natural language. They should never hear these framework terms unless they bring them up.",
+        "Save a deal story with triple mapping: value messaging (before_state, negative_consequences, required_capabilities, pbos), deal qualification (champion, economic_buyer, decision_criteria, competition), and STAR (situation, task, action, result). YOU do the mapping from the user's natural language. They should never hear these framework terms unless they bring them up.",
       parameters: z.object({
         company: z.string().describe("Account/company name"),
         deal_size: z.string().optional().describe("Approximate ACV or total deal value"),
         timeline: z.string().optional().describe("Time from first touch to close"),
         origin: z.string().optional().describe("How it started: cold outreach, inbound, referral, etc."),
-        // CotM mapping
-        before_state: z.string().describe("Customer's specific situation/pain before (CotM)"),
-        negative_consequences: z.string().optional().describe("What would have happened if they didn't act (CotM)"),
-        required_capabilities: z.string().optional().describe("What the solution needed to do (CotM)"),
-        pbos: z.string().optional().describe("Quantified positive business outcomes achieved (CotM)"),
+        // Value messaging mapping
+        before_state: z.string().describe("Customer's specific situation or pain before the solution"),
+        negative_consequences: z.string().optional().describe("What would have happened if they didn't act"),
+        required_capabilities: z.string().optional().describe("What the solution needed to do"),
+        pbos: z.string().optional().describe("Quantified positive business outcomes achieved"),
         how_won: z.string().optional().describe("Key move or moment that won the deal"),
-        // MEDDPICC elements
-        champion: z.string().optional().describe("Who sold internally (MEDDPICC C)"),
-        economic_buyer: z.string().optional().describe("Who signed the check (MEDDPICC E)"),
-        competition: z.string().optional().describe("Alternatives in the deal (MEDDPICC C)"),
-        decision_criteria: z.string().optional().describe("What they evaluated on (MEDDPICC D)"),
-        decision_process: z.string().optional().describe("How they made the decision (MEDDPICC D)"),
-        metrics: z.string().optional().describe("Key metrics that drove urgency (MEDDPICC M)"),
+        // Deal qualification elements
+        champion: z.string().optional().describe("Who sold internally for you"),
+        economic_buyer: z.string().optional().describe("Who signed the check"),
+        competition: z.string().optional().describe("Alternatives evaluated in the deal"),
+        decision_criteria: z.string().optional().describe("What they evaluated on"),
+        decision_process: z.string().optional().describe("How they made the decision"),
+        metrics: z.string().optional().describe("Key metrics that drove urgency"),
         // STAR mapping (for interview tools)
         star_situation: z.string().optional().describe("STAR: Context/background"),
         star_task: z.string().optional().describe("STAR: What you needed to accomplish"),
@@ -237,13 +237,13 @@ export function createOnboardingTools(userId: string) {
             useWhen: story.use_when,
             verticals: story.verticals,
             sellCycle: story.sell_cycle,
-            // CotM mapping
+            // Value messaging mapping
             beforeState: story.before_state,
             negativeConsequences: story.negative_consequences,
             requiredCapabilities: story.required_capabilities,
             pbos: story.pbos,
             howWon: story.how_won,
-            // MEDDPICC mapping
+            // Deal qualification mapping
             champion: story.champion,
             economicBuyer: story.economic_buyer,
             competition: story.competition,
@@ -257,14 +257,14 @@ export function createOnboardingTools(userId: string) {
               action: story.star_action || story.how_won,
               result: story.star_result || story.pbos,
             },
-            // CotM convenience mapping
+            // Value messaging convenience mapping
             cotmMapping: {
               beforeState: story.before_state,
               negConsequences: story.negative_consequences,
               reqCapabilities: story.required_capabilities,
               pbos: story.pbos,
             },
-            // MEDDPICC convenience mapping
+            // Deal qualification convenience mapping
             meddpiccMapping: {
               metrics: story.metrics,
               econ_buyer: story.economic_buyer,
@@ -303,14 +303,14 @@ export function createOnboardingTools(userId: string) {
             story.timeline ? `Timeline: ${story.timeline}` : "",
             story.origin ? `Origin: ${story.origin}` : "",
             "",
-            "## CotM Mapping",
+            "## Value Messaging",
             `Before State: ${story.before_state}`,
             story.negative_consequences ? `Negative Consequences: ${story.negative_consequences}` : "",
             story.required_capabilities ? `Required Capabilities: ${story.required_capabilities}` : "",
-            story.pbos ? `PBOs: ${story.pbos}` : "",
+            story.pbos ? `Business Outcomes: ${story.pbos}` : "",
             story.how_won ? `How Won: ${story.how_won}` : "",
             "",
-            "## MEDDPICC",
+            "## Deal Qualification",
             story.champion ? `Champion: ${story.champion}` : "",
             story.economic_buyer ? `Economic Buyer: ${story.economic_buyer}` : "",
             story.competition ? `Competition: ${story.competition}` : "",

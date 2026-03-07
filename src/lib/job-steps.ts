@@ -34,8 +34,8 @@ const STEP_TEMPLATES: Record<ToolName, Omit<JobStep, "status" | "startedAt" | "c
     { id: "generating_pov_deck", label: "Generating POV Deck", description: "Building your 5-slide business case deck." },
     { id: "generating_handwritten", label: "Creating handwritten cards", description: "Generating handwritten notebook card with Side A and Side B reference." },
     { id: "generating_call_docs", label: "Generating call prep docs", description: "Building call playbook and arsenal tailored to your interview type." },
-    { id: "building_competitive_playbook", label: "Building competitive playbook", description: "Creating interactive competitive playbook with CotM positioning cards and talk tracks." },
-    { id: "generating_gamma_deck", label: "Generating presentation deck", description: "Creating a polished Gamma presentation with CotM narrative arc." },
+    { id: "building_competitive_playbook", label: "Building competitive playbook", description: "Creating interactive competitive playbook with value-based positioning cards and talk tracks." },
+    { id: "generating_gamma_deck", label: "Generating presentation deck", description: "Creating a polished Gamma presentation with a value-driven narrative arc." },
     { id: "delivery", label: "Delivering to your inbox", description: "Sending your complete prep package via email." },
   ],
   prospect_prep: [
@@ -46,9 +46,9 @@ const STEP_TEMPLATES: Record<ToolName, Omit<JobStep, "status" | "startedAt" | "c
     { id: "generating_pov_deck", label: "Generating POV Deck", description: "Building your 5-slide business case deck." },
     { id: "generating_handwritten", label: "Creating handwritten cards", description: "Generating handwritten notebook card with Side A and Side B reference." },
     { id: "generating_call_docs", label: "Generating call prep docs", description: "Building call playbook and arsenal tailored to your meeting stage." },
-    { id: "building_competitive_playbook", label: "Building competitive playbook", description: "Creating interactive competitive playbook with CotM positioning cards and talk tracks." },
-    { id: "building_stakeholder_map", label: "Building stakeholder map", description: "Creating interactive stakeholder map with MEDDPICC roles and action items." },
-    { id: "generating_gamma_deck", label: "Generating presentation deck", description: "Creating a polished Gamma presentation with CotM narrative arc." },
+    { id: "building_competitive_playbook", label: "Building competitive playbook", description: "Creating interactive competitive playbook with value-based positioning cards and talk tracks." },
+    { id: "building_stakeholder_map", label: "Building stakeholder map", description: "Creating interactive stakeholder map with deal qualification roles and action items." },
+    { id: "generating_gamma_deck", label: "Generating presentation deck", description: "Creating a polished Gamma presentation with a value-driven narrative arc." },
     { id: "delivery", label: "Delivering to your inbox", description: "Sending your complete prep package via email." },
   ],
   deal_audit: [
@@ -57,7 +57,7 @@ const STEP_TEMPLATES: Record<ToolName, Omit<JobStep, "status" | "startedAt" | "c
     { id: "company_deep_dive", label: "Deep diving deal context", description: "Prospect's financial health, budget cycles, stakeholder dynamics, and decision process." },
     { id: "generating_brief", label: "Building Deal Audit Report", description: "Compiling qualification scorecard, risk assessment, strategy brief, discovery questions, and deal health summary into one comprehensive document." },
     { id: "generating_handwritten", label: "Creating handwritten cards", description: "Generating handwritten notebook card with deal health scorecard." },
-    { id: "building_stakeholder_map", label: "Building stakeholder map", description: "Creating interactive stakeholder map with MEDDPICC roles and action items." },
+    { id: "building_stakeholder_map", label: "Building stakeholder map", description: "Creating interactive stakeholder map with deal qualification roles and action items." },
     { id: "delivery", label: "Delivering to your inbox", description: "Sending your complete audit package via email." },
   ],
   interview_outreach: [
@@ -67,8 +67,8 @@ const STEP_TEMPLATES: Record<ToolName, Omit<JobStep, "status" | "startedAt" | "c
     { id: "generating_resume", label: "Building ATS Resume", description: "Generating an ATS-optimized resume tailored to the target role and company." },
     { id: "generating_pov_deck", label: "Generating POV Deck", description: "Building your 5-slide business case deck." },
     { id: "generating_handwritten", label: "Creating handwritten cards", description: "Generating handwritten notebook card with Side A and Side B reference." },
-    { id: "building_competitive_playbook", label: "Building competitive playbook", description: "Creating interactive competitive playbook with CotM positioning cards and talk tracks." },
-    { id: "generating_gamma_deck", label: "Generating presentation deck", description: "Creating a polished Gamma presentation with CotM narrative arc." },
+    { id: "building_competitive_playbook", label: "Building competitive playbook", description: "Creating interactive competitive playbook with value-based positioning cards and talk tracks." },
+    { id: "generating_gamma_deck", label: "Generating presentation deck", description: "Creating a polished Gamma presentation with a value-driven narrative arc." },
     { id: "delivery", label: "Delivering to your inbox", description: "Sending your complete outreach package via email." },
   ],
   prospect_outreach: [
@@ -77,8 +77,8 @@ const STEP_TEMPLATES: Record<ToolName, Omit<JobStep, "status" | "startedAt" | "c
     { id: "generating_brief", label: "Building Research Brief", description: "Compiling account intel, prospect profile, pain mapping, story selection, and outreach sequence into one comprehensive document." },
     { id: "generating_pov_deck", label: "Generating POV Deck", description: "Building your 5-slide business case deck." },
     { id: "generating_handwritten", label: "Creating handwritten cards", description: "Generating handwritten notebook card with Side A and Side B reference." },
-    { id: "building_competitive_playbook", label: "Building competitive playbook", description: "Creating interactive competitive playbook with CotM positioning cards and talk tracks." },
-    { id: "generating_gamma_deck", label: "Generating presentation deck", description: "Creating a polished Gamma presentation with CotM narrative arc." },
+    { id: "building_competitive_playbook", label: "Building competitive playbook", description: "Creating interactive competitive playbook with value-based positioning cards and talk tracks." },
+    { id: "generating_gamma_deck", label: "Generating presentation deck", description: "Creating a polished Gamma presentation with a value-driven narrative arc." },
     { id: "delivery", label: "Delivering to your inbox", description: "Sending your complete outreach package via email." },
   ],
   champion_builder: [
@@ -86,15 +86,15 @@ const STEP_TEMPLATES: Record<ToolName, Omit<JobStep, "status" | "startedAt" | "c
     { id: "company_deep_dive", label: "Mapping internal dynamics", description: "Org politics, decision process, stakeholder influence, and internal objections." },
     { id: "generating_brief", label: "Building Champion Strategy Brief", description: "Compiling champion profile, stakeholder map, development plan, internal selling kit, and coaching notes into one comprehensive document." },
     { id: "generating_handwritten", label: "Creating handwritten cards", description: "Generating handwritten notebook card with champion coaching reference." },
-    { id: "building_competitive_playbook", label: "Building competitive playbook", description: "Creating interactive competitive playbook with CotM positioning cards and talk tracks." },
-    { id: "building_stakeholder_map", label: "Building stakeholder map", description: "Creating interactive stakeholder map with MEDDPICC roles and action items." },
+    { id: "building_competitive_playbook", label: "Building competitive playbook", description: "Creating interactive competitive playbook with value-based positioning cards and talk tracks." },
+    { id: "building_stakeholder_map", label: "Building stakeholder map", description: "Creating interactive stakeholder map with deal qualification roles and action items." },
     { id: "delivery", label: "Delivering to your inbox", description: "Sending your complete champion toolkit via email." },
   ],
   practice_mode: [
     { id: "generating_persona", label: "Building AI buyer persona", description: "Generating a realistic buyer persona from your account research and meeting context." },
     { id: "initializing_avatar", label: "Initializing video avatar", description: "Starting the HeyGen Streaming Avatar session with your buyer persona." },
     { id: "live_session", label: "Live practice session", description: "Real-time roleplay conversation with your AI buyer persona." },
-    { id: "generating_scorecard", label: "Scoring your session", description: "Analyzing your conversation against CotM framework and generating actionable feedback." },
+    { id: "generating_scorecard", label: "Scoring your session", description: "Analyzing your conversation against our value selling framework and generating actionable feedback." },
   ],
 };
 
@@ -184,7 +184,7 @@ export function getExpectedAssets(toolName: ToolName): Omit<Asset, "url" | "size
     ],
     practice_mode: [
       { id: "session_transcript", label: "Session Transcript", format: "pdf", category: "research" },
-      { id: "cotm_scorecard", label: "CotM Scorecard", format: "pdf", category: "deliverable" },
+      { id: "cotm_scorecard", label: "Sales Scorecard", format: "pdf", category: "deliverable" },
     ],
   };
 

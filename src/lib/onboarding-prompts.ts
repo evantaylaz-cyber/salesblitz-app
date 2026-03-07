@@ -97,7 +97,7 @@ Start with value prop 1.`,
     description: "Your ideal customer profile and sales approach",
     prompt: `I need to document my selling style for a sales enablement tool. Ask me these questions one at a time:
 
-1. What sales methodology do you follow? (e.g., MEDDPICC, Challenger, SPIN, Sandler, Command of the Message, or a combination)
+1. What sales methodology do you follow? (e.g., MEDDPICC, Challenger, SPIN, Sandler, value messaging, or a combination)
 2. How would you describe your preferred communication tone? (e.g., direct and data-driven, consultative, relationship-first)
 3. What's your ideal customer profile? (company size, industry, role titles you sell to, deal size range)
 
@@ -172,7 +172,7 @@ For each:
 - Proof point (customer result, data, case study)
 
 **SALES METHODOLOGY:**
-- Which methodology do you follow? (MEDDPICC, Challenger, SPIN, Command of the Message, etc.)
+- Which methodology do you follow? (MEDDPICC, Challenger, SPIN, value messaging, etc.)
 - Preferred communication tone (direct, consultative, etc.)
 
 ---

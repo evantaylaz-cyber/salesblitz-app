@@ -107,11 +107,11 @@ export const TOOLS: ToolDefinition[] = [
   {
     id: "practice_mode",
     name: "AI Practice Mode",
-    description: "Real-time roleplay against an AI buyer persona rendered as a video avatar, built from account research. CotM scoring after each session.",
+    description: "Real-time roleplay against an AI buyer persona rendered as a video avatar, built from account research. Performance scoring after each session.",
     deliverables: [
       "Live video avatar roleplay session (HeyGen Streaming Avatar)",
       "AI buyer persona generated from account research",
-      "Post-session CotM scorecard with actionable feedback",
+      "Post-session sales scorecard with actionable feedback",
       "Full conversation transcript",
     ],
     minimumTier: "pro",

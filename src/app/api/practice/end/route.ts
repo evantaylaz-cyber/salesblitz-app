@@ -7,7 +7,7 @@ import Anthropic from "@anthropic-ai/sdk";
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 // POST /api/practice/end
-// Ends a session, scores the transcript against CotM, saves results
+// Ends a session, scores the transcript against value selling framework, saves results
 export async function POST(req: NextRequest) {
   try {
     const clerkUser = await currentUser();

@@ -81,8 +81,8 @@ Generate a JSON object with this EXACT structure (no markdown, no code blocks, j
   "objections": ["<objection 1>", "<objection 2>", "<objection 3>", "<objection 4>"],
   "communication_style": "<1-2 sentence description of how they communicate>",
   "knowledge": {},
-  "cotm_triggers": {
-    "before_state": "<specific description of their current situation and pain>",
+  "discovery_triggers": {
+    "current_situation": "<specific description of their current situation and pain>",
     "pain_points": ["<pain 1>", "<pain 2>", "<pain 3>"],
     "decision_criteria": ["<criterion 1>", "<criterion 2>", "<criterion 3>"],
     "competitors_they_know": ["<competitor 1>", "<competitor 2>"]

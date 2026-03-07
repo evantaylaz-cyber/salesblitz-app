@@ -78,8 +78,8 @@ export function buildPersonaSystemPrompt(persona: {
   objections: string[];
   communication_style: string;
   knowledge: Record<string, unknown>;
-  cotm_triggers: {
-    before_state: string;
+  discovery_triggers: {
+    current_situation: string;
     pain_points: string[];
     decision_criteria: string[];
     competitors_they_know: string[];
@@ -94,16 +94,16 @@ YOUR PRIORITIES (what you care about):
 ${persona.priorities.map((p) => `- ${p}`).join("\n")}
 
 YOUR CURRENT SITUATION:
-${persona.cotm_triggers.before_state}
+${persona.discovery_triggers.current_situation}
 
 YOUR PAIN POINTS (you may or may not reveal these easily):
-${persona.cotm_triggers.pain_points.map((p) => `- ${p}`).join("\n")}
+${persona.discovery_triggers.pain_points.map((p) => `- ${p}`).join("\n")}
 
 YOUR DECISION CRITERIA (what a solution must have):
-${persona.cotm_triggers.decision_criteria.map((d) => `- ${d}`).join("\n")}
+${persona.discovery_triggers.decision_criteria.map((d) => `- ${d}`).join("\n")}
 
 COMPETITORS YOU KNOW ABOUT:
-${persona.cotm_triggers.competitors_they_know.map((c) => `- ${c}`).join("\n")}
+${persona.discovery_triggers.competitors_they_know.map((c) => `- ${c}`).join("\n")}
 
 YOUR OBJECTIONS (use these naturally, not all at once):
 ${persona.objections.map((o) => `- "${o}"`).join("\n")}
@@ -122,7 +122,7 @@ BEHAVIOR RULES:
 }
 
 /**
- * Build the CotM scoring prompt for post-session evaluation.
+ * Build the sales scoring prompt for post-session evaluation.
  */
 export function buildScoringPrompt(
   transcript: Array<{ role: string; text: string }>,
@@ -132,7 +132,7 @@ export function buildScoringPrompt(
     .map((t) => `[${t.role === "user" ? "REP" : persona.name.toUpperCase()}]: ${t.text}`)
     .join("\n\n");
 
-  return `You are a sales coaching expert trained in Command of the Message (CotM) and MEDDPICC. Evaluate this practice sales conversation.
+  return `You are a sales coaching expert specializing in value-based selling methodology. Evaluate this practice sales conversation.
 
 THE SCENARIO:
 The rep was practicing a sales call with ${persona.name}, ${persona.title} at ${persona.company}.
@@ -140,13 +140,13 @@ The rep was practicing a sales call with ${persona.name}, ${persona.title} at ${
 TRANSCRIPT:
 ${formattedTranscript}
 
-EVALUATE against the CotM framework. Score each dimension 1-5 (1 = missed entirely, 3 = attempted but incomplete, 5 = executed with excellence):
+EVALUATE against these core value selling dimensions. Score each 1-5 (1 = missed entirely, 3 = attempted but incomplete, 5 = executed with excellence):
 
-1. BEFORE STATE: Did the rep establish the buyer's current situation with specifics? Did they ask questions to uncover it rather than assume?
-2. NEGATIVE CONSEQUENCES: Did the rep help the buyer see the cost of inaction? Was urgency created naturally through the conversation?
+1. CURRENT CHALLENGES: Did the rep establish the buyer's current situation with specifics? Did they ask questions to uncover it rather than assume?
+2. COST OF INACTION: Did the rep help the buyer see the cost of doing nothing? Was urgency created naturally through the conversation?
 3. REQUIRED CAPABILITIES: Did the rep map capabilities to the buyer's specific needs (not just list features)?
-4. POSITIVE BUSINESS OUTCOMES: Did the rep tie to quantified business outcomes the buyer cares about?
-5. HOW WE DO IT: Did the rep provide differentiated proof? Did they earn the right to pitch before doing so?
+4. BUSINESS OUTCOMES: Did the rep tie to quantified business outcomes the buyer cares about?
+5. SOLUTION APPROACH: Did the rep provide differentiated proof? Did they earn the right to pitch before doing so?
 
 ALSO EVALUATE:
 6. DISCOVERY QUALITY: Open vs closed questions. Depth of follow-up. Did they build on the buyer's answers?

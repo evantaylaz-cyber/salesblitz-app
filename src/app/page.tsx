@@ -183,14 +183,35 @@ export default async function LandingPage() {
                 hook: "Rehearse before the real thing.",
                 description: "Live video roleplay against an AI buyer persona built from your actual account research.",
               },
-            ].map((tool) => (
+              {
+                name: "Territory Blitz",
+                hook: "Map your entire territory.",
+                comingSoon: true,
+                description: "Automated account prioritization, trigger monitoring, and outreach sequencing across your full book.",
+              },
+              {
+                name: "Win/Loss Analyst",
+                hook: "Learn from every outcome.",
+                comingSoon: true,
+                description: "Post-deal analysis with pattern recognition, coaching insights, and story bank extraction.",
+              },
+            ].map((tool: { name: string; hook: string; description: string; comingSoon?: boolean }) => (
               <div
                 key={tool.name}
-                className="rounded-xl border border-gray-200 bg-white p-6 transition hover:border-indigo-200 hover:shadow-sm"
+                className={`relative rounded-xl border p-6 transition ${
+                  tool.comingSoon
+                    ? "border-gray-100 bg-gray-50"
+                    : "border-gray-200 bg-white hover:border-indigo-200 hover:shadow-sm"
+                }`}
               >
-                <h3 className="font-semibold text-gray-900">{tool.name}</h3>
-                <p className="mt-2 text-sm text-gray-500">
-                  <span className="font-medium text-gray-700">{tool.hook}</span>{" "}
+                {tool.comingSoon && (
+                  <span className="absolute top-3 right-3 rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-indigo-600">
+                    Coming Soon
+                  </span>
+                )}
+                <h3 className={`font-semibold ${tool.comingSoon ? "text-gray-500" : "text-gray-900"}`}>{tool.name}</h3>
+                <p className={`mt-2 text-sm ${tool.comingSoon ? "text-gray-400" : "text-gray-500"}`}>
+                  <span className={`font-medium ${tool.comingSoon ? "text-gray-500" : "text-gray-700"}`}>{tool.hook}</span>{" "}
                   {tool.description}
                 </p>
               </div>
@@ -216,7 +237,7 @@ export default async function LandingPage() {
                 Name a target company. We generate a buyer persona from real
                 research, your profile & your blitz run data. Then you practice a
                 live conversation against a video avatar who pushes back, asks
-                tough questions & scores you on Command of the Message.
+                tough questions & scores you across 8 sales performance dimensions.
               </p>
               <div className="mt-8 space-y-4">
                 {[
@@ -230,7 +251,7 @@ export default async function LandingPage() {
                   },
                   {
                     icon: <BarChart3 className="h-4 w-4 text-indigo-400" />,
-                    text: "Scored on 8 CotM dimensions with coaching feedback after every session",
+                    text: "Scored on 8 value selling dimensions with coaching feedback after every session",
                   },
                 ].map((item, i) => (
                   <div key={i} className="flex items-start gap-3">
@@ -257,11 +278,25 @@ export default async function LandingPage() {
 
                 {/* Avatar area */}
                 <div className="relative mx-2 aspect-video rounded-lg bg-gradient-to-br from-gray-700 to-gray-800 overflow-hidden">
-                  {/* Avatar silhouette */}
+                  {/* Avatar photo */}
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="relative">
-                      <div className="h-24 w-24 rounded-full bg-gradient-to-br from-indigo-500/30 to-purple-500/30 flex items-center justify-center">
-                        <div className="h-16 w-16 rounded-full bg-gradient-to-br from-indigo-400/40 to-purple-400/40" />
+                      <div className="h-28 w-28 rounded-full overflow-hidden ring-2 ring-indigo-500/40 ring-offset-2 ring-offset-gray-800">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src="/avatar-practice.png"
+                          alt="AI Buyer Persona"
+                          className="h-full w-full object-cover"
+                          onError={(e) => {
+                            const target = e.currentTarget;
+                            target.style.display = "none";
+                            const fallback = target.nextElementSibling as HTMLElement;
+                            if (fallback) fallback.style.display = "flex";
+                          }}
+                        />
+                        <div className="h-full w-full bg-gradient-to-br from-indigo-500/30 to-purple-500/30 items-center justify-center hidden">
+                          <svg className="h-16 w-16 text-indigo-300/50" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                        </div>
                       </div>
                       {/* Speaking indicator */}
                       <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 flex items-center gap-1 rounded-full bg-black/60 px-2 py-0.5">
@@ -308,7 +343,7 @@ export default async function LandingPage() {
               <div className="absolute -bottom-4 -right-4 rounded-xl border border-gray-700 bg-gray-800 p-3 shadow-xl lg:-right-8">
                 <div className="flex items-center gap-2 mb-2">
                   <BarChart3 className="h-3.5 w-3.5 text-indigo-400" />
-                  <span className="text-[10px] font-semibold text-gray-300">CotM Score</span>
+                  <span className="text-[10px] font-semibold text-gray-300">Session Score</span>
                 </div>
                 <div className="space-y-1.5">
                   {[

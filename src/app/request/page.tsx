@@ -342,7 +342,7 @@ export default function RequestPage() {
                     >
                       <div className="font-medium text-sm text-gray-900">Discovery</div>
                       <div className="mt-1 text-xs text-gray-500">
-                        First call. 80% listening, qualify MEDDPICC, map pain.
+                        First call. 80% listening, qualify the deal, map pain.
                       </div>
                     </button>
                     <button
@@ -370,7 +370,7 @@ export default function RequestPage() {
                     >
                       <div className="font-medium text-sm text-gray-900">Pitch / Demo</div>
                       <div className="mt-1 text-xs text-gray-500">
-                        Present your solution. CotM narrative, handle objections.
+                        Present your solution. Value narrative, handle objections.
                       </div>
                     </button>
                     <button

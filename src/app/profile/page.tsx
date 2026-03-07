@@ -718,8 +718,8 @@ export default function ProfilePage() {
                 >
                   <option value="MEDDPICC">MEDDPICC</option>
                   <option value="MEDDIC">MEDDIC</option>
-                  <option value="Command of the Message">Command of the Message</option>
-                  <option value="MEDDPICC + CotM">MEDDPICC + CotM</option>
+                  <option value="Value Messaging">Value Messaging</option>
+                  <option value="MEDDPICC + Value Messaging">MEDDPICC + Value Messaging</option>
                   <option value="Challenger Sale">Challenger Sale</option>
                   <option value="SPIN Selling">SPIN Selling</option>
                   <option value="Sandler">Sandler</option>

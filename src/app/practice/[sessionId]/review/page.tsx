@@ -52,11 +52,11 @@ interface SessionData {
 }
 
 const SCORE_LABELS: Record<keyof ScoreBreakdown, string> = {
-  before_state: "Before State",
-  negative_consequences: "Negative Consequences",
+  before_state: "Current Challenges",
+  negative_consequences: "Cost of Inaction",
   required_capabilities: "Required Capabilities",
-  positive_business_outcomes: "Positive Business Outcomes",
-  how_we_do_it: "How We Do It",
+  positive_business_outcomes: "Business Outcomes",
+  how_we_do_it: "Solution Approach",
   discovery_quality: "Discovery Quality",
   objection_handling: "Objection Handling",
   conversation_flow: "Conversation Flow",
@@ -167,7 +167,7 @@ export default function PracticeReviewPage() {
           <div className="rounded-2xl border bg-white p-6 shadow-sm">
             <div className="flex items-center gap-3 mb-6">
               <BarChart3 className="h-5 w-5 text-indigo-600" />
-              <h3 className="text-lg font-bold text-gray-900">CotM Scorecard</h3>
+              <h3 className="text-lg font-bold text-gray-900">Sales Scorecard</h3>
               <span className="ml-auto text-3xl font-bold text-gray-900">
                 {session.cotmScore.overall}/5
               </span>

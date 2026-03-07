@@ -150,7 +150,7 @@ export default function PlaybooksPage() {
             Competitive Playbooks
           </h2>
           <p className="text-gray-600 mt-1">
-            Interactive competitive positioning cards with CotM talk tracks, land
+            Interactive competitive positioning cards with value-based talk tracks, land
             mines, and multi-threading plays. Built automatically from your
             research runs.
           </p>

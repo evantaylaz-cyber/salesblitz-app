@@ -97,7 +97,7 @@ export default function PracticeHistoryPage() {
             <p className="mt-1 text-3xl font-bold text-gray-900">{sessions.length}</p>
           </div>
           <div className="rounded-xl border bg-white p-5 shadow-sm">
-            <p className="text-sm text-gray-500">Average CotM Score</p>
+            <p className="text-sm text-gray-500">Average Score</p>
             <p className="mt-1 text-3xl font-bold text-gray-900">
               {avgScore > 0 ? avgScore.toFixed(1) : "--"}/5
             </p>
