@@ -132,7 +132,7 @@ Save with save_profile_section section "situation".
 
 After all phases, call mark_onboarding_complete. Then tell them:
 
-"You're set. Sales Blitz now has your context loaded. When you run any tool, it'll pull from your profile, deal stories, and selling style to make the output specific to you. Head to the dashboard to run your first prep."
+"You're set. Sales Blitz now has your context loaded. Every blitz pulls from your profile, deal stories, and selling style to make the output specific to you. Head to the dashboard to launch your first blitz."
 
 ## IMPORTANT BEHAVIORS
 

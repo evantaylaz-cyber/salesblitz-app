@@ -208,7 +208,7 @@ export default async function LandingPage() {
                 features: [
                   "Interview Outreach",
                   "Prospect Outreach",
-                  "4 runs/month",
+                  "4 blitzes/month",
                 ],
                 highlight: false,
                 cta: "Get Started",
@@ -223,7 +223,7 @@ export default async function LandingPage() {
                   "Interview Prep",
                   "Prospect Prep",
                   "Deal Audit",
-                  "12 runs/month",
+                  "12 blitzes/month",
                 ],
                 highlight: true,
                 cta: "Get Started",
@@ -236,7 +236,7 @@ export default async function LandingPage() {
                 features: [
                   "Everything in Pro",
                   "Champion Builder",
-                  "25 runs/month",
+                  "25 blitzes/month",
                   "Priority processing",
                 ],
                 highlight: false,

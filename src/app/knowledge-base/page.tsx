@@ -475,7 +475,7 @@ export default function KnowledgeBasePage() {
                       <VoiceTextarea
                         value={formContent}
                         onChange={setFormContent}
-                        placeholder="Paste your document content here. This will be injected into your run prompts for personalized, accurate deliverables."
+                        placeholder="Paste your document content here. This gets injected into every blitz for personalized, accurate deliverables."
                         rows={16}
                       />
                       <p className="mt-1 text-xs text-gray-400">

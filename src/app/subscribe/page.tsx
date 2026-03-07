@@ -165,7 +165,7 @@ export default function SubscribePage() {
                   )}
                 </div>
                 <p className="mt-2 text-sm text-gray-500">
-                  {tier.runs} tool runs/month · ${tier.overage}/overage run
+                  {tier.runs} blitzes/month · ${tier.overage}/extra blitz
                 </p>
 
                 <button
@@ -240,9 +240,9 @@ export default function SubscribePage() {
 
         {/* Run Packs */}
         <div id="packs" className="mt-12">
-          <h2 className="mb-6 text-xl font-bold text-gray-900">Run Packs</h2>
+          <h2 className="mb-6 text-xl font-bold text-gray-900">Blitz Packs</h2>
           <p className="mb-6 text-gray-500">
-            Need more runs? Add packs to any plan. Runs are valid for 90 days from purchase.
+            Need more blitzes? Add packs to any plan. Valid for 90 days from purchase.
           </p>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             {PACKS.map((pack) => {
@@ -254,10 +254,10 @@ export default function SubscribePage() {
                     ${pack.price}
                     <span className="text-sm font-normal text-gray-400">
                       {" "}
-                      · ${pack.perRun}/run
+                      · ${pack.perRun}/blitz
                     </span>
                   </p>
-                  <p className="mt-1 text-sm text-gray-500">{pack.runs} runs · 90-day expiration</p>
+                  <p className="mt-1 text-sm text-gray-500">{pack.runs} blitzes · 90-day expiration</p>
                   <button
                     onClick={() => handleCheckout(pack.key)}
                     disabled={isLoading}

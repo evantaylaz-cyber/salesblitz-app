@@ -128,6 +128,23 @@ const TOOLS: Tool[] = [
     description: "Stakeholder maps, internal selling kits, and competitive ammo.",
     minimumTier: "closer",
   },
+  // Row 4: Coming Soon — Closer tier teasers
+  {
+    id: "territory_blitz",
+    name: "Territory Blitz",
+    hook: "Map your entire territory.",
+    description: "Upload a target list, get research & outreach for every account in one blitz.",
+    minimumTier: "closer",
+    comingSoon: true,
+  },
+  {
+    id: "win_loss_analyst",
+    name: "Win/Loss Analyst",
+    hook: "Learn from every deal.",
+    description: "Upload closed deal transcripts. Get pattern analysis, methodology gaps, and coaching recs.",
+    minimumTier: "closer",
+    comingSoon: true,
+  },
 ];
 
 export default function DashboardPage() {
@@ -382,7 +399,7 @@ export default function DashboardPage() {
           {/* Pack Runs */}
           <div className="rounded-xl border bg-white p-5 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-500">Run Packs</span>
+              <span className="text-sm font-medium text-gray-500">Blitz Packs</span>
               <Package className="h-4 w-4 text-emerald-500" />
             </div>
             <p className="mt-2 text-2xl font-bold text-gray-900">
@@ -431,7 +448,7 @@ export default function DashboardPage() {
               <div>
                 <h3 className="font-semibold text-gray-900">Complete your profile</h3>
                 <p className="text-sm text-gray-500">
-                  Personalize your AI so every run matches your selling style.
+                  Personalize your AI so every blitz matches your selling style.
                 </p>
               </div>
             </div>
@@ -462,7 +479,7 @@ export default function DashboardPage() {
                   <Eye className="h-5 w-5 text-gray-600" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">See a sample run</h3>
+                  <h3 className="font-semibold text-gray-900">See a sample blitz</h3>
                   <p className="text-sm text-gray-500">
                     Preview a completed package before you buy.
                   </p>
@@ -522,10 +539,10 @@ export default function DashboardPage() {
                       className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                       {totalAvailableRuns() === 0 ? (
-                        "No Runs Remaining"
+                        "No Blitzes Remaining"
                       ) : (
                         <>
-                          <Zap className="h-4 w-4" /> New Run
+                          <Zap className="h-4 w-4" /> New Blitz
                         </>
                       )}
                     </button>
@@ -547,7 +564,7 @@ export default function DashboardPage() {
         {/* Recent Runs */}
         {userData?.runLogs && userData.runLogs.length > 0 && (
           <div className="mt-10">
-            <h2 className="mb-4 text-lg font-semibold text-gray-900">Recent Runs</h2>
+            <h2 className="mb-4 text-lg font-semibold text-gray-900">Recent Blitzes</h2>
             <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
               <table className="w-full text-sm">
                 <thead className="bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">

@@ -230,9 +230,9 @@ export default function AnalyticsPage() {
         <div className="mb-8 grid gap-6 lg:grid-cols-2">
           {/* Runs by Tool */}
           <div className="rounded-xl border bg-white p-6 shadow-sm">
-            <h2 className="mb-4 text-lg font-semibold text-gray-900">Runs by Tool</h2>
+            <h2 className="mb-4 text-lg font-semibold text-gray-900">Blitzes by Tool</h2>
             {data.runsByTool.length === 0 ? (
-              <p className="text-sm text-gray-400">No runs yet</p>
+              <p className="text-sm text-gray-400">No blitzes yet</p>
             ) : (
               <div className="space-y-3">
                 {data.runsByTool.map((t) => (
@@ -272,7 +272,7 @@ export default function AnalyticsPage() {
                       </span>
                       <span className="text-sm font-medium text-gray-700">{c.company}</span>
                     </div>
-                    <span className="text-sm text-gray-500">{c.count} run{c.count !== 1 ? "s" : ""}</span>
+                    <span className="text-sm text-gray-500">{c.count} blitz{c.count !== 1 ? "es" : ""}</span>
                   </div>
                 ))}
               </div>
@@ -326,7 +326,7 @@ export default function AnalyticsPage() {
           </div>
           {data.recentRequests.length === 0 ? (
             <div className="p-6 text-center text-sm text-gray-400">
-              No runs in the last {range} days
+              No blitzes in the last {range} days
             </div>
           ) : (
             <div className="divide-y">

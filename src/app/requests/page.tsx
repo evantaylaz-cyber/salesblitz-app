@@ -173,7 +173,7 @@ export default function RequestsPage() {
               href="/dashboard"
               className="mt-4 inline-block text-sm font-medium text-indigo-600 hover:text-indigo-800"
             >
-              Run a tool from the dashboard
+              Start a blitz from the dashboard
             </a>
           </div>
         ) : (

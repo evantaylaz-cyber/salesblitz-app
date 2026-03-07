@@ -105,7 +105,7 @@ export async function consumeRun(
 
   return {
     success: false,
-    error: "No runs remaining. Purchase a run pack or upgrade your plan.",
+    error: "No blitzes remaining. Purchase a blitz pack or upgrade your plan.",
   };
 }
 
@@ -211,7 +211,7 @@ async function consumeTeamRun(
 
   return {
     success: false,
-    error: "Team has no runs remaining. The team admin needs to upgrade or purchase a run pack.",
+    error: "Team has no blitzes remaining. The team admin needs to upgrade or purchase a blitz pack.",
   };
 }
 

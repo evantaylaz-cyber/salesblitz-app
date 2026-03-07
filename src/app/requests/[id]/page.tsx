@@ -284,7 +284,7 @@ export default function RequestDetailPage() {
             <div className="flex items-start gap-3">
               <Clock className="h-5 w-5 text-amber-500 mt-0.5" />
               <div className="flex-1">
-                <h3 className="font-semibold text-amber-800">This run appears stalled</h3>
+                <h3 className="font-semibold text-amber-800">This blitz appears stalled</h3>
                 <p className="mt-1 text-sm text-amber-700">
                   It&apos;s been queued longer than expected. You can retry it at no extra cost.
                 </p>

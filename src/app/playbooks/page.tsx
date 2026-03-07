@@ -194,7 +194,7 @@ export default function PlaybooksPage() {
             <p className="text-gray-500 text-sm max-w-md mx-auto">
               {searchQuery
                 ? "Try a different search term."
-                : "Playbooks are generated automatically when you run Interview Prep, Prospect Prep, or other research tools. Submit your first request to get started."}
+                : "Playbooks are generated automatically when you blitz Interview Prep, Prospect Prep, or other research tools. Submit your first request to get started."}
             </p>
             {!searchQuery && (
               <a
