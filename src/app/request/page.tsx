@@ -23,13 +23,14 @@ import {
 } from "lucide-react";
 import VoiceTextarea from "@/components/VoiceTextarea";
 
-const TOOL_INFO: Record<string, { name: string; category: "interview" | "prospect" | "deal" }> = {
+const TOOL_INFO: Record<string, { name: string; category: "interview" | "prospect" | "deal" | "practice" }> = {
   interview_outreach: { name: "Interview Outreach", category: "interview" },
   interview_prep: { name: "Interview Prep", category: "interview" },
   prospect_outreach: { name: "Prospect Outreach", category: "prospect" },
   prospect_prep: { name: "Prospect Prep", category: "prospect" },
   deal_audit: { name: "Deal Audit", category: "deal" },
   champion_builder: { name: "Champion Builder", category: "deal" },
+  practice_mode: { name: "AI Practice Mode", category: "practice" },
 };
 
 export default function RequestPage() {

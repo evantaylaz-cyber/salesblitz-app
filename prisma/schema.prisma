@@ -30,6 +30,7 @@ model User {
   batchJobs               BatchJob[]
   knowledgeDocs           KnowledgeDocument[]
   debriefs                RunDebrief[]
+  practiceSessions        PracticeSession[]
   userProfile             UserProfile?
 
   // Team relationships
@@ -250,6 +251,40 @@ model KnowledgeDocument {
   category  String   @default("custom") // product_docs | competitive_intel | deal_stories | icp_definitions | methodology | objection_handling | custom
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// AI Practice Mode — real-time roleplay against HeyGen streaming avatar.
+// Persona generated from account research, scored against CotM framework.
+model PracticeSession {
+  id                String   @id @default(uuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Target context
+  targetCompany     String   // Company the persona represents
+  targetRole        String?  // Persona's role/title
+  personaName       String?  // Generated persona name
+  personaConfig     Json?    // Full persona definition (personality, objections, priorities, style)
+
+  // Session data
+  heygenSessionId   String?  // HeyGen streaming session ID
+  avatarId          String?  // HeyGen avatar used
+  voiceId           String?  // HeyGen voice used
+  transcript        Json     @default("[]") // Array of { role: "user" | "persona", text, timestamp }
+  durationSeconds   Int?     // Total session length
+
+  // Scoring
+  cotmScore         Json?    // { overall, beforeState, negativeConsequences, requiredCapabilities, pbos, howWeDoIt }
+  feedback          String?  @db.Text // AI-generated coaching feedback
+  outcome           String?  // strong | developing | needs_work
+
+  // Status
+  status            String   @default("created") // created | active | completed | failed
+  errorMessage      String?  @db.Text
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  completedAt       DateTime?
 }
 
 // Post-run debrief — captures user feedback after a meeting/interview.

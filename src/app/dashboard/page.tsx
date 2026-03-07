@@ -72,6 +72,7 @@ const TOOL_NAMES: Record<string, string> = {
   prospect_prep: "Prospect Prep",
   deal_audit: "Deal Audit",
   champion_builder: "Champion Builder",
+  practice_mode: "AI Practice Mode",
 };
 
 const TOOLS: Tool[] = [
@@ -91,13 +92,13 @@ const TOOLS: Tool[] = [
     minimumTier: "pro",
   },
   {
-    id: "deal_audit",
-    name: "Deal Audit",
-    hook: "Stress-test your deal.",
-    description: "Qualification scorecard, risk flags, and a strategy to close the gaps.",
+    id: "practice_mode",
+    name: "AI Practice Mode",
+    hook: "Rehearse the conversation.",
+    description: "Live roleplay against an AI buyer persona built from real account research. CotM scoring after.",
     minimumTier: "pro",
   },
-  // Row 2: Prospect workflow + champion strategy
+  // Row 2: Prospect workflow + deal management
   {
     id: "prospect_outreach",
     name: "Prospect Outreach",
@@ -112,6 +113,14 @@ const TOOLS: Tool[] = [
     description: "Discovery plans, stakeholder maps, and competitive positioning for any meeting type.",
     minimumTier: "pro",
   },
+  {
+    id: "deal_audit",
+    name: "Deal Audit",
+    hook: "Stress-test your deal.",
+    description: "Qualification scorecard, risk flags, and a strategy to close the gaps.",
+    minimumTier: "closer",
+  },
+  // Row 3: Deal management
   {
     id: "champion_builder",
     name: "Champion Builder",

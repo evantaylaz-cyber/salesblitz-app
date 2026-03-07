@@ -15,7 +15,7 @@ const TIERS = [
     runs: 4,
     overage: 15,
     tools: ["Interview Outreach", "Prospect Outreach"],
-    lockedTools: ["Interview Prep", "Prospect Prep", "Deal Audit", "Champion Builder"],
+    lockedTools: ["Interview Prep", "Prospect Prep", "AI Practice Mode", "Deal Audit", "Champion Builder"],
     highlight: false,
   },
   {
@@ -26,8 +26,9 @@ const TIERS = [
     annualKey: "pro_annual",
     runs: 12,
     overage: 12,
-    tools: ["Interview Outreach", "Prospect Outreach", "Interview Prep", "Prospect Prep", "Deal Audit"],
-    lockedTools: ["Champion Builder"],
+    tools: ["Interview Outreach", "Prospect Outreach", "Interview Prep", "Prospect Prep"],
+    lockedTools: ["Deal Audit", "Champion Builder"],
+    extras: ["AI Practice Mode (3 sessions/mo)"],
     highlight: true,
   },
   {
@@ -47,7 +48,7 @@ const TIERS = [
       "Champion Builder",
     ],
     lockedTools: [],
-    extras: ["Priority processing", "Quarterly 30-min strategy call"],
+    extras: ["AI Practice Mode (10 sessions/mo)", "Priority processing", "Quarterly 30-min strategy call"],
     highlight: false,
   },
 ];

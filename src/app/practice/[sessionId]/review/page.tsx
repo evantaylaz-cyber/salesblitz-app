@@ -1,0 +1,272 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useUser } from "@clerk/nextjs";
+import { useParams, useRouter } from "next/navigation";
+import {
+  ArrowLeft,
+  Clock,
+  Target,
+  TrendingUp,
+  Star,
+  AlertTriangle,
+  ChevronRight,
+  Loader2,
+  MessageSquare,
+  BarChart3,
+} from "lucide-react";
+
+interface ScoreBreakdown {
+  before_state: number;
+  negative_consequences: number;
+  required_capabilities: number;
+  positive_business_outcomes: number;
+  how_we_do_it: number;
+  discovery_quality: number;
+  objection_handling: number;
+  conversation_flow: number;
+}
+
+interface SessionData {
+  id: string;
+  targetCompany: string;
+  targetRole: string;
+  personaName: string;
+  personaConfig: {
+    name: string;
+    title: string;
+    company: string;
+    personality: string;
+  };
+  transcript: Array<{ role: string; text: string; timestamp: string }>;
+  durationSeconds: number | null;
+  cotmScore: {
+    overall: number;
+    scores: ScoreBreakdown;
+    top_moment: string;
+    biggest_miss: string;
+  } | null;
+  feedback: string | null;
+  outcome: string | null;
+  createdAt: string;
+}
+
+const SCORE_LABELS: Record<keyof ScoreBreakdown, string> = {
+  before_state: "Before State",
+  negative_consequences: "Negative Consequences",
+  required_capabilities: "Required Capabilities",
+  positive_business_outcomes: "Positive Business Outcomes",
+  how_we_do_it: "How We Do It",
+  discovery_quality: "Discovery Quality",
+  objection_handling: "Objection Handling",
+  conversation_flow: "Conversation Flow",
+};
+
+export default function PracticeReviewPage() {
+  const { isLoaded } = useUser();
+  const params = useParams();
+  const router = useRouter();
+  const sessionId = params.sessionId as string;
+
+  const [session, setSession] = useState<SessionData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [showTranscript, setShowTranscript] = useState(false);
+
+  useEffect(() => {
+    if (isLoaded && sessionId) fetchSession();
+  }, [isLoaded, sessionId]);
+
+  async function fetchSession() {
+    try {
+      // Fetch from history and find this session
+      const res = await fetch("/api/practice/history?limit=50");
+      const data = await res.json();
+      const found = data.sessions?.find((s: SessionData) => s.id === sessionId);
+      if (found) setSession(found);
+    } catch {
+      // silent
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const outcomeColor = (outcome: string | null) => {
+    if (outcome === "strong") return "text-emerald-600 bg-emerald-50 border-emerald-200";
+    if (outcome === "developing") return "text-amber-600 bg-amber-50 border-amber-200";
+    return "text-red-600 bg-red-50 border-red-200";
+  };
+
+  const scoreColor = (score: number) => {
+    if (score >= 4) return "bg-emerald-500";
+    if (score >= 3) return "bg-amber-500";
+    return "bg-red-500";
+  };
+
+  if (!isLoaded || loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+      </div>
+    );
+  }
+
+  if (!session) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p className="text-gray-500">Session not found.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <header className="border-b bg-white">
+        <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-4">
+          <div className="flex items-center gap-3">
+            <button onClick={() => router.push("/practice")} className="text-gray-400 hover:text-gray-600">
+              <ArrowLeft className="h-5 w-5" />
+            </button>
+            <h1 className="text-xl font-bold text-gray-900">Session Review</h1>
+          </div>
+          <button
+            onClick={() => router.push("/practice")}
+            className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+          >
+            Practice Again
+          </button>
+        </div>
+      </header>
+
+      <main className="mx-auto max-w-4xl px-6 py-10 space-y-8">
+        {/* Session Header */}
+        <div className="flex items-start justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">{session.targetCompany}</h2>
+            <p className="mt-1 text-gray-500">
+              {session.personaName} &middot; {session.targetRole}
+            </p>
+            <div className="mt-2 flex items-center gap-4 text-sm text-gray-400">
+              {session.durationSeconds && (
+                <span className="flex items-center gap-1">
+                  <Clock className="h-3.5 w-3.5" />
+                  {Math.round(session.durationSeconds / 60)} minutes
+                </span>
+              )}
+              <span>{new Date(session.createdAt).toLocaleDateString()}</span>
+            </div>
+          </div>
+          {session.outcome && (
+            <span className={`rounded-full border px-3 py-1 text-sm font-semibold ${outcomeColor(session.outcome)}`}>
+              {session.outcome === "strong" ? "Strong" : session.outcome === "developing" ? "Developing" : "Needs Work"}
+            </span>
+          )}
+        </div>
+
+        {/* Overall Score */}
+        {session.cotmScore && (
+          <div className="rounded-2xl border bg-white p-6 shadow-sm">
+            <div className="flex items-center gap-3 mb-6">
+              <BarChart3 className="h-5 w-5 text-indigo-600" />
+              <h3 className="text-lg font-bold text-gray-900">CotM Scorecard</h3>
+              <span className="ml-auto text-3xl font-bold text-gray-900">
+                {session.cotmScore.overall}/5
+              </span>
+            </div>
+
+            <div className="space-y-3">
+              {Object.entries(session.cotmScore.scores || {}).map(([key, score]) => (
+                <div key={key} className="flex items-center gap-3">
+                  <span className="w-48 text-sm text-gray-600">
+                    {SCORE_LABELS[key as keyof ScoreBreakdown] || key}
+                  </span>
+                  <div className="flex-1 h-2 rounded-full bg-gray-100 overflow-hidden">
+                    <div
+                      className={`h-full rounded-full ${scoreColor(score as number)} transition-all`}
+                      style={{ width: `${((score as number) / 5) * 100}%` }}
+                    />
+                  </div>
+                  <span className="w-8 text-right text-sm font-medium text-gray-700">
+                    {score as number}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Highlights */}
+        {session.cotmScore && (
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {session.cotmScore.top_moment && (
+              <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-5">
+                <div className="flex items-center gap-2 mb-2">
+                  <Star className="h-4 w-4 text-emerald-600" />
+                  <span className="text-sm font-semibold text-emerald-700">Top Moment</span>
+                </div>
+                <p className="text-sm text-emerald-800">{session.cotmScore.top_moment}</p>
+              </div>
+            )}
+            {session.cotmScore.biggest_miss && (
+              <div className="rounded-xl border border-amber-200 bg-amber-50 p-5">
+                <div className="flex items-center gap-2 mb-2">
+                  <AlertTriangle className="h-4 w-4 text-amber-600" />
+                  <span className="text-sm font-semibold text-amber-700">Biggest Miss</span>
+                </div>
+                <p className="text-sm text-amber-800">{session.cotmScore.biggest_miss}</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Coaching Feedback */}
+        {session.feedback && (
+          <div className="rounded-2xl border bg-white p-6 shadow-sm">
+            <h3 className="text-lg font-bold text-gray-900 mb-3">Coaching Feedback</h3>
+            <div className="prose prose-sm max-w-none text-gray-700 whitespace-pre-wrap">
+              {session.feedback}
+            </div>
+          </div>
+        )}
+
+        {/* Transcript Toggle */}
+        <div className="rounded-2xl border bg-white shadow-sm overflow-hidden">
+          <button
+            onClick={() => setShowTranscript(!showTranscript)}
+            className="flex w-full items-center justify-between p-6 hover:bg-gray-50 transition"
+          >
+            <div className="flex items-center gap-2">
+              <MessageSquare className="h-5 w-5 text-gray-400" />
+              <h3 className="text-lg font-bold text-gray-900">Full Transcript</h3>
+              <span className="text-sm text-gray-400">
+                ({(session.transcript || []).length} messages)
+              </span>
+            </div>
+            <ChevronRight
+              className={`h-5 w-5 text-gray-400 transition ${showTranscript ? "rotate-90" : ""}`}
+            />
+          </button>
+          {showTranscript && (
+            <div className="border-t px-6 py-4 space-y-4 max-h-96 overflow-y-auto">
+              {(session.transcript || []).map((entry, i) => (
+                <div key={i} className={`flex ${entry.role === "user" ? "justify-end" : "justify-start"}`}>
+                  <div
+                    className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm ${
+                      entry.role === "user"
+                        ? "bg-indigo-100 text-indigo-900"
+                        : "bg-gray-100 text-gray-800"
+                    }`}
+                  >
+                    <p className="mb-1 text-xs font-medium text-gray-500">
+                      {entry.role === "user" ? "You" : session.personaName}
+                    </p>
+                    {entry.text}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </main>
+    </div>
+  );
+}

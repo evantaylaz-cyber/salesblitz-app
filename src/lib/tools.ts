@@ -6,7 +6,8 @@ export type ToolName =
   | "interview_prep"
   | "prospect_prep"
   | "deal_audit"
-  | "champion_builder";
+  | "champion_builder"
+  | "practice_mode";
 
 export interface ToolDefinition {
   id: ToolName;
@@ -88,8 +89,8 @@ export const TOOLS: ToolDefinition[] = [
       "Deal Audit Report (PDF) — qualification scorecard, risk assessment, strategy brief",
       "3 Handwritten Reference Cards (Gemini)",
     ],
-    minimumTier: "pro",
-    overageRate: 12,
+    minimumTier: "closer",
+    overageRate: 10,
   },
   {
     id: "champion_builder",
@@ -102,6 +103,19 @@ export const TOOLS: ToolDefinition[] = [
     ],
     minimumTier: "closer",
     overageRate: 10,
+  },
+  {
+    id: "practice_mode",
+    name: "AI Practice Mode",
+    description: "Real-time roleplay against an AI buyer persona rendered as a video avatar, built from account research. CotM scoring after each session.",
+    deliverables: [
+      "Live video avatar roleplay session (HeyGen Streaming Avatar)",
+      "AI buyer persona generated from account research",
+      "Post-session CotM scorecard with actionable feedback",
+      "Full conversation transcript",
+    ],
+    minimumTier: "pro",
+    overageRate: 12,
   },
 ];
 

@@ -1,10 +1,17 @@
 # AltVest Subscriber App — Project Context
 
 > Cross-session memory file. Read this at the start of every new session.
-> Last updated: 2026-03-03
+> Last updated: 2026-03-07
 
 ## What This Is
-AI-powered competitive intelligence SaaS for B2B sales professionals. Users submit a target company/person, the system runs deep research via Claude API, and delivers 5-10 polished documents (DOCX/PDF) plus an interactive competitive landscape app.
+AI-powered strategic preparation platform for enterprise B2B sales professionals. The personal intelligence layer that follows YOU across your career. Users submit a target company/person, the system runs deep research via Claude API, and delivers a focused package: Research Brief (PDF), POV Deck (PDF), 3 Handwritten Reference Cards (Gemini PNG), Interactive Competitive Landscape (HTML), and Gamma presentation deck.
+
+**Positioning (locked Mar 7):** Gong serves the org. AltVest serves the seller. AltVest owns the preparation layer: "get armed for this specific conversation." Portable across career transitions (interview → job → next job). No CRM dependency. No enterprise contract required.
+
+## Marketing Site
+- Domain: alternativeinvestments.io (Vercel, auto-deploys from GitHub: evantaylaz-cyber/alternativeinvestments-site)
+- App domain: app.alternativeinvestments.io
+- Vercel project ID (site): prj_zC5Th1edh1DSclIGOTGnh6emOBGn
 
 ## Tech Stack
 - **Frontend**: Next.js 14.2.5 (App Router), React 18, Tailwind CSS
@@ -86,6 +93,18 @@ The PATCH endpoint accepts `x-api-key` header for worker auth (`INTERNAL_API_KEY
 - [x] Phase 4: Team Accounts ✅ BUILT 2026-03-05 (DB migration, API CRUD, team pages, invite email via Resend, invite acceptance page, team-scoped billing/runs/analytics)
 - [x] Phase 4.1: Usage Analytics ✅ BUILT 2026-03-05 (API + dashboard with daily chart, tool breakdown, top companies, member usage, avg completion time)
 - [x] Phase 4.2: Pipeline Speed Optimization ✅ BUILT 2026-03-05 (parallelization, Sonnet default, Haiku for low-stakes, token budget right-sizing)
+- [x] Phase 4.3: MeetingType System + Call Doc Generation ✅ BUILT 2026-03-05
+- [x] Phase 4.4: Responsive Mobile Nav ✅ BUILT 2026-03-05
+- [x] **Phase 5: AI Practice Mode (HeyGen Streaming Avatar)** ✅ BUILT 2026-03-07
+  - Real-time roleplay against AI buyer persona rendered as video avatar
+  - HeyGen Streaming Avatar SDK (@heygen/streaming-avatar), HeyGen API Pay-As-You-Go (~$0.10/min), $10 free credit
+  - Research engine feeds buyer persona → HeyGen avatar session → CotM scoring after (8 dimensions, 1-5 each)
+  - PracticeSession table: persona config, transcript, CotM score, feedback, outcome, HeyGen session refs
+  - Session caps: Pro 3/mo, Closer 10/mo, Launch 0
+  - Tier restructure: Deal Audit moved from Pro to Closer. Philosophy: Launch=Outreach, Pro=Prep+Practice, Closer=Deal Management
+  - 5 API routes (token, start, message, end, history), 4 frontend pages (landing, active session, review, history)
+  - Competitive differentiator vs Gong AI Trainer: no call library needed, just a company name. Portable.
+  - Pending: npm install @heygen/streaming-avatar, DB migration apply, HEYGEN_API_KEY env var, deploy
 
 ### Outreach Sequence Status (as of 2026-03-03) — DEPLOYED
 - Worker: `stepGenerateOutreachSequence` added to executor.js (lines 634-693)
