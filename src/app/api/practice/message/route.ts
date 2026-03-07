@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-20250514",
       max_tokens: 500,
-      system: buildPersonaSystemPrompt(persona as Parameters<typeof buildPersonaSystemPrompt>[0]),
+      system: buildPersonaSystemPrompt(persona as Parameters<typeof buildPersonaSystemPrompt>[0], (persona as Record<string, unknown>)._meetingType as string | undefined),
       messages: conversationHistory,
     });
 

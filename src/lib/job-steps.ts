@@ -91,9 +91,9 @@ const STEP_TEMPLATES: Record<ToolName, Omit<JobStep, "status" | "startedAt" | "c
     { id: "delivery", label: "Delivering to your inbox", description: "Sending your complete champion toolkit via email." },
   ],
   practice_mode: [
-    { id: "generating_persona", label: "Building AI buyer persona", description: "Generating a realistic buyer persona from your account research and meeting context." },
-    { id: "initializing_avatar", label: "Initializing video avatar", description: "Starting the HeyGen Streaming Avatar session with your buyer persona." },
-    { id: "live_session", label: "Live practice session", description: "Real-time roleplay conversation with your AI buyer persona." },
+    { id: "generating_persona", label: "Building AI persona", description: "Generating a realistic persona from your research and meeting context." },
+    { id: "initializing_avatar", label: "Initializing video avatar", description: "Starting the HeyGen Streaming Avatar session with your persona." },
+    { id: "live_session", label: "Live practice session", description: "Real-time roleplay conversation with your AI persona." },
     { id: "generating_scorecard", label: "Scoring your session", description: "Analyzing your conversation against our value selling framework and generating actionable feedback." },
   ],
 };

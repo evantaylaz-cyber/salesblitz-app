@@ -62,8 +62,37 @@ Seller's differentiators: ${user.userProfile.companyDifferentiators || "Unknown"
 Seller's target market: ${user.userProfile.companyTargetMarket || "Unknown"}`
       : "";
 
-    // Generate buyer persona via Claude
-    const personaPrompt = `Generate a realistic buyer persona for a practice sales call. The rep is selling to ${targetCompany}.
+    // Generate persona via Claude (adapts to meeting type)
+    const isInterview = meetingType === "interview";
+    const personaPrompt = isInterview
+      ? `Generate a realistic interviewer persona for a practice interview at ${targetCompany}. The user is the CANDIDATE being interviewed.
+
+${researchContext ? `RESEARCH DATA ON THE COMPANY:\n${researchContext.slice(0, 8000)}` : "No prior research available. Generate a plausible persona based on the company name."}
+
+${sellerContext ? `CANDIDATE CONTEXT:\n${sellerContext}` : ""}
+
+MEETING TYPE: interview
+
+Generate a JSON object with this EXACT structure (no markdown, no code blocks, just the JSON):
+{
+  "name": "<realistic full name>",
+  "title": "<realistic hiring manager or panel member title at this company>",
+  "company": "${targetCompany}",
+  "personality": "<2-3 sentence personality description as an interviewer>",
+  "priorities": ["<what they care about in a candidate 1>", "<priority 2>", "<priority 3>"],
+  "objections": ["<tough interview question 1>", "<tough question 2>", "<tough question 3>", "<tough question 4>"],
+  "communication_style": "<1-2 sentence description of their interview style>",
+  "knowledge": {},
+  "discovery_triggers": {
+    "current_situation": "<what's happening at the company that created this opening>",
+    "pain_points": ["<team challenge 1>", "<challenge 2>", "<challenge 3>"],
+    "decision_criteria": ["<what they evaluate candidates on 1>", "<criterion 2>", "<criterion 3>"],
+    "competitors_they_know": ["<competitor 1>", "<competitor 2>"]
+  }
+}
+
+Make the persona feel like a REAL interviewer. They should ask probing follow-ups, challenge vague answers, and test for depth. The questions should be specific to ${targetCompany}'s actual business challenges.`
+      : `Generate a realistic persona for a practice sales call. The rep is selling to ${targetCompany}.
 
 ${researchContext ? `RESEARCH DATA ON THE COMPANY:\n${researchContext.slice(0, 8000)}` : "No prior research available. Generate a plausible persona based on the company name."}
 
@@ -111,6 +140,9 @@ Make the persona feel REAL. Specific details, not generic business-speak. The ob
       console.error("Failed to parse persona:", personaText);
       return NextResponse.json({ error: "Failed to generate persona" }, { status: 500 });
     }
+
+    // Store meetingType in personaConfig so message route can adapt behavior
+    persona._meetingType = meetingType || "discovery";
 
     // Create PracticeSession in DB
     const session = await prisma.practiceSession.create({

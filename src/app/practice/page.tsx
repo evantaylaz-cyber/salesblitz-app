@@ -127,8 +127,8 @@ export default function PracticeLanding() {
         <div className="rounded-2xl border-2 border-emerald-200 bg-white p-8 shadow-sm">
           <h2 className="text-lg font-bold text-gray-900">Start a Practice Session</h2>
           <p className="mt-1 text-sm text-gray-500">
-            Name a target company. We'll generate a buyer persona from real research and you'll practice
-            a live conversation against a video avatar.
+            Name a target company. We'll generate a persona from real research and you'll practice
+            a live conversation against a video avatar. Works for prospect calls, interview panels, or any meeting.
           </p>
 
           <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">

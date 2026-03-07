@@ -9,6 +9,10 @@ import {
   Mic,
   BarChart3,
   MessageSquare,
+  Mail,
+  Users,
+  Rocket,
+  Shield,
 } from "lucide-react";
 import ProductMockup from "@/components/ProductMockup";
 
@@ -181,7 +185,7 @@ export default async function LandingPage() {
               {
                 name: "AI Practice Mode",
                 hook: "Rehearse before the real thing.",
-                description: "Live video roleplay against an AI buyer persona built from your actual account research.",
+                description: "Live video roleplay against an AI persona built from your research. Prep for prospect calls, interviews & panels.",
               },
               {
                 name: "Territory Blitz",
@@ -231,13 +235,14 @@ export default async function LandingPage() {
                 AI Practice Mode
               </div>
               <h2 className="mt-4 text-3xl font-bold text-white">
-                Rehearse against a buyer who knows your deal
+                Rehearse against someone who knows your deal
               </h2>
               <p className="mt-4 text-lg text-gray-400">
-                Name a target company. We generate a buyer persona from real
-                research, your profile & your blitz run data. Then you practice a
+                Name a target company. We generate a persona from real
+                research, your profile & your blitz run data. Practice a
                 live conversation against a video avatar who pushes back, asks
-                tough questions & scores you across 8 sales performance dimensions.
+                tough questions & scores you across 8 performance dimensions.
+                Works for prospect calls, interview panels, or any high-stakes meeting.
               </p>
               <div className="mt-8 space-y-4">
                 {[
@@ -247,7 +252,7 @@ export default async function LandingPage() {
                   },
                   {
                     icon: <MessageSquare className="h-4 w-4 text-emerald-400" />,
-                    text: "Persona built from your actual account research, not generic scripts",
+                    text: "Persona built from your actual research, not generic scripts. Works for sales calls & interviews.",
                   },
                   {
                     icon: <BarChart3 className="h-4 w-4 text-emerald-400" />,
@@ -397,7 +402,7 @@ export default async function LandingPage() {
                   "Everything in Launch",
                   "Interview Prep",
                   "Prospect Prep",
-                  "AI Practice (3 sessions/mo)",
+                  "AI Practice Mode (3 sessions/mo)",
                   "12 blitzes/month",
                 ],
                 highlight: true,
@@ -412,7 +417,7 @@ export default async function LandingPage() {
                   "Everything in Pro",
                   "Deal Audit",
                   "Champion Builder",
-                  "AI Practice (10 sessions/mo)",
+                  "AI Practice Mode (10 sessions/mo)",
                   "25 blitzes/month",
                   "Priority processing",
                 ],

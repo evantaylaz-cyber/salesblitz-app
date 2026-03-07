@@ -28,7 +28,7 @@ const TIERS = [
     overage: 12,
     tools: ["Interview Outreach", "Prospect Outreach", "Interview Prep", "Prospect Prep"],
     lockedTools: ["Deal Audit", "Champion Builder"],
-    extras: ["AI Practice Mode (3 sessions/mo)"],
+    extras: ["AI Practice Mode: calls & interviews (3 sessions/mo)"],
     highlight: true,
   },
   {
@@ -48,7 +48,7 @@ const TIERS = [
       "Champion Builder",
     ],
     lockedTools: [],
-    extras: ["AI Practice Mode (10 sessions/mo)", "Priority processing", "Quarterly 30-min strategy call"],
+    extras: ["AI Practice Mode: calls & interviews (10 sessions/mo)", "Priority processing", "Quarterly 30-min strategy call"],
     highlight: false,
   },
 ];

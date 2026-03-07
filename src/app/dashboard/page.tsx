@@ -94,8 +94,8 @@ const TOOLS: Tool[] = [
   {
     id: "practice_mode",
     name: "AI Practice Mode",
-    hook: "Rehearse the conversation.",
-    description: "Live roleplay against an AI buyer persona built from real account research. Performance scoring after.",
+    hook: "Rehearse before the real thing.",
+    description: "Live roleplay against an AI persona built from your research. Works for prospect calls, interviews & panels. Scored on 8 dimensions.",
     minimumTier: "pro",
   },
   // Row 2: Prospect workflow + deal management
