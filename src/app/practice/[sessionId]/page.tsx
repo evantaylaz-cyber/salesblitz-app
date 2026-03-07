@@ -154,10 +154,7 @@ export default function PracticeSessionPage() {
 
         // Have avatar speak the opening
         setIsSpeaking(true);
-        await (avatar as { speak: (opts: { text: string; taskType: number }) => Promise<void> }).speak({
-          text: openingData.response,
-          taskType: TaskType.REPEAT,
-        });
+        await avatar.speak({ text: openingData.response, taskType: TaskType.REPEAT });
         setIsSpeaking(false);
       }
     } catch (err) {
@@ -213,13 +210,11 @@ export default function PracticeSessionPage() {
             ]);
 
             // Have avatar speak
-            const avatar = avatarRef.current as {
-              speak: (opts: { text: string; taskType: number }) => Promise<void>;
-            } | null;
-            if (avatar) {
+            if (avatarRef.current) {
               setIsSpeaking(true);
               const { TaskType } = await import("@heygen/streaming-avatar");
-              await avatar.speak({ text: data.response, taskType: TaskType.REPEAT });
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              await (avatarRef.current as any).speak({ text: data.response, taskType: TaskType.REPEAT });
               setIsSpeaking(false);
             }
           }
