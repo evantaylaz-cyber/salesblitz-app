@@ -534,10 +534,10 @@ export default async function LandingPage() {
                     className="mt-8 inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700"
                   >
                     <Mail className="h-4 w-4" />
-                    Talk to Evan
+                    Talk to Us
                   </a>
                   <p className="mt-3 text-xs text-gray-500">
-                    evan@salesblitz.ai
+                    hello@salesblitz.ai
                   </p>
                 </div>
               </div>

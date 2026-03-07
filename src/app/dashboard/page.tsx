@@ -651,7 +651,7 @@ export default function DashboardPage() {
               className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700"
             >
               <Mail className="h-4 w-4" />
-              Talk to Evan
+              Talk to Us
             </a>
           </div>
         </div>
