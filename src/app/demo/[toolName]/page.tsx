@@ -39,7 +39,7 @@ const STEP_ICONS: Record<string, React.ElementType> = {
 };
 
 const ASSET_CATEGORY_LABELS: Record<string, { label: string; color: string }> = {
-  interactive: { label: "Interactive", color: "bg-indigo-100 text-indigo-700" },
+  interactive: { label: "Interactive", color: "bg-emerald-100 text-emerald-800" },
   research: { label: "Research", color: "bg-blue-100 text-blue-700" },
   deliverable: { label: "Deliverable", color: "bg-emerald-100 text-emerald-700" },
 };
@@ -72,7 +72,7 @@ export default function DemoRunPage() {
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
           <p className="text-gray-500">Demo not found for this tool.</p>
-          <a href="/demo/prospect_prep" className="mt-4 inline-block text-sm font-medium text-indigo-600 hover:text-indigo-800">
+          <a href="/demo/prospect_prep" className="mt-4 inline-block text-sm font-medium text-emerald-700 hover:text-emerald-900">
             View Prospect Prep demo instead
           </a>
         </div>
@@ -106,7 +106,7 @@ export default function DemoRunPage() {
           </div>
           <a
             href="/subscribe"
-            className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition"
+            className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 transition"
           >
             <Zap className="h-4 w-4" />
             Run Your Own
@@ -230,7 +230,7 @@ export default function DemoRunPage() {
         )}
 
         {/* CTA */}
-        <div className="rounded-xl border border-indigo-200 bg-gradient-to-r from-indigo-50 to-white p-6 text-center">
+        <div className="rounded-xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-white p-6 text-center">
           <h3 className="text-lg font-bold text-gray-900">Ready to run your own?</h3>
           <p className="mt-2 text-sm text-gray-600">
             Get a complete deliverable package for your actual prospects, interviewers, or accounts.
@@ -238,7 +238,7 @@ export default function DemoRunPage() {
           <div className="mt-4 flex items-center justify-center gap-3">
             <a
               href="/subscribe"
-              className="flex items-center gap-2 rounded-lg bg-indigo-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 transition"
+              className="flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 transition"
             >
               <Zap className="h-4 w-4" />
               Get Started
@@ -259,17 +259,17 @@ export default function DemoRunPage() {
                   <a
                     key={d.toolName}
                     href={`/demo/${d.toolName}`}
-                    className="flex items-center justify-between rounded-xl border bg-white px-5 py-4 hover:border-indigo-200 hover:shadow-sm transition group"
+                    className="flex items-center justify-between rounded-xl border bg-white px-5 py-4 hover:border-emerald-200 hover:shadow-sm transition group"
                   >
                     <div>
-                      <p className="text-sm font-semibold text-gray-900 group-hover:text-indigo-700">
+                      <p className="text-sm font-semibold text-gray-900 group-hover:text-emerald-800">
                         {TOOL_NAMES[d.toolName] || d.toolName}
                       </p>
                       <p className="text-xs text-gray-500">
                         {d.targetName} · {d.targetCompany}
                       </p>
                     </div>
-                    <ArrowRight className="h-4 w-4 text-gray-300 group-hover:text-indigo-500" />
+                    <ArrowRight className="h-4 w-4 text-gray-300 group-hover:text-emerald-600" />
                   </a>
                 ))}
             </div>

@@ -94,7 +94,7 @@ export default function InviteAcceptPage() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
-          <Loader2 className="mx-auto h-8 w-8 animate-spin text-indigo-600" />
+          <Loader2 className="mx-auto h-8 w-8 animate-spin text-emerald-700" />
           <p className="mt-3 text-sm text-gray-500">Loading invite...</p>
         </div>
       </div>
@@ -105,7 +105,7 @@ export default function InviteAcceptPage() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
-          <Loader2 className="mx-auto h-8 w-8 animate-spin text-indigo-600" />
+          <Loader2 className="mx-auto h-8 w-8 animate-spin text-emerald-700" />
           <p className="mt-3 text-sm text-gray-500">Accepting invite...</p>
         </div>
       </div>
@@ -124,7 +124,7 @@ export default function InviteAcceptPage() {
           <div className="mt-6 flex justify-center gap-3">
             <Link
               href={`/teams/${teamId}`}
-              className="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-indigo-700"
+              className="rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-700"
             >
               View Team
             </Link>
@@ -152,7 +152,7 @@ export default function InviteAcceptPage() {
         <div className="mt-6 flex justify-center gap-3">
           <Link
             href="/teams"
-            className="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-indigo-700"
+            className="rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-700"
           >
             View Your Teams
           </Link>

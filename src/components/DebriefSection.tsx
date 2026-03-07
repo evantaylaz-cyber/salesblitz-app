@@ -144,10 +144,10 @@ export default function DebriefSection({ requestId }: { requestId: string }) {
         className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition"
       >
         <div className="flex items-center gap-3">
-          <MessageSquare className="h-5 w-5 text-indigo-500" />
+          <MessageSquare className="h-5 w-5 text-emerald-600" />
           <h2 className="font-semibold text-gray-900">Post-Run Debrief</h2>
           {debriefs.length > 0 && (
-            <span className="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-600">
+            <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">
               {debriefs.length}
             </span>
           )}
@@ -295,7 +295,7 @@ export default function DebriefSection({ requestId }: { requestId: string }) {
             <button
               onClick={handleSubmit}
               disabled={submitting || !content.trim()}
-              className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+              className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
             >
               {submitting ? (
                 <Loader2 className="h-4 w-4 animate-spin" />

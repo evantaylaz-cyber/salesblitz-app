@@ -51,7 +51,7 @@ const STATUS_COLORS: Record<string, string> = {
   delivered: "bg-emerald-100 text-emerald-700",
   completed: "bg-emerald-100 text-emerald-700",
   researching: "bg-blue-100 text-blue-700",
-  generating: "bg-indigo-100 text-indigo-700",
+  generating: "bg-emerald-100 text-emerald-800",
   submitted: "bg-gray-100 text-gray-700",
   failed: "bg-red-100 text-red-700",
   in_progress: "bg-blue-100 text-blue-700",
@@ -88,7 +88,7 @@ export default function AnalyticsPage() {
   if (!isLoaded || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-700" />
       </div>
     );
   }
@@ -118,7 +118,7 @@ export default function AnalyticsPage() {
             <span className="text-gray-300">/</span>
             <span className="text-lg font-semibold text-gray-700">Analytics</span>
             {teamId && (
-              <span className="ml-2 rounded-full bg-indigo-100 px-2.5 py-0.5 text-xs font-medium text-indigo-700">
+              <span className="ml-2 rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800">
                 Team
               </span>
             )}
@@ -146,7 +146,7 @@ export default function AnalyticsPage() {
                 onClick={() => setRange(r)}
                 className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${
                   range === r
-                    ? "bg-indigo-600 text-white"
+                    ? "bg-emerald-600 text-white"
                     : "bg-white text-gray-600 border border-gray-300 hover:bg-gray-50"
                 }`}
               >
@@ -211,7 +211,7 @@ export default function AnalyticsPage() {
                   style={{ height: "100%" }}
                 >
                   <div
-                    className="absolute bottom-0 w-full rounded-t bg-indigo-500 transition hover:bg-indigo-600"
+                    className="absolute bottom-0 w-full rounded-t bg-emerald-500 transition hover:bg-emerald-600"
                     style={{ height: `${(day.count / maxDaily) * 100}%`, minHeight: "2px" }}
                   />
                   <div className="absolute -top-6 left-1/2 -translate-x-1/2 hidden group-hover:block whitespace-nowrap rounded bg-gray-900 px-2 py-1 text-xs text-white">
@@ -245,7 +245,7 @@ export default function AnalyticsPage() {
                     </div>
                     <div className="h-2 rounded-full bg-gray-100">
                       <div
-                        className="h-2 rounded-full bg-indigo-500"
+                        className="h-2 rounded-full bg-emerald-500"
                         style={{
                           width: `${(t.count / (data.runsByTool[0]?.count || 1)) * 100}%`,
                         }}
@@ -297,7 +297,7 @@ export default function AnalyticsPage() {
                   <div className="flex items-center gap-2">
                     <div className="h-2 w-24 rounded-full bg-gray-100">
                       <div
-                        className="h-2 rounded-full bg-indigo-500"
+                        className="h-2 rounded-full bg-emerald-500"
                         style={{
                           width: `${(m.runCount / (data.memberBreakdown[0]?.runCount || 1)) * 100}%`,
                         }}
@@ -319,7 +319,7 @@ export default function AnalyticsPage() {
             <h2 className="text-lg font-semibold text-gray-900">Recent Runs</h2>
             <Link
               href="/requests"
-              className="flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-700"
+              className="flex items-center gap-1 text-sm text-emerald-700 hover:text-emerald-800"
             >
               View all <ArrowRight className="h-3.5 w-3.5" />
             </Link>

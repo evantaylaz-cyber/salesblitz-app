@@ -39,7 +39,7 @@ const CATEGORIES = [
   { value: "product_docs", label: "Product Docs", icon: FileText, color: "blue" },
   { value: "competitive_intel", label: "Competitive Intel", icon: Shield, color: "red" },
   { value: "deal_stories", label: "Deal Stories", icon: Target, color: "green" },
-  { value: "icp_definitions", label: "ICP Definitions", icon: Users, color: "purple" },
+  { value: "icp_definitions", label: "ICP Definitions", icon: Users, color: "green" },
   { value: "methodology", label: "Methodology", icon: Lightbulb, color: "amber" },
   { value: "objection_handling", label: "Objection Handling", icon: MessageSquare, color: "orange" },
   { value: "custom", label: "Custom", icon: FolderOpen, color: "gray" },
@@ -49,7 +49,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   blue: "bg-blue-50 text-blue-700 border-blue-200",
   red: "bg-red-50 text-red-700 border-red-200",
   green: "bg-green-50 text-green-700 border-green-200",
-  purple: "bg-purple-50 text-purple-700 border-purple-200",
+  purple: "bg-green-50 text-green-700 border-green-200",
   amber: "bg-amber-50 text-amber-700 border-amber-200",
   orange: "bg-orange-50 text-orange-700 border-orange-200",
   gray: "bg-gray-50 text-gray-700 border-gray-200",
@@ -212,7 +212,7 @@ export default function KnowledgeBasePage() {
   if (!isLoaded || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-700" />
       </div>
     );
   }
@@ -232,14 +232,14 @@ export default function KnowledgeBasePage() {
             </a>
             <span className="text-gray-300">/</span>
             <h1 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-              <BookOpen className="h-5 w-5 text-indigo-600" />
+              <BookOpen className="h-5 w-5 text-emerald-700" />
               Knowledge Base
             </h1>
           </div>
           <div className="flex items-center gap-3">
             <button
               onClick={openCreate}
-              className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-700"
+              className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-700"
             >
               <Plus className="h-4 w-4" />
               Add Document
@@ -257,8 +257,8 @@ export default function KnowledgeBasePage() {
         )}
 
         {/* Intro */}
-        <div className="mb-6 rounded-xl border border-indigo-100 bg-indigo-50/50 p-4">
-          <p className="text-sm text-indigo-800">
+        <div className="mb-6 rounded-xl border border-emerald-100 bg-emerald-50/50 p-4">
+          <p className="text-sm text-emerald-900">
             <strong>Your Knowledge Base</strong> feeds directly into every run.
             Add product docs, competitive intel, ICP definitions, deal stories, or
             methodology notes — the more context you provide, the more personalized
@@ -275,7 +275,7 @@ export default function KnowledgeBasePage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search documents..."
-              className="w-full rounded-lg border border-gray-300 pl-10 pr-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+              className="w-full rounded-lg border border-gray-300 pl-10 pr-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
             />
           </div>
           <div className="flex gap-2 flex-wrap">
@@ -283,7 +283,7 @@ export default function KnowledgeBasePage() {
               onClick={() => setFilterCategory(null)}
               className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
                 !filterCategory
-                  ? "bg-indigo-600 text-white border-indigo-600"
+                  ? "bg-emerald-600 text-white border-emerald-600"
                   : "bg-white text-gray-600 border-gray-300 hover:bg-gray-50"
               }`}
             >
@@ -300,7 +300,7 @@ export default function KnowledgeBasePage() {
                   }
                   className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
                     filterCategory === cat.value
-                      ? "bg-indigo-600 text-white border-indigo-600"
+                      ? "bg-emerald-600 text-white border-emerald-600"
                       : "bg-white text-gray-600 border-gray-300 hover:bg-gray-50"
                   }`}
                 >
@@ -330,7 +330,7 @@ export default function KnowledgeBasePage() {
                 {docs.length === 0 && (
                   <button
                     onClick={openCreate}
-                    className="mt-4 inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition"
+                    className="mt-4 inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 transition"
                   >
                     <Plus className="h-4 w-4" />
                     Add Your First Document
@@ -349,7 +349,7 @@ export default function KnowledgeBasePage() {
                       onClick={() => viewFullDoc(doc)}
                       className={`rounded-xl border bg-white p-4 cursor-pointer transition hover:shadow-sm ${
                         isActive
-                          ? "border-indigo-300 ring-1 ring-indigo-200"
+                          ? "border-emerald-300 ring-1 ring-emerald-200"
                           : "border-gray-200 hover:border-gray-300"
                       }`}
                     >
@@ -383,7 +383,7 @@ export default function KnowledgeBasePage() {
                               e.stopPropagation();
                               openEdit(doc);
                             }}
-                            className="p-1.5 text-gray-400 hover:text-indigo-600 transition rounded-lg hover:bg-indigo-50"
+                            className="p-1.5 text-gray-400 hover:text-emerald-700 transition rounded-lg hover:bg-emerald-50"
                             title="Edit"
                           >
                             <Edit3 className="h-4 w-4" />
@@ -448,7 +448,7 @@ export default function KnowledgeBasePage() {
                         value={formTitle}
                         onChange={(e) => setFormTitle(e.target.value)}
                         placeholder="e.g., Product Overview — Enterprise Features"
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                         autoFocus
                       />
                     </div>
@@ -459,7 +459,7 @@ export default function KnowledgeBasePage() {
                       <select
                         value={formCategory}
                         onChange={(e) => setFormCategory(e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                       >
                         {CATEGORIES.map((cat) => (
                           <option key={cat.value} value={cat.value}>
@@ -495,7 +495,7 @@ export default function KnowledgeBasePage() {
                       <button
                         onClick={handleSave}
                         disabled={formSaving || !formTitle.trim() || !formContent.trim()}
-                        className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition disabled:opacity-50"
+                        className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 transition disabled:opacity-50"
                       >
                         {formSaving ? (
                           <Loader2 className="h-4 w-4 animate-spin" />

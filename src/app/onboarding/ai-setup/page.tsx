@@ -220,7 +220,7 @@ export default function AISetupPage() {
   if (!isLoaded) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-700" />
       </div>
     );
   }
@@ -249,7 +249,7 @@ export default function AISetupPage() {
             </button>
           </div>
           <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-indigo-600" />
+            <Sparkles className="h-5 w-5 text-emerald-700" />
             <span className="font-semibold text-gray-900">AI Profile Setup</span>
           </div>
         </div>
@@ -263,7 +263,7 @@ export default function AISetupPage() {
               <div
                 className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium ${
                   i <= currentStepIndex
-                    ? "bg-indigo-600 text-white"
+                    ? "bg-emerald-600 text-white"
                     : "bg-gray-200 text-gray-500"
                 }`}
               >
@@ -283,7 +283,7 @@ export default function AISetupPage() {
               {i < steps.length - 1 && (
                 <div
                   className={`flex-1 h-0.5 ${
-                    i < currentStepIndex ? "bg-indigo-600" : "bg-gray-200"
+                    i < currentStepIndex ? "bg-emerald-600" : "bg-gray-200"
                   }`}
                 />
               )}
@@ -314,18 +314,18 @@ export default function AISetupPage() {
                   setMethod("quick_interview");
                   setStep("prompts");
                 }}
-                className="rounded-xl border-2 bg-white p-6 text-left hover:border-indigo-300 hover:shadow-md transition group"
+                className="rounded-xl border-2 bg-white p-6 text-left hover:border-emerald-300 hover:shadow-md transition group"
               >
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-50 group-hover:bg-indigo-100 transition">
-                    <MessageSquare className="h-5 w-5 text-indigo-600" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-50 group-hover:bg-emerald-100 transition">
+                    <MessageSquare className="h-5 w-5 text-emerald-700" />
                   </div>
                   <h3 className="font-semibold text-gray-900">Quick Interview</h3>
                 </div>
                 <p className="text-sm text-gray-500 mb-3">
                   5 focused prompts, one topic at a time. The AI interviews you conversationally, then outputs JSON you paste back.
                 </p>
-                <div className="flex items-center text-sm text-indigo-600 font-medium">
+                <div className="flex items-center text-sm text-emerald-700 font-medium">
                   Recommended for first-timers
                   <ChevronRight className="h-4 w-4 ml-1" />
                 </div>
@@ -337,7 +337,7 @@ export default function AISetupPage() {
                   setMethod("one_shot");
                   setStep("prompts");
                 }}
-                className="rounded-xl border-2 bg-white p-6 text-left hover:border-indigo-300 hover:shadow-md transition group"
+                className="rounded-xl border-2 bg-white p-6 text-left hover:border-emerald-300 hover:shadow-md transition group"
               >
                 <div className="flex items-center gap-3 mb-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-50 group-hover:bg-gray-100 transition">
@@ -413,11 +413,11 @@ export default function AISetupPage() {
                   </div>
 
                   <div className="flex items-center gap-2 text-sm text-gray-500">
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-100 text-xs font-medium text-indigo-600">1</span>
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-xs font-medium text-emerald-700">1</span>
                     Copy the prompt above
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-100 text-xs font-medium text-indigo-600 ml-3">2</span>
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-xs font-medium text-emerald-700 ml-3">2</span>
                     Run it in ChatGPT, Claude, or Gemini
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-100 text-xs font-medium text-indigo-600 ml-3">3</span>
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-xs font-medium text-emerald-700 ml-3">3</span>
                     Paste the final JSON output below
                   </div>
 
@@ -428,7 +428,7 @@ export default function AISetupPage() {
                       onChange={(e) => setPasteInput(e.target.value)}
                       placeholder="Paste the AI's JSON output here..."
                       rows={8}
-                      className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-mono"
+                      className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 font-mono"
                     />
                   </div>
 
@@ -485,7 +485,7 @@ export default function AISetupPage() {
                           }
                         }}
                         disabled={!pasteInput.trim() || parsing}
-                        className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50 transition"
+                        className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50 transition"
                       >
                         {parsing ? (
                           <Loader2 className="h-4 w-4 animate-spin" />
@@ -524,7 +524,7 @@ export default function AISetupPage() {
                           pastedTexts[p.id]
                             ? "bg-green-100 text-green-700"
                             : i === currentPromptIndex
-                            ? "bg-indigo-100 text-indigo-700"
+                            ? "bg-emerald-100 text-emerald-800"
                             : "bg-gray-100 text-gray-500 hover:bg-gray-200"
                         }`}
                       >
@@ -590,11 +590,11 @@ export default function AISetupPage() {
             </div>
 
             <div className="flex items-center gap-2 text-sm text-gray-500">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-100 text-xs font-medium text-indigo-600">1</span>
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-xs font-medium text-emerald-700">1</span>
               Copy the prompt above
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-100 text-xs font-medium text-indigo-600 ml-3">2</span>
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-xs font-medium text-emerald-700 ml-3">2</span>
               Complete the conversation in your AI
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-100 text-xs font-medium text-indigo-600 ml-3">3</span>
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-xs font-medium text-emerald-700 ml-3">3</span>
               Paste the final JSON output below
             </div>
 
@@ -604,7 +604,7 @@ export default function AISetupPage() {
               onChange={(e) => setPasteInput(e.target.value)}
               placeholder="Paste the AI's final JSON output here..."
               rows={10}
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 font-mono"
+              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 font-mono"
             />
 
             {/* Parse errors */}
@@ -657,7 +657,7 @@ export default function AISetupPage() {
                   }
                 }}
                 disabled={!pasteInput.trim() || parsing}
-                className="flex items-center gap-2 rounded-lg bg-indigo-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50 transition"
+                className="flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50 transition"
               >
                 {parsing ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -689,7 +689,7 @@ export default function AISetupPage() {
                   <input
                     value={reviewData.companyName || ""}
                     onChange={(e) => setReviewData({ ...reviewData, companyName: e.target.value })}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                   />
                 </div>
                 <div>
@@ -697,7 +697,7 @@ export default function AISetupPage() {
                   <input
                     value={reviewData.companyUrl || ""}
                     onChange={(e) => setReviewData({ ...reviewData, companyUrl: e.target.value })}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                   />
                 </div>
               </div>
@@ -900,7 +900,7 @@ export default function AISetupPage() {
                   <input
                     value={reviewData.sellingStyle || ""}
                     onChange={(e) => setReviewData({ ...reviewData, sellingStyle: e.target.value })}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                   />
                 </div>
                 <div>
@@ -908,7 +908,7 @@ export default function AISetupPage() {
                   <input
                     value={reviewData.preferredTone || ""}
                     onChange={(e) => setReviewData({ ...reviewData, preferredTone: e.target.value })}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                   />
                 </div>
               </div>
@@ -926,7 +926,7 @@ export default function AISetupPage() {
               <button
                 onClick={saveProfile}
                 disabled={savingProfile}
-                className="flex items-center gap-2 rounded-lg bg-indigo-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50 transition"
+                className="flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50 transition"
               >
                 {savingProfile ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -955,7 +955,7 @@ export default function AISetupPage() {
             {generatingKB ? (
               <div className="flex items-center justify-center py-12">
                 <div className="text-center space-y-3">
-                  <Loader2 className="h-8 w-8 animate-spin text-indigo-600 mx-auto" />
+                  <Loader2 className="h-8 w-8 animate-spin text-emerald-700 mx-auto" />
                   <p className="text-sm text-gray-500">Generating knowledge base documents...</p>
                 </div>
               </div>
@@ -967,7 +967,7 @@ export default function AISetupPage() {
                 </p>
                 <button
                   onClick={skipKB}
-                  className="mt-4 rounded-lg bg-indigo-600 px-6 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition"
+                  className="mt-4 rounded-lg bg-emerald-600 px-6 py-2 text-sm font-medium text-white hover:bg-emerald-700 transition"
                 >
                   Finish Setup
                 </button>
@@ -992,7 +992,7 @@ export default function AISetupPage() {
                             }}
                             className={`flex h-5 w-5 items-center justify-center rounded border-2 transition ${
                               doc.enabled
-                                ? "border-indigo-600 bg-indigo-600"
+                                ? "border-emerald-600 bg-emerald-600"
                                 : "border-gray-300"
                             }`}
                           >
@@ -1039,7 +1039,7 @@ export default function AISetupPage() {
                   <button
                     onClick={saveKBDocs}
                     disabled={savingKB || kbDocs.filter((d) => d.enabled).length === 0}
-                    className="flex items-center gap-2 rounded-lg bg-indigo-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50 transition"
+                    className="flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50 transition"
                   >
                     {savingKB ? (
                       <Loader2 className="h-4 w-4 animate-spin" />

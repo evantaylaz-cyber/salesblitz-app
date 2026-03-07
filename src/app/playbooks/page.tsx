@@ -95,7 +95,7 @@ export default function PlaybooksPage() {
   if (!isLoaded || loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
       </div>
     );
   }
@@ -113,7 +113,7 @@ export default function PlaybooksPage() {
               <ArrowLeft className="h-5 w-5" />
             </a>
             <div className="flex items-center gap-2">
-              <Shield className="h-5 w-5 text-indigo-600" />
+              <Shield className="h-5 w-5 text-emerald-700" />
               <h1 className="text-lg font-semibold text-gray-900">
                 Competitive Playbooks
               </h1>
@@ -175,7 +175,7 @@ export default function PlaybooksPage() {
               placeholder="Search by company or contact name..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
             />
           </div>
         </div>
@@ -199,7 +199,7 @@ export default function PlaybooksPage() {
             {!searchQuery && (
               <a
                 href="/request"
-                className="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors"
+                className="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors"
               >
                 <Zap className="h-4 w-4" />
                 New Request
@@ -235,8 +235,8 @@ function CompanyCard({ group }: { group: CompanyGroup }) {
       {/* Company header */}
       <div className="px-5 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-lg bg-indigo-100 flex items-center justify-center">
-            <Building2 className="h-5 w-5 text-indigo-600" />
+          <div className="h-10 w-10 rounded-lg bg-emerald-100 flex items-center justify-center">
+            <Building2 className="h-5 w-5 text-emerald-700" />
           </div>
           <div>
             <h3 className="font-semibold text-gray-900">{group.company}</h3>
@@ -252,7 +252,7 @@ function CompanyCard({ group }: { group: CompanyGroup }) {
               {group.hasPlaybook && (
                 <>
                   <span className="text-xs text-gray-400">•</span>
-                  <span className="inline-flex items-center gap-1 text-xs font-medium text-indigo-600">
+                  <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700">
                     <Shield className="h-3 w-3" />
                     Playbook
                   </span>
@@ -268,7 +268,7 @@ function CompanyCard({ group }: { group: CompanyGroup }) {
               href={latestPlaybook.playbookUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors"
             >
               <Shield className="h-3.5 w-3.5" />
               Open Playbook
@@ -327,7 +327,7 @@ function CompanyCard({ group }: { group: CompanyGroup }) {
                     href={run.playbookUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
+                    className="text-xs text-emerald-700 hover:text-emerald-900 flex items-center gap-1"
                   >
                     <Shield className="h-3 w-3" />
                     Playbook

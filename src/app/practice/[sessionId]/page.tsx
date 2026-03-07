@@ -326,7 +326,7 @@ export default function PracticeSessionPage() {
           <div className="relative aspect-video w-full max-w-2xl overflow-hidden rounded-2xl bg-gray-800">
             {avatarLoading && (
               <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-                <Loader2 className="h-10 w-10 animate-spin text-indigo-400" />
+                <Loader2 className="h-10 w-10 animate-spin text-emerald-400" />
                 <p className="text-sm text-gray-400">Starting avatar...</p>
               </div>
             )}
@@ -339,9 +339,9 @@ export default function PracticeSessionPage() {
             {isSpeaking && (
               <div className="absolute bottom-4 left-4 flex items-center gap-2 rounded-full bg-black/60 px-3 py-1">
                 <div className="flex gap-0.5">
-                  <div className="h-3 w-1 animate-pulse rounded-full bg-indigo-400" style={{ animationDelay: "0ms" }} />
-                  <div className="h-3 w-1 animate-pulse rounded-full bg-indigo-400" style={{ animationDelay: "150ms" }} />
-                  <div className="h-3 w-1 animate-pulse rounded-full bg-indigo-400" style={{ animationDelay: "300ms" }} />
+                  <div className="h-3 w-1 animate-pulse rounded-full bg-emerald-400" style={{ animationDelay: "0ms" }} />
+                  <div className="h-3 w-1 animate-pulse rounded-full bg-emerald-400" style={{ animationDelay: "150ms" }} />
+                  <div className="h-3 w-1 animate-pulse rounded-full bg-emerald-400" style={{ animationDelay: "300ms" }} />
                 </div>
                 <span className="text-xs text-gray-300">Speaking</span>
               </div>
@@ -356,7 +356,7 @@ export default function PracticeSessionPage() {
               className={`flex h-14 w-14 items-center justify-center rounded-full transition ${
                 isRecording
                   ? "bg-red-600 hover:bg-red-700 ring-4 ring-red-600/30"
-                  : "bg-indigo-600 hover:bg-indigo-700"
+                  : "bg-emerald-600 hover:bg-emerald-700"
               } disabled:opacity-50`}
             >
               {isRecording ? <MicOff className="h-6 w-6" /> : <Mic className="h-6 w-6" />}
@@ -396,7 +396,7 @@ export default function PracticeSessionPage() {
                 <div
                   className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm ${
                     entry.role === "user"
-                      ? "bg-indigo-600 text-white"
+                      ? "bg-emerald-600 text-white"
                       : "bg-gray-800 text-gray-200"
                   }`}
                 >

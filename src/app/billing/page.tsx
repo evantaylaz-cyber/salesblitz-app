@@ -62,7 +62,7 @@ export default function BillingPage() {
   if (!isLoaded || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-700" />
       </div>
     );
   }
@@ -91,14 +91,14 @@ export default function BillingPage() {
         {/* Current Plan */}
         <section className="rounded-xl border bg-white p-6 shadow-sm">
           <div className="flex items-center gap-2 mb-4">
-            <CreditCard className="h-5 w-5 text-indigo-600" />
+            <CreditCard className="h-5 w-5 text-emerald-700" />
             <h2 className="text-lg font-bold text-gray-900">Current Plan</h2>
           </div>
 
           {hasSubscription && user?.currentTier ? (
             <div className="space-y-3">
               <div className="flex items-center gap-3">
-                <span className="rounded-full bg-indigo-100 px-3 py-1 text-sm font-semibold text-indigo-700 capitalize">
+                <span className="rounded-full bg-emerald-100 px-3 py-1 text-sm font-semibold text-emerald-800 capitalize">
                   {user.currentTier}
                 </span>
                 <span className="text-sm text-gray-500 capitalize">
@@ -131,7 +131,7 @@ export default function BillingPage() {
               <p className="text-gray-600">No active subscription.</p>
               <a
                 href="/subscribe"
-                className="mt-3 inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
+                className="mt-3 inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700"
               >
                 <Zap className="h-4 w-4" /> Choose a Plan
               </a>
@@ -188,7 +188,7 @@ export default function BillingPage() {
 
           <a
             href="/subscribe#packs"
-            className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-indigo-600 hover:text-indigo-700"
+            className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-emerald-700 hover:text-emerald-800"
           >
             Buy Run Packs →
           </a>

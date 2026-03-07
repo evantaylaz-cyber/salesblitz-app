@@ -125,7 +125,7 @@ export default function OnboardingChatBubble({
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full bg-indigo-600 px-5 py-3 text-white shadow-lg hover:bg-indigo-700 transition-all hover:shadow-xl group"
+        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full bg-emerald-600 px-5 py-3 text-white shadow-lg hover:bg-emerald-700 transition-all hover:shadow-xl group"
       >
         {profileDone ? (
           <>
@@ -153,8 +153,8 @@ export default function OnboardingChatBubble({
       <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-2xl bg-white border border-gray-200 shadow-xl px-4 py-3 cursor-pointer hover:shadow-2xl transition-all"
         onClick={() => setIsMinimized(false)}
       >
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-100">
-          <Bot className="h-4 w-4 text-indigo-600" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100">
+          <Bot className="h-4 w-4 text-emerald-700" />
         </div>
         <div className="flex-1">
           <p className="text-sm font-medium text-gray-900">Sales Blitz Setup</p>
@@ -162,7 +162,7 @@ export default function OnboardingChatBubble({
             {profileDone ? "Complete" : `${depth}/4 layers`}
           </p>
         </div>
-        {isLoading && <Loader2 className="h-4 w-4 animate-spin text-indigo-500" />}
+        {isLoading && <Loader2 className="h-4 w-4 animate-spin text-emerald-600" />}
         <button
           onClick={(e) => { e.stopPropagation(); setIsOpen(false); }}
           className="text-gray-400 hover:text-gray-600"
@@ -177,10 +177,10 @@ export default function OnboardingChatBubble({
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col w-[420px] h-[600px] max-h-[80vh] rounded-2xl bg-white border border-gray-200 shadow-2xl overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-indigo-50 to-white">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-emerald-50 to-white">
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-100">
-            <Bot className="h-4 w-4 text-indigo-600" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100">
+            <Bot className="h-4 w-4 text-emerald-700" />
           </div>
           <div>
             <h3 className="text-sm font-semibold text-gray-900">
@@ -271,7 +271,7 @@ export default function OnboardingChatBubble({
                       <button
                         key={suggestion}
                         onClick={() => handleSuggestion(suggestion)}
-                        className="text-xs px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-full transition-colors border border-indigo-100"
+                        className="text-xs px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-full transition-colors border border-emerald-100"
                       >
                         {suggestion}
                       </button>
@@ -287,7 +287,7 @@ export default function OnboardingChatBubble({
                       <button
                         key={suggestion}
                         onClick={() => handleSuggestion(suggestion)}
-                        className="text-xs px-2.5 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-full transition-colors border border-indigo-100"
+                        className="text-xs px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-full transition-colors border border-emerald-100"
                       >
                         {suggestion}
                       </button>
@@ -324,7 +324,7 @@ export default function OnboardingChatBubble({
               <div className={`flex gap-2.5 ${isUser ? "flex-row-reverse" : ""}`}>
                 <div
                   className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    isUser ? "bg-indigo-600" : "bg-gray-900"
+                    isUser ? "bg-emerald-600" : "bg-gray-900"
                   }`}
                 >
                   {isUser ? (
@@ -336,7 +336,7 @@ export default function OnboardingChatBubble({
                 <div
                   className={`px-3.5 py-2.5 max-w-[300px] text-sm leading-relaxed whitespace-pre-wrap ${
                     isUser
-                      ? "bg-indigo-600 text-white rounded-2xl rounded-tr-md"
+                      ? "bg-emerald-600 text-white rounded-2xl rounded-tr-md"
                       : "bg-gray-50 border border-gray-100 text-gray-800 rounded-2xl rounded-tl-md"
                   }`}
                 >
@@ -417,7 +417,7 @@ export default function OnboardingChatBubble({
                 profileDone ? "Ask anything or update your profile." : "Type your response..."
               }
               rows={1}
-              className="w-full resize-none rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent placeholder:text-gray-400 max-h-24 overflow-y-auto"
+              className="w-full resize-none rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent placeholder:text-gray-400 max-h-24 overflow-y-auto"
               style={{ height: "auto", minHeight: "40px" }}
               onInput={(e) => {
                 const target = e.target as HTMLTextAreaElement;
@@ -447,7 +447,7 @@ export default function OnboardingChatBubble({
           <button
             type="submit"
             disabled={!input.trim() || isLoading}
-            className="flex items-center justify-center w-9 h-9 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors flex-shrink-0"
+            className="flex items-center justify-center w-9 h-9 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors flex-shrink-0"
           >
             <Send className="w-3.5 h-3.5" />
           </button>

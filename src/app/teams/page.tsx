@@ -111,14 +111,14 @@ export default function TeamsPage() {
 
   const roleIcon = (role: string) => {
     if (role === "owner") return <Crown className="h-4 w-4 text-amber-500" />;
-    if (role === "admin") return <Shield className="h-4 w-4 text-indigo-500" />;
+    if (role === "admin") return <Shield className="h-4 w-4 text-emerald-600" />;
     return <User className="h-4 w-4 text-gray-400" />;
   };
 
   if (!isLoaded || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-700" />
       </div>
     );
   }
@@ -155,7 +155,7 @@ export default function TeamsPage() {
               {pendingInvites.map((invite) => (
                 <div
                   key={invite.teamId}
-                  className="flex items-center justify-between rounded-xl border border-indigo-200 bg-indigo-50 p-4"
+                  className="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50 p-4"
                 >
                   <div>
                     <p className="font-medium text-gray-900">{invite.teamName}</p>
@@ -166,7 +166,7 @@ export default function TeamsPage() {
                   <div className="flex gap-2">
                     <button
                       onClick={() => respondToInvite(invite.teamId, "accept_invite")}
-                      className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+                      className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
                     >
                       Accept
                     </button>
@@ -188,7 +188,7 @@ export default function TeamsPage() {
           <h1 className="text-2xl font-bold text-gray-900">Your Teams</h1>
           <button
             onClick={() => setShowCreate(true)}
-            className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+            className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
           >
             <Plus className="h-4 w-4" />
             Create Team
@@ -214,7 +214,7 @@ export default function TeamsPage() {
                   value={newTeamName}
                   onChange={(e) => setNewTeamName(e.target.value)}
                   placeholder="e.g. Sales Team West"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                 />
               </div>
               <div>
@@ -226,14 +226,14 @@ export default function TeamsPage() {
                   value={newTeamDesc}
                   onChange={(e) => setNewTeamDesc(e.target.value)}
                   placeholder="Optional team description"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                 />
               </div>
               {error && <p className="text-sm text-red-600">{error}</p>}
               <button
                 onClick={createTeam}
                 disabled={creating || !newTeamName.trim()}
-                className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+                className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
               >
                 {creating ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -256,7 +256,7 @@ export default function TeamsPage() {
             </p>
             <button
               onClick={() => setShowCreate(true)}
-              className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+              className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
             >
               <Plus className="h-4 w-4" />
               Create Your First Team
@@ -268,11 +268,11 @@ export default function TeamsPage() {
               <Link
                 key={team.id}
                 href={`/teams/${team.id}`}
-                className="flex items-center justify-between rounded-xl border bg-white p-5 shadow-sm transition hover:border-indigo-200 hover:shadow-md"
+                className="flex items-center justify-between rounded-xl border bg-white p-5 shadow-sm transition hover:border-emerald-200 hover:shadow-md"
               >
                 <div className="flex items-center gap-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100">
-                    <Users className="h-5 w-5 text-indigo-600" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100">
+                    <Users className="h-5 w-5 text-emerald-700" />
                   </div>
                   <div>
                     <h3 className="font-medium text-gray-900">{team.name}</h3>
@@ -283,7 +283,7 @@ export default function TeamsPage() {
                       </span>
                       <span>{team.memberCount} member{team.memberCount !== 1 ? "s" : ""}</span>
                       {team.currentTier && (
-                        <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-medium text-indigo-700">
+                        <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800">
                           {team.currentTier}
                         </span>
                       )}

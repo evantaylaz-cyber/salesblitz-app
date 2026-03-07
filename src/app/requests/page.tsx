@@ -78,12 +78,12 @@ const TOOL_NAMES: Record<string, string> = {
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: React.ElementType }> = {
   submitted: { label: "Queued", color: "text-blue-700", bg: "bg-blue-50 border-blue-200", icon: Clock },
   researching: { label: "Researching", color: "text-amber-700", bg: "bg-amber-50 border-amber-200", icon: Loader2 },
-  generating: { label: "Generating", color: "text-purple-700", bg: "bg-purple-50 border-purple-200", icon: Loader2 },
+  generating: { label: "Generating", color: "text-green-700", bg: "bg-green-50 border-green-200", icon: Loader2 },
   in_progress: { label: "In Progress", color: "text-amber-700", bg: "bg-amber-50 border-amber-200", icon: Loader2 },
   ready: { label: "Ready", color: "text-emerald-700", bg: "bg-emerald-50 border-emerald-200", icon: CheckCircle2 },
   delivered: { label: "Delivered", color: "text-emerald-700", bg: "bg-emerald-50 border-emerald-200", icon: CheckCircle2 },
   failed: { label: "Failed", color: "text-red-700", bg: "bg-red-50 border-red-200", icon: AlertCircle },
-  awaiting_clarification: { label: "Your Input Needed", color: "text-indigo-700", bg: "bg-indigo-50 border-indigo-200", icon: MessageCircleQuestion },
+  awaiting_clarification: { label: "Your Input Needed", color: "text-emerald-800", bg: "bg-emerald-50 border-emerald-200", icon: MessageCircleQuestion },
 };
 
 const BATCH_STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: React.ElementType }> = {
@@ -93,7 +93,7 @@ const BATCH_STATUS_CONFIG: Record<string, { label: string; color: string; bg: st
   failed: { label: "Failed", color: "text-red-700", bg: "bg-red-50 border-red-200", icon: AlertCircle },
   partial: { label: "Partial", color: "text-amber-700", bg: "bg-amber-50 border-amber-200", icon: AlertCircle },
   submitted: { label: "Queued", color: "text-blue-700", bg: "bg-blue-50 border-blue-200", icon: Clock },
-  awaiting_clarification: { label: "Your Input Needed", color: "text-indigo-700", bg: "bg-indigo-50 border-indigo-200", icon: MessageCircleQuestion },
+  awaiting_clarification: { label: "Your Input Needed", color: "text-emerald-800", bg: "bg-emerald-50 border-emerald-200", icon: MessageCircleQuestion },
 };
 
 export default function RequestsPage() {
@@ -131,7 +131,7 @@ export default function RequestsPage() {
   if (!isLoaded || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-700" />
       </div>
     );
   }
@@ -154,7 +154,7 @@ export default function RequestsPage() {
           <div className="flex items-center gap-3">
             <a
               href="/request/batch"
-              className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition"
+              className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 transition"
             >
               <Layers className="h-4 w-4" />
               New Batch
@@ -171,7 +171,7 @@ export default function RequestsPage() {
             <p className="mt-4 text-gray-500">No requests yet.</p>
             <a
               href="/dashboard"
-              className="mt-4 inline-block text-sm font-medium text-indigo-600 hover:text-indigo-800"
+              className="mt-4 inline-block text-sm font-medium text-emerald-700 hover:text-emerald-900"
             >
               Start a blitz from the dashboard
             </a>
@@ -182,7 +182,7 @@ export default function RequestsPage() {
             {batchJobs.length > 0 && (
               <section>
                 <div className="flex items-center gap-2 mb-4">
-                  <Layers className="h-5 w-5 text-indigo-600" />
+                  <Layers className="h-5 w-5 text-emerald-700" />
                   <h2 className="text-base font-semibold text-gray-900">Batch Jobs</h2>
                   <span className="text-xs text-gray-400 ml-1">({batchJobs.length})</span>
                 </div>
@@ -204,7 +204,7 @@ export default function RequestsPage() {
                       <a
                         key={batch.id}
                         href={`/batch/${batch.id}`}
-                        className="block rounded-xl border bg-white p-5 shadow-sm hover:shadow-md hover:border-indigo-200 transition cursor-pointer"
+                        className="block rounded-xl border bg-white p-5 shadow-sm hover:shadow-md hover:border-emerald-200 transition cursor-pointer"
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
@@ -233,7 +233,7 @@ export default function RequestsPage() {
                                     <span className="text-red-500 ml-1">({failedAccounts} failed)</span>
                                   )}
                                   {awaitingAccounts > 0 && (
-                                    <span className="text-indigo-500 ml-1">({awaitingAccounts} awaiting input)</span>
+                                    <span className="text-emerald-600 ml-1">({awaitingAccounts} awaiting input)</span>
                                   )}
                                 </span>
                                 <span className="text-xs text-gray-400 ml-auto">
@@ -248,10 +248,10 @@ export default function RequestsPage() {
                                       : batch.status === "partial"
                                       ? "bg-amber-400"
                                       : batch.status === "awaiting_clarification"
-                                      ? "bg-indigo-400"
+                                      ? "bg-emerald-400"
                                       : progress === 100
                                       ? "bg-emerald-500"
-                                      : "bg-indigo-500"
+                                      : "bg-emerald-500"
                                   }`}
                                   style={{ width: `${Math.max(progress, batch.status === "awaiting_clarification" ? 10 : 0)}%` }}
                                 />
@@ -265,7 +265,7 @@ export default function RequestsPage() {
                           </div>
                           <div className="flex items-center gap-2 ml-4 shrink-0">
                             {batch.status === "awaiting_clarification" ? (
-                              <span className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white">
+                              <span className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white">
                                 <MessageCircleQuestion className="h-4 w-4" />
                                 Review
                               </span>
@@ -288,7 +288,7 @@ export default function RequestsPage() {
               <section>
                 {batchJobs.length > 0 && (
                   <div className="flex items-center gap-2 mb-4">
-                    <Package className="h-5 w-5 text-indigo-600" />
+                    <Package className="h-5 w-5 text-emerald-700" />
                     <h2 className="text-base font-semibold text-gray-900">Individual Requests</h2>
                     <span className="text-xs text-gray-400 ml-1">({requests.length})</span>
                   </div>
@@ -309,7 +309,7 @@ export default function RequestsPage() {
                       <a
                         key={req.id}
                         href={`/requests/${req.id}`}
-                        className="block rounded-xl border bg-white p-5 shadow-sm hover:shadow-md hover:border-indigo-200 transition cursor-pointer"
+                        className="block rounded-xl border bg-white p-5 shadow-sm hover:shadow-md hover:border-emerald-200 transition cursor-pointer"
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
@@ -338,7 +338,7 @@ export default function RequestsPage() {
                               <div className="mt-3">
                                 <div className="flex items-center gap-2 mb-1.5">
                                   {activeStep && (
-                                    <p className="text-xs text-indigo-600 font-medium">
+                                    <p className="text-xs text-emerald-700 font-medium">
                                       {activeStep.label}
                                     </p>
                                   )}
@@ -353,7 +353,7 @@ export default function RequestsPage() {
                                         ? "bg-red-400"
                                         : progress === 100
                                         ? "bg-emerald-500"
-                                        : "bg-indigo-500"
+                                        : "bg-emerald-500"
                                     }`}
                                     style={{ width: `${progress}%` }}
                                   />
@@ -375,7 +375,7 @@ export default function RequestsPage() {
                                   e.preventDefault();
                                   window.location.href = `/request/${req.id}/clarify`;
                                 }}
-                                className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white cursor-pointer hover:bg-indigo-700 transition"
+                                className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white cursor-pointer hover:bg-emerald-700 transition"
                               >
                                 <MessageCircleQuestion className="h-4 w-4" />
                                 Answer

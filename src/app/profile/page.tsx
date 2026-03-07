@@ -144,8 +144,8 @@ function CollapsibleSection({
         className="flex w-full items-center justify-between px-6 py-4 text-left hover:bg-gray-50 transition"
       >
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-50">
-            <Icon className="h-5 w-5 text-indigo-600" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-50">
+            <Icon className="h-5 w-5 text-emerald-700" />
           </div>
           <div>
             <h3 className="font-semibold text-gray-900">{title}</h3>
@@ -207,7 +207,7 @@ function TextInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition"
+        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition"
       />
       {hint && <p className="mt-1 text-xs text-gray-400">{hint}</p>}
     </div>
@@ -487,7 +487,7 @@ export default function ProfilePage() {
   if (!isLoaded || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-700" />
       </div>
     );
   }
@@ -511,7 +511,7 @@ export default function ProfilePage() {
           <div className="flex items-center gap-3">
             <a
               href="/onboarding/ai-setup"
-              className="flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700 transition hover:bg-indigo-100"
+              className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-800 transition hover:bg-emerald-100"
             >
               <Sparkles className="h-4 w-4" />
               Fill with AI
@@ -519,7 +519,7 @@ export default function ProfilePage() {
             <button
               onClick={saveProfile}
               disabled={saving}
-              className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-700 disabled:opacity-50"
+              className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-700 disabled:opacity-50"
             >
               {saving ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -538,13 +538,13 @@ export default function ProfilePage() {
       <main className="mx-auto max-w-4xl px-6 py-8">
         {/* Intro banner */}
         {!profile.onboardingCompleted && (
-          <div className="mb-6 flex items-start gap-3 rounded-xl border border-indigo-200 bg-indigo-50 p-4">
-            <AlertCircle className="h-5 w-5 text-indigo-600 mt-0.5 shrink-0" />
+          <div className="mb-6 flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+            <AlertCircle className="h-5 w-5 text-emerald-700 mt-0.5 shrink-0" />
             <div>
-              <p className="font-medium text-indigo-900">
+              <p className="font-medium text-emerald-900">
                 Set up your profile for better results
               </p>
-              <p className="mt-1 text-sm text-indigo-700">
+              <p className="mt-1 text-sm text-emerald-800">
                 Drop your company website below and we&apos;ll auto-fill most of this.
                 The more context you provide, the more personalized your deliverables.
               </p>
@@ -579,12 +579,12 @@ export default function ProfilePage() {
                     value={profile.companyUrl}
                     onChange={(e) => updateField("companyUrl", e.target.value)}
                     placeholder="https://yourcompany.com"
-                    className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition"
+                    className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition"
                   />
                   <button
                     onClick={fetchCompanyFromUrl}
                     disabled={!profile.companyUrl || fetchingCompany}
-                    className="flex items-center gap-1.5 rounded-lg bg-indigo-50 border border-indigo-200 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-100 disabled:opacity-50 disabled:cursor-not-allowed transition whitespace-nowrap"
+                    className="flex items-center gap-1.5 rounded-lg bg-emerald-50 border border-emerald-200 px-4 py-2 text-sm font-medium text-emerald-800 hover:bg-emerald-100 disabled:opacity-50 disabled:cursor-not-allowed transition whitespace-nowrap"
                   >
                     {fetchingCompany ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -616,7 +616,7 @@ export default function ProfilePage() {
                   <select
                     value={profile.preferredTone}
                     onChange={(e) => updateField("preferredTone", e.target.value)}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                   >
                     <option value="professional">Professional</option>
                     <option value="conversational">Conversational</option>
@@ -714,7 +714,7 @@ export default function ProfilePage() {
                 <select
                   value={profile.sellingStyle}
                   onChange={(e) => updateField("sellingStyle", e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                 >
                   <option value="MEDDPICC">MEDDPICC</option>
                   <option value="MEDDIC">MEDDIC</option>
@@ -741,7 +741,7 @@ export default function ProfilePage() {
                   </div>
                   <button
                     onClick={addDealStory}
-                    className="flex items-center gap-1 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-700 hover:bg-indigo-100 transition"
+                    className="flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-800 hover:bg-emerald-100 transition"
                   >
                     <Plus className="h-3 w-3" /> Add Story
                   </button>
@@ -783,12 +783,12 @@ export default function ProfilePage() {
                             updateDealStory(i, "sourceUrl", e.target.value)
                           }
                           placeholder="Paste a case study or blog post URL..."
-                          className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                          className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                         />
                         <button
                           onClick={() => fetchDealStoryFromUrl(i)}
                           disabled={!story.sourceUrl || fetchingStoryUrl === i}
-                          className="flex items-center gap-1 rounded-lg bg-indigo-50 border border-indigo-200 px-3 py-2 text-xs font-medium text-indigo-700 hover:bg-indigo-100 disabled:opacity-50 transition whitespace-nowrap"
+                          className="flex items-center gap-1 rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-2 text-xs font-medium text-emerald-800 hover:bg-emerald-100 disabled:opacity-50 transition whitespace-nowrap"
                         >
                           {fetchingStoryUrl === i ? (
                             <Loader2 className="h-3 w-3 animate-spin" />
@@ -807,7 +807,7 @@ export default function ProfilePage() {
                             updateDealStory(i, "title", e.target.value)
                           }
                           placeholder="Story name"
-                          className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                          className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                         />
                         <input
                           type="text"
@@ -816,7 +816,7 @@ export default function ProfilePage() {
                             updateDealStory(i, "customer", e.target.value)
                           }
                           placeholder="Customer name"
-                          className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                          className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                         />
                       </div>
                       <VoiceTextarea
@@ -844,7 +844,7 @@ export default function ProfilePage() {
                           updateDealStory(i, "metrics", e.target.value)
                         }
                         placeholder="Key metrics (e.g., '$2.1M ACV, 340% ROI')"
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                       />
                     </div>
                   ))}
@@ -864,7 +864,7 @@ export default function ProfilePage() {
                   </div>
                   <button
                     onClick={addValueProp}
-                    className="flex items-center gap-1 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-700 hover:bg-indigo-100 transition"
+                    className="flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-800 hover:bg-emerald-100 transition"
                   >
                     <Plus className="h-3 w-3" /> Add Prop
                   </button>
@@ -904,7 +904,7 @@ export default function ProfilePage() {
                           updateValueProp(i, "headline", e.target.value)
                         }
                         placeholder="Headline (e.g., '60% faster time-to-detection')"
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                       />
                       <VoiceTextarea
                         value={prop.description}
@@ -919,7 +919,7 @@ export default function ProfilePage() {
                           updateValueProp(i, "proofPoint", e.target.value)
                         }
                         placeholder="Proof point (customer quote, stat, case study reference)"
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                       />
                     </div>
                   ))}
@@ -942,7 +942,7 @@ export default function ProfilePage() {
                 <select
                   value={profile.lifecycleStage}
                   onChange={(e) => updateField("lifecycleStage", e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                 >
                   <option value="">Select...</option>
                   <option value="interviewing">Interviewing</option>
@@ -1036,14 +1036,14 @@ export default function ProfilePage() {
         </div>
 
         {/* Knowledge Base link */}
-        <div className="mt-6 rounded-xl border border-indigo-100 bg-indigo-50/50 p-4 flex items-center justify-between">
+        <div className="mt-6 rounded-xl border border-emerald-100 bg-emerald-50/50 p-4 flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-indigo-900">Want even better results?</p>
-            <p className="text-xs text-indigo-700 mt-0.5">Add product docs, competitive intel, and deal stories to your Knowledge Base.</p>
+            <p className="text-sm font-medium text-emerald-900">Want even better results?</p>
+            <p className="text-xs text-emerald-800 mt-0.5">Add product docs, competitive intel, and deal stories to your Knowledge Base.</p>
           </div>
           <a
             href="/knowledge-base"
-            className="shrink-0 flex items-center gap-1.5 rounded-lg border border-indigo-200 bg-white px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-50 transition"
+            className="shrink-0 flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-white px-4 py-2 text-sm font-medium text-emerald-800 hover:bg-emerald-50 transition"
           >
             <BookOpen className="h-4 w-4" />
             Knowledge Base
@@ -1060,7 +1060,7 @@ export default function ProfilePage() {
           <button
             onClick={saveProfile}
             disabled={saving}
-            className="flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-indigo-700 disabled:opacity-50"
+            className="flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-700 disabled:opacity-50"
           >
             {saving ? (
               <Loader2 className="h-4 w-4 animate-spin" />

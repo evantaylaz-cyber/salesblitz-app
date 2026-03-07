@@ -105,7 +105,7 @@ export default function PracticeReviewPage() {
   if (!isLoaded || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-700" />
       </div>
     );
   }
@@ -130,7 +130,7 @@ export default function PracticeReviewPage() {
           </div>
           <button
             onClick={() => router.push("/practice")}
-            className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+            className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
           >
             Practice Again
           </button>
@@ -166,7 +166,7 @@ export default function PracticeReviewPage() {
         {session.cotmScore && (
           <div className="rounded-2xl border bg-white p-6 shadow-sm">
             <div className="flex items-center gap-3 mb-6">
-              <BarChart3 className="h-5 w-5 text-indigo-600" />
+              <BarChart3 className="h-5 w-5 text-emerald-700" />
               <h3 className="text-lg font-bold text-gray-900">Sales Scorecard</h3>
               <span className="ml-auto text-3xl font-bold text-gray-900">
                 {session.cotmScore.overall}/5
@@ -252,7 +252,7 @@ export default function PracticeReviewPage() {
                   <div
                     className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm ${
                       entry.role === "user"
-                        ? "bg-indigo-100 text-indigo-900"
+                        ? "bg-emerald-100 text-emerald-900"
                         : "bg-gray-100 text-gray-800"
                     }`}
                   >

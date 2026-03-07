@@ -85,7 +85,7 @@ export default function SubscribePage() {
   if (!isLoaded) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-700" />
       </div>
     );
   }
@@ -113,7 +113,7 @@ export default function SubscribePage() {
           <button
             onClick={() => setAnnual(!annual)}
             className={`relative h-7 w-12 rounded-full transition ${
-              annual ? "bg-indigo-600" : "bg-gray-300"
+              annual ? "bg-emerald-600" : "bg-gray-300"
             }`}
           >
             <span
@@ -145,12 +145,12 @@ export default function SubscribePage() {
                 key={tier.name}
                 className={`relative rounded-2xl border-2 bg-white p-6 shadow-sm ${
                   tier.highlight
-                    ? "border-indigo-500 ring-1 ring-indigo-500"
+                    ? "border-emerald-500 ring-1 ring-emerald-500"
                     : "border-gray-200"
                 }`}
               >
                 {tier.highlight && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-indigo-600 px-3 py-0.5 text-xs font-semibold text-white">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-emerald-600 px-3 py-0.5 text-xs font-semibold text-white">
                     Most Popular
                   </div>
                 )}
@@ -173,7 +173,7 @@ export default function SubscribePage() {
                   disabled={isLoading}
                   className={`mt-5 w-full rounded-lg px-4 py-3 text-sm font-semibold transition flex items-center justify-center gap-2 ${
                     tier.highlight
-                      ? "bg-indigo-600 text-white hover:bg-indigo-700"
+                      ? "bg-emerald-600 text-white hover:bg-emerald-700"
                       : "bg-gray-900 text-white hover:bg-gray-800"
                   } disabled:opacity-50`}
                 >
@@ -200,7 +200,7 @@ export default function SubscribePage() {
                     </div>
                   ))}
                   {tier.extras?.map((e) => (
-                    <div key={e} className="flex items-center text-sm text-indigo-600 font-medium">
+                    <div key={e} className="flex items-center text-sm text-emerald-700 font-medium">
                       <Star className="mr-2 h-4 w-4 text-amber-500 shrink-0" />
                       {e}
                     </div>

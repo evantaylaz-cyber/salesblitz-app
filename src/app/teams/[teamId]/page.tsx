@@ -165,7 +165,7 @@ export default function TeamDetailPage() {
 
   const roleIcon = (role: string) => {
     if (role === "owner") return <Crown className="h-4 w-4 text-amber-500" />;
-    if (role === "admin") return <Shield className="h-4 w-4 text-indigo-500" />;
+    if (role === "admin") return <Shield className="h-4 w-4 text-emerald-600" />;
     return <User className="h-4 w-4 text-gray-400" />;
   };
 
@@ -192,7 +192,7 @@ export default function TeamDetailPage() {
   if (!isLoaded || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-700" />
       </div>
     );
   }
@@ -247,7 +247,7 @@ export default function TeamDetailPage() {
             {isAdmin && (
               <Link
                 href={`/subscribe?teamId=${team.id}`}
-                className="mt-2 inline-block text-sm text-indigo-600 hover:text-indigo-700"
+                className="mt-2 inline-block text-sm text-emerald-700 hover:text-emerald-800"
               >
                 {team.currentTier ? "Change plan" : "Subscribe"}
               </Link>
@@ -305,12 +305,12 @@ export default function TeamDetailPage() {
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
                 placeholder="colleague@company.com"
-                className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
               />
               <select
                 value={inviteRole}
                 onChange={(e) => setInviteRole(e.target.value)}
-                className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
               >
                 <option value="member">Member</option>
                 <option value="admin">Admin</option>
@@ -318,7 +318,7 @@ export default function TeamDetailPage() {
               <button
                 onClick={inviteMember}
                 disabled={inviting || !inviteEmail.trim()}
-                className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+                className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
               >
                 {inviting ? (
                   <Loader2 className="h-4 w-4 animate-spin" />

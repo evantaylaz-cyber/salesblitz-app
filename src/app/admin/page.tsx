@@ -57,7 +57,7 @@ const TOOL_NAMES: Record<string, string> = {
 const STATUS_ACTIONS: Record<string, { next: string; label: string; icon: React.ElementType; color: string }> = {
   submitted: { next: "in_progress", label: "Start Working", icon: Play, color: "bg-amber-600 hover:bg-amber-700" },
   in_progress: { next: "ready", label: "Mark Ready", icon: CheckCircle2, color: "bg-emerald-600 hover:bg-emerald-700" },
-  ready: { next: "delivered", label: "Mark Delivered", icon: Send, color: "bg-indigo-600 hover:bg-indigo-700" },
+  ready: { next: "delivered", label: "Mark Delivered", icon: Send, color: "bg-emerald-600 hover:bg-emerald-700" },
 };
 
 export default function AdminPage() {
@@ -133,7 +133,7 @@ export default function AdminPage() {
   if (!isLoaded || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-700" />
       </div>
     );
   }
@@ -173,7 +173,7 @@ export default function AdminPage() {
               onClick={() => setStatusFilter(s)}
               className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
                 statusFilter === s
-                  ? "bg-indigo-600 text-white"
+                  ? "bg-emerald-600 text-white"
                   : "bg-white border border-gray-300 text-gray-600 hover:bg-gray-50"
               }`}
             >
@@ -266,7 +266,7 @@ export default function AdminPage() {
                             {req.linkedinUrl && (
                               <p>
                                 <strong>LinkedIn:</strong>{" "}
-                                <a href={req.linkedinUrl} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline inline-flex items-center gap-1">
+                                <a href={req.linkedinUrl} target="_blank" rel="noopener noreferrer" className="text-emerald-700 hover:underline inline-flex items-center gap-1">
                                   Profile <ExternalLink className="h-3 w-3" />
                                 </a>
                               </p>
@@ -282,7 +282,7 @@ export default function AdminPage() {
                               </h4>
                               <button
                                 onClick={() => copyToClipboard(req.linkedinText!)}
-                                className="inline-flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800"
+                                className="inline-flex items-center gap-1 text-xs text-emerald-700 hover:text-emerald-900"
                               >
                                 <Copy className="h-3 w-3" /> Copy
                               </button>
@@ -302,7 +302,7 @@ export default function AdminPage() {
                             </h4>
                             <button
                               onClick={() => copyToClipboard(req.jobDescription!)}
-                              className="inline-flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800"
+                              className="inline-flex items-center gap-1 text-xs text-emerald-700 hover:text-emerald-900"
                             >
                               <Copy className="h-3 w-3" /> Copy
                             </button>
@@ -335,7 +335,7 @@ export default function AdminPage() {
                             value={deliveryUrl}
                             onChange={(e) => setDeliveryUrl(e.target.value)}
                             placeholder="https://drive.google.com/drive/folders/..."
-                            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                           />
                         </div>
                         <div>
@@ -347,7 +347,7 @@ export default function AdminPage() {
                             onChange={(e) => setDeliveryNotes(e.target.value)}
                             rows={2}
                             placeholder="e.g., Your Interview Prep package is ready. Includes POV deck, prep sheet, and outreach sequence."
-                            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-y"
+                            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 resize-y"
                           />
                         </div>
                         <div>
@@ -359,7 +359,7 @@ export default function AdminPage() {
                             onChange={(e) => setAdminNotes(e.target.value)}
                             rows={2}
                             placeholder="Internal notes..."
-                            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-y"
+                            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 resize-y"
                           />
                         </div>
 

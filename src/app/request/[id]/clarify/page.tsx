@@ -137,7 +137,7 @@ export default function ClarifyPage() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
-          <Loader2 className="mx-auto h-8 w-8 animate-spin text-indigo-600" />
+          <Loader2 className="mx-auto h-8 w-8 animate-spin text-emerald-700" />
           <p className="mt-3 text-sm text-gray-500">Loading questions...</p>
         </div>
       </div>
@@ -153,7 +153,7 @@ export default function ClarifyPage() {
           <p className="mt-3 text-gray-600">{error}</p>
           <a
             href="/dashboard"
-            className="mt-4 inline-block text-indigo-600 hover:underline"
+            className="mt-4 inline-block text-emerald-700 hover:underline"
           >
             Back to Dashboard
           </a>
@@ -189,7 +189,7 @@ export default function ClarifyPage() {
           <div className="mt-6 flex gap-3 justify-center">
             <a
               href="/dashboard"
-              className="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-indigo-700"
+              className="rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-700"
             >
               Back to Dashboard
             </a>
@@ -241,17 +241,17 @@ export default function ClarifyPage() {
 
       <main className="mx-auto max-w-3xl px-6 py-8">
         {/* Context banner */}
-        <div className="mb-6 rounded-xl border border-indigo-200 bg-indigo-50 p-4">
+        <div className="mb-6 rounded-xl border border-emerald-200 bg-emerald-50 p-4">
           <div className="flex items-start gap-3">
-            <HelpCircle className="h-5 w-5 text-indigo-600 shrink-0 mt-0.5" />
+            <HelpCircle className="h-5 w-5 text-emerald-700 shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm text-indigo-900">
+              <p className="text-sm text-emerald-900">
                 A few quick questions to significantly improve your deliverables.
                 Current confidence without your input:{" "}
                 <strong>{confidence}%</strong>
               </p>
               {data?.clarificationQuestions?.reasoning && (
-                <p className="mt-1 text-xs text-indigo-700">
+                <p className="mt-1 text-xs text-emerald-800">
                   {data.clarificationQuestions.reasoning}
                 </p>
               )}
@@ -274,7 +274,7 @@ export default function ClarifyPage() {
               className="rounded-xl border bg-white p-6 shadow-sm"
             >
               <div className="flex items-start gap-3 mb-4">
-                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-bold text-indigo-700">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xs font-bold text-emerald-800">
                   {i + 1}
                 </span>
                 <div>
@@ -296,7 +296,7 @@ export default function ClarifyPage() {
                       onClick={() => toggleMultipleChoice(q.id, opt)}
                       className={`rounded-full px-4 py-2 text-sm font-medium transition ${
                         answers[q.id] === opt
-                          ? "bg-indigo-600 text-white shadow-sm"
+                          ? "bg-emerald-600 text-white shadow-sm"
                           : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                       }`}
                     >
@@ -314,7 +314,7 @@ export default function ClarifyPage() {
                         : ""
                     }
                     onChange={(e) => setAnswer(q.id, e.target.value)}
-                    className="mt-2 w-full rounded-lg border border-gray-300 px-3.5 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                    className="mt-2 w-full rounded-lg border border-gray-300 px-3.5 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                   />
                 </div>
               ) : (
@@ -345,7 +345,7 @@ export default function ClarifyPage() {
             <button
               onClick={handleSubmit}
               disabled={submitting || answeredCount === 0}
-              className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {submitting ? (
                 <>

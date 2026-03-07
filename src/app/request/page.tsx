@@ -70,7 +70,7 @@ export default function RequestPage() {
   if (!isLoaded) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-700" />
       </div>
     );
   }
@@ -81,7 +81,7 @@ export default function RequestPage() {
         <div className="text-center">
           <AlertCircle className="mx-auto h-12 w-12 text-red-400" />
           <p className="mt-3 text-gray-600">Invalid tool selected.</p>
-          <a href="/dashboard" className="mt-4 inline-block text-indigo-600 hover:underline">
+          <a href="/dashboard" className="mt-4 inline-block text-emerald-700 hover:underline">
             Back to Dashboard
           </a>
         </div>
@@ -177,7 +177,7 @@ export default function RequestPage() {
             {submittedRequestId && (
               <a
                 href={`/requests/${submittedRequestId}`}
-                className="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-indigo-700"
+                className="rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-700"
               >
                 Track Progress
               </a>
@@ -237,7 +237,7 @@ export default function RequestPage() {
                   value={targetName}
                   onChange={(e) => setTargetName(e.target.value)}
                   placeholder={isInterview ? "e.g., Sarah Chen" : "e.g., Mike Thompson"}
-                  className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                  className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                 />
               </div>
               <div>
@@ -251,7 +251,7 @@ export default function RequestPage() {
                   value={targetCompany}
                   onChange={(e) => setTargetCompany(e.target.value)}
                   placeholder="e.g., Stripe"
-                  className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                  className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                 />
               </div>
             </div>
@@ -266,7 +266,7 @@ export default function RequestPage() {
                   value={targetRole}
                   onChange={(e) => setTargetRole(e.target.value)}
                   placeholder="e.g., VP of Engineering"
-                  className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                  className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                 />
               </div>
               <div>
@@ -279,7 +279,7 @@ export default function RequestPage() {
                   value={targetCompanyUrl}
                   onChange={(e) => setTargetCompanyUrl(e.target.value)}
                   placeholder="https://stripe.com"
-                  className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                  className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                 />
                 <p className="mt-1 text-xs text-gray-400">Optional — we&apos;ll research them either way</p>
               </div>
@@ -305,7 +305,7 @@ export default function RequestPage() {
                       onClick={() => setMeetingType("mock_pitch")}
                       className={`rounded-lg border p-4 text-left transition ${
                         meetingType === "mock_pitch"
-                          ? "border-indigo-500 bg-indigo-50 ring-1 ring-indigo-500"
+                          ? "border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500"
                           : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                       }`}
                     >
@@ -319,7 +319,7 @@ export default function RequestPage() {
                       onClick={() => setMeetingType("hiring_manager")}
                       className={`rounded-lg border p-4 text-left transition ${
                         meetingType === "hiring_manager"
-                          ? "border-indigo-500 bg-indigo-50 ring-1 ring-indigo-500"
+                          ? "border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500"
                           : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                       }`}
                     >
@@ -336,7 +336,7 @@ export default function RequestPage() {
                       onClick={() => setMeetingType("discovery")}
                       className={`rounded-lg border p-4 text-left transition ${
                         meetingType === "discovery"
-                          ? "border-indigo-500 bg-indigo-50 ring-1 ring-indigo-500"
+                          ? "border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500"
                           : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                       }`}
                     >
@@ -350,7 +350,7 @@ export default function RequestPage() {
                       onClick={() => setMeetingType("follow_up")}
                       className={`rounded-lg border p-4 text-left transition ${
                         meetingType === "follow_up"
-                          ? "border-indigo-500 bg-indigo-50 ring-1 ring-indigo-500"
+                          ? "border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500"
                           : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                       }`}
                     >
@@ -364,7 +364,7 @@ export default function RequestPage() {
                       onClick={() => setMeetingType("pitch")}
                       className={`rounded-lg border p-4 text-left transition ${
                         meetingType === "pitch"
-                          ? "border-indigo-500 bg-indigo-50 ring-1 ring-indigo-500"
+                          ? "border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500"
                           : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                       }`}
                     >
@@ -378,7 +378,7 @@ export default function RequestPage() {
                       onClick={() => setMeetingType("closing")}
                       className={`rounded-lg border p-4 text-left transition ${
                         meetingType === "closing"
-                          ? "border-indigo-500 bg-indigo-50 ring-1 ring-indigo-500"
+                          ? "border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500"
                           : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
                       }`}
                     >
@@ -409,7 +409,7 @@ export default function RequestPage() {
                 value={linkedinUrl}
                 onChange={(e) => setLinkedinUrl(e.target.value)}
                 placeholder="https://linkedin.com/in/..."
-                className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
               />
             </div>
             <div>
@@ -456,7 +456,7 @@ export default function RequestPage() {
                   <select
                     value={engagementType}
                     onChange={(e) => setEngagementType(e.target.value)}
-                    className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                    className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                   >
                     <option value="">Select...</option>
                     <option value="cold_outreach">Cold Outreach</option>
@@ -477,7 +477,7 @@ export default function RequestPage() {
                     type="date"
                     value={meetingDate}
                     onChange={(e) => setMeetingDate(e.target.value)}
-                    className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                    className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                   />
                 </div>
                 <div>
@@ -516,13 +516,13 @@ export default function RequestPage() {
                     value={jobPostingUrl}
                     onChange={(e) => setJobPostingUrl(e.target.value)}
                     placeholder="https://boards.greenhouse.io/stripe/jobs/..."
-                    className="flex-1 rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                    className="flex-1 rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                   />
                   <button
                     type="button"
                     onClick={fetchJobDescription}
                     disabled={!jobPostingUrl || fetchingJd}
-                    className="flex items-center gap-1.5 rounded-lg bg-indigo-50 border border-indigo-200 px-4 py-2.5 text-sm font-medium text-indigo-700 hover:bg-indigo-100 disabled:opacity-50 disabled:cursor-not-allowed transition whitespace-nowrap"
+                    className="flex items-center gap-1.5 rounded-lg bg-emerald-50 border border-emerald-200 px-4 py-2.5 text-sm font-medium text-emerald-800 hover:bg-emerald-100 disabled:opacity-50 disabled:cursor-not-allowed transition whitespace-nowrap"
                   >
                     {fetchingJd ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -655,7 +655,7 @@ export default function RequestPage() {
             <button
               type="submit"
               disabled={submitting || !targetName || !targetCompany}
-              className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {submitting ? (
                 <>

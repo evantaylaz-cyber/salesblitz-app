@@ -215,7 +215,7 @@ export default function BatchProgressPage() {
                 batchJob.status === "failed" ? "bg-red-500"
                 : batchJob.percentComplete === 100 ? "bg-emerald-500"
                 : isAwaiting ? "bg-yellow-500"
-                : "bg-indigo-500"
+                : "bg-emerald-500"
               }`} style={{ width: `${batchJob.percentComplete}%` }} />
             </div>
           </div>
@@ -258,7 +258,7 @@ export default function BatchProgressPage() {
                   <div className="h-1.5 rounded-full bg-zinc-800/60 overflow-hidden">
                     <div className={`h-full rounded-full transition-all duration-500 ${
                       step.status === "completed" ? "bg-emerald-500 w-full"
-                      : step.status === "in_progress" ? "bg-indigo-500 w-1/2"
+                      : step.status === "in_progress" ? "bg-emerald-500 w-1/2"
                       : step.status === "failed" ? "bg-red-500 w-full"
                       : "bg-zinc-700/50 w-0"
                     }`} />
@@ -279,7 +279,7 @@ export default function BatchProgressPage() {
                 return (
                   <button key={account.requestId}
                     onClick={() => account.requestId ? router.push(`/requests/${account.requestId}`) : undefined}
-                    className={`w-full text-left rounded-lg border px-4 py-3 transition hover:border-indigo-500/50 ${statusColor.bg}`}>
+                    className={`w-full text-left rounded-lg border px-4 py-3 transition hover:border-emerald-500/50 ${statusColor.bg}`}>
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
@@ -339,7 +339,7 @@ export default function BatchProgressPage() {
               {batchJob.batchAssetUrls.map((asset: any, idx: number) => (
                 <a key={idx} href={asset.url} target="_blank" rel="noopener noreferrer"
                   className="flex items-center gap-3 rounded-lg border border-zinc-800/60 bg-zinc-800/20 px-4 py-3 hover:bg-zinc-800/40 transition">
-                  <FileText className="h-5 w-5 text-indigo-400" />
+                  <FileText className="h-5 w-5 text-emerald-400" />
                   <span className="flex-1 text-sm font-medium text-white">{asset.label || asset.id || `Asset ${idx + 1}`}</span>
                   <span className="text-zinc-500">↗</span>
                 </a>

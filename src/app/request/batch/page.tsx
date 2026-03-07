@@ -199,7 +199,7 @@ export default function BatchRequestPage() {
             <select
               value={toolName}
               onChange={(e) => setToolName(e.target.value as typeof toolName)}
-              className="w-full rounded-xl border border-zinc-800/60 bg-zinc-900/50 px-4 py-3 text-white placeholder-zinc-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition"
+              className="w-full rounded-xl border border-zinc-800/60 bg-zinc-900/50 px-4 py-3 text-white placeholder-zinc-500 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition"
             >
               {TOOL_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -217,7 +217,7 @@ export default function BatchRequestPage() {
             <select
               value={batchType}
               onChange={(e) => setBatchType(e.target.value as typeof batchType)}
-              className="w-full rounded-xl border border-zinc-800/60 bg-zinc-900/50 px-4 py-3 text-white placeholder-zinc-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition"
+              className="w-full rounded-xl border border-zinc-800/60 bg-zinc-900/50 px-4 py-3 text-white placeholder-zinc-500 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition"
             >
               {BATCH_TYPE_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -254,7 +254,7 @@ export default function BatchRequestPage() {
                         value={account.targetName}
                         onChange={(e) => updateAccount(account.id, "targetName", e.target.value)}
                         placeholder="e.g., John Smith"
-                        className="w-full rounded-lg border border-zinc-800/60 bg-zinc-900/50 px-3 py-2 text-sm text-white placeholder-zinc-600 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition"
+                        className="w-full rounded-lg border border-zinc-800/60 bg-zinc-900/50 px-3 py-2 text-sm text-white placeholder-zinc-600 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition"
                       />
                     </div>
                     <div>
@@ -266,7 +266,7 @@ export default function BatchRequestPage() {
                         value={account.targetCompany}
                         onChange={(e) => updateAccount(account.id, "targetCompany", e.target.value)}
                         placeholder="e.g., Acme Corp"
-                        className="w-full rounded-lg border border-zinc-800/60 bg-zinc-900/50 px-3 py-2 text-sm text-white placeholder-zinc-600 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition"
+                        className="w-full rounded-lg border border-zinc-800/60 bg-zinc-900/50 px-3 py-2 text-sm text-white placeholder-zinc-600 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition"
                       />
                     </div>
                   </div>
@@ -280,7 +280,7 @@ export default function BatchRequestPage() {
                       value={account.targetRole}
                       onChange={(e) => updateAccount(account.id, "targetRole", e.target.value)}
                       placeholder="e.g., VP Sales"
-                      className="w-full rounded-lg border border-zinc-800/60 bg-zinc-900/50 px-3 py-2 text-sm text-white placeholder-zinc-600 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition"
+                      className="w-full rounded-lg border border-zinc-800/60 bg-zinc-900/50 px-3 py-2 text-sm text-white placeholder-zinc-600 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition"
                     />
                   </div>
 
@@ -294,7 +294,7 @@ export default function BatchRequestPage() {
                         value={account.linkedinUrl}
                         onChange={(e) => updateAccount(account.id, "linkedinUrl", e.target.value)}
                         placeholder="https://linkedin.com/in/..."
-                        className="w-full rounded-lg border border-zinc-800/60 bg-zinc-900/50 px-3 py-2 text-sm text-white placeholder-zinc-600 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition"
+                        className="w-full rounded-lg border border-zinc-800/60 bg-zinc-900/50 px-3 py-2 text-sm text-white placeholder-zinc-600 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition"
                       />
                     </div>
                     <div>
@@ -306,7 +306,7 @@ export default function BatchRequestPage() {
                         value={account.targetCompanyUrl}
                         onChange={(e) => updateAccount(account.id, "targetCompanyUrl", e.target.value)}
                         placeholder="https://acmecorp.com"
-                        className="w-full rounded-lg border border-zinc-800/60 bg-zinc-900/50 px-3 py-2 text-sm text-white placeholder-zinc-600 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition"
+                        className="w-full rounded-lg border border-zinc-800/60 bg-zinc-900/50 px-3 py-2 text-sm text-white placeholder-zinc-600 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition"
                       />
                     </div>
                   </div>
@@ -350,7 +350,7 @@ export default function BatchRequestPage() {
                 onChange={(e) =>
                   updateSharedContext("engagementType", e.target.value as any)
                 }
-                className="w-full rounded-lg border border-zinc-800/60 bg-zinc-900/50 px-3 py-2 text-sm text-white placeholder-zinc-500 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition"
+                className="w-full rounded-lg border border-zinc-800/60 bg-zinc-900/50 px-3 py-2 text-sm text-white placeholder-zinc-500 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition"
               >
                 {ENGAGEMENT_TYPE_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -370,7 +370,7 @@ export default function BatchRequestPage() {
                   onChange={(e) => updateSharedContext("additionalNotes", e.target.value)}
                   placeholder="Any additional context for the batch (optional)"
                   rows={4}
-                  className={`w-full rounded-lg border bg-zinc-900/50 px-3 py-2 text-sm text-white placeholder-zinc-600 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition resize-none ${
+                  className={`w-full rounded-lg border bg-zinc-900/50 px-3 py-2 text-sm text-white placeholder-zinc-600 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition resize-none ${
                     isListening ? "border-red-500/50" : "border-zinc-800/60"
                   } ${voiceSupported ? "pr-10" : ""}`}
                 />
@@ -393,8 +393,8 @@ export default function BatchRequestPage() {
           </div>
 
           {/* Run Cost Display */}
-          <div className="rounded-lg border border-indigo-500/20 bg-indigo-950/30 p-4">
-            <div className="flex items-center gap-2 text-sm text-indigo-300">
+          <div className="rounded-lg border border-emerald-500/20 bg-emerald-950/30 p-4">
+            <div className="flex items-center gap-2 text-sm text-emerald-300">
               <Zap className="h-4 w-4" />
               This will use <span className="font-semibold">{runsCost}</span> run
               {runsCost !== 1 ? "s" : ""} from your balance
@@ -421,7 +421,7 @@ export default function BatchRequestPage() {
             <button
               type="submit"
               disabled={!isValid || loading}
-              className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-3 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+              className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-4 py-3 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
             >
               {loading ? (
                 <>

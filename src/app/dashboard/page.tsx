@@ -244,7 +244,7 @@ export default function DashboardPage() {
   if (!isLoaded || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-700" />
       </div>
     );
   }
@@ -259,7 +259,7 @@ export default function DashboardPage() {
           <div className="flex items-center gap-3">
             <h1 className="text-xl font-bold text-gray-900">Sales Blitz</h1>
             {hasSubscription && (
-              <span className="rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-700">
+              <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800">
                 {TIER_NAMES[userData!.currentTier!]}
               </span>
             )}
@@ -275,7 +275,7 @@ export default function DashboardPage() {
             <a href="/requests" className="relative text-sm text-gray-600 hover:text-gray-900">
               Requests
               {pendingRequests > 0 && (
-                <span className="absolute -top-1.5 -right-3 flex h-4 w-4 items-center justify-center rounded-full bg-indigo-600 text-[10px] font-bold text-white">
+                <span className="absolute -top-1.5 -right-3 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-600 text-[10px] font-bold text-white">
                   {pendingRequests}
                 </span>
               )}
@@ -305,7 +305,7 @@ export default function DashboardPage() {
             )}
             <a
               href="/subscribe"
-              className="text-sm font-medium text-indigo-600 hover:text-indigo-800"
+              className="text-sm font-medium text-emerald-700 hover:text-emerald-900"
             >
               {hasSubscription ? "Upgrade" : "Subscribe"}
             </a>
@@ -317,7 +317,7 @@ export default function DashboardPage() {
             <a href="/requests" className="relative text-sm text-gray-600 hover:text-gray-900">
               Requests
               {pendingRequests > 0 && (
-                <span className="absolute -top-1.5 -right-3 flex h-4 w-4 items-center justify-center rounded-full bg-indigo-600 text-[10px] font-bold text-white">
+                <span className="absolute -top-1.5 -right-3 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-600 text-[10px] font-bold text-white">
                   {pendingRequests}
                 </span>
               )}
@@ -360,7 +360,7 @@ export default function DashboardPage() {
             )}
             <a
               href="/subscribe"
-              className="block rounded-lg px-3 py-2.5 text-sm font-medium text-indigo-600 hover:bg-indigo-50"
+              className="block rounded-lg px-3 py-2.5 text-sm font-medium text-emerald-700 hover:bg-emerald-50"
             >
               {hasSubscription ? "Upgrade" : "Subscribe"}
             </a>
@@ -375,7 +375,7 @@ export default function DashboardPage() {
           <div className="rounded-xl border bg-white p-5 shadow-sm">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-gray-500">Subscription</span>
-              <Zap className="h-4 w-4 text-indigo-500" />
+              <Zap className="h-4 w-4 text-emerald-600" />
             </div>
             <p className="mt-2 text-2xl font-bold text-gray-900">
               {hasSubscription ? userData!.subscriptionRunsRemaining : 0}
@@ -386,7 +386,7 @@ export default function DashboardPage() {
             {hasSubscription && userData!.subscriptionRunsTotal > 0 && (
               <div className="mt-3 h-1.5 rounded-full bg-gray-100">
                 <div
-                  className="h-1.5 rounded-full bg-indigo-500 transition-all"
+                  className="h-1.5 rounded-full bg-emerald-500 transition-all"
                   style={{
                     width: `${(userData!.subscriptionRunsRemaining / userData!.subscriptionRunsTotal) * 100}%`,
                   }}
@@ -435,7 +435,7 @@ export default function DashboardPage() {
             <p className="mt-2 text-2xl font-bold text-gray-900">{totalAvailableRuns()}</p>
             <a
               href="/subscribe#packs"
-              className="mt-2 inline-flex items-center text-xs font-medium text-indigo-600 hover:text-indigo-800"
+              className="mt-2 inline-flex items-center text-xs font-medium text-emerald-700 hover:text-emerald-900"
             >
               Buy more <ChevronRight className="ml-0.5 h-3 w-3" />
             </a>
@@ -444,10 +444,10 @@ export default function DashboardPage() {
 
         {/* AI Profile Setup Banner — depth-aware */}
         {onboardingDepth < 4 && (
-          <div className="mb-8 flex items-center justify-between rounded-xl border border-indigo-200 bg-gradient-to-r from-indigo-50 to-white p-5 shadow-sm">
+          <div className="mb-8 flex items-center justify-between rounded-xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-white p-5 shadow-sm">
             <div className="flex items-center gap-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100">
-                <Sparkles className="h-5 w-5 text-indigo-600" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100">
+                <Sparkles className="h-5 w-5 text-emerald-700" />
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900">
@@ -468,7 +468,7 @@ export default function DashboardPage() {
                       <div
                         key={level}
                         className={`h-1.5 w-8 rounded-full ${
-                          level <= onboardingDepth ? "bg-indigo-500" : "bg-gray-200"
+                          level <= onboardingDepth ? "bg-emerald-500" : "bg-gray-200"
                         }`}
                       />
                     ))}
@@ -486,7 +486,7 @@ export default function DashboardPage() {
               </a>
               <button
                 onClick={() => setChatOpen(true)}
-                className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition whitespace-nowrap"
+                className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 transition whitespace-nowrap"
               >
                 <Sparkles className="h-4 w-4" />
                 {onboardingDepth === 0 ? "Start" : "Continue"}
@@ -512,7 +512,7 @@ export default function DashboardPage() {
               </div>
               <a
                 href="/demo/prospect_prep"
-                className="flex items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700 hover:bg-indigo-100 transition whitespace-nowrap"
+                className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-800 hover:bg-emerald-100 transition whitespace-nowrap"
               >
                 <Eye className="h-4 w-4" />
                 View
@@ -561,7 +561,7 @@ export default function DashboardPage() {
                     <button
                       onClick={() => handleRunTool(tool.id)}
                       disabled={totalAvailableRuns() === 0}
-                      className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      className="w-full rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                       {totalAvailableRuns() === 0 ? (
                         "No Blitzes Remaining"
@@ -574,7 +574,7 @@ export default function DashboardPage() {
                   ) : (
                     <a
                       href="/subscribe"
-                      className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-indigo-200 bg-indigo-50 px-4 py-2.5 text-sm font-medium text-indigo-700 transition hover:bg-indigo-100"
+                      className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-medium text-emerald-800 transition hover:bg-emerald-100"
                     >
                       <ArrowUpRight className="h-4 w-4" />
                       Unlock with {TIER_NAMES[tool.minimumTier]}

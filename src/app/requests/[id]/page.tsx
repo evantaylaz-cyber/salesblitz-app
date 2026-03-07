@@ -90,15 +90,15 @@ const STEP_ICONS: Record<string, React.ElementType> = {
 const STATUS_STYLES: Record<string, { ring: string; bg: string; text: string; icon: string }> = {
   submitted: { ring: "ring-blue-200", bg: "bg-blue-50", text: "text-blue-700", icon: "text-blue-400" },
   researching: { ring: "ring-amber-200", bg: "bg-amber-50", text: "text-amber-700", icon: "text-amber-500" },
-  generating: { ring: "ring-purple-200", bg: "bg-purple-50", text: "text-purple-700", icon: "text-purple-500" },
+  generating: { ring: "ring-green-200", bg: "bg-green-50", text: "text-green-700", icon: "text-green-500" },
   ready: { ring: "ring-emerald-200", bg: "bg-emerald-50", text: "text-emerald-700", icon: "text-emerald-500" },
   delivered: { ring: "ring-emerald-200", bg: "bg-emerald-50", text: "text-emerald-700", icon: "text-emerald-500" },
   failed: { ring: "ring-red-200", bg: "bg-red-50", text: "text-red-700", icon: "text-red-500" },
-  awaiting_clarification: { ring: "ring-indigo-200", bg: "bg-indigo-50", text: "text-indigo-700", icon: "text-indigo-500" },
+  awaiting_clarification: { ring: "ring-emerald-200", bg: "bg-emerald-50", text: "text-emerald-800", icon: "text-emerald-600" },
 };
 
 const ASSET_CATEGORY_LABELS: Record<string, { label: string; color: string }> = {
-  interactive: { label: "Interactive", color: "bg-indigo-100 text-indigo-700" },
+  interactive: { label: "Interactive", color: "bg-emerald-100 text-emerald-800" },
   research: { label: "Research", color: "bg-blue-100 text-blue-700" },
   deliverable: { label: "Deliverable", color: "bg-emerald-100 text-emerald-700" },
 };
@@ -191,7 +191,7 @@ export default function RequestDetailPage() {
   if (!isLoaded || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-700" />
       </div>
     );
   }
@@ -202,7 +202,7 @@ export default function RequestDetailPage() {
         <div className="text-center">
           <AlertCircle className="mx-auto h-12 w-12 text-red-400" />
           <p className="mt-4 text-gray-600">{error || "Request not found"}</p>
-          <a href="/requests" className="mt-4 inline-block text-sm font-medium text-indigo-600 hover:text-indigo-800">
+          <a href="/requests" className="mt-4 inline-block text-sm font-medium text-emerald-700 hover:text-emerald-900">
             ← Back to requests
           </a>
         </div>
@@ -263,7 +263,7 @@ export default function RequestDetailPage() {
               className={`h-full rounded-full transition-all duration-700 ease-out ${
                 request.status === "failed" ? "bg-red-500" :
                 request.progress === 100 ? "bg-emerald-500" :
-                "bg-indigo-500"
+                "bg-emerald-500"
               }`}
               style={{ width: `${request.progress}%` }}
             />
@@ -291,7 +291,7 @@ export default function RequestDetailPage() {
                 <button
                   onClick={retryRequest}
                   disabled={retrying}
-                  className="mt-3 inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50 transition"
+                  className="mt-3 inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50 transition"
                 >
                   {retrying ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -307,17 +307,17 @@ export default function RequestDetailPage() {
 
         {/* Clarification Banner */}
         {request.status === "awaiting_clarification" && (
-          <div className="rounded-xl border border-indigo-200 bg-indigo-50 p-6">
+          <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-6">
             <div className="flex items-start gap-4">
-              <MessageCircleQuestion className="h-6 w-6 text-indigo-600 shrink-0 mt-0.5" />
+              <MessageCircleQuestion className="h-6 w-6 text-emerald-700 shrink-0 mt-0.5" />
               <div className="flex-1">
-                <h3 className="font-semibold text-indigo-900">We have a few questions</h3>
-                <p className="mt-1 text-sm text-indigo-700">
+                <h3 className="font-semibold text-emerald-900">We have a few questions</h3>
+                <p className="mt-1 text-sm text-emerald-800">
                   Answering these will significantly improve your deliverables. Takes about 2 minutes.
                 </p>
                 <a
                   href={`/request/${request.id}/clarify`}
-                  className="mt-4 inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 transition"
+                  className="mt-4 inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 transition"
                 >
                   <MessageCircleQuestion className="h-4 w-4" />
                   Answer Questions
@@ -343,7 +343,7 @@ export default function RequestDetailPage() {
                 <div
                   key={step.id}
                   className={`flex items-start gap-4 px-6 py-4 transition ${
-                    isActive ? "bg-indigo-50/50" : ""
+                    isActive ? "bg-emerald-50/50" : ""
                   }`}
                 >
                   {/* Step indicator */}
@@ -351,7 +351,7 @@ export default function RequestDetailPage() {
                     {isComplete ? (
                       <CheckCircle2 className="h-5 w-5 text-emerald-500" />
                     ) : isActive ? (
-                      <Loader2 className="h-5 w-5 text-indigo-500 animate-spin" />
+                      <Loader2 className="h-5 w-5 text-emerald-600 animate-spin" />
                     ) : isFailed ? (
                       <AlertCircle className="h-5 w-5 text-red-500" />
                     ) : (
@@ -363,12 +363,12 @@ export default function RequestDetailPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <StepIcon className={`h-4 w-4 ${
-                        isActive ? "text-indigo-500" :
+                        isActive ? "text-emerald-600" :
                         isComplete ? "text-gray-400" :
                         "text-gray-300"
                       }`} />
                       <span className={`text-sm font-medium ${
-                        isActive ? "text-indigo-700" :
+                        isActive ? "text-emerald-800" :
                         isComplete ? "text-gray-700" :
                         isFailed ? "text-red-700" :
                         "text-gray-400"
@@ -432,7 +432,7 @@ export default function RequestDetailPage() {
                             {asset.label}
                           </span>
                           <span className="text-xs text-gray-400 uppercase">{asset.format}</span>
-                          <ExternalLink className="h-4 w-4 text-gray-300 group-hover:text-indigo-500" />
+                          <ExternalLink className="h-4 w-4 text-gray-300 group-hover:text-emerald-600" />
                         </a>
                       ))}
                     </div>
@@ -460,7 +460,7 @@ export default function RequestDetailPage() {
                   <button
                     onClick={retryRequest}
                     disabled={retrying}
-                    className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50 transition"
+                    className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50 transition"
                   >
                     {retrying ? (
                       <Loader2 className="h-4 w-4 animate-spin" />

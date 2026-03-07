@@ -14,7 +14,7 @@ export default async function Image() {
           height: "100%",
           display: "flex",
           flexDirection: "column",
-          background: "linear-gradient(135deg, #312e81 0%, #4338ca 40%, #6366f1 100%)",
+          background: "linear-gradient(135deg, #064e3b 0%, #059669 40%, #34d399 100%)",
           padding: "60px 80px",
           fontFamily: "system-ui, -apple-system, sans-serif",
           position: "relative",

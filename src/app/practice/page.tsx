@@ -95,7 +95,7 @@ export default function PracticeLanding() {
   if (!isLoaded || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-700" />
       </div>
     );
   }
@@ -109,7 +109,7 @@ export default function PracticeLanding() {
               <ArrowLeft className="h-5 w-5" />
             </a>
             <div className="flex items-center gap-2">
-              <Video className="h-5 w-5 text-indigo-600" />
+              <Video className="h-5 w-5 text-emerald-700" />
               <h1 className="text-xl font-bold text-gray-900">AI Practice Mode</h1>
             </div>
           </div>
@@ -124,7 +124,7 @@ export default function PracticeLanding() {
 
       <main className="mx-auto max-w-5xl px-6 py-10">
         {/* Start New Session */}
-        <div className="rounded-2xl border-2 border-indigo-200 bg-white p-8 shadow-sm">
+        <div className="rounded-2xl border-2 border-emerald-200 bg-white p-8 shadow-sm">
           <h2 className="text-lg font-bold text-gray-900">Start a Practice Session</h2>
           <p className="mt-1 text-sm text-gray-500">
             Name a target company. We'll generate a buyer persona from real research and you'll practice
@@ -139,7 +139,7 @@ export default function PracticeLanding() {
                 value={targetCompany}
                 onChange={(e) => setTargetCompany(e.target.value)}
                 placeholder="e.g. CBRE, Salesforce, Home Depot"
-                className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                 onKeyDown={(e) => e.key === "Enter" && handleStart()}
               />
             </div>
@@ -148,7 +148,7 @@ export default function PracticeLanding() {
               <select
                 value={meetingType}
                 onChange={(e) => setMeetingType(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
               >
                 <option value="discovery">Discovery Call</option>
                 <option value="follow_up">Follow-Up</option>
@@ -166,7 +166,7 @@ export default function PracticeLanding() {
           <button
             onClick={handleStart}
             disabled={starting || usage.used >= tierCap}
-            className="mt-6 flex items-center gap-2 rounded-lg bg-indigo-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:opacity-50"
+            className="mt-6 flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:opacity-50"
           >
             {starting ? (
               <>
@@ -189,7 +189,7 @@ export default function PracticeLanding() {
               <h2 className="text-lg font-bold text-gray-900">Recent Sessions</h2>
               <a
                 href="/practice/history"
-                className="text-sm text-indigo-600 hover:text-indigo-800"
+                className="text-sm text-emerald-700 hover:text-emerald-900"
               >
                 View All
               </a>
@@ -200,11 +200,11 @@ export default function PracticeLanding() {
                 <a
                   key={s.id}
                   href={s.status === "completed" ? `/practice/${s.id}/review` : `/practice/${s.id}`}
-                  className="flex items-center justify-between rounded-xl border bg-white p-4 shadow-sm transition hover:border-indigo-300 hover:shadow"
+                  className="flex items-center justify-between rounded-xl border bg-white p-4 shadow-sm transition hover:border-emerald-300 hover:shadow"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-50">
-                      <Target className="h-5 w-5 text-indigo-600" />
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-50">
+                      <Target className="h-5 w-5 text-emerald-700" />
                     </div>
                     <div>
                       <p className="font-medium text-gray-900">{s.targetCompany}</p>

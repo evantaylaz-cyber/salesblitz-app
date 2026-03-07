@@ -67,7 +67,7 @@ export default function PracticeHistoryPage() {
   if (!isLoaded || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-700" />
       </div>
     );
   }
@@ -81,7 +81,7 @@ export default function PracticeHistoryPage() {
               <ArrowLeft className="h-5 w-5" />
             </button>
             <div className="flex items-center gap-2">
-              <Video className="h-5 w-5 text-indigo-600" />
+              <Video className="h-5 w-5 text-emerald-700" />
               <h1 className="text-xl font-bold text-gray-900">Practice History</h1>
             </div>
           </div>
@@ -117,7 +117,7 @@ export default function PracticeHistoryPage() {
             <p className="mt-3 text-gray-500">No practice sessions yet.</p>
             <button
               onClick={() => router.push("/practice")}
-              className="mt-4 rounded-lg bg-indigo-600 px-6 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+              className="mt-4 rounded-lg bg-emerald-600 px-6 py-2 text-sm font-medium text-white hover:bg-emerald-700"
             >
               Start Your First Session
             </button>
@@ -128,11 +128,11 @@ export default function PracticeHistoryPage() {
               <a
                 key={s.id}
                 href={s.status === "completed" ? `/practice/${s.id}/review` : `/practice/${s.id}`}
-                className="flex items-center justify-between rounded-xl border bg-white p-4 shadow-sm transition hover:border-indigo-300 hover:shadow"
+                className="flex items-center justify-between rounded-xl border bg-white p-4 shadow-sm transition hover:border-emerald-300 hover:shadow"
               >
                 <div className="flex items-center gap-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-50">
-                    <Target className="h-5 w-5 text-indigo-600" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-50">
+                    <Target className="h-5 w-5 text-emerald-700" />
                   </div>
                   <div>
                     <p className="font-medium text-gray-900">{s.targetCompany}</p>
