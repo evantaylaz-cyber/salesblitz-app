@@ -536,9 +536,6 @@ export default async function LandingPage() {
                     <Mail className="h-4 w-4" />
                     Talk to Us
                   </a>
-                  <p className="mt-3 text-xs text-gray-500">
-                    hello@salesblitz.ai
-                  </p>
                 </div>
               </div>
             </div>
