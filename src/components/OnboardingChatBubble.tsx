@@ -18,33 +18,32 @@ import {
 } from "lucide-react";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
 
-const PHASES = [
-  { id: "identity", label: "Identity & Role" },
-  { id: "stories", label: "Deal Stories" },
-  { id: "methodology", label: "Selling Style" },
-  { id: "situation", label: "Current Situation" },
+const LAYERS = [
+  { depth: 1, label: "Essentials" },
+  { depth: 2, label: "Methodology" },
+  { depth: 3, label: "Territory" },
+  { depth: 4, label: "Writing Style" },
 ];
 
 interface OnboardingChatBubbleProps {
   /** If true, the chat panel starts open */
   defaultOpen?: boolean;
-  /** Callback when onboarding completes */
-  onComplete?: () => void;
-  /** Whether user already completed onboarding (from DB) */
-  alreadyCompleted?: boolean;
+  /** Callback when onboarding depth changes */
+  onDepthChange?: (depth: number) => void;
+  /** Current onboarding depth from DB (0-4) */
+  currentDepth?: number;
 }
 
 export default function OnboardingChatBubble({
   defaultOpen = false,
-  onComplete,
-  alreadyCompleted = false,
+  onDepthChange,
+  currentDepth = 0,
 }: OnboardingChatBubbleProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const [isMinimized, setIsMinimized] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const [completedPhases, setCompletedPhases] = useState<Set<string>>(new Set());
-  const [onboardingDone, setOnboardingDone] = useState(false);
+  const [depth, setDepth] = useState(currentDepth);
   const [hasInteracted, setHasInteracted] = useState(false);
 
   const { messages, input, handleInputChange, handleSubmit, isLoading, setInput, append, error } =
@@ -55,18 +54,11 @@ export default function OnboardingChatBubble({
         console.error("[OnboardingChat] Error:", err);
       },
       onToolCall: ({ toolCall }) => {
-        if (toolCall.toolName === "save_profile_section") {
+        if (toolCall.toolName === "advance_onboarding_depth") {
           const args = toolCall.args as any;
-          if (args.section === "identity") setCompletedPhases((p) => new Set(p).add("identity"));
-          if (args.section === "methodology") setCompletedPhases((p) => new Set(p).add("methodology"));
-          if (args.section === "situation") setCompletedPhases((p) => new Set(p).add("situation"));
-        }
-        if (toolCall.toolName === "save_deal_story") {
-          setCompletedPhases((p) => new Set(p).add("stories"));
-        }
-        if (toolCall.toolName === "mark_onboarding_complete") {
-          setOnboardingDone(true);
-          onComplete?.();
+          const newDepth = args.depth || 1;
+          setDepth(newDepth);
+          onDepthChange?.(newDepth);
         }
       },
     });
@@ -126,7 +118,7 @@ export default function OnboardingChatBubble({
 
   const showSuggestions = messages.length === 0;
 
-  const profileDone = alreadyCompleted || onboardingDone;
+  const profileDone = depth >= 4;
 
   // Floating button when closed
   if (!isOpen) {
@@ -143,10 +135,10 @@ export default function OnboardingChatBubble({
         ) : (
           <>
             <Sparkles className="h-5 w-5" />
-            <span className="text-sm font-medium">Set Up Profile</span>
-            {completedPhases.size > 0 && (
+            <span className="text-sm font-medium">{depth === 0 ? "Set Up Profile" : "Continue Setup"}</span>
+            {depth > 0 && (
               <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-white/20 text-xs">
-                {completedPhases.size}/4
+                {depth}/4
               </span>
             )}
           </>
@@ -167,7 +159,7 @@ export default function OnboardingChatBubble({
         <div className="flex-1">
           <p className="text-sm font-medium text-gray-900">Sales Blitz Setup</p>
           <p className="text-xs text-gray-500">
-            {onboardingDone ? "Complete" : `${completedPhases.size}/4 sections`}
+            {profileDone ? "Complete" : `${depth}/4 layers`}
           </p>
         </div>
         {isLoading && <Loader2 className="h-4 w-4 animate-spin text-indigo-500" />}
@@ -195,7 +187,7 @@ export default function OnboardingChatBubble({
               {profileDone ? "AI Assistant" : "Profile Setup"}
             </h3>
             <p className="text-xs text-gray-500">
-              {profileDone ? "Ask anything about your runs or profile" : `${completedPhases.size}/4 complete`}
+              {profileDone ? "Ask anything about your runs or profile" : `Layer ${depth}/4`}
             </p>
           </div>
         </div>
@@ -203,13 +195,13 @@ export default function OnboardingChatBubble({
           {/* Progress dots — only during onboarding */}
           {!profileDone && (
             <div className="flex gap-1 mr-2">
-              {PHASES.map((phase) => (
+              {LAYERS.map((layer) => (
                 <div
-                  key={phase.id}
+                  key={layer.depth}
                   className={`h-2 w-2 rounded-full transition-colors ${
-                    completedPhases.has(phase.id) ? "bg-green-500" : "bg-gray-200"
+                    depth >= layer.depth ? "bg-green-500" : "bg-gray-200"
                   }`}
-                  title={phase.label}
+                  title={layer.label}
                 />
               ))}
             </div>
@@ -379,12 +371,12 @@ export default function OnboardingChatBubble({
           </div>
         )}
 
-        {/* Completion CTA */}
-        {onboardingDone && (
+        {/* Layer completion CTA */}
+        {profileDone && (
           <div className="mx-auto text-center py-3">
             <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-50 border border-green-200 text-green-700 text-xs font-medium">
               <CheckCircle2 className="h-3.5 w-3.5" />
-              Profile setup complete
+              Profile fully tuned (4/4)
             </div>
           </div>
         )}
@@ -422,7 +414,7 @@ export default function OnboardingChatBubble({
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
               placeholder={
-                onboardingDone ? "Ask anything or close this chat." : "Type your response..."
+                profileDone ? "Ask anything or update your profile." : "Type your response..."
               }
               rows={1}
               className="w-full resize-none rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent placeholder:text-gray-400 max-h-24 overflow-y-auto"

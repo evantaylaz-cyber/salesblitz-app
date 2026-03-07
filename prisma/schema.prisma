@@ -223,16 +223,43 @@ model UserProfile {
   linkedinExperience    String?  @map("linkedin_experience") @db.Text
   linkedinEducation     String?  @map("linkedin_education") @db.Text
 
-  // Selling methodology
+  // Selling methodology & style
   sellingStyle          String?  @default("MEDDPICC") @map("selling_style")
+  sellingPhilosophy     String?  @map("selling_philosophy") @db.Text  // How they think about selling (discovery-led, challenger, consultative)
+  sellerArchetype       String?  @map("seller_archetype")             // e.g., "enterprise_closer", "consultative_hunter", "expansion_farmer"
+
+  // Career & interview context (used by interview tools)
+  careerNarrative       String?  @map("career_narrative") @db.Text    // 2-3 sentence career arc summary
+  targetRoleTypes       Json     @default("[]") @map("target_role_types")  // ["enterprise_ae", "strategic_ae", "team_lead"]
+  keyStrengths          Json     @default("[]") @map("key_strengths")      // ["discovery", "multithreading", "executive_presence"]
+  interviewHistory      Json     @default("[]") @map("interview_history")  // [{company, role, round, outcome, date, notes}]
+
+  // Territory & ICP context (used by prospecting tools)
+  icpDefinitions        Json     @default("[]") @map("icp_definitions")    // [{industry, companySize, buyerPersona, commonPains}]
+  territoryFocus        String?  @map("territory_focus") @db.Text          // Geographic/vertical/segment focus
+  currentQuotaContext   String?  @map("current_quota_context") @db.Text    // Where they are vs. quota, pipeline health
 
   // Sales assets (JSONB)
+  // dealStories schema: [{company, dealSize, timeline, origin, beforeState, negativeConsequences,
+  //   requiredCapabilities, pbos, howWon, champion, economicBuyer, competition,
+  //   cotmMapping: {beforeState, negConsequences, reqCapabilities, pbos},
+  //   meddpiccMapping: {metrics, econ_buyer, decision_criteria, decision_process, paper_process, identified_pain, champion, competition},
+  //   starMapping: {situation, task, action, result},
+  //   verticals: [], dealSize: "", sellCycle: ""}]
   dealStories           Json     @default("[]") @map("deal_stories")
+  caseStudies           Json     @default("[]") @map("case_studies")       // [{customerName, challenge, solution, result, quote, industry}]
   valueProps            Json     @default("[]") @map("value_props")
 
-  // Preferences
+  // Writing & communication style
+  writingStyle          String?  @map("writing_style") @db.Text           // Description of their writing voice
+  bannedPhrases         Json     @default("[]") @map("banned_phrases")    // Phrases to never use in their output
+  signaturePatterns     Json     @default("[]") @map("signature_patterns") // Phrases/patterns they like to use
+
+  // Lifecycle & onboarding
+  lifecycleStage        String?  @default("selling") @map("lifecycle_stage")  // "interviewing" | "ramping" | "selling" | "managing"
+  onboardingDepth       Int      @default(0) @map("onboarding_depth")         // 0-4: none, essentials, post-first-blitz, post-third-blitz, rich
   preferredTone         String?  @default("professional") @map("preferred_tone")
-  onboardingCompleted   Boolean  @default(false) @map("onboarding_completed")
+  onboardingCompleted   Boolean  @default(false) @map("onboarding_completed") // Kept for backward compat
 
   createdAt             DateTime @default(now()) @map("created_at")
   updatedAt             DateTime @default(now()) @updatedAt @map("updated_at")

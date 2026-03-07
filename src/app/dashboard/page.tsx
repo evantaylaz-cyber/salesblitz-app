@@ -154,6 +154,7 @@ export default function DashboardPage() {
   const [pendingRequests, setPendingRequests] = useState(0);
   const [chatOpen, setChatOpen] = useState(false);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
+  const [onboardingDepth, setOnboardingDepth] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -171,6 +172,9 @@ export default function DashboardPage() {
         const data = await res.json();
         if (data.profile?.onboardingCompleted) {
           setOnboardingComplete(true);
+        }
+        if (data.profile?.onboardingDepth !== undefined) {
+          setOnboardingDepth(data.profile.onboardingDepth);
         }
       }
     } catch {}
@@ -438,18 +442,39 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* AI Profile Setup Banner */}
-        {!onboardingComplete && (
+        {/* AI Profile Setup Banner — depth-aware */}
+        {onboardingDepth < 4 && (
           <div className="mb-8 flex items-center justify-between rounded-xl border border-indigo-200 bg-gradient-to-r from-indigo-50 to-white p-5 shadow-sm">
             <div className="flex items-center gap-4">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100">
                 <Sparkles className="h-5 w-5 text-indigo-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">Complete your profile</h3>
+                <h3 className="font-semibold text-gray-900">
+                  {onboardingDepth === 0 && "Complete your profile"}
+                  {onboardingDepth === 1 && "Deepen your profile"}
+                  {onboardingDepth === 2 && "Add territory & career context"}
+                  {onboardingDepth === 3 && "Dial in your writing voice"}
+                </h3>
                 <p className="text-sm text-gray-500">
-                  Personalize your AI so every blitz matches your selling style.
+                  {onboardingDepth === 0 && "Personalize your AI so every blitz matches your selling style. Takes ~3 min."}
+                  {onboardingDepth === 1 && "Add deal stories & methodology to sharpen your output. Takes ~5 min."}
+                  {onboardingDepth === 2 && "Add ICP definitions, territory focus, and career context. Takes ~5 min."}
+                  {onboardingDepth === 3 && "Final layer: writing style, banned phrases, signature patterns."}
                 </p>
+                {onboardingDepth > 0 && (
+                  <div className="flex items-center gap-1 mt-1">
+                    {[1, 2, 3, 4].map((level) => (
+                      <div
+                        key={level}
+                        className={`h-1.5 w-8 rounded-full ${
+                          level <= onboardingDepth ? "bg-indigo-500" : "bg-gray-200"
+                        }`}
+                      />
+                    ))}
+                    <span className="text-xs text-gray-400 ml-1">{onboardingDepth}/4</span>
+                  </div>
+                )}
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -464,7 +489,7 @@ export default function DashboardPage() {
                 className="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition whitespace-nowrap"
               >
                 <Sparkles className="h-4 w-4" />
-                Start
+                {onboardingDepth === 0 ? "Start" : "Continue"}
               </button>
             </div>
           </div>
@@ -605,9 +630,10 @@ export default function DashboardPage() {
       <OnboardingChatBubble
         defaultOpen={chatOpen}
         key={chatOpen ? "forced-open" : "default"}
-        alreadyCompleted={onboardingComplete}
-        onComplete={() => {
-          setOnboardingComplete(true);
+        currentDepth={onboardingDepth}
+        onDepthChange={(newDepth) => {
+          setOnboardingDepth(newDepth);
+          if (newDepth >= 1) setOnboardingComplete(true);
           fetchUserData();
         }}
       />

@@ -20,6 +20,9 @@ import {
   Globe,
   Sparkles,
   LinkIcon,
+  Briefcase,
+  MapPin,
+  Pen,
 } from "lucide-react";
 import VoiceTextarea from "@/components/VoiceTextarea";
 
@@ -51,10 +54,25 @@ interface ProfileData {
   linkedinExperience: string;
   linkedinEducation: string;
   sellingStyle: string;
+  sellingPhilosophy: string;
+  sellerArchetype: string;
   dealStories: DealStory[];
   valueProps: ValueProp[];
   preferredTone: string;
   onboardingCompleted: boolean;
+  // Career & Territory (Layer 3)
+  careerNarrative: string;
+  keyStrengths: string[];
+  targetRoleTypes: string[];
+  lifecycleStage: string;
+  territoryFocus: string;
+  currentQuotaContext: string;
+  // Writing Style (Layer 4)
+  writingStyle: string;
+  bannedPhrases: string[];
+  signaturePatterns: string[];
+  // Depth tracking
+  onboardingDepth: number;
 }
 
 const EMPTY_DEAL_STORY: DealStory = {
@@ -85,10 +103,22 @@ const DEFAULT_PROFILE: ProfileData = {
   linkedinExperience: "",
   linkedinEducation: "",
   sellingStyle: "MEDDPICC",
+  sellingPhilosophy: "",
+  sellerArchetype: "",
   dealStories: [],
   valueProps: [],
   preferredTone: "professional",
   onboardingCompleted: false,
+  careerNarrative: "",
+  keyStrengths: [],
+  targetRoleTypes: [],
+  lifecycleStage: "",
+  territoryFocus: "",
+  currentQuotaContext: "",
+  writingStyle: "",
+  bannedPhrases: [],
+  signaturePatterns: [],
+  onboardingDepth: 0,
 };
 
 function CollapsibleSection({
@@ -248,6 +278,18 @@ export default function ProfilePage() {
               : [],
             valueProps: Array.isArray(data.profile.valueProps)
               ? data.profile.valueProps
+              : [],
+            keyStrengths: Array.isArray(data.profile.keyStrengths)
+              ? data.profile.keyStrengths
+              : [],
+            targetRoleTypes: Array.isArray(data.profile.targetRoleTypes)
+              ? data.profile.targetRoleTypes
+              : [],
+            bannedPhrases: Array.isArray(data.profile.bannedPhrases)
+              ? data.profile.bannedPhrases
+              : [],
+            signaturePatterns: Array.isArray(data.profile.signaturePatterns)
+              ? data.profile.signaturePatterns
               : [],
           });
         }
@@ -883,6 +925,113 @@ export default function ProfilePage() {
                   ))}
                 </div>
               </div>
+            </div>
+          </CollapsibleSection>
+        </div>
+
+          {/* SECTION 4: Career & Territory */}
+          <CollapsibleSection
+            title="Career & Territory"
+            icon={Briefcase}
+            description="Your career arc, territory, and ICP"
+          >
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Lifecycle Stage
+                </label>
+                <select
+                  value={profile.lifecycleStage}
+                  onChange={(e) => updateField("lifecycleStage", e.target.value)}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                >
+                  <option value="">Select...</option>
+                  <option value="interviewing">Interviewing</option>
+                  <option value="ramping">Ramping</option>
+                  <option value="selling">Selling</option>
+                  <option value="managing">Managing</option>
+                </select>
+              </div>
+              <TextArea
+                label="Career Narrative"
+                value={profile.careerNarrative}
+                onChange={(v) => updateField("careerNarrative", v)}
+                placeholder="2-3 sentence arc of your career path"
+                hint="Used in interview prep and outreach positioning"
+                rows={3}
+              />
+              <TextArea
+                label="Selling Philosophy"
+                value={profile.sellingPhilosophy}
+                onChange={(v) => updateField("sellingPhilosophy", v)}
+                placeholder="Your approach in one sentence"
+                rows={2}
+              />
+              <TextInput
+                label="Seller Archetype"
+                value={profile.sellerArchetype}
+                onChange={(v) => updateField("sellerArchetype", v)}
+                placeholder="e.g., Challenger, Relationship Builder, Consultant"
+              />
+              <TextInput
+                label="Key Strengths"
+                value={(profile.keyStrengths || []).join(", ")}
+                onChange={(v) => updateField("keyStrengths", v.split(",").map((s: string) => s.trim()).filter(Boolean))}
+                placeholder="discovery, multithreading, executive presence"
+                hint="Comma-separated"
+              />
+              <TextInput
+                label="Target Role Types"
+                value={(profile.targetRoleTypes || []).join(", ")}
+                onChange={(v) => updateField("targetRoleTypes", v.split(",").map((s: string) => s.trim()).filter(Boolean))}
+                placeholder="Enterprise AE, Strategic AE, Team Lead"
+                hint="Comma-separated. Used for interview tools."
+              />
+              <TextArea
+                label="Territory Focus"
+                value={profile.territoryFocus}
+                onChange={(v) => updateField("territoryFocus", v)}
+                placeholder="Geographic, vertical, or segment focus"
+                rows={2}
+              />
+              <TextArea
+                label="Quota & Pipeline Context"
+                value={profile.currentQuotaContext}
+                onChange={(v) => updateField("currentQuotaContext", v)}
+                placeholder="Where you are vs. quota, pipeline health, etc."
+                rows={2}
+              />
+            </div>
+          </CollapsibleSection>
+
+          {/* SECTION 5: Writing Style */}
+          <CollapsibleSection
+            title="Writing Style"
+            icon={Pen}
+            description="Your voice, banned phrases, and patterns"
+          >
+            <div className="space-y-4">
+              <TextArea
+                label="Writing Style"
+                value={profile.writingStyle}
+                onChange={(v) => updateField("writingStyle", v)}
+                placeholder="How would you describe your writing? Direct, conversational, data-heavy?"
+                rows={2}
+              />
+              <TextInput
+                label="Banned Phrases"
+                value={(profile.bannedPhrases || []).join(", ")}
+                onChange={(v) => updateField("bannedPhrases", v.split(",").map((s: string) => s.trim()).filter(Boolean))}
+                placeholder="delve, robust, streamline, comprehensive"
+                hint="Comma-separated. Words you never want in outreach or decks."
+              />
+              <TextInput
+                label="Signature Patterns"
+                value={(profile.signaturePatterns || []).join(", ")}
+                onChange={(v) => updateField("signaturePatterns", v.split(",").map((s: string) => s.trim()).filter(Boolean))}
+                placeholder="Phrases or patterns you like using"
+                hint="Comma-separated"
+              />
             </div>
           </CollapsibleSection>
         </div>

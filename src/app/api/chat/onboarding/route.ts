@@ -44,7 +44,7 @@ export async function POST(req: Request) {
       system: systemPrompt,
       messages,
       tools,
-      maxSteps: 5, // Allow multiple tool calls per response
+      maxSteps: 8, // Allow multiple tool calls per response (6 tool types + follow-ups)
     });
 
     return result.toDataStreamResponse();
