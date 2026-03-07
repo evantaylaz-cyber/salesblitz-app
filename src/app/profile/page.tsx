@@ -907,7 +907,7 @@ export default function ProfilePage() {
           <p className="text-sm text-gray-500">
             {profile.onboardingCompleted
               ? "Profile saved. Changes take effect on your next run."
-              : "Complete your profile to get the most out of AltVest."}
+              : "Complete your profile to get the most out of Sales Blitz."}
           </p>
           <button
             onClick={saveProfile}

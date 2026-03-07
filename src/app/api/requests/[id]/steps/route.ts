@@ -4,7 +4,7 @@ import prisma from "@/lib/db";
 import { stepEventBus } from "@/lib/step-events";
 
 // Admin emails from env (comma-separated for multiple admins)
-const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || "evan.tay.laz@gmail.com")
+const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || "evan@salesblitz.ai")
   .split(",")
   .map((e) => e.trim().toLowerCase());
 

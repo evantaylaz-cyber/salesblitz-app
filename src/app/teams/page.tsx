@@ -130,7 +130,7 @@ export default function TeamsPage() {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-3">
             <Link href="/dashboard" className="text-xl font-bold text-gray-900">
-              AltVest
+              Sales Blitz
             </Link>
             <span className="text-gray-300">/</span>
             <span className="text-lg font-semibold text-gray-700">Teams</span>

@@ -472,7 +472,7 @@ export default function RequestDetailPage() {
                   <span className="text-xs text-gray-500">No additional credits consumed</span>
                 </div>
                 <p className="mt-3 text-xs text-red-600">
-                  Our team has been notified. You can also reach us at support@alternativeinvestments.io
+                  Our team has been notified. You can also reach us at evan@salesblitz.ai
                 </p>
               </div>
             </div>

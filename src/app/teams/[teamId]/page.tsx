@@ -209,7 +209,7 @@ export default function TeamDetailPage() {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-3">
             <Link href="/dashboard" className="text-xl font-bold text-gray-900">
-              AltVest
+              Sales Blitz
             </Link>
             <span className="text-gray-300">/</span>
             <Link href="/teams" className="text-lg text-gray-500 hover:text-gray-700">

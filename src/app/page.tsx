@@ -23,7 +23,7 @@ export default async function LandingPage() {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600">
               <Target className="h-5 w-5 text-white" />
             </div>
-            <span className="text-xl font-bold text-gray-900">AltVest</span>
+            <span className="text-xl font-bold text-gray-900">Sales Blitz</span>
           </div>
           <div className="absolute inset-x-0 hidden items-center justify-center gap-8 md:flex pointer-events-none">
             <a href="#how-it-works" className="text-sm text-gray-600 hover:text-gray-900 pointer-events-auto">
@@ -335,7 +335,7 @@ export default async function LandingPage() {
               <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600">
                 <Target className="h-4 w-4 text-white" />
               </div>
-              <span className="font-bold text-gray-900">AltVest</span>
+              <span className="font-bold text-gray-900">Sales Blitz</span>
             </div>
             <div className="flex items-center gap-6 text-sm text-gray-500">
               <Link href="/sign-in" className="hover:text-gray-700">
@@ -349,7 +349,7 @@ export default async function LandingPage() {
               </a>
             </div>
             <p className="text-sm text-gray-400">
-              &copy; {new Date().getFullYear()} AltVest. All rights reserved.
+              &copy; {new Date().getFullYear()} Sales Blitz. All rights reserved.
             </p>
           </div>
         </div>

@@ -101,7 +101,7 @@ export default function OnboardingChatPage() {
         <div className="mb-8">
           <h2 className="text-lg font-semibold text-gray-900">Setup Progress</h2>
           <p className="text-sm text-gray-500 mt-1">
-            Your context powers every AltVest output.
+            Your context powers every Sales Blitz output.
           </p>
         </div>
 
@@ -151,7 +151,7 @@ export default function OnboardingChatPage() {
         {/* Header */}
         <header className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white">
           <div>
-            <h1 className="text-lg font-semibold text-gray-900">AltVest Setup</h1>
+            <h1 className="text-lg font-semibold text-gray-900">Sales Blitz Setup</h1>
             <p className="text-sm text-gray-500">
               {onboardingDone
                 ? "Setup complete. Head to the dashboard."
@@ -179,7 +179,7 @@ export default function OnboardingChatPage() {
                 </div>
                 <div className="bg-white border border-gray-200 rounded-2xl rounded-tl-md px-4 py-3 max-w-lg">
                   <p className="text-sm text-gray-800 leading-relaxed">
-                    Let's get you set up. This takes about 10 minutes and makes everything AltVest generates specific to you, your deals, and how you sell.
+                    Let's get you set up. This takes about 10 minutes and makes everything Sales Blitz generates specific to you, your deals, and how you sell.
                   </p>
                   <p className="text-sm text-gray-800 leading-relaxed mt-2">
                     First, tell me what you sell and who you sell it to.

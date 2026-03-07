@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import prisma from "@/lib/db";
 
-const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || "evan.tay.laz@gmail.com")
+const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || "evan@salesblitz.ai")
   .split(",")
   .map((e) => e.trim().toLowerCase());
 

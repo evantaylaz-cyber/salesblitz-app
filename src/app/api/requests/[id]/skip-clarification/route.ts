@@ -16,7 +16,7 @@ export async function GET(
     const clerkUser = await currentUser();
     if (!clerkUser) {
       // Redirect to sign-in, then back here
-      const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://app.alternativeinvestments.io";
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://salesblitz.ai";
       return NextResponse.redirect(`${appUrl}/sign-in?redirect_url=/api/requests/${params.id}/skip-clarification`);
     }
 
@@ -43,7 +43,7 @@ export async function GET(
     // Only skip if actually awaiting clarification
     if (request.status !== "awaiting_clarification") {
       // Already running or done — just redirect to status page
-      const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://app.alternativeinvestments.io";
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://salesblitz.ai";
       return NextResponse.redirect(`${appUrl}/requests/${params.id}`);
     }
 
@@ -73,7 +73,7 @@ export async function GET(
     }
 
     // Redirect to request status page
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://app.alternativeinvestments.io";
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://salesblitz.ai";
     return NextResponse.redirect(`${appUrl}/requests/${params.id}`);
   } catch (error) {
     console.error("Skip clarification error:", error);

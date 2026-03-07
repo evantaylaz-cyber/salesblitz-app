@@ -11,7 +11,7 @@ export default function ProductMockup() {
             <div className="h-3 w-3 rounded-full bg-green-400" />
           </div>
           <div className="mx-auto flex h-6 max-w-[60%] items-center justify-center rounded-md bg-white border border-gray-200 px-3 text-[10px] text-gray-400 font-mono truncate">
-            app.altvest.io/runs/4f8a...
+            salesblitz.ai/runs/4f8a...
           </div>
         </div>
 

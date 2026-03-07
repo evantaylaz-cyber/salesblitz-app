@@ -165,7 +165,7 @@ export default function OnboardingChatBubble({
           <Bot className="h-4 w-4 text-indigo-600" />
         </div>
         <div className="flex-1">
-          <p className="text-sm font-medium text-gray-900">AltVest Setup</p>
+          <p className="text-sm font-medium text-gray-900">Sales Blitz Setup</p>
           <p className="text-xs text-gray-500">
             {onboardingDone ? "Complete" : `${completedPhases.size}/4 sections`}
           </p>
@@ -256,7 +256,7 @@ export default function OnboardingChatBubble({
                 ) : (
                   <>
                     <p className="text-sm text-gray-800 leading-relaxed">
-                      Let's get you set up. This takes about 10 minutes and makes everything AltVest generates specific to you.
+                      Let's get you set up. This takes about 10 minutes and makes everything Sales Blitz generates specific to you.
                     </p>
                     <p className="text-sm text-gray-800 leading-relaxed mt-1.5">
                       First, tell me what you sell and who you sell it to.

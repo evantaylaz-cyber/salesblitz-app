@@ -130,7 +130,7 @@ export async function sendOrderNotification(order: OrderDetails) {
         </ul>
 
         <div style="margin-top:24px;padding-top:16px;border-top:1px solid #e5e7eb;">
-          <a href="https://app.alternativeinvestments.io/admin"
+          <a href="https://salesblitz.ai/admin"
              style="display:inline-block;background:#4f46e5;color:#fff;padding:10px 24px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">
             Open Admin Queue →
           </a>
@@ -142,10 +142,10 @@ export async function sendOrderNotification(order: OrderDetails) {
 
   try {
     const { error } = await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL || "AltVest Orders <onboarding@resend.dev>",
+      from: process.env.RESEND_FROM_EMAIL || "Sales Blitz Orders <onboarding@resend.dev>",
       to: [
-        "evan@alternativeinvestments.io",
-        "evan.tay.laz@gmail.com",
+        "evan@salesblitz.ai",
+        "evan@salesblitz.ai",
       ],
       subject: `${order.priority ? "⚡ " : ""}New ${toolLabel} Order — ${order.targetName} @ ${order.targetCompany}`,
       html,
@@ -175,7 +175,7 @@ interface InviteDetails {
 }
 
 export async function sendTeamInviteEmail(invite: InviteDetails) {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://app.alternativeinvestments.io";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://salesblitz.ai";
   const acceptUrl = `${appUrl}/teams/invite?teamId=${invite.teamId}&email=${encodeURIComponent(invite.inviteEmail)}`;
 
   const roleLabel = invite.role === "admin" ? "an Admin" : "a Member";
@@ -183,7 +183,7 @@ export async function sendTeamInviteEmail(invite: InviteDetails) {
   const html = `
     <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:600px;margin:0 auto;">
       <div style="background:#4f46e5;color:#fff;padding:24px;border-radius:12px 12px 0 0;">
-        <h1 style="margin:0;font-size:22px;">You're invited to join a team on AltVest</h1>
+        <h1 style="margin:0;font-size:22px;">You're invited to join a team on Sales Blitz</h1>
       </div>
 
       <div style="border:1px solid #e5e7eb;border-top:none;padding:24px;border-radius:0 0 12px 12px;">
@@ -203,7 +203,7 @@ export async function sendTeamInviteEmail(invite: InviteDetails) {
         </div>
 
         <p style="font-size:12px;color:#9ca3af;text-align:center;margin:16px 0 0;">
-          If you don't have an AltVest account yet, you'll be prompted to create one first.
+          If you don't have a Sales Blitz account yet, you'll be prompted to create one first.
         </p>
       </div>
     </div>
@@ -211,9 +211,9 @@ export async function sendTeamInviteEmail(invite: InviteDetails) {
 
   try {
     const { error } = await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL || "AltVest <onboarding@resend.dev>",
+      from: process.env.RESEND_FROM_EMAIL || "Sales Blitz <onboarding@resend.dev>",
       to: [invite.inviteEmail],
-      subject: `${invite.inviterName} invited you to ${invite.teamName} on AltVest`,
+      subject: `${invite.inviterName} invited you to ${invite.teamName} on Sales Blitz`,
       html,
     });
 
