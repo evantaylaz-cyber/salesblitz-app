@@ -150,7 +150,8 @@ function PracticeLanding() {
         return;
       }
 
-      router.push(`/practice/${data.sessionId}`);
+      const personaParam = data.persona?.name ? `?persona=${encodeURIComponent(data.persona.name)}` : "";
+      router.push(`/practice/${data.sessionId}${personaParam}`);
     } catch {
       setError("Failed to start session");
       setStarting(false);

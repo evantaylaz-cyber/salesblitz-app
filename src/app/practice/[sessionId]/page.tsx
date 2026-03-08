@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useUser } from "@clerk/nextjs";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import {
   ArrowLeft,
   Mic,
@@ -37,6 +37,7 @@ export default function PracticeSessionPage() {
   const { isLoaded } = useUser();
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const sessionId = params.sessionId as string;
 
   // State
@@ -62,6 +63,11 @@ export default function PracticeSessionPage() {
   const recognitionRef = useRef<ISpeechRecognition | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const transcriptEndRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const chromaKeyFrameRef = useRef<number | null>(null);
+  const isSpeakingRef = useRef(false);  // tracks avatar speaking for mic gating
+  const micActiveRef = useRef(false);   // tracks if user has mic toggled on
+  const ttsVoiceRef = useRef("onyx");   // TTS voice: onyx (male) or nova (female)
 
   // Convert text to audio via OpenAI TTS, then send to LiveAvatar via repeatAudio()
   async function speakViaAvatar(text: string) {
@@ -73,7 +79,7 @@ export default function PracticeSessionPage() {
       const ttsRes = await fetch("/api/practice/tts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({ text, voice: ttsVoiceRef.current }),
       });
 
       if (!ttsRes.ok) {
@@ -97,6 +103,61 @@ export default function PracticeSessionPage() {
     }
   }
 
+  // Chroma key: process video frames to remove green background
+  function startChromaKey() {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    if (!video || !canvas) return;
+
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    if (!ctx) return;
+
+    function processFrame() {
+      if (!video || !canvas || !ctx) return;
+      if (video.videoWidth === 0) {
+        chromaKeyFrameRef.current = requestAnimationFrame(processFrame);
+        return;
+      }
+
+      // Match canvas size to video
+      if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+      }
+
+      ctx.drawImage(video, 0, 0);
+      const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = frame.data;
+
+      // Replace green pixels with dark gray (matching bg-gray-800 = #1f2937)
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+
+        // Green screen detection: high green, low red, low blue
+        if (g > 100 && g > r * 1.4 && g > b * 1.4) {
+          data[i] = 31;      // R (gray-800)
+          data[i + 1] = 41;  // G
+          data[i + 2] = 55;  // B
+          data[i + 3] = 255; // A
+        }
+      }
+
+      ctx.putImageData(frame, 0, 0);
+      chromaKeyFrameRef.current = requestAnimationFrame(processFrame);
+    }
+
+    chromaKeyFrameRef.current = requestAnimationFrame(processFrame);
+  }
+
+  function stopChromaKey() {
+    if (chromaKeyFrameRef.current) {
+      cancelAnimationFrame(chromaKeyFrameRef.current);
+      chromaKeyFrameRef.current = null;
+    }
+  }
+
   // Load session data and initialize avatar
   useEffect(() => {
     if (isLoaded && sessionId) {
@@ -116,11 +177,21 @@ export default function PracticeSessionPage() {
 
   async function initSession() {
     try {
+      // Select avatar based on persona name (passed via URL query param)
+      const personaName = searchParams.get("persona") || "";
+      const FEMALE_AVATAR = "b4fc2d60-3b82-4694-b243-93e9d2bb0242"; // Anastasia in Grey Shirt
+      const MALE_AVATAR = "bb1f6ebc-b388-4a39-9e2b-8df618e0377c";   // Graham in Black Shirt
+      const femaleNames = ["sarah", "maria", "rachel", "jennifer", "jessica", "emily", "emma", "olivia", "sophia", "isabella", "ava", "mia", "charlotte", "amelia", "lisa", "patricia", "linda", "elizabeth", "barbara", "susan", "margaret", "dorothy", "sandra", "ashley", "kimberly", "donna", "carol", "michelle", "amanda", "melissa", "deborah", "stephanie", "rebecca", "laura", "helen", "anna", "samantha", "katherine", "christine", "debra", "diana", "natalie", "angela", "julie", "karen", "nancy", "betty", "parul", "aviva", "nina", "tracy"];
+      const firstNameLower = personaName.split(" ")[0]?.toLowerCase() || "";
+      const isFemale = femaleNames.includes(firstNameLower);
+      const avatarId = isFemale ? FEMALE_AVATAR : MALE_AVATAR;
+      ttsVoiceRef.current = isFemale ? "nova" : "onyx";
+
       // Get LiveAvatar session token from our backend
       const tokenRes = await fetch("/api/practice/token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ avatarId: "bb1f6ebc-b388-4a39-9e2b-8df618e0377c" }), // Graham in Black Shirt
+        body: JSON.stringify({ avatarId }),
       });
       const tokenData = await tokenRes.json();
 
@@ -155,6 +226,7 @@ export default function PracticeSessionPage() {
           // Attach video stream to element
           if (videoRef.current) {
             session.attach(videoRef.current);
+            videoRef.current.onplaying = () => startChromaKey();
           }
 
           // Start timer
@@ -170,16 +242,28 @@ export default function PracticeSessionPage() {
         // Stream is ready, attach to video element
         if (videoRef.current) {
           session.attach(videoRef.current);
+          // Start chroma key processing once video is playing
+          videoRef.current.onplaying = () => startChromaKey();
         }
       });
 
-      // Avatar speaking events
+      // Avatar speaking events: mute mic to prevent feedback loop
       session.on(AgentEventsEnum.AVATAR_SPEAK_STARTED, () => {
         setIsSpeaking(true);
+        isSpeakingRef.current = true;
+        // Pause speech recognition while avatar is speaking
+        if (recognitionRef.current) {
+          try { recognitionRef.current.abort(); } catch { /* ok */ }
+        }
       });
 
       session.on(AgentEventsEnum.AVATAR_SPEAK_ENDED, () => {
         setIsSpeaking(false);
+        isSpeakingRef.current = false;
+        // Resume speech recognition if user had mic on
+        if (micActiveRef.current && !recognitionRef.current) {
+          resumeListening();
+        }
       });
 
       // Start the LiveAvatar session
@@ -220,17 +304,11 @@ export default function PracticeSessionPage() {
     }
   }
 
-  // Speech recognition (Web Speech API)
-  const startListening = useCallback(() => {
-    if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) {
-      setError("Speech recognition not supported in this browser. Use Chrome.");
-      return;
-    }
-
+  // Helper: create and start a new speech recognition instance
+  function createRecognition() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const SpeechRecognitionCtor = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-
-    if (!SpeechRecognitionCtor) return;
+    if (!SpeechRecognitionCtor) return null;
 
     const recognition = new SpeechRecognitionCtor() as ISpeechRecognition;
     recognition.continuous = true;
@@ -240,6 +318,9 @@ export default function PracticeSessionPage() {
     recognition.onresult = async (event) => {
       const last = event.results[event.results.length - 1];
       if (last.isFinal) {
+        // Drop any transcript that arrives while avatar is speaking (safety net)
+        if (isSpeakingRef.current) return;
+
         const userText = last[0].transcript.trim();
         if (!userText) return;
 
@@ -282,13 +363,56 @@ export default function PracticeSessionPage() {
       }
     };
 
+    // Auto-restart if recognition ends while mic should be active
+    recognition.onend = () => {
+      if (micActiveRef.current && !isSpeakingRef.current) {
+        // Recognition ended unexpectedly (Chrome does this), restart
+        try {
+          recognition.start();
+        } catch {
+          recognitionRef.current = null;
+        }
+      } else {
+        recognitionRef.current = null;
+      }
+    };
+
     recognition.start();
     recognitionRef.current = recognition;
+    return recognition;
+  }
+
+  // Resume listening after avatar finishes speaking
+  function resumeListening() {
+    if (!micActiveRef.current) return;
+    if (isSpeakingRef.current) return;
+    if (recognitionRef.current) return;
+    createRecognition();
+    setIsRecording(true);
+  }
+
+  // Speech recognition (Web Speech API)
+  const startListening = useCallback(() => {
+    if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) {
+      setError("Speech recognition not supported in this browser. Use Chrome.");
+      return;
+    }
+
+    // Don't start if avatar is currently speaking
+    if (isSpeakingRef.current) {
+      micActiveRef.current = true;  // flag so it auto-starts when avatar finishes
+      setIsRecording(true);
+      return;
+    }
+
+    micActiveRef.current = true;
+    createRecognition();
     setIsRecording(true);
   }, [sessionId]);
 
   const stopListening = useCallback(() => {
-    recognitionRef.current?.stop();
+    micActiveRef.current = false;
+    try { recognitionRef.current?.stop(); } catch { /* ok */ }
     recognitionRef.current = null;
     setIsRecording(false);
   }, []);
@@ -314,6 +438,7 @@ export default function PracticeSessionPage() {
   }
 
   async function cleanup() {
+    stopChromaKey();
     try {
       const session = sessionRef.current;
       if (session) {
@@ -381,16 +506,19 @@ export default function PracticeSessionPage() {
                 <p className="text-sm text-gray-400">Starting avatar...</p>
               </div>
             )}
+            {/* Hidden video element receives the LiveAvatar stream */}
             <video
               ref={videoRef}
               autoPlay
               playsInline
+              muted
+              className="absolute opacity-0 pointer-events-none"
+              style={{ width: 1, height: 1 }}
+            />
+            {/* Canvas displays chroma-keyed video (green screen removed) */}
+            <canvas
+              ref={canvasRef}
               className={`h-full w-full object-cover ${avatarLoading ? "opacity-0" : "opacity-100"} transition-opacity duration-500`}
-              style={{
-                // Chroma key: remove green screen background from LiveAvatar video
-                // The avatar renders with bright green BG (#00B140) for compositing
-                mixBlendMode: "screen",
-              }}
             />
             {isSpeaking && (
               <div className="absolute bottom-4 left-4 flex items-center gap-2 rounded-full bg-black/60 px-3 py-1">

@@ -11,10 +11,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { text } = await req.json();
+    const { text, voice: requestedVoice } = await req.json();
     if (!text || typeof text !== "string") {
       return NextResponse.json({ error: "text is required" }, { status: 400 });
     }
+    // OpenAI TTS voices: alloy, echo, fable, onyx, nova, shimmer
+    // onyx = deep male, nova = warm female
+    const voice = requestedVoice || "onyx";
 
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
@@ -32,7 +35,7 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({
         model: "tts-1",
         input: text,
-        voice: "onyx", // deep, authoritative male voice; good for buyer persona
+        voice,
         response_format: "pcm", // raw PCM 16-bit signed LE, 24KHz mono
         speed: 1.0,
       }),
