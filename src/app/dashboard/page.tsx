@@ -210,7 +210,11 @@ export default function DashboardPage() {
   }
 
   function handleRunTool(toolId: string) {
-    window.location.href = `/request?tool=${toolId}`;
+    if (toolId === "practice_mode") {
+      window.location.href = `/practice`;
+    } else {
+      window.location.href = `/request?tool=${toolId}`;
+    }
   }
 
   async function handleManageBilling() {
