@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useUser } from "@clerk/nextjs";
 import { UserButton } from "@clerk/nextjs";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -28,16 +28,36 @@ interface PastSession {
   status: string;
 }
 
-export default function PracticeLanding() {
+export default function PracticePage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-emerald-700" /></div>}>
+      <PracticeLanding />
+    </Suspense>
+  );
+}
+
+function PracticeLanding() {
   const { isLoaded } = useUser();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [targetCompany, setTargetCompany] = useState("");
   const [meetingType, setMeetingType] = useState("discovery");
+  const [runRequestId, setRunRequestId] = useState<string | null>(null);
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sessions, setSessions] = useState<PastSession[]>([]);
   const [usage, setUsage] = useState<{ used: number; tier: string | null }>({ used: 0, tier: null });
   const [loading, setLoading] = useState(true);
+
+  // Pre-populate from URL params (linked from blitz detail page)
+  useEffect(() => {
+    const company = searchParams.get("company");
+    const reqId = searchParams.get("runRequestId");
+    const type = searchParams.get("meetingType");
+    if (company) setTargetCompany(company);
+    if (reqId) setRunRequestId(reqId);
+    if (type) setMeetingType(type);
+  }, [searchParams]);
 
   useEffect(() => {
     if (isLoaded) fetchHistory();
@@ -68,7 +88,11 @@ export default function PracticeLanding() {
       const res = await fetch("/api/practice/start", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ targetCompany: targetCompany.trim(), meetingType }),
+        body: JSON.stringify({
+          targetCompany: targetCompany.trim(),
+          meetingType,
+          ...(runRequestId ? { runRequestId } : {}),
+        }),
       });
 
       const data = await res.json();
@@ -124,11 +148,31 @@ export default function PracticeLanding() {
       </header>
 
       <main className="mx-auto max-w-5xl px-6 py-10">
+        {/* Research-powered banner (when linked from a blitz) */}
+        {runRequestId && (
+          <div className="mb-6 flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-3">
+            <Zap className="h-5 w-5 text-emerald-600" />
+            <p className="text-sm text-emerald-800">
+              <span className="font-semibold">Research-powered session.</span>{" "}
+              This practice call will use real research from your {targetCompany} blitz to generate a more accurate persona.
+            </p>
+            <button
+              onClick={() => {
+                setRunRequestId(null);
+                router.replace("/practice", { scroll: false });
+              }}
+              className="ml-auto text-xs text-emerald-600 hover:text-emerald-800 whitespace-nowrap"
+            >
+              Start fresh instead
+            </button>
+          </div>
+        )}
+
         {/* Start New Session */}
         <div className="rounded-2xl border-2 border-emerald-200 bg-white p-8 shadow-sm">
           <h2 className="text-lg font-bold text-gray-900">Start a Practice Session</h2>
           <p className="mt-1 text-sm text-gray-500">
-            Name a target company. We'll generate a persona from real research and you'll practice
+            Name a target company. We&apos;ll generate a persona from real research and you&apos;ll practice
             a live conversation against a video avatar. Works for prospect calls, interview panels, or any meeting.
           </p>
 
