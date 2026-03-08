@@ -14,8 +14,7 @@ import {
   Play,
   ChevronRight,
   Zap,
-  FileText,
-  CheckCircle2,
+  Plus,
 } from "lucide-react";
 
 interface BlitzRun {
@@ -36,6 +35,22 @@ const TOOL_LABELS: Record<string, string> = {
   deal_audit: "Deal Audit",
   champion_builder: "Champion Builder",
 };
+
+// Map blitz tool to the practice scenario it creates
+const SCENARIO_LABELS: Record<string, string> = {
+  interview_outreach: "Interview Practice",
+  interview_prep: "Interview Practice",
+  prospect_outreach: "Discovery Call",
+  prospect_prep: "Discovery Call",
+  deal_audit: "Deal Review Call",
+  champion_builder: "Champion Call",
+};
+
+function inferMeetingType(toolName: string): string {
+  if (toolName.startsWith("interview_")) return "interview";
+  if (toolName === "deal_audit") return "follow_up";
+  return "discovery";
+}
 
 interface PastSession {
   id: string;
@@ -63,22 +78,26 @@ function PracticeLanding() {
   const searchParams = useSearchParams();
   const [targetCompany, setTargetCompany] = useState("");
   const [meetingType, setMeetingType] = useState("discovery");
-  const [runRequestId, setRunRequestId] = useState<string | null>(null);
   const [starting, setStarting] = useState(false);
+  const [launchingId, setLaunchingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [sessions, setSessions] = useState<PastSession[]>([]);
   const [blitzRuns, setBlitzRuns] = useState<BlitzRun[]>([]);
   const [usage, setUsage] = useState<{ used: number; tier: string | null }>({ used: 0, tier: null });
   const [loading, setLoading] = useState(true);
+  const [showFreestyle, setShowFreestyle] = useState(false);
 
-  // Pre-populate from URL params (linked from blitz detail page)
+  // Auto-launch when coming from "Practice Again" with full context
   useEffect(() => {
+    const autostart = searchParams.get("autostart");
     const company = searchParams.get("company");
     const reqId = searchParams.get("runRequestId");
     const type = searchParams.get("meetingType");
-    if (company) setTargetCompany(company);
-    if (reqId) setRunRequestId(reqId);
-    if (type) setMeetingType(type);
+
+    if (autostart === "true" && company) {
+      // Launch directly without showing the form
+      launchDirect(company, type || "discovery", reqId || undefined);
+    }
   }, [searchParams]);
 
   useEffect(() => {
@@ -105,7 +124,6 @@ function PracticeLanding() {
     try {
       const res = await fetch("/api/requests");
       const data = await res.json();
-      // Filter to completed/delivered/ready runs that have research data
       const completed = (data.requests || []).filter(
         (r: BlitzRun) => r.status === "delivered" || r.status === "ready" || r.status === "completed"
       );
@@ -115,11 +133,7 @@ function PracticeLanding() {
     }
   }
 
-  async function launchBlitz(run: BlitzRun) {
-    const type = run.toolName.startsWith("interview_") ? "interview" : meetingType;
-    setRunRequestId(run.id);
-    setTargetCompany(run.targetCompany);
-    setMeetingType(type);
+  async function launchDirect(company: string, type: string, runRequestId?: string) {
     setStarting(true);
     setError(null);
 
@@ -128,42 +142,8 @@ function PracticeLanding() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          targetCompany: run.targetCompany,
+          targetCompany: company,
           meetingType: type,
-          runRequestId: run.id,
-        }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || "Failed to start session");
-        setStarting(false);
-        return;
-      }
-
-      const personaParam = data.persona?.name ? `?persona=${encodeURIComponent(data.persona.name)}` : "";
-      router.push(`/practice/${data.sessionId}${personaParam}`);
-    } catch {
-      setError("Failed to start session");
-      setStarting(false);
-    }
-  }
-
-  async function handleStart() {
-    if (!targetCompany.trim()) {
-      setError("Enter a company name.");
-      return;
-    }
-    setStarting(true);
-    setError(null);
-
-    try {
-      const res = await fetch("/api/practice/start", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          targetCompany: targetCompany.trim(),
-          meetingType,
           ...(runRequestId ? { runRequestId } : {}),
         }),
       });
@@ -183,6 +163,22 @@ function PracticeLanding() {
     }
   }
 
+  async function launchBlitz(run: BlitzRun) {
+    const type = inferMeetingType(run.toolName);
+    setLaunchingId(run.id);
+    setError(null);
+    await launchDirect(run.targetCompany, type, run.id);
+    setLaunchingId(null);
+  }
+
+  async function handleFreestyleStart() {
+    if (!targetCompany.trim()) {
+      setError("Enter a company name.");
+      return;
+    }
+    await launchDirect(targetCompany.trim(), meetingType);
+  }
+
   const outcomeColor = (outcome: string | null) => {
     if (outcome === "strong") return "text-emerald-600 bg-emerald-50";
     if (outcome === "developing") return "text-amber-600 bg-amber-50";
@@ -190,11 +186,23 @@ function PracticeLanding() {
   };
 
   const tierCap = usage.tier === "closer" ? 10 : usage.tier === "pro" ? 3 : 0;
+  const atCap = usage.used >= tierCap;
 
   if (!isLoaded || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-emerald-700" />
+      </div>
+    );
+  }
+
+  // Auto-launching state (from Practice Again)
+  if (starting && searchParams.get("autostart") === "true") {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4">
+        <Loader2 className="h-10 w-10 animate-spin text-emerald-700" />
+        <p className="text-sm text-gray-500">Starting your next session...</p>
+        {error && <p className="text-sm text-red-600">{error}</p>}
       </div>
     );
   }
@@ -222,126 +230,61 @@ function PracticeLanding() {
       </header>
 
       <main className="mx-auto max-w-5xl px-6 py-10">
-        {/* Research-powered banner (when linked from a blitz) */}
-        {runRequestId && (
-          <div className="mb-6 flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-3">
-            <Zap className="h-5 w-5 text-emerald-600" />
-            <p className="text-sm text-emerald-800">
-              <span className="font-semibold">Research-powered session.</span>{" "}
-              This practice call will use real research from your {targetCompany} blitz to generate a more accurate persona.
-            </p>
-            <button
-              onClick={() => {
-                setRunRequestId(null);
-                router.replace("/practice", { scroll: false });
-              }}
-              className="ml-auto text-xs text-emerald-600 hover:text-emerald-800 whitespace-nowrap"
-            >
-              Start fresh instead
-            </button>
+        {error && (
+          <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            {error}
           </div>
         )}
 
-        {/* Start New Session */}
-        <div className="rounded-2xl border-2 border-emerald-200 bg-white p-8 shadow-sm">
-          <h2 className="text-lg font-bold text-gray-900">Start a Practice Session</h2>
-          <p className="mt-1 text-sm text-gray-500">
-            Name a target company. We&apos;ll generate a persona from real research and you&apos;ll practice
-            a live conversation against a video avatar. Works for prospect calls, interview panels, or any meeting.
-          </p>
-
-          <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700">Target Company</label>
-              <input
-                type="text"
-                value={targetCompany}
-                onChange={(e) => setTargetCompany(e.target.value)}
-                placeholder="e.g. CBRE, Salesforce, Home Depot"
-                className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
-                onKeyDown={(e) => e.key === "Enter" && handleStart()}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Meeting Type</label>
-              <select
-                value={meetingType}
-                onChange={(e) => setMeetingType(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
-              >
-                <option value="discovery">Discovery Call</option>
-                <option value="follow_up">Follow-Up</option>
-                <option value="pitch">Pitch / Demo</option>
-                <option value="closing">Closing</option>
-                <option value="interview">Interview (you're the candidate)</option>
-              </select>
-            </div>
-          </div>
-
-          {error && (
-            <p className="mt-3 text-sm text-red-600">{error}</p>
-          )}
-
-          <button
-            onClick={handleStart}
-            disabled={starting || usage.used >= tierCap}
-            className="mt-6 flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:opacity-50"
-          >
-            {starting ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Generating Persona...
-              </>
-            ) : (
-              <>
-                <Play className="h-4 w-4" />
-                Start Practice
-              </>
-            )}
-          </button>
-        </div>
-
-        {/* Use Research from a Blitz */}
-        {blitzRuns.length > 0 && !runRequestId && (
-          <div className="mt-8">
-            <h2 className="text-lg font-bold text-gray-900">Or Practice a Completed Blitz</h2>
+        {/* HERO: Practice Your Blitz Runs */}
+        {blitzRuns.length > 0 && (
+          <div>
+            <h2 className="text-lg font-bold text-gray-900">Your Practice Scenarios</h2>
             <p className="mt-1 text-sm text-gray-500">
-              Select a blitz run to practice with a persona built from real research.
+              Each scenario uses real research from your blitz to build the persona. One click to start.
             </p>
-            <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
-              {blitzRuns.slice(0, 6).map((run) => (
-                <button
-                  key={run.id}
-                  onClick={() => launchBlitz(run)}
-                  disabled={starting}
-                  className="flex items-center gap-3 rounded-xl border bg-white p-4 text-left shadow-sm transition hover:border-emerald-300 hover:shadow disabled:opacity-50"
-                >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-50">
-                    {starting && runRequestId === run.id ? (
-                      <Loader2 className="h-5 w-5 animate-spin text-emerald-700" />
-                    ) : (
-                      <Play className="h-5 w-5 text-emerald-700" />
-                    )}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="font-medium text-gray-900 truncate">{run.targetCompany}</p>
-                    <p className="text-sm text-gray-500 truncate">
-                      {run.targetName}{run.targetRole ? ` \u00b7 ${run.targetRole}` : ""}
-                    </p>
-                  </div>
-                  <div className="shrink-0 flex items-center gap-2">
-                    <span className="text-xs text-gray-400">
-                      {TOOL_LABELS[run.toolName] || run.toolName}
-                    </span>
-                    <ChevronRight className="h-4 w-4 text-emerald-400" />
-                  </div>
-                </button>
-              ))}
+            <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2">
+              {blitzRuns.slice(0, 8).map((run) => {
+                const scenario = SCENARIO_LABELS[run.toolName] || "Practice Call";
+                const isLaunching = launchingId === run.id;
+                return (
+                  <button
+                    key={run.id}
+                    onClick={() => launchBlitz(run)}
+                    disabled={starting || atCap}
+                    className="group flex items-center gap-4 rounded-xl border-2 border-gray-100 bg-white p-5 text-left shadow-sm transition hover:border-emerald-300 hover:shadow-md disabled:opacity-50"
+                  >
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-emerald-50 transition group-hover:bg-emerald-100">
+                      {isLaunching ? (
+                        <Loader2 className="h-5 w-5 animate-spin text-emerald-700" />
+                      ) : (
+                        <Play className="h-5 w-5 text-emerald-700" />
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <p className="font-semibold text-gray-900 truncate">{run.targetCompany}</p>
+                        <span className="shrink-0 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">
+                          {scenario}
+                        </span>
+                      </div>
+                      <p className="mt-0.5 text-sm text-gray-500 truncate">
+                        {run.targetName}{run.targetRole ? ` \u00b7 ${run.targetRole}` : ""}
+                      </p>
+                      <div className="mt-1.5 flex items-center gap-1.5">
+                        <Zap className="h-3 w-3 text-emerald-500" />
+                        <span className="text-xs text-emerald-600">Research-powered</span>
+                      </div>
+                    </div>
+                    <ChevronRight className="h-5 w-5 shrink-0 text-gray-300 transition group-hover:text-emerald-500" />
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}
 
-        {/* Past Sessions */}
+        {/* Recent Sessions */}
         {sessions.length > 0 && (
           <div className="mt-10">
             <div className="flex items-center justify-between">
@@ -397,6 +340,76 @@ function PracticeLanding() {
                 </a>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Freestyle Practice (demoted, collapsible) */}
+        <div className="mt-10">
+          {!showFreestyle ? (
+            <button
+              onClick={() => setShowFreestyle(true)}
+              className="flex items-center gap-2 text-sm text-gray-500 hover:text-emerald-700 transition"
+            >
+              <Plus className="h-4 w-4" />
+              Freestyle practice (no blitz required)
+            </button>
+          ) : (
+            <div className="rounded-xl border bg-white p-6 shadow-sm">
+              <h3 className="text-sm font-semibold text-gray-700">Freestyle Practice</h3>
+              <p className="mt-1 text-xs text-gray-400">
+                No research data. We&apos;ll generate a generic persona from the company name.
+              </p>
+              <div className="mt-4 flex items-end gap-3">
+                <div className="flex-1">
+                  <label className="block text-xs font-medium text-gray-500">Company</label>
+                  <input
+                    type="text"
+                    value={targetCompany}
+                    onChange={(e) => setTargetCompany(e.target.value)}
+                    placeholder="e.g. CBRE, Salesforce"
+                    className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                    onKeyDown={(e) => e.key === "Enter" && handleFreestyleStart()}
+                  />
+                </div>
+                <div className="w-40">
+                  <label className="block text-xs font-medium text-gray-500">Type</label>
+                  <select
+                    value={meetingType}
+                    onChange={(e) => setMeetingType(e.target.value)}
+                    className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                  >
+                    <option value="discovery">Discovery Call</option>
+                    <option value="follow_up">Follow-Up</option>
+                    <option value="pitch">Pitch / Demo</option>
+                    <option value="closing">Closing</option>
+                    <option value="interview">Interview</option>
+                  </select>
+                </div>
+                <button
+                  onClick={handleFreestyleStart}
+                  disabled={starting || atCap}
+                  className="flex items-center gap-2 rounded-lg bg-gray-800 px-4 py-2 text-sm font-medium text-white transition hover:bg-gray-900 disabled:opacity-50"
+                >
+                  {starting && !launchingId ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Play className="h-4 w-4" />
+                  )}
+                  Start
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Empty state when no blitz runs */}
+        {blitzRuns.length === 0 && sessions.length === 0 && (
+          <div className="mt-4 rounded-2xl border-2 border-dashed border-gray-200 p-12 text-center">
+            <Video className="mx-auto h-10 w-10 text-gray-300" />
+            <h3 className="mt-4 text-sm font-semibold text-gray-700">No practice scenarios yet</h3>
+            <p className="mt-1 text-sm text-gray-400">
+              Run a blitz from the dashboard to generate a research-powered practice scenario, or use freestyle mode below.
+            </p>
           </div>
         )}
       </main>

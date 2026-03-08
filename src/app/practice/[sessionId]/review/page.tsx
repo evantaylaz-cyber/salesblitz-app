@@ -160,8 +160,9 @@ export default function PracticeReviewPage() {
           </div>
           <button
             onClick={() => {
-              // Carry context forward: company, meeting type, and runRequestId
+              // Auto-launch next session with full context carried forward
               const params = new URLSearchParams();
+              params.set("autostart", "true");
               if (session?.targetCompany) params.set("company", session.targetCompany);
               if (session?.personaConfig?._meetingType) params.set("meetingType", session.personaConfig._meetingType);
               if (session?.runRequestId) params.set("runRequestId", session.runRequestId);
