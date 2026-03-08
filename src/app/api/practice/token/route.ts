@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Parse optional body for avatar_id override
-    let avatarId = "Graham_in_Black_Suit"; // Default professional male avatar
+    let avatarId = "bb1f6ebc-b388-4a39-9e2b-8df618e0377c"; // Graham in Black Shirt
     try {
       const body = await req.json();
       if (body?.avatarId) avatarId = body.avatarId;

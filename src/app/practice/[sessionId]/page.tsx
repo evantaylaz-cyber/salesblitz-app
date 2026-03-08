@@ -86,7 +86,7 @@ export default function PracticeSessionPage() {
       const tokenRes = await fetch("/api/practice/token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ avatarId: "Graham_in_Black_Suit" }),
+        body: JSON.stringify({ avatarId: "bb1f6ebc-b388-4a39-9e2b-8df618e0377c" }), // Graham in Black Shirt
       });
       const tokenData = await tokenRes.json();
 
