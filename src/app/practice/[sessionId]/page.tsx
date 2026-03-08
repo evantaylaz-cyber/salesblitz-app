@@ -72,6 +72,7 @@ export default function PracticeSessionPage() {
       if (timerRef.current) clearInterval(timerRef.current);
       cleanup();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoaded, sessionId]);
 
   // Auto-scroll transcript
@@ -82,7 +83,6 @@ export default function PracticeSessionPage() {
   async function initSession() {
     try {
       // Get LiveAvatar session token from our backend
-      // Uses FULL mode with a professional avatar (Graham in Black Suit)
       const tokenRes = await fetch("/api/practice/token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -97,48 +97,53 @@ export default function PracticeSessionPage() {
       }
 
       // Dynamic import of LiveAvatar SDK (client-side only)
-      const { LiveAvatarSession } = await import("@heygen/liveavatar-web-sdk");
+      const { LiveAvatarSession, SessionEvent, AgentEventsEnum } = await import(
+        "@heygen/liveavatar-web-sdk"
+      );
 
-      // Create session with text mode (voiceChat: false)
+      // Create session in CUSTOM mode (voiceChat: false)
       // We handle STT (Web Speech API) and LLM (Claude) ourselves
-      // LiveAvatar handles TTS + avatar lip sync
+      // LiveAvatar handles TTS + avatar lip sync only
       const session = new LiveAvatarSession(tokenData.sessionToken, {
         voiceChat: false,
       });
 
       sessionRef.current = session;
 
-      // Listen for session events
-      // The SDK emits events when the avatar video stream is ready,
-      // when the avatar starts/stops speaking, and on disconnect
-      session.on("session_started", () => {
-        setAvatarReady(true);
-        setAvatarLoading(false);
+      // Listen for session state changes
+      session.on(SessionEvent.SESSION_STATE_CHANGED, (state: string) => {
+        if (state === "CONNECTED") {
+          setAvatarReady(true);
+          setAvatarLoading(false);
 
-        // Start timer
-        timerRef.current = setInterval(() => {
-          setElapsed((prev) => prev + 1);
-        }, 1000);
+          // Attach video stream to element
+          if (videoRef.current) {
+            session.attach(videoRef.current);
+          }
+
+          // Start timer
+          timerRef.current = setInterval(() => {
+            setElapsed((prev) => prev + 1);
+          }, 1000);
+        } else if (state === "DISCONNECTED" || state === "INACTIVE") {
+          setAvatarReady(false);
+        }
       });
 
-      session.on("session_stopped", () => {
-        setAvatarReady(false);
+      session.on(SessionEvent.SESSION_STREAM_READY, () => {
+        // Stream is ready, attach to video element
+        if (videoRef.current) {
+          session.attach(videoRef.current);
+        }
       });
 
-      session.on("avatar_talking_started", () => {
+      // Avatar speaking events
+      session.on(AgentEventsEnum.AVATAR_SPEAK_STARTED, () => {
         setIsSpeaking(true);
       });
 
-      session.on("avatar_talking_stopped", () => {
+      session.on(AgentEventsEnum.AVATAR_SPEAK_ENDED, () => {
         setIsSpeaking(false);
-      });
-
-      // Video stream handler - attach MediaStream to video element
-      session.on("stream_ready", (stream: MediaStream) => {
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-          videoRef.current.play().catch(() => {});
-        }
       });
 
       // Start the LiveAvatar session
@@ -164,14 +169,18 @@ export default function PracticeSessionPage() {
           },
         ]);
 
-        // Have avatar speak the opening line
-        setIsSpeaking(true);
+        // Set persona info from the response if available
+        if (openingData.persona) {
+          setPersona(openingData.persona);
+        }
+
+        // Have avatar speak the opening line using message() method
+        // message() sends text to the avatar for TTS + lip sync
         try {
-          await session.speak(openingData.response);
+          session.message(openingData.response);
         } catch (speakErr) {
           console.error("Speak error:", speakErr);
         }
-        setIsSpeaking(false);
       }
     } catch (err) {
       console.error("Init error:", err);
@@ -227,13 +236,11 @@ export default function PracticeSessionPage() {
 
             // Have LiveAvatar avatar speak the response
             if (sessionRef.current) {
-              setIsSpeaking(true);
               try {
-                await sessionRef.current.speak(data.response);
+                sessionRef.current.message(data.response);
               } catch (speakErr) {
                 console.error("Speak error:", speakErr);
               }
-              setIsSpeaking(false);
             }
           }
         } catch {

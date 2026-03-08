@@ -19,8 +19,8 @@ export async function POST(req: NextRequest) {
       // No body provided, use default
     }
 
-    // Create LiveAvatar session token in LITE mode
-    // LITE = we control the LLM (Claude), avatar handles TTS + lip sync only
+    // Create LiveAvatar session token in CUSTOM mode
+    // CUSTOM = we control the LLM (Claude), avatar handles TTS + lip sync only
     // Cost: 1 credit/min (vs 2 credits/min for FULL mode)
     const res = await fetch("https://api.liveavatar.com/v1/sessions/token", {
       method: "POST",
@@ -30,11 +30,8 @@ export async function POST(req: NextRequest) {
         Accept: "application/json",
       },
       body: JSON.stringify({
-        mode: "FULL",
+        mode: "CUSTOM",
         avatar_id: avatarId,
-        avatar_persona: {
-          language: "en",
-        },
       }),
     });
 

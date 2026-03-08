@@ -27,8 +27,7 @@
     "svix": "^1.15.0",
     "tailwind-merge": "^2.2.0",
     "@anthropic-ai/sdk": "^0.39.0",
-    "@heygen/streaming-avatar": "^2.0.0",
-    "@heygen/liveavatar-web-sdk": "^1.0.0",
+    "@heygen/liveavatar-web-sdk": "^0.0.10",
     "zod": "^3.22.0"
   },
   "devDependencies": {
