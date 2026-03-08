@@ -63,6 +63,40 @@ export default function PracticeSessionPage() {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const transcriptEndRef = useRef<HTMLDivElement>(null);
 
+  // Convert text to audio via OpenAI TTS, then send to LiveAvatar via repeatAudio()
+  async function speakViaAvatar(text: string) {
+    const session = sessionRef.current;
+    if (!session) return;
+
+    try {
+      // Get PCM audio from our TTS endpoint
+      const ttsRes = await fetch("/api/practice/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+
+      if (!ttsRes.ok) {
+        console.error("TTS failed:", ttsRes.status);
+        return;
+      }
+
+      const { chunks } = await ttsRes.json();
+
+      if (!chunks || chunks.length === 0) {
+        console.error("TTS returned no audio chunks");
+        return;
+      }
+
+      // Send each ~1s chunk to LiveAvatar via repeatAudio (maps to agent.speak)
+      for (const chunk of chunks) {
+        session.repeatAudio(chunk);
+      }
+    } catch (err) {
+      console.error("speakViaAvatar error:", err);
+    }
+  }
+
   // Load session data and initialize avatar
   useEffect(() => {
     if (isLoaded && sessionId) {
@@ -104,8 +138,8 @@ export default function PracticeSessionPage() {
       );
 
       // Create session in CUSTOM mode (voiceChat: false)
-      // We handle STT (Web Speech API) and LLM (Claude) ourselves
-      // LiveAvatar handles TTS + avatar lip sync only
+      // We handle STT (Web Speech API), LLM (Claude), and TTS (OpenAI) ourselves
+      // LiveAvatar handles avatar video rendering + lip sync only
       const session = new LiveAvatarSession(tokenData.sessionToken, {
         voiceChat: false,
       });
@@ -176,14 +210,8 @@ export default function PracticeSessionPage() {
           setPersona(openingData.persona);
         }
 
-        // Have avatar speak the opening line using repeat() method
-        // In CUSTOM mode: repeat() sends avatar.speak_text (TTS works)
-        // message() sends avatar.speak_response (server rejects it)
-        try {
-          session.repeat(openingData.response);
-        } catch (speakErr) {
-          console.error("Speak error:", speakErr);
-        }
+        // Convert text to audio via OpenAI TTS, send to avatar for lip sync
+        speakViaAvatar(openingData.response);
       }
     } catch (err) {
       console.error("Init error:", err);
@@ -237,14 +265,8 @@ export default function PracticeSessionPage() {
               { role: "persona", text: data.response, timestamp: new Date().toISOString() },
             ]);
 
-            // Have LiveAvatar avatar speak the response
-            if (sessionRef.current) {
-              try {
-                sessionRef.current.repeat(data.response);
-              } catch (speakErr) {
-                console.error("Speak error:", speakErr);
-              }
-            }
+            // Convert text to audio via OpenAI TTS, send to avatar for lip sync
+            speakViaAvatar(data.response);
           }
         } catch {
           setError("Failed to get response");
@@ -364,6 +386,11 @@ export default function PracticeSessionPage() {
               autoPlay
               playsInline
               className={`h-full w-full object-cover ${avatarLoading ? "opacity-0" : "opacity-100"} transition-opacity duration-500`}
+              style={{
+                // Chroma key: remove green screen background from LiveAvatar video
+                // The avatar renders with bright green BG (#00B140) for compositing
+                mixBlendMode: "screen",
+              }}
             />
             {isSpeaking && (
               <div className="absolute bottom-4 left-4 flex items-center gap-2 rounded-full bg-black/60 px-3 py-1">
