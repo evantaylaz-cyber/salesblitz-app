@@ -31,6 +31,8 @@ interface TranscriptEntry {
   role: "user" | "persona";
   text: string;
   timestamp: string;
+  speaker?: string;
+  speakerTitle?: string;
 }
 
 export default function PracticeSessionPage() {
@@ -55,6 +57,8 @@ export default function PracticeSessionPage() {
   const [error, setError] = useState<string | null>(null);
   const [elapsed, setElapsed] = useState(0);
   const [ending, setEnding] = useState(false);
+  const [currentSpeaker, setCurrentSpeaker] = useState<string | null>(null);
+  const [isPanelMode, setIsPanelMode] = useState(false);
 
   // Refs
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -281,13 +285,21 @@ export default function PracticeSessionPage() {
 
       const openingData = await openingRes.json();
       if (openingData.response) {
-        setTranscript([
-          {
-            role: "persona",
-            text: openingData.response,
-            timestamp: new Date().toISOString(),
-          },
-        ]);
+        const entry: TranscriptEntry = {
+          role: "persona",
+          text: openingData.response,
+          timestamp: new Date().toISOString(),
+        };
+
+        // Handle panel mode speaker info
+        if (openingData.speaker) {
+          entry.speaker = openingData.speaker;
+          entry.speakerTitle = openingData.speakerTitle;
+          setCurrentSpeaker(openingData.speaker);
+          setIsPanelMode(true);
+        }
+
+        setTranscript([entry]);
 
         // Set persona info from the response if available
         if (openingData.persona) {
@@ -341,10 +353,20 @@ export default function PracticeSessionPage() {
 
           const data = await res.json();
           if (data.response) {
-            setTranscript((prev) => [
-              ...prev,
-              { role: "persona", text: data.response, timestamp: new Date().toISOString() },
-            ]);
+            const personaEntry: TranscriptEntry = {
+              role: "persona",
+              text: data.response,
+              timestamp: new Date().toISOString(),
+            };
+
+            // Handle panel mode speaker info
+            if (data.speaker) {
+              personaEntry.speaker = data.speaker;
+              personaEntry.speakerTitle = data.speakerTitle;
+              setCurrentSpeaker(data.speaker);
+            }
+
+            setTranscript((prev) => [...prev, personaEntry]);
 
             // Convert text to audio via OpenAI TTS, send to avatar for lip sync
             speakViaAvatar(data.response);
@@ -527,7 +549,9 @@ export default function PracticeSessionPage() {
                   <div className="h-3 w-1 animate-pulse rounded-full bg-emerald-400" style={{ animationDelay: "150ms" }} />
                   <div className="h-3 w-1 animate-pulse rounded-full bg-emerald-400" style={{ animationDelay: "300ms" }} />
                 </div>
-                <span className="text-xs text-gray-300">Speaking</span>
+                <span className="text-xs text-gray-300">
+                  {isPanelMode && currentSpeaker ? currentSpeaker : "Speaking"}
+                </span>
               </div>
             )}
           </div>
@@ -584,8 +608,13 @@ export default function PracticeSessionPage() {
                       : "bg-gray-800 text-gray-200"
                   }`}
                 >
-                  {entry.role === "persona" && persona && (
-                    <p className="mb-1 text-xs font-medium text-gray-400">{persona.name}</p>
+                  {entry.role === "persona" && (
+                    <p className="mb-1 text-xs font-medium text-gray-400">
+                      {entry.speaker || persona?.name || "Persona"}
+                      {entry.speakerTitle && isPanelMode && (
+                        <span className="ml-1 text-gray-500">&middot; {entry.speakerTitle}</span>
+                      )}
+                    </p>
                   )}
                   {entry.text}
                 </div>

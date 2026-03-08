@@ -148,6 +148,85 @@ ${behaviorRules}`;
 }
 
 /**
+ * Build system prompt for panel mode (multi-interviewer simulation).
+ * Single avatar, but Claude switches between panelist personas during the conversation.
+ * Each response must start with [SPEAKER: Name] tag so the UI can display who's talking.
+ */
+export function buildPanelSystemPrompt(
+  panelMembers: Array<{
+    name: string;
+    title: string | null;
+    roleInMeeting: string;
+    personalityVibe: string | null;
+    evaluationFocus: string | null;
+  }>,
+  companyName: string,
+  meetingType?: string,
+): string {
+  const memberDescriptions = panelMembers.map((m, i) => {
+    const vibe = m.personalityVibe
+      ? { analytical_skeptical: "analytical and skeptical, asks tough follow-ups", relationship_first: "warm and relationship-oriented, evaluates cultural fit", high_energy_challenger: "high-energy, pushes back hard, tests under pressure", warm_collaborative: "collaborative and friendly, but still evaluating" }[m.personalityVibe] || m.personalityVibe
+      : "professional";
+    return `${i + 1}. ${m.name} (${m.title || m.roleInMeeting}) - Style: ${vibe}${m.evaluationFocus ? `. Evaluates: ${m.evaluationFocus}` : ""}`;
+  }).join("\n");
+
+  const firstMember = panelMembers[0];
+
+  return `You are simulating a PANEL INTERVIEW at ${companyName}. You play ALL of the following interviewers, one at a time. The candidate is being evaluated by this panel:
+
+${memberDescriptions}
+
+CRITICAL RULES:
+1. Every response MUST start with exactly [SPEAKER: Full Name] on its own line, followed by your spoken dialogue. This tag tells the system who is currently speaking. Example:
+[SPEAKER: Sarah Chen]
+Thanks for that example. Let me dig into the metrics side of it.
+
+2. Start the session as ${firstMember.name} (${firstMember.title || firstMember.roleInMeeting}). They open the interview.
+
+3. Switch speakers every 3-5 exchanges. When switching, the CURRENT speaker hands off naturally, then the NEXT response starts with the new speaker's tag. Example handoff:
+[SPEAKER: Sarah Chen]
+Great, I think Justin had some questions for you on the technical side.
+Then the next response:
+[SPEAKER: Justin Darby]
+Yeah, thanks Sarah. So tell me about a time when...
+
+4. Each panelist should stay in character with their personality and evaluation focus. The analytical one asks for data. The relationship one asks about team dynamics. The challenger pushes back.
+
+5. The overall meeting type is: ${meetingType || "panel interview"}.
+
+SPEECH RULES (MANDATORY):
+- Never use stage directions, action descriptions, or asterisk-wrapped text. Write ONLY spoken dialogue.
+- Keep responses to 2-3 sentences max. You're in a real-time conversation.
+- Speak naturally with contractions and varied pacing.
+- This is a real-time transcript with potential errors. Guess intent and respond naturally.
+- Never break character. Never reference AI, simulation, or practice.
+- Never reference follow-up emails or meetings outside this conversation.
+- Do not use lists, numbered points, or formatting. Conversational speech only.
+
+BEHAVIOR RULES:
+- Evaluate the candidate rigorously. Push for specifics.
+- If an answer is vague, ask "Can you walk me through a concrete example?"
+- Each panelist brings their own perspective and evaluation lens.
+- Acknowledge strong answers subtly. Challenge weak ones directly.
+- The panel should feel like a real multi-person interview, not a scripted sequence.`;
+}
+
+/**
+ * Extract the [SPEAKER: Name] tag from a panel mode response.
+ * Returns { speaker, text } where text has the tag stripped.
+ */
+export function extractPanelSpeaker(response: string): { speaker: string | null; text: string } {
+  const match = response.match(/^\[SPEAKER:\s*([^\]]+)\]\s*/);
+  if (match) {
+    return {
+      speaker: match[1].trim(),
+      text: response.slice(match[0].length).trim(),
+    };
+  }
+  return { speaker: null, text: response };
+}
+
+/**
  * Strip stage directions and action text from persona responses before TTS.
  * Removes *asterisk-wrapped text*, (parenthetical actions), and [bracketed directions].
  */

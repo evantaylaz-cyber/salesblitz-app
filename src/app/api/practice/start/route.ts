@@ -42,36 +42,116 @@ export async function POST(req: NextRequest) {
 
     // Load research data from existing run if provided
     let researchContext = "";
+    let linkedRunRequestId: string | null = null;
+    let linkedTargetId: string | null = null;
+    let linkedMeetingType: string | null = null;
+    let panelData: Array<{ name: string; title: string | null; roleInMeeting: string; personalityVibe: string | null; evaluationFocus: string | null }> | null = null;
     if (runRequestId) {
       const runRequest = await prisma.runRequest.findUnique({
         where: { id: runRequestId, userId: user.id },
-        select: { researchData: true, targetCompany: true, targetName: true, targetRole: true },
+        select: {
+          id: true,
+          researchData: true,
+          targetCompany: true,
+          targetName: true,
+          targetRole: true,
+          targetId: true,
+          meetingType: true,
+          interviewPanel: {
+            include: { members: { orderBy: { order: "asc" } } },
+          },
+        },
       });
-      if (runRequest?.researchData) {
-        researchContext = typeof runRequest.researchData === "string"
-          ? runRequest.researchData
-          : JSON.stringify(runRequest.researchData);
+      if (runRequest) {
+        linkedRunRequestId = runRequest.id;
+        linkedTargetId = runRequest.targetId;
+        linkedMeetingType = runRequest.meetingType;
+        if (runRequest.researchData) {
+          researchContext = typeof runRequest.researchData === "string"
+            ? runRequest.researchData
+            : JSON.stringify(runRequest.researchData);
+        }
+        // Extract panel data if available
+        if (runRequest.interviewPanel?.members && runRequest.interviewPanel.members.length > 0) {
+          panelData = runRequest.interviewPanel.members.map((m: { name: string; title: string | null; roleInMeeting: string; personalityVibe: string | null; evaluationFocus: string | null; order: number }) => ({
+            name: m.name,
+            title: m.title,
+            roleInMeeting: m.roleInMeeting,
+            personalityVibe: m.personalityVibe,
+            evaluationFocus: m.evaluationFocus,
+          }));
+        }
       }
     }
 
-    // Load user profile for seller context
-    const sellerContext = user.userProfile
-      ? `Seller's company: ${user.userProfile.companyName || "Unknown"}
-Seller's product: ${user.userProfile.companyProduct || "Unknown"}
-Seller's differentiators: ${user.userProfile.companyDifferentiators || "Unknown"}
-Seller's target market: ${user.userProfile.companyTargetMarket || "Unknown"}`
+    // Resolve Target (from RunRequest link or upsert)
+    if (!linkedTargetId) {
+      const target = await prisma.target.upsert({
+        where: {
+          userId_companyName_contactName: {
+            userId: user.id,
+            companyName: targetCompany,
+            contactName: null,
+          },
+        },
+        update: {},
+        create: {
+          userId: user.id,
+          companyName: targetCompany,
+          type: meetingType === "interview" ? "interview" : "prospect",
+        },
+      });
+      linkedTargetId = target.id;
+    }
+
+    // Check for prior sessions on this target (session chaining)
+    const previousSession = await prisma.practiceSession.findFirst({
+      where: {
+        userId: user.id,
+        targetId: linkedTargetId,
+        status: "completed",
+      },
+      orderBy: { createdAt: "desc" },
+      select: { id: true, sessionSequence: true, feedback: true, cotmScore: true },
+    });
+
+    // Load user profile for seller context (use ALL available fields)
+    const p = user.userProfile;
+    const sellerContext = p
+      ? [
+          p.companyName && `Company: ${p.companyName}`,
+          p.companyProduct && `Product: ${p.companyProduct}`,
+          p.companyDescription && `Description: ${p.companyDescription}`,
+          p.companyDifferentiators && `Differentiators: ${p.companyDifferentiators}`,
+          p.companyCompetitors && `Competitors: ${p.companyCompetitors}`,
+          p.companyTargetMarket && `Target Market: ${p.companyTargetMarket}`,
+          p.sellingStyle && `Selling Methodology: ${p.sellingStyle}`,
+          p.sellingPhilosophy && `Selling Philosophy: ${p.sellingPhilosophy}`,
+          p.sellerArchetype && `Seller Archetype: ${p.sellerArchetype}`,
+          p.careerNarrative && `Career Narrative: ${p.careerNarrative}`,
+          p.lifecycleStage && `Lifecycle: ${p.lifecycleStage}`,
+          p.territoryFocus && `Territory Focus: ${p.territoryFocus}`,
+          p.currentQuotaContext && `Quota Context: ${p.currentQuotaContext}`,
+          p.linkedinAbout && `LinkedIn About: ${p.linkedinAbout}`,
+        ].filter(Boolean).join("\n")
       : "";
 
-    // Generate persona via Claude (adapts to meeting type)
-    const isInterview = meetingType === "interview";
+    // Use the most specific meeting type available
+    const effectiveMeetingType = meetingType || linkedMeetingType || "discovery";
+    const isInterview = effectiveMeetingType === "interview" || ["phone_screen", "hiring_manager", "mock_pitch", "panel", "final", "executive"].includes(effectiveMeetingType);
+    // Build prior session context for session chaining
+    const priorSessionContext = previousSession?.feedback
+      ? `\nPRIOR SESSION FEEDBACK (session #${previousSession.sessionSequence}):\n${previousSession.feedback.slice(0, 1000)}\nPush harder on the areas where the candidate/rep was weakest. Don't repeat the same opening; pick up where they left off.`
+      : "";
+
     const personaPrompt = isInterview
       ? `Generate a realistic interviewer persona for a practice interview at ${targetCompany}. The user is the CANDIDATE being interviewed.
 
-${researchContext ? `RESEARCH DATA ON THE COMPANY:\n${researchContext.slice(0, 8000)}` : "No prior research available. Generate a plausible persona based on the company name."}
+${researchContext ? `RESEARCH DATA ON THE COMPANY:\n${researchContext.slice(0, 12000)}` : "No prior research available. Generate a plausible persona based on the company name."}
 
 ${sellerContext ? `CANDIDATE CONTEXT:\n${sellerContext}` : ""}
-
-MEETING TYPE: interview
+${priorSessionContext}
+MEETING TYPE: ${effectiveMeetingType}
 
 Generate a JSON object with this EXACT structure (no markdown, no code blocks, just the JSON):
 {
@@ -94,11 +174,11 @@ Generate a JSON object with this EXACT structure (no markdown, no code blocks, j
 Make the persona feel like a REAL interviewer. They should ask probing follow-ups, challenge vague answers, and test for depth. The questions should be specific to ${targetCompany}'s actual business challenges.`
       : `Generate a realistic persona for a practice sales call. The rep is selling to ${targetCompany}.
 
-${researchContext ? `RESEARCH DATA ON THE COMPANY:\n${researchContext.slice(0, 8000)}` : "No prior research available. Generate a plausible persona based on the company name."}
+${researchContext ? `RESEARCH DATA ON THE COMPANY:\n${researchContext.slice(0, 12000)}` : "No prior research available. Generate a plausible persona based on the company name."}
 
 ${sellerContext ? `SELLER CONTEXT:\n${sellerContext}` : ""}
-
-${meetingType ? `MEETING TYPE: ${meetingType}` : "MEETING TYPE: discovery"}
+${priorSessionContext}
+MEETING TYPE: ${effectiveMeetingType}
 
 Generate a JSON object with this EXACT structure (no markdown, no code blocks, just the JSON):
 {
@@ -142,16 +222,36 @@ Make the persona feel REAL. Specific details, not generic business-speak. The ob
     }
 
     // Store meetingType in personaConfig so message route can adapt behavior
-    persona._meetingType = meetingType || "discovery";
+    persona._meetingType = effectiveMeetingType;
 
-    // Create PracticeSession in DB
+    // Panel mode: if we have panel data, store it for the message route
+    const isPanelMode = panelData !== null && panelData.length > 1;
+    if (isPanelMode) {
+      persona._panelMembers = panelData;
+      persona._isPanelMode = true;
+    }
+
+    // Create PracticeSession in DB (linked to Target, RunRequest, and prior session)
     const session = await prisma.practiceSession.create({
       data: {
         userId: user.id,
+        targetId: linkedTargetId,
+        runRequestId: linkedRunRequestId,
         targetCompany,
         targetRole: persona.title,
-        personaName: persona.name,
+        personaName: isPanelMode ? panelData![0].name : persona.name,
         personaConfig: persona,
+        isPanelMode,
+        panelMemberStates: isPanelMode ? {
+          currentSpeakerIndex: 0,
+          turnCounts: Object.fromEntries(panelData!.map(m => [m.name, 0])),
+          members: panelData,
+        } : undefined,
+        previousSessionId: previousSession?.id || null,
+        sessionSequence: previousSession ? previousSession.sessionSequence + 1 : 1,
+        focusAreas: previousSession?.feedback
+          ? [previousSession.feedback.slice(0, 500)]
+          : [],
         status: "created",
         transcript: [],
       },
@@ -160,11 +260,13 @@ Make the persona feel REAL. Specific details, not generic business-speak. The ob
     return NextResponse.json({
       sessionId: session.id,
       persona: {
-        name: persona.name,
-        title: persona.title,
-        company: persona.company,
+        name: isPanelMode ? panelData![0].name : persona.name,
+        title: isPanelMode ? panelData![0].title : persona.title,
+        company: targetCompany,
         personality: persona.personality,
       },
+      isPanelMode,
+      panelMembers: isPanelMode ? panelData!.map(m => ({ name: m.name, title: m.title, roleInMeeting: m.roleInMeeting })) : undefined,
       remaining: (capCheck.remaining ?? 0) - 1,
       cap: capCheck.cap,
     });

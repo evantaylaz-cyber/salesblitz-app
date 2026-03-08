@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import prisma from "@/lib/db";
-import { buildPersonaSystemPrompt, cleanForTTS } from "@/lib/practice";
+import { buildPersonaSystemPrompt, buildPanelSystemPrompt, extractPanelSpeaker, cleanForTTS } from "@/lib/practice";
 import Anthropic from "@anthropic-ai/sdk";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -69,11 +69,24 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // Build system prompt (panel mode uses different prompt)
+    const isPanelMode = session.isPanelMode && persona._isPanelMode && persona._panelMembers;
+    let systemPrompt: string;
+    if (isPanelMode) {
+      systemPrompt = buildPanelSystemPrompt(
+        persona._panelMembers as Array<{ name: string; title: string | null; roleInMeeting: string; personalityVibe: string | null; evaluationFocus: string | null }>,
+        session.targetCompany,
+        persona._meetingType as string | undefined,
+      );
+    } else {
+      systemPrompt = buildPersonaSystemPrompt(persona as Parameters<typeof buildPersonaSystemPrompt>[0], persona._meetingType as string | undefined);
+    }
+
     // Get persona response from Claude
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-20250514",
       max_tokens: 500,
-      system: buildPersonaSystemPrompt(persona as Parameters<typeof buildPersonaSystemPrompt>[0], (persona as Record<string, unknown>)._meetingType as string | undefined),
+      system: systemPrompt,
       messages: conversationHistory,
     });
 
@@ -82,10 +95,32 @@ export async function POST(req: NextRequest) {
       if (block.type === "text") responseText += block.text;
     }
 
-    // Add persona response to transcript
+    // Extract speaker info for panel mode
+    let speaker: string | null = null;
+    let speakerTitle: string | null = null;
+    let displayText = responseText;
+    if (isPanelMode) {
+      const extracted = extractPanelSpeaker(responseText);
+      speaker = extracted.speaker;
+      displayText = extracted.text;
+      // Look up title from panel members
+      if (speaker && persona._panelMembers) {
+        const member = (persona._panelMembers as Array<{ name: string; title: string | null }>).find(
+          m => m.name.toLowerCase() === speaker!.toLowerCase()
+        );
+        speakerTitle = member?.title || null;
+      }
+    }
+
+    // Add persona response to transcript (with speaker info for panel mode)
     const finalTranscript = [
       ...updatedTranscript,
-      { role: "persona", text: responseText, timestamp: new Date().toISOString() },
+      {
+        role: "persona",
+        text: displayText,
+        timestamp: new Date().toISOString(),
+        ...(speaker ? { speaker, speakerTitle } : {}),
+      },
     ];
 
     // Save updated transcript
@@ -95,9 +130,13 @@ export async function POST(req: NextRequest) {
     });
 
     // Clean stage directions for TTS, but keep raw text in transcript
-    const ttsText = cleanForTTS(responseText);
+    const ttsText = cleanForTTS(displayText);
 
-    return NextResponse.json({ response: ttsText, rawResponse: responseText });
+    return NextResponse.json({
+      response: ttsText,
+      rawResponse: displayText,
+      ...(speaker ? { speaker, speakerTitle } : {}),
+    });
   } catch (err) {
     console.error("Practice message error:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

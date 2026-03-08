@@ -115,12 +115,37 @@ function PracticeLanding() {
     }
   }
 
-  function selectBlitz(run: BlitzRun) {
+  async function launchBlitz(run: BlitzRun) {
+    const type = run.toolName.startsWith("interview_") ? "interview" : meetingType;
     setRunRequestId(run.id);
     setTargetCompany(run.targetCompany);
-    // Infer meeting type from tool name
-    if (run.toolName.startsWith("interview_")) {
-      setMeetingType("interview");
+    setMeetingType(type);
+    setStarting(true);
+    setError(null);
+
+    try {
+      const res = await fetch("/api/practice/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          targetCompany: run.targetCompany,
+          meetingType: type,
+          runRequestId: run.id,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Failed to start session");
+        setStarting(false);
+        return;
+      }
+
+      const personaParam = data.persona?.name ? `?persona=${encodeURIComponent(data.persona.name)}` : "";
+      router.push(`/practice/${data.sessionId}${personaParam}`);
+    } catch {
+      setError("Failed to start session");
+      setStarting(false);
     }
   }
 
@@ -287,11 +312,16 @@ function PracticeLanding() {
               {blitzRuns.slice(0, 6).map((run) => (
                 <button
                   key={run.id}
-                  onClick={() => selectBlitz(run)}
-                  className="flex items-center gap-3 rounded-xl border bg-white p-4 text-left shadow-sm transition hover:border-emerald-300 hover:shadow"
+                  onClick={() => launchBlitz(run)}
+                  disabled={starting}
+                  className="flex items-center gap-3 rounded-xl border bg-white p-4 text-left shadow-sm transition hover:border-emerald-300 hover:shadow disabled:opacity-50"
                 >
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-50">
-                    <FileText className="h-5 w-5 text-emerald-700" />
+                    {starting && runRequestId === run.id ? (
+                      <Loader2 className="h-5 w-5 animate-spin text-emerald-700" />
+                    ) : (
+                      <Play className="h-5 w-5 text-emerald-700" />
+                    )}
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="font-medium text-gray-900 truncate">{run.targetCompany}</p>
@@ -303,7 +333,7 @@ function PracticeLanding() {
                     <span className="text-xs text-gray-400">
                       {TOOL_LABELS[run.toolName] || run.toolName}
                     </span>
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                    <ChevronRight className="h-4 w-4 text-emerald-400" />
                   </div>
                 </button>
               ))}
