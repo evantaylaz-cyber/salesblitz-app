@@ -11,8 +11,6 @@ import {
   Loader2,
   MessageSquare,
   Clock,
-  Video,
-  VideoOff,
   AlertCircle,
 } from "lucide-react";
 
@@ -59,7 +57,8 @@ export default function PracticeSessionPage() {
 
   // Refs
   const videoRef = useRef<HTMLVideoElement>(null);
-  const avatarRef = useRef<unknown>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const sessionRef = useRef<any>(null);
   const recognitionRef = useRef<ISpeechRecognition | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const transcriptEndRef = useRef<HTMLDivElement>(null);
@@ -82,36 +81,37 @@ export default function PracticeSessionPage() {
 
   async function initSession() {
     try {
-      // Fetch session data to get persona
-      const sessionRes = await fetch(`/api/practice/history`);
-      const historyData = await sessionRes.json();
-      // Find this session (or load directly)
-      // For now, we proceed with avatar init and get persona from start response
-
-      // Get HeyGen token
-      const tokenRes = await fetch("/api/practice/token", { method: "POST" });
+      // Get LiveAvatar session token from our backend
+      // Uses FULL mode with a professional avatar (Graham in Black Suit)
+      const tokenRes = await fetch("/api/practice/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ avatarId: "Graham_in_Black_Suit" }),
+      });
       const tokenData = await tokenRes.json();
 
-      if (!tokenData.token) {
-        setError("Failed to get avatar session token. Check your HeyGen API key.");
+      if (!tokenData.sessionToken) {
+        setError("Failed to get avatar session token. Check your LiveAvatar API key.");
         setAvatarLoading(false);
         return;
       }
 
-      // Dynamic import of HeyGen SDK (client-side only)
-      const { default: StreamingAvatar, StreamingEvents, AvatarQuality, TaskType } = await import(
-        "@heygen/streaming-avatar"
-      );
+      // Dynamic import of LiveAvatar SDK (client-side only)
+      const { LiveAvatarSession } = await import("@heygen/liveavatar-web-sdk");
 
-      const avatar = new StreamingAvatar({ token: tokenData.token });
-      avatarRef.current = avatar;
+      // Create session with text mode (voiceChat: false)
+      // We handle STT (Web Speech API) and LLM (Claude) ourselves
+      // LiveAvatar handles TTS + avatar lip sync
+      const session = new LiveAvatarSession(tokenData.sessionToken, {
+        voiceChat: false,
+      });
 
-      // Listen for stream ready
-      avatar.on(StreamingEvents.STREAM_READY, (event: { detail: MediaStream }) => {
-        if (videoRef.current) {
-          videoRef.current.srcObject = event.detail;
-          videoRef.current.play().catch(() => {});
-        }
+      sessionRef.current = session;
+
+      // Listen for session events
+      // The SDK emits events when the avatar video stream is ready,
+      // when the avatar starts/stops speaking, and on disconnect
+      session.on("session_started", () => {
         setAvatarReady(true);
         setAvatarLoading(false);
 
@@ -121,25 +121,30 @@ export default function PracticeSessionPage() {
         }, 1000);
       });
 
-      avatar.on(StreamingEvents.STREAM_DISCONNECTED, () => {
+      session.on("session_stopped", () => {
         setAvatarReady(false);
       });
 
-      // Start the avatar with professional config
-      // Uses Wayne (professional male) or Anna (professional female) avatar
-      // Voice emotion set to FRIENDLY for natural conversational tone
-      await avatar.createStartAvatar({
-        avatarName: "Wayne_20240711",
-        quality: AvatarQuality.High,
-        language: "en",
-        voice: {
-          voiceId: "",  // Empty = use avatar's default voice
-          rate: 1.0,
-          emotion: "FRIENDLY" as never,
-        },
+      session.on("avatar_talking_started", () => {
+        setIsSpeaking(true);
       });
 
-      // Send opening line
+      session.on("avatar_talking_stopped", () => {
+        setIsSpeaking(false);
+      });
+
+      // Video stream handler - attach MediaStream to video element
+      session.on("stream_ready", (stream: MediaStream) => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          videoRef.current.play().catch(() => {});
+        }
+      });
+
+      // Start the LiveAvatar session
+      await session.start();
+
+      // Send opening line via our Claude-powered backend
       const openingRes = await fetch("/api/practice/message", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -159,14 +164,18 @@ export default function PracticeSessionPage() {
           },
         ]);
 
-        // Have avatar speak the opening
+        // Have avatar speak the opening line
         setIsSpeaking(true);
-        await avatar.speak({ text: openingData.response, taskType: TaskType.REPEAT });
+        try {
+          await session.speak(openingData.response);
+        } catch (speakErr) {
+          console.error("Speak error:", speakErr);
+        }
         setIsSpeaking(false);
       }
     } catch (err) {
       console.error("Init error:", err);
-      setError("Failed to initialize avatar. Make sure @heygen/streaming-avatar is installed.");
+      setError("Failed to initialize avatar session. Check console for details.");
       setAvatarLoading(false);
     }
   }
@@ -200,7 +209,7 @@ export default function PracticeSessionPage() {
           { role: "user", text: userText, timestamp: new Date().toISOString() },
         ]);
 
-        // Send to backend
+        // Send to Claude backend
         setIsProcessing(true);
         try {
           const res = await fetch("/api/practice/message", {
@@ -216,12 +225,14 @@ export default function PracticeSessionPage() {
               { role: "persona", text: data.response, timestamp: new Date().toISOString() },
             ]);
 
-            // Have avatar speak
-            if (avatarRef.current) {
+            // Have LiveAvatar avatar speak the response
+            if (sessionRef.current) {
               setIsSpeaking(true);
-              const { TaskType } = await import("@heygen/streaming-avatar");
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              await (avatarRef.current as any).speak({ text: data.response, taskType: TaskType.REPEAT });
+              try {
+                await sessionRef.current.speak(data.response);
+              } catch (speakErr) {
+                console.error("Speak error:", speakErr);
+              }
               setIsSpeaking(false);
             }
           }
@@ -256,7 +267,7 @@ export default function PracticeSessionPage() {
     if (timerRef.current) clearInterval(timerRef.current);
 
     try {
-      const res = await fetch("/api/practice/end", {
+      await fetch("/api/practice/end", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ sessionId, durationSeconds: elapsed }),
@@ -272,9 +283,10 @@ export default function PracticeSessionPage() {
 
   async function cleanup() {
     try {
-      const avatar = avatarRef.current as { stopAvatar: () => Promise<void> } | null;
-      if (avatar) {
-        await avatar.stopAvatar();
+      const session = sessionRef.current;
+      if (session) {
+        await session.stop();
+        sessionRef.current = null;
       }
     } catch {
       // silent cleanup
