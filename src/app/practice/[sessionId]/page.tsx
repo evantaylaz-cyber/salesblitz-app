@@ -176,10 +176,11 @@ export default function PracticeSessionPage() {
           setPersona(openingData.persona);
         }
 
-        // Have avatar speak the opening line using message() method
-        // message() sends text to the avatar for TTS + lip sync
+        // Have avatar speak the opening line using repeat() method
+        // In CUSTOM mode: repeat() sends avatar.speak_text (TTS works)
+        // message() sends avatar.speak_response (server rejects it)
         try {
-          session.message(openingData.response);
+          session.repeat(openingData.response);
         } catch (speakErr) {
           console.error("Speak error:", speakErr);
         }
@@ -239,7 +240,7 @@ export default function PracticeSessionPage() {
             // Have LiveAvatar avatar speak the response
             if (sessionRef.current) {
               try {
-                sessionRef.current.message(data.response);
+                sessionRef.current.repeat(data.response);
               } catch (speakErr) {
                 console.error("Speak error:", speakErr);
               }
