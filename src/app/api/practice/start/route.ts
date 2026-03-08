@@ -91,13 +91,14 @@ export async function POST(req: NextRequest) {
           userId_companyName_contactName: {
             userId: user.id,
             companyName: targetCompany,
-            contactName: null,
+            contactName: "",
           },
         },
         update: {},
         create: {
           userId: user.id,
           companyName: targetCompany,
+          contactName: "",
           type: meetingType === "interview" ? "interview" : "prospect",
         },
       });

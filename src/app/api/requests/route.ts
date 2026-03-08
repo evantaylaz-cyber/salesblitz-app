@@ -156,7 +156,7 @@ export async function POST(req: NextRequest) {
         userId_companyName_contactName: {
           userId: user.id,
           companyName: targetCompany,
-          contactName: targetName || null,
+          contactName: targetName || "",
         },
       },
       update: {
@@ -166,7 +166,7 @@ export async function POST(req: NextRequest) {
       create: {
         userId: user.id,
         companyName: targetCompany,
-        contactName: targetName || null,
+        contactName: targetName || "",
         contactTitle: targetRole || null,
         type: targetType,
         roundCount: 1,
