@@ -21,6 +21,7 @@ import {
   Download,
   MessageCircleQuestion,
   RefreshCw,
+  Video,
 } from "lucide-react";
 import DebriefSection from "@/components/DebriefSection";
 
@@ -447,6 +448,32 @@ export default function RequestDetailPage() {
         {/* Post-Run Debrief */}
         {(request.status === "delivered" || request.status === "ready") && (
           <DebriefSection requestId={request.id} />
+        )}
+
+        {/* Practice This Call CTA */}
+        {(request.status === "delivered" || request.status === "ready") && (
+          <div className="rounded-xl border-2 border-emerald-200 bg-gradient-to-r from-emerald-50 to-white p-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100">
+                  <Video className="h-6 w-6 text-emerald-700" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900">Practice This Call</h3>
+                  <p className="text-sm text-gray-500">
+                    Rehearse with an AI avatar using the research from this blitz
+                  </p>
+                </div>
+              </div>
+              <a
+                href={`/practice?runRequestId=${request.id}&company=${encodeURIComponent(request.targetCompany)}&meetingType=discovery`}
+                className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700 transition"
+              >
+                <Video className="h-4 w-4" />
+                Start Practice
+              </a>
+            </div>
+          </div>
         )}
 
         {/* Error State */}
