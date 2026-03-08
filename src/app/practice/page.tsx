@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 import { UserButton } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   ArrowLeft,
   Video,
@@ -13,6 +13,7 @@ import {
   TrendingUp,
   Play,
   ChevronRight,
+  Zap,
 } from "lucide-react";
 
 interface PastSession {
