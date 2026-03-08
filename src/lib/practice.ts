@@ -241,16 +241,66 @@ export function cleanForTTS(text: string): string {
 }
 
 /**
- * Build the sales scoring prompt for post-session evaluation.
+ * Build the scoring prompt for post-session evaluation.
+ * Adapts rubric based on whether this is a sales call or interview.
  */
 export function buildScoringPrompt(
-  transcript: Array<{ role: string; text: string }>,
-  persona: { name: string; title: string; company: string }
+  transcript: Array<{ role: string; text: string; speaker?: string }>,
+  persona: { name: string; title: string; company: string },
+  meetingType?: string,
+  isPanelMode?: boolean,
 ): string {
+  const isInterview = meetingType === "interview" || ["phone_screen", "hiring_manager", "mock_pitch", "panel", "final", "executive"].includes(meetingType || "");
+
   const formattedTranscript = transcript
-    .map((t) => `[${t.role === "user" ? "REP" : persona.name.toUpperCase()}]: ${t.text}`)
+    .map((t) => {
+      if (t.role === "user") return `[CANDIDATE]: ${t.text}`;
+      const label = t.speaker ? t.speaker.toUpperCase() : persona.name.toUpperCase();
+      return `[${label}]: ${t.text}`;
+    })
     .join("\n\n");
 
+  if (isInterview) {
+    return `You are an interview coaching expert. Evaluate this practice interview conversation.
+
+THE SCENARIO:
+The candidate was practicing ${isPanelMode ? "a panel interview" : "an interview"} at ${persona.company} with ${persona.name}, ${persona.title}.
+
+TRANSCRIPT:
+${formattedTranscript}
+
+EVALUATE against these interview performance dimensions. Score each 1-5 (1 = missed entirely, 3 = attempted but incomplete, 5 = executed with excellence):
+
+1. STORYTELLING & EXAMPLES: Did the candidate use specific, concrete stories? Were examples relevant to the role and company? Did they use structured frameworks (STAR, etc.) naturally?
+2. COMPANY KNOWLEDGE: Did the candidate demonstrate real understanding of the company's business, challenges, and market position? Or was it generic?
+3. ROLE FIT: Did the candidate connect their experience directly to the role requirements? Did they show why they're the right person for THIS specific role?
+4. QUESTION QUALITY: Did the candidate ask insightful questions that demonstrated preparation and genuine curiosity? Or generic "what's the culture like" filler?
+5. OBJECTION HANDLING: When challenged on experience gaps or pushed for specifics, did the candidate respond confidently with substance?
+6. EXECUTIVE PRESENCE: Confidence, clarity, conciseness. Did the candidate command attention or ramble?
+7. DISCOVERY & LISTENING: Did the candidate pick up on cues from the interviewer and adapt? Did they build on what was shared?
+8. CLOSING STRENGTH: Did the candidate express genuine interest, ask about next steps, and leave a strong final impression?
+
+Return a JSON object with this exact structure:
+{
+  "overall": <number 1-5, weighted average>,
+  "scores": {
+    "storytelling": <1-5>,
+    "company_knowledge": <1-5>,
+    "role_fit": <1-5>,
+    "question_quality": <1-5>,
+    "objection_handling": <1-5>,
+    "executive_presence": <1-5>,
+    "discovery_listening": <1-5>,
+    "closing_strength": <1-5>
+  },
+  "outcome": "<strong|developing|needs_work>",
+  "feedback": "<2-3 paragraphs of specific, actionable coaching feedback. Reference exact moments from the transcript. Tell the candidate what they did well, what they missed, and exactly what to do differently next time. Be direct, not soft.>",
+  "top_moment": "<the single best thing the candidate did, with the exact quote>",
+  "biggest_miss": "<the single biggest missed opportunity, with what they should have said instead>"
+}`;
+  }
+
+  // Sales scoring rubric
   return `You are a sales coaching expert specializing in value-based selling methodology. Evaluate this practice sales conversation.
 
 THE SCENARIO:

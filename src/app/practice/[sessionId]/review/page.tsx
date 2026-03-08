@@ -16,7 +16,8 @@ import {
   BarChart3,
 } from "lucide-react";
 
-interface ScoreBreakdown {
+// Score keys differ between sales and interview rubrics
+type SalesScoreBreakdown = {
   before_state: number;
   negative_consequences: number;
   required_capabilities: number;
@@ -25,7 +26,20 @@ interface ScoreBreakdown {
   discovery_quality: number;
   objection_handling: number;
   conversation_flow: number;
-}
+};
+
+type InterviewScoreBreakdown = {
+  storytelling: number;
+  company_knowledge: number;
+  role_fit: number;
+  question_quality: number;
+  objection_handling: number;
+  executive_presence: number;
+  discovery_listening: number;
+  closing_strength: number;
+};
+
+type ScoreBreakdown = SalesScoreBreakdown | InterviewScoreBreakdown;
 
 interface SessionData {
   id: string;
@@ -37,8 +51,11 @@ interface SessionData {
     title: string;
     company: string;
     personality: string;
+    _meetingType?: string;
+    _isPanelMode?: boolean;
+    _panelMembers?: Array<{ name: string; title: string | null; roleInMeeting: string }>;
   };
-  transcript: Array<{ role: string; text: string; timestamp: string }>;
+  transcript: Array<{ role: string; text: string; timestamp: string; speaker?: string; speakerTitle?: string }>;
   durationSeconds: number | null;
   cotmScore: {
     overall: number;
@@ -48,10 +65,14 @@ interface SessionData {
   } | null;
   feedback: string | null;
   outcome: string | null;
+  isPanelMode: boolean;
+  sessionSequence: number;
+  targetId: string | null;
+  runRequestId: string | null;
   createdAt: string;
 }
 
-const SCORE_LABELS: Record<keyof ScoreBreakdown, string> = {
+const SALES_SCORE_LABELS: Record<string, string> = {
   before_state: "Current Challenges",
   negative_consequences: "Cost of Inaction",
   required_capabilities: "Required Capabilities",
@@ -60,6 +81,17 @@ const SCORE_LABELS: Record<keyof ScoreBreakdown, string> = {
   discovery_quality: "Discovery Quality",
   objection_handling: "Objection Handling",
   conversation_flow: "Conversation Flow",
+};
+
+const INTERVIEW_SCORE_LABELS: Record<string, string> = {
+  storytelling: "Storytelling & Examples",
+  company_knowledge: "Company Knowledge",
+  role_fit: "Role Fit",
+  question_quality: "Question Quality",
+  objection_handling: "Objection Handling",
+  executive_presence: "Executive Presence",
+  discovery_listening: "Discovery & Listening",
+  closing_strength: "Closing Strength",
 };
 
 export default function PracticeReviewPage() {
@@ -78,11 +110,9 @@ export default function PracticeReviewPage() {
 
   async function fetchSession() {
     try {
-      // Fetch from history and find this session
-      const res = await fetch("/api/practice/history?limit=50");
+      const res = await fetch(`/api/practice/session?id=${sessionId}`);
       const data = await res.json();
-      const found = data.sessions?.find((s: SessionData) => s.id === sessionId);
-      if (found) setSession(found);
+      if (data.session) setSession(data.session);
     } catch {
       // silent
     } finally {
@@ -129,7 +159,14 @@ export default function PracticeReviewPage() {
             <h1 className="text-xl font-bold text-gray-900">Session Review</h1>
           </div>
           <button
-            onClick={() => router.push("/practice")}
+            onClick={() => {
+              // Carry context forward: company, meeting type, and runRequestId
+              const params = new URLSearchParams();
+              if (session?.targetCompany) params.set("company", session.targetCompany);
+              if (session?.personaConfig?._meetingType) params.set("meetingType", session.personaConfig._meetingType);
+              if (session?.runRequestId) params.set("runRequestId", session.runRequestId);
+              router.push(`/practice?${params.toString()}`);
+            }}
             className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
           >
             Practice Again
@@ -163,36 +200,48 @@ export default function PracticeReviewPage() {
         </div>
 
         {/* Overall Score */}
-        {session.cotmScore && (
-          <div className="rounded-2xl border bg-white p-6 shadow-sm">
-            <div className="flex items-center gap-3 mb-6">
-              <BarChart3 className="h-5 w-5 text-emerald-700" />
-              <h3 className="text-lg font-bold text-gray-900">Sales Scorecard</h3>
-              <span className="ml-auto text-3xl font-bold text-gray-900">
-                {session.cotmScore.overall}/5
-              </span>
-            </div>
+        {session.cotmScore && (() => {
+          const meetingType = session.personaConfig?._meetingType || "discovery";
+          const isInterview = meetingType === "interview" || ["phone_screen", "hiring_manager", "mock_pitch", "panel", "final", "executive"].includes(meetingType);
+          const scoreLabels = isInterview ? INTERVIEW_SCORE_LABELS : SALES_SCORE_LABELS;
+          const scorecardTitle = isInterview ? "Interview Scorecard" : "Sales Scorecard";
 
-            <div className="space-y-3">
-              {Object.entries(session.cotmScore.scores || {}).map(([key, score]) => (
-                <div key={key} className="flex items-center gap-3">
-                  <span className="w-48 text-sm text-gray-600">
-                    {SCORE_LABELS[key as keyof ScoreBreakdown] || key}
+          return (
+            <div className="rounded-2xl border bg-white p-6 shadow-sm">
+              <div className="flex items-center gap-3 mb-6">
+                <BarChart3 className="h-5 w-5 text-emerald-700" />
+                <h3 className="text-lg font-bold text-gray-900">{scorecardTitle}</h3>
+                {session.sessionSequence > 1 && (
+                  <span className="text-xs text-gray-400 bg-gray-100 rounded-full px-2 py-0.5">
+                    Session #{session.sessionSequence}
                   </span>
-                  <div className="flex-1 h-2 rounded-full bg-gray-100 overflow-hidden">
-                    <div
-                      className={`h-full rounded-full ${scoreColor(score as number)} transition-all`}
-                      style={{ width: `${((score as number) / 5) * 100}%` }}
-                    />
+                )}
+                <span className="ml-auto text-3xl font-bold text-gray-900">
+                  {session.cotmScore.overall}/5
+                </span>
+              </div>
+
+              <div className="space-y-3">
+                {Object.entries(session.cotmScore.scores || {}).map(([key, score]) => (
+                  <div key={key} className="flex items-center gap-3">
+                    <span className="w-48 text-sm text-gray-600">
+                      {scoreLabels[key] || key}
+                    </span>
+                    <div className="flex-1 h-2 rounded-full bg-gray-100 overflow-hidden">
+                      <div
+                        className={`h-full rounded-full ${scoreColor(score as number)} transition-all`}
+                        style={{ width: `${((score as number) / 5) * 100}%` }}
+                      />
+                    </div>
+                    <span className="w-8 text-right text-sm font-medium text-gray-700">
+                      {score as number}
+                    </span>
                   </div>
-                  <span className="w-8 text-right text-sm font-medium text-gray-700">
-                    {score as number}
-                  </span>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
 
         {/* Highlights */}
         {session.cotmScore && (
@@ -257,7 +306,14 @@ export default function PracticeReviewPage() {
                     }`}
                   >
                     <p className="mb-1 text-xs font-medium text-gray-500">
-                      {entry.role === "user" ? "You" : session.personaName}
+                      {entry.role === "user" ? "You" : (
+                        <>
+                          {entry.speaker || session.personaName}
+                          {entry.speakerTitle && session.isPanelMode && (
+                            <span className="ml-1 text-gray-400">&middot; {entry.speakerTitle}</span>
+                          )}
+                        </>
+                      )}
                     </p>
                     {entry.text}
                   </div>

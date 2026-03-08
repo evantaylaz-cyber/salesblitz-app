@@ -38,8 +38,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Session not found" }, { status: 404 });
     }
 
-    const transcript = session.transcript as Array<{ role: string; text: string }>;
-    const persona = session.personaConfig as { name: string; title: string; company: string };
+    const transcript = session.transcript as Array<{ role: string; text: string; speaker?: string }>;
+    const persona = session.personaConfig as { name: string; title: string; company: string; _meetingType?: string };
+
+    // Determine meeting type for scoring rubric selection
+    const meetingType = persona._meetingType || "discovery";
 
     // Need at least a couple exchanges to score meaningfully
     if (transcript.length < 4) {
@@ -61,8 +64,8 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Score the conversation
-    const scoringPrompt = buildScoringPrompt(transcript, persona);
+    // Score the conversation (uses interview or sales rubric based on meetingType)
+    const scoringPrompt = buildScoringPrompt(transcript, persona, meetingType, session.isPanelMode);
 
     const scoringResponse = await anthropic.messages.create({
       model: "claude-sonnet-4-20250514",
@@ -109,6 +112,32 @@ export async function POST(req: NextRequest) {
         outcome: scoring.outcome,
       },
     });
+
+    // Update Target.accumulatedIntel with key coaching points (context accumulation)
+    if (session.targetId && scoring.feedback) {
+      try {
+        const target = await prisma.target.findUnique({
+          where: { id: session.targetId },
+          select: { accumulatedIntel: true },
+        });
+
+        const newIntel = `[Session ${session.sessionSequence || 1} - ${new Date().toISOString().split("T")[0]}] Score: ${scoring.overall}/5 (${scoring.outcome}). ${scoring.biggest_miss ? `Key miss: ${scoring.biggest_miss.slice(0, 200)}` : ""} ${scoring.top_moment ? `Strength: ${scoring.top_moment.slice(0, 200)}` : ""}`;
+
+        const existingIntel = target?.accumulatedIntel || "";
+        // Keep accumulated intel under 5K chars
+        const combined = existingIntel
+          ? `${existingIntel}\n\n${newIntel}`.slice(-5000)
+          : newIntel;
+
+        await prisma.target.update({
+          where: { id: session.targetId },
+          data: { accumulatedIntel: combined },
+        });
+      } catch (intelErr) {
+        console.error("Failed to update target intel:", intelErr);
+        // Non-fatal: don't fail the whole end request
+      }
+    }
 
     return NextResponse.json({
       score: scoring,
