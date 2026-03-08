@@ -20,6 +20,9 @@ import {
   Calendar,
   Globe,
   Sparkles,
+  Users,
+  Plus,
+  Trash2,
 } from "lucide-react";
 import VoiceTextarea from "@/components/VoiceTextarea";
 
@@ -62,10 +65,44 @@ export default function RequestPage() {
   const [caseStudies, setCaseStudies] = useState("");
   const [interviewInstructions, setInterviewInstructions] = useState("");
 
+  // Panel composition (interview_prep only)
+  const [panelRoundType, setPanelRoundType] = useState("");
+  const [panelRoundNumber, setPanelRoundNumber] = useState(1);
+  const [panelMembers, setPanelMembers] = useState<Array<{
+    name: string;
+    title: string;
+    roleInMeeting: string;
+    personalityVibe: string;
+    evaluationFocus: string;
+    linkedinUrl: string;
+  }>>([]);
+
   // UI state
   const [engagementExpanded, setEngagementExpanded] = useState(false);
+  const [panelExpanded, setPanelExpanded] = useState(false);
   const [fetchingJd, setFetchingJd] = useState(false);
   const [fetchJdError, setFetchJdError] = useState<string | null>(null);
+
+  function addPanelMember() {
+    setPanelMembers([...panelMembers, {
+      name: "",
+      title: "",
+      roleInMeeting: "hiring_manager",
+      personalityVibe: "",
+      evaluationFocus: "",
+      linkedinUrl: "",
+    }]);
+  }
+
+  function updatePanelMember(idx: number, field: string, value: string) {
+    const updated = [...panelMembers];
+    updated[idx] = { ...updated[idx], [field]: value };
+    setPanelMembers(updated);
+  }
+
+  function removePanelMember(idx: number) {
+    setPanelMembers(panelMembers.filter((_, i) => i !== idx));
+  }
 
   if (!isLoaded) {
     return (
@@ -141,6 +178,14 @@ export default function RequestPage() {
           additionalNotes: additionalNotes || undefined,
           caseStudies: caseStudies || undefined,
           interviewInstructions: interviewInstructions || undefined,
+          // Panel composition (interview_prep only)
+          ...(toolId === "interview_prep" && panelMembers.length > 0 ? {
+            panel: {
+              roundType: panelRoundType || meetingType || "panel",
+              roundNumber: panelRoundNumber,
+              members: panelMembers.filter(m => m.name.trim()),
+            },
+          } : {}),
         }),
       });
 
@@ -297,37 +342,31 @@ export default function RequestPage() {
                   ? "What kind of interview are you prepping for? This determines which call prep docs we generate."
                   : "What stage is this meeting? We tailor your speaker notes, arsenal, and call flow to match."}
               </p>
-              <div className={`grid gap-3 ${toolId === "interview_prep" ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1 sm:grid-cols-2"}`}>
+              <div className={`grid gap-3 ${toolId === "interview_prep" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : "grid-cols-1 sm:grid-cols-2"}`}>
                 {toolId === "interview_prep" ? (
                   <>
-                    <button
-                      type="button"
-                      onClick={() => setMeetingType("mock_pitch")}
-                      className={`rounded-lg border p-4 text-left transition ${
-                        meetingType === "mock_pitch"
-                          ? "border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500"
-                          : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                      }`}
-                    >
-                      <div className="font-medium text-sm text-gray-900">Mock Pitch</div>
-                      <div className="mt-1 text-xs text-gray-500">
-                        Practice selling to a fictional prospect. Speaker notes, arsenal, call flow, live scenario, Q&amp;A doc.
-                      </div>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setMeetingType("hiring_manager")}
-                      className={`rounded-lg border p-4 text-left transition ${
-                        meetingType === "hiring_manager"
-                          ? "border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500"
-                          : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                      }`}
-                    >
-                      <div className="font-medium text-sm text-gray-900">Hiring Manager</div>
-                      <div className="mt-1 text-xs text-gray-500">
-                        Prep for the actual interview conversation. Speaker notes, arsenal, and call flow.
-                      </div>
-                    </button>
+                    {[
+                      { id: "phone_screen", label: "Phone Screen", desc: "Recruiter or initial screen. Story bank, salary framing, role-fit talking points." },
+                      { id: "hiring_manager", label: "Hiring Manager", desc: "1:1 with the HM. Speaker notes, arsenal, call flow tailored to their priorities." },
+                      { id: "mock_pitch", label: "Mock Pitch", desc: "Live selling exercise. Speaker notes, arsenal, call flow, live scenario, Q&A doc." },
+                      { id: "panel", label: "Panel Interview", desc: "Multiple interviewers. Prep for each panelist's focus area and switching dynamics." },
+                      { id: "final", label: "Final Round", desc: "Executive or cross-functional final. High-stakes prep with objection handling." },
+                      { id: "executive", label: "Executive / VP+", desc: "C-suite or VP conversation. Strategic narrative, business acumen, leadership framing." },
+                    ].map((type) => (
+                      <button
+                        key={type.id}
+                        type="button"
+                        onClick={() => setMeetingType(type.id)}
+                        className={`rounded-lg border p-4 text-left transition ${
+                          meetingType === type.id
+                            ? "border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500"
+                            : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                        }`}
+                      >
+                        <div className="font-medium text-sm text-gray-900">{type.label}</div>
+                        <div className="mt-1 text-xs text-gray-500">{type.desc}</div>
+                      </button>
+                    ))}
                   </>
                 ) : (
                   <>
@@ -575,6 +614,129 @@ export default function RequestPage() {
                   The more detail you give, the more tailored your speaker notes, arsenal, and call flow will be.
                 </p>
               </div>
+            </div>
+          )}
+
+          {/* Panel Composition (interview_prep only) */}
+          {toolId === "interview_prep" && (
+            <div className="rounded-xl border bg-white p-6 shadow-sm">
+              <button
+                type="button"
+                onClick={() => {
+                  setPanelExpanded(!panelExpanded);
+                  if (!panelExpanded && panelMembers.length === 0) {
+                    addPanelMember();
+                  }
+                }}
+                className="flex w-full items-center justify-between text-left"
+              >
+                <div>
+                  <h2 className="text-base font-semibold text-gray-900 flex items-center gap-2">
+                    <Users className="h-4 w-4 text-gray-400" />
+                    Interview Panel
+                  </h2>
+                  <p className="text-sm text-gray-500">
+                    Who will you be talking to? Adding panelists makes your practice sessions and prep docs way sharper.
+                  </p>
+                </div>
+                {panelExpanded ? (
+                  <ChevronDown className="h-5 w-5 text-gray-400 shrink-0" />
+                ) : (
+                  <ChevronRight className="h-5 w-5 text-gray-400 shrink-0" />
+                )}
+              </button>
+
+              {panelExpanded && (
+                <div className="space-y-4 mt-4 pt-4 border-t">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div>
+                      <label className="mb-1.5 text-sm font-medium text-gray-700">Round Number</label>
+                      <input
+                        type="number"
+                        min={1}
+                        max={10}
+                        value={panelRoundNumber}
+                        onChange={(e) => setPanelRoundNumber(parseInt(e.target.value) || 1)}
+                        className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+                      />
+                      <p className="mt-1 text-xs text-gray-400">Which round is this? (1st, 2nd, 3rd...)</p>
+                    </div>
+                  </div>
+
+                  {/* Panel Members */}
+                  <div className="space-y-3">
+                    {panelMembers.map((member, idx) => (
+                      <div key={idx} className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="text-sm font-medium text-gray-700">Panelist {idx + 1}</span>
+                          <button
+                            type="button"
+                            onClick={() => removePanelMember(idx)}
+                            className="text-gray-400 hover:text-red-500 transition"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                          <input
+                            type="text"
+                            value={member.name}
+                            onChange={(e) => updatePanelMember(idx, "name", e.target.value)}
+                            placeholder="Name (e.g., Sarah Chen)"
+                            className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+                          />
+                          <input
+                            type="text"
+                            value={member.title}
+                            onChange={(e) => updatePanelMember(idx, "title", e.target.value)}
+                            placeholder="Title (e.g., VP Sales)"
+                            className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+                          />
+                          <select
+                            value={member.roleInMeeting}
+                            onChange={(e) => updatePanelMember(idx, "roleInMeeting", e.target.value)}
+                            className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+                          >
+                            <option value="hiring_manager">Hiring Manager</option>
+                            <option value="peer">Peer Interviewer</option>
+                            <option value="executive_sponsor">Executive / VP+</option>
+                            <option value="technical_evaluator">Technical Evaluator</option>
+                            <option value="cross_functional">Cross-Functional</option>
+                          </select>
+                          <select
+                            value={member.personalityVibe}
+                            onChange={(e) => updatePanelMember(idx, "personalityVibe", e.target.value)}
+                            className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+                          >
+                            <option value="">Personality (optional)</option>
+                            <option value="analytical_skeptical">Analytical / Skeptical</option>
+                            <option value="relationship_first">Relationship-First</option>
+                            <option value="high_energy_challenger">High-Energy Challenger</option>
+                            <option value="warm_collaborative">Warm / Collaborative</option>
+                          </select>
+                        </div>
+                        <div className="mt-3">
+                          <input
+                            type="text"
+                            value={member.evaluationFocus}
+                            onChange={(e) => updatePanelMember(idx, "evaluationFocus", e.target.value)}
+                            placeholder="What do they evaluate? (e.g., discovery depth, business acumen, cultural fit)"
+                            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={addPanelMember}
+                      className="flex items-center gap-1.5 rounded-lg border border-dashed border-gray-300 px-4 py-2.5 text-sm text-gray-500 hover:border-emerald-500 hover:text-emerald-700 transition w-full justify-center"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Add Panelist
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

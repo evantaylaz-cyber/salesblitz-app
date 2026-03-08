@@ -94,6 +94,8 @@ export async function POST(req: NextRequest) {
       caseStudies,
       interviewInstructions,
       teamId,
+      // Panel composition (interview_prep only)
+      panel,
     } = body;
 
     if (!toolName || !targetName || !targetCompany) {
@@ -147,12 +149,38 @@ export async function POST(req: NextRequest) {
     const steps = initializeSteps(toolName as ToolName);
     const expectedAssets = getExpectedAssets(toolName as ToolName);
 
+    // Upsert Target entity (groups all activity per user per company/contact pair)
+    const targetType = toolName.startsWith("interview_") ? "interview" : "prospect";
+    const target = await prisma.target.upsert({
+      where: {
+        userId_companyName_contactName: {
+          userId: user.id,
+          companyName: targetCompany,
+          contactName: targetName || null,
+        },
+      },
+      update: {
+        contactTitle: targetRole || undefined,
+        roundCount: { increment: 1 },
+      },
+      create: {
+        userId: user.id,
+        companyName: targetCompany,
+        contactName: targetName || null,
+        contactTitle: targetRole || null,
+        type: targetType,
+        roundCount: 1,
+        currentRound: 1,
+      },
+    });
+
     // Create the run request with execution tracking
     const request = await prisma.runRequest.create({
       data: {
         userId: user.id,
         teamId: teamId || null,
         toolName,
+        targetId: target.id,
         targetName,
         targetCompany,
         targetRole: targetRole || null,
@@ -174,6 +202,29 @@ export async function POST(req: NextRequest) {
         currentStep: null,
       },
     });
+
+    // Create InterviewPanel + members if panel data provided (interview_prep only)
+    if (panel && toolName === "interview_prep" && Array.isArray(panel.members) && panel.members.length > 0) {
+      await prisma.interviewPanel.create({
+        data: {
+          runRequestId: request.id,
+          roundType: panel.roundType || meetingType || "panel",
+          roundNumber: panel.roundNumber || 1,
+          assignment: interviewInstructions || null,
+          members: {
+            create: panel.members.map((m: { name: string; title?: string; roleInMeeting: string; personalityVibe?: string; evaluationFocus?: string; linkedinUrl?: string }, idx: number) => ({
+              name: m.name,
+              title: m.title || null,
+              roleInMeeting: m.roleInMeeting,
+              personalityVibe: m.personalityVibe || null,
+              evaluationFocus: m.evaluationFocus || null,
+              linkedinUrl: m.linkedinUrl || null,
+              order: idx,
+            })),
+          },
+        },
+      });
+    }
 
     // Send email notification (don't block response on failure)
     sendOrderNotification({
