@@ -31,6 +31,7 @@ model User {
   knowledgeDocs           KnowledgeDocument[]
   debriefs                RunDebrief[]
   practiceSessions        PracticeSession[]
+  targets                 Target[]
   userProfile             UserProfile?
 
   // Team relationships
@@ -153,6 +154,10 @@ model RunRequest {
   batchJob        BatchJob? @relation(fields: [batchJobId], references: [id], onDelete: SetNull)
   batchIndex      Int?     // Position in batch (0-indexed)
 
+  // Target graph (links all activity for one company/person pair)
+  targetId        String?
+  target          Target?  @relation(fields: [targetId], references: [id])
+
   // Customer inputs
   targetName      String   // Name of person or account
   targetCompany   String   // Company name
@@ -195,6 +200,12 @@ model RunRequest {
 
   // Post-run debrief
   debriefs        RunDebrief[]
+
+  // Interview panel (1:1 for interview_prep runs with multi-interviewer context)
+  interviewPanel  InterviewPanel?
+
+  // Practice sessions spawned from this blitz
+  practiceSessions PracticeSession[]
 
   // Timestamps
   createdAt       DateTime @default(now())
@@ -287,17 +298,36 @@ model PracticeSession {
   userId            String
   user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  // Target graph (links to persistent Target entity)
+  targetId          String?
+  target            Target?  @relation(fields: [targetId], references: [id])
+
+  // Blitz that spawned this session (if any)
+  runRequestId      String?
+  runRequest        RunRequest? @relation(fields: [runRequestId], references: [id])
+
   // Target context
   targetCompany     String   // Company the persona represents
   targetRole        String?  // Persona's role/title
   personaName       String?  // Generated persona name
   personaConfig     Json?    // Full persona definition (personality, objections, priorities, style)
 
+  // Panel mode (multi-interviewer simulation)
+  isPanelMode       Boolean  @default(false)
+  panelMemberStates Json?    // { currentSpeakerIndex, turnCounts: { [memberId]: number }, members: [...] }
+
+  // Session continuity (learning across rounds)
+  previousSessionId String?  // FK to prior session for same target (self-relation)
+  previousSession   PracticeSession? @relation("SessionChain", fields: [previousSessionId], references: [id])
+  nextSessions      PracticeSession[] @relation("SessionChain")
+  focusAreas        Json?    // string[] from prior debrief synthesis (what to push harder on)
+  sessionSequence   Int      @default(1) // 1st, 2nd, 3rd session for this target
+
   // Session data
   heygenSessionId   String?  // HeyGen streaming session ID
   avatarId          String?  // HeyGen avatar used
   voiceId           String?  // HeyGen voice used
-  transcript        Json     @default("[]") // Array of { role: "user" | "persona", text, timestamp }
+  transcript        Json     @default("[]") // Array of { role: "user" | "persona", text, timestamp, speaker?, speakerTitle? }
   durationSeconds   Int?     // Total session length
 
   // Scoring
@@ -312,6 +342,63 @@ model PracticeSession {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   completedAt       DateTime?
+}
+
+// Target — groups all activity (blitzes, practice sessions, debriefs) for one company/person pair.
+// Accumulates intelligence across rounds, enabling the learning flywheel.
+model Target {
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyName     String
+  contactName     String?
+  contactTitle    String?
+  type            String   @default("prospect") // prospect | interview
+  roundCount      Int      @default(0)
+  currentRound    Int      @default(1)
+  accumulatedIntel String? @db.Text // synthesized learnings across rounds, max 5K
+  status          String   @default("active") // active | paused | closed | won | lost
+  notes           String?  @db.Text
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  runRequests      RunRequest[]
+  practiceSessions PracticeSession[]
+
+  @@unique([userId, companyName, contactName])
+  @@index([userId])
+}
+
+// InterviewPanel — captures multi-interviewer composition per interview_prep run.
+// One panel per RunRequest (1:1). Contains one or more InterviewPanelMembers.
+model InterviewPanel {
+  id           String   @id @default(uuid())
+  runRequestId String   @unique
+  runRequest   RunRequest @relation(fields: [runRequestId], references: [id], onDelete: Cascade)
+  roundType    String   // phone_screen | panel | final | executive | mock_pitch
+  roundNumber  Int      @default(1)
+  assignment   String?  @db.Text // interview assignment/case study text
+  createdAt    DateTime @default(now())
+
+  members InterviewPanelMember[]
+}
+
+// InterviewPanelMember — one per interviewer on a panel.
+// personalityVibe drives avatar selection in Practice Mode.
+model InterviewPanelMember {
+  id              String  @id @default(uuid())
+  panelId         String
+  panel           InterviewPanel @relation(fields: [panelId], references: [id], onDelete: Cascade)
+  name            String
+  title           String?
+  roleInMeeting   String  // hiring_manager | peer | executive_sponsor | technical_evaluator | cross_functional
+  personalityVibe String? // analytical_skeptical | relationship_first | high_energy_challenger | warm_collaborative
+  knownObjections String? @db.Text
+  evaluationFocus String? @db.Text // what they specifically evaluate
+  linkedinUrl     String?
+  order           Int     @default(0) // display/switching order
+
+  @@index([panelId])
 }
 
 // Post-run debrief — captures user feedback after a meeting/interview.
