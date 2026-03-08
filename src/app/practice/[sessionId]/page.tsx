@@ -125,11 +125,18 @@ export default function PracticeSessionPage() {
         setAvatarReady(false);
       });
 
-      // Start the avatar
+      // Start the avatar with professional config
+      // Uses Wayne (professional male) or Anna (professional female) avatar
+      // Voice emotion set to FRIENDLY for natural conversational tone
       await avatar.createStartAvatar({
-        avatarName: "default",
+        avatarName: "Wayne_20240711",
         quality: AvatarQuality.High,
         language: "en",
+        voice: {
+          voiceId: "",  // Empty = use avatar's default voice
+          rate: 1.0,
+          emotion: "FRIENDLY" as never,
+        },
       });
 
       // Send opening line

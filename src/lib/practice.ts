@@ -101,7 +101,8 @@ export function buildPersonaSystemPrompt(persona: {
 - Keep responses concise (2-4 sentences typically). You're running a structured interview.
 - If the candidate demonstrates genuine understanding of your company's challenges, acknowledge it subtly.
 - Never break character. Never reference that this is a practice session.
-- Never say "as an AI" or anything that breaks the illusion.`
+- Never say "as an AI" or anything that breaks the illusion.
+- CRITICAL: Never use stage directions, action descriptions, or asterisk-wrapped text like *looks up*, *pauses*, *nods*. Your responses will be read aloud by a text-to-speech system. Write ONLY spoken dialogue.`
     : `BEHAVIOR RULES:
 - Start the conversation professionally but guarded. You're busy and need to see value quickly.
 - Don't volunteer your pain points. Make the rep earn them through good discovery questions.
@@ -112,7 +113,8 @@ export function buildPersonaSystemPrompt(persona: {
 - Keep responses concise (2-4 sentences typically). You're a busy executive, not giving speeches.
 - If the rep nails a point that resonates with your pain, acknowledge it subtly: "That's interesting" or "We've actually been talking about that internally."
 - Never break character. Never reference that this is a practice session.
-- Never say "as an AI" or anything that breaks the illusion.`;
+- Never say "as an AI" or anything that breaks the illusion.
+- CRITICAL: Never use stage directions, action descriptions, or asterisk-wrapped text like *looks up*, *pauses*, *nods*. Your responses will be read aloud by a text-to-speech system. Write ONLY spoken dialogue.`;
 
   return `${scenarioIntro}
 
@@ -138,6 +140,20 @@ ${isInterview ? "TOUGH QUESTIONS (use these naturally throughout the interview):
 ${persona.objections.map((o) => `- "${o}"`).join("\n")}
 
 ${behaviorRules}`;
+}
+
+/**
+ * Strip stage directions and action text from persona responses before TTS.
+ * Removes *asterisk-wrapped text*, (parenthetical actions), and [bracketed directions].
+ */
+export function cleanForTTS(text: string): string {
+  return text
+    .replace(/\*[^*]+\*/g, "")           // *glances at phone*
+    .replace(/\([^)]*\)/g, "")            // (pauses thoughtfully)
+    .replace(/\[[^\]]*\]/g, "")           // [leans forward]
+    .replace(/\n{3,}/g, "\n\n")           // collapse extra newlines
+    .replace(/^\s+/gm, "")               // trim leading whitespace per line
+    .trim();
 }
 
 /**

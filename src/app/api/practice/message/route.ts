@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import prisma from "@/lib/db";
-import { buildPersonaSystemPrompt } from "@/lib/practice";
+import { buildPersonaSystemPrompt, cleanForTTS } from "@/lib/practice";
 import Anthropic from "@anthropic-ai/sdk";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -94,7 +94,10 @@ export async function POST(req: NextRequest) {
       data: { transcript: finalTranscript },
     });
 
-    return NextResponse.json({ response: responseText });
+    // Clean stage directions for TTS, but keep raw text in transcript
+    const ttsText = cleanForTTS(responseText);
+
+    return NextResponse.json({ response: ttsText, rawResponse: responseText });
   } catch (err) {
     console.error("Practice message error:", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
