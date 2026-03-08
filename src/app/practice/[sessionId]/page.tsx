@@ -91,7 +91,9 @@ export default function PracticeSessionPage() {
       const tokenData = await tokenRes.json();
 
       if (!tokenData.sessionToken) {
-        setError("Failed to get avatar session token. Check your LiveAvatar API key.");
+        const detail = tokenData.detail || tokenData.error || "No token returned";
+        console.error("Token endpoint response:", tokenData);
+        setError(`Failed to get avatar session token: ${detail}`);
         setAvatarLoading(false);
         return;
       }

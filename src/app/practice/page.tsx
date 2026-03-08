@@ -14,7 +14,28 @@ import {
   Play,
   ChevronRight,
   Zap,
+  FileText,
+  CheckCircle2,
 } from "lucide-react";
+
+interface BlitzRun {
+  id: string;
+  toolName: string;
+  targetCompany: string;
+  targetName: string;
+  targetRole: string | null;
+  status: string;
+  createdAt: string;
+}
+
+const TOOL_LABELS: Record<string, string> = {
+  interview_outreach: "Interview Outreach",
+  prospect_outreach: "Prospect Outreach",
+  interview_prep: "Interview Prep",
+  prospect_prep: "Prospect Prep",
+  deal_audit: "Deal Audit",
+  champion_builder: "Champion Builder",
+};
 
 interface PastSession {
   id: string;
@@ -46,6 +67,7 @@ function PracticeLanding() {
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sessions, setSessions] = useState<PastSession[]>([]);
+  const [blitzRuns, setBlitzRuns] = useState<BlitzRun[]>([]);
   const [usage, setUsage] = useState<{ used: number; tier: string | null }>({ used: 0, tier: null });
   const [loading, setLoading] = useState(true);
 
@@ -60,7 +82,10 @@ function PracticeLanding() {
   }, [searchParams]);
 
   useEffect(() => {
-    if (isLoaded) fetchHistory();
+    if (isLoaded) {
+      fetchHistory();
+      fetchBlitzRuns();
+    }
   }, [isLoaded]);
 
   async function fetchHistory() {
@@ -73,6 +98,29 @@ function PracticeLanding() {
       // silent
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function fetchBlitzRuns() {
+    try {
+      const res = await fetch("/api/requests");
+      const data = await res.json();
+      // Filter to completed/delivered/ready runs that have research data
+      const completed = (data.requests || []).filter(
+        (r: BlitzRun) => r.status === "delivered" || r.status === "ready" || r.status === "completed"
+      );
+      setBlitzRuns(completed);
+    } catch {
+      // silent
+    }
+  }
+
+  function selectBlitz(run: BlitzRun) {
+    setRunRequestId(run.id);
+    setTargetCompany(run.targetCompany);
+    // Infer meeting type from tool name
+    if (run.toolName.startsWith("interview_")) {
+      setMeetingType("interview");
     }
   }
 
@@ -226,6 +274,41 @@ function PracticeLanding() {
             )}
           </button>
         </div>
+
+        {/* Use Research from a Blitz */}
+        {blitzRuns.length > 0 && !runRequestId && (
+          <div className="mt-8">
+            <h2 className="text-lg font-bold text-gray-900">Or Practice a Completed Blitz</h2>
+            <p className="mt-1 text-sm text-gray-500">
+              Select a blitz run to practice with a persona built from real research.
+            </p>
+            <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
+              {blitzRuns.slice(0, 6).map((run) => (
+                <button
+                  key={run.id}
+                  onClick={() => selectBlitz(run)}
+                  className="flex items-center gap-3 rounded-xl border bg-white p-4 text-left shadow-sm transition hover:border-emerald-300 hover:shadow"
+                >
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-50">
+                    <FileText className="h-5 w-5 text-emerald-700" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-gray-900 truncate">{run.targetCompany}</p>
+                    <p className="text-sm text-gray-500 truncate">
+                      {run.targetName}{run.targetRole ? ` \u00b7 ${run.targetRole}` : ""}
+                    </p>
+                  </div>
+                  <div className="shrink-0 flex items-center gap-2">
+                    <span className="text-xs text-gray-400">
+                      {TOOL_LABELS[run.toolName] || run.toolName}
+                    </span>
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Past Sessions */}
         {sessions.length > 0 && (
