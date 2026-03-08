@@ -44,17 +44,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const data = await res.json();
-    console.log("LiveAvatar token response:", JSON.stringify(data));
+    const raw = await res.json();
+    console.log("LiveAvatar token response:", JSON.stringify(raw).slice(0, 300));
 
-    // LiveAvatar API may return different field names depending on version
-    const sessionToken = data.session_token || data.token || data.sessionToken;
-    const sessionId = data.session_id || data.sessionId;
+    // LiveAvatar API wraps responses in { code: 1000, data: { session_id, session_token } }
+    const payload = raw.data || raw;
+    const sessionToken = payload.session_token || payload.token || payload.sessionToken;
+    const sessionId = payload.session_id || payload.sessionId;
 
     if (!sessionToken) {
-      console.error("LiveAvatar returned 200 but no token found. Response keys:", Object.keys(data));
+      console.error("LiveAvatar returned 200 but no token found. Response keys:", Object.keys(raw), "Payload keys:", Object.keys(payload));
       return NextResponse.json(
-        { error: "LiveAvatar returned no session token", detail: JSON.stringify(data).slice(0, 500) },
+        { error: "LiveAvatar returned no session token", detail: JSON.stringify(raw).slice(0, 500) },
         { status: 500 }
       );
     }
