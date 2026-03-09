@@ -71,9 +71,9 @@ export default async function LandingPage() {
               </span>
             </h1>
             <p className="mt-6 text-lg text-gray-600 md:text-xl">
-              Intelligence packages, POV decks, call playbooks & live AI
-              practice for every deal on your calendar. Ready in minutes, not
-              days.
+              Drop in a company name. Get a research brief, competitive
+              playbook, call prep docs, and POV deck in minutes. Then
+              practice your pitch against an AI buyer who pushes back.
             </p>
             <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
               <Link
@@ -115,7 +115,7 @@ export default async function LandingPage() {
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-3xl font-bold text-gray-900">How it works</h2>
             <p className="mt-4 text-lg text-gray-500">
-              Three inputs. Eight finished assets. Under 15 minutes.
+              Three inputs. Eight finished assets. In minutes.
             </p>
           </div>
           <div className="mt-16 grid grid-cols-1 gap-12 md:grid-cols-3">
