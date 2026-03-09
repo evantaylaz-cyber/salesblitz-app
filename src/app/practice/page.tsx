@@ -154,8 +154,11 @@ function PracticeLanding() {
         return;
       }
 
-      const personaParam = data.persona?.name ? `?persona=${encodeURIComponent(data.persona.name)}` : "";
-      router.push(`/practice/${data.sessionId}${personaParam}`);
+      const queryParams = new URLSearchParams();
+      if (data.persona?.gender) queryParams.set("gender", data.persona.gender);
+      if (data.persona?.name) queryParams.set("persona", encodeURIComponent(data.persona.name));
+      const qs = queryParams.toString();
+      router.push(`/practice/${data.sessionId}${qs ? `?${qs}` : ""}`);
     } catch {
       setError("Failed to start session");
       setStarting(false);

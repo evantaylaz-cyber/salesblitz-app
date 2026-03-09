@@ -123,6 +123,16 @@ export async function POST(req: NextRequest) {
       select: { id: true, sessionSequence: true, feedback: true, cotmScore: true },
     });
 
+    // Load accumulated intel from Target (full learning history across all sessions)
+    let accumulatedIntel = "";
+    if (linkedTargetId) {
+      const target = await prisma.target.findUnique({
+        where: { id: linkedTargetId },
+        select: { accumulatedIntel: true },
+      });
+      accumulatedIntel = target?.accumulatedIntel || "";
+    }
+
     // Load user profile for seller context (use ALL available fields)
     const p = user.userProfile;
     const sellerContext = p
@@ -147,10 +157,17 @@ export async function POST(req: NextRequest) {
     // Use the most specific meeting type available
     const effectiveMeetingType = meetingType || linkedMeetingType || "discovery";
     const isInterview = effectiveMeetingType === "interview" || ["phone_screen", "hiring_manager", "mock_pitch", "panel", "final", "executive"].includes(effectiveMeetingType);
-    // Build prior session context for session chaining
-    const priorSessionContext = previousSession?.feedback
-      ? `\nPRIOR SESSION FEEDBACK (session #${previousSession.sessionSequence}):\n${previousSession.feedback.slice(0, 1000)}\nPush harder on the areas where the candidate/rep was weakest. Don't repeat the same opening; pick up where they left off.`
-      : "";
+    // Build prior session context for session chaining (use accumulated intel + last session)
+    let priorSessionContext = "";
+    if (accumulatedIntel) {
+      priorSessionContext += `\nACCUMULATED COACHING HISTORY (across all prior sessions for this target):\n${accumulatedIntel.slice(0, 2000)}\n`;
+    }
+    if (previousSession?.feedback) {
+      priorSessionContext += `\nMOST RECENT SESSION FEEDBACK (session #${previousSession.sessionSequence}):\n${previousSession.feedback.slice(0, 1000)}\n`;
+    }
+    if (priorSessionContext) {
+      priorSessionContext += `\nCOACHING DIRECTIVE: Push harder on the areas where the candidate/rep was weakest in prior sessions. Test whether they've improved. Don't repeat the same opening; pick up where they left off. If they've been strong in certain areas, probe at a deeper level.`;
+    }
 
     // Build smarter research extraction: prioritize structured sections over raw dump
     const maxResearchChars = 30000;
@@ -213,6 +230,7 @@ Generate a JSON object with this EXACT structure (no markdown, no code blocks, j
 {
   ${nameInstruction},
   ${titleInstructionInterview},
+  "gender": "<male or female, inferred from the name>",
   "company": "${targetCompany}",
   "personality": "<2-3 sentence personality description as an interviewer>",
   "priorities": ["<what they care about in a candidate 1>", "<priority 2>", "<priority 3>"],
@@ -241,6 +259,7 @@ Generate a JSON object with this EXACT structure (no markdown, no code blocks, j
 {
   ${nameInstruction},
   ${titleInstructionSales},
+  "gender": "<male or female, inferred from the name>",
   "company": "${targetCompany}",
   "personality": "<2-3 sentence personality description>",
   "priorities": ["<priority 1>", "<priority 2>", "<priority 3>"],
@@ -306,9 +325,11 @@ Make the persona feel REAL. Specific details, not generic business-speak. The ob
         } : undefined,
         previousSessionId: previousSession?.id || null,
         sessionSequence: previousSession ? previousSession.sessionSequence + 1 : 1,
-        focusAreas: previousSession?.feedback
-          ? [previousSession.feedback.slice(0, 500)]
-          : [],
+        focusAreas: accumulatedIntel
+          ? [accumulatedIntel.slice(0, 1500)]
+          : previousSession?.feedback
+            ? [previousSession.feedback.slice(0, 500)]
+            : [],
         status: "created",
         transcript: [],
       },
@@ -321,6 +342,7 @@ Make the persona feel REAL. Specific details, not generic business-speak. The ob
         title: isPanelMode ? panelData![0].title : persona.title,
         company: targetCompany,
         personality: persona.personality,
+        gender: persona.gender || null,
       },
       isPanelMode,
       panelMembers: isPanelMode ? panelData!.map(m => ({ name: m.name, title: m.title, roleInMeeting: m.roleInMeeting })) : undefined,

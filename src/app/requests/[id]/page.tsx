@@ -551,14 +551,16 @@ export default function RequestDetailPage() {
                   <Video className="h-6 w-6 text-emerald-700" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">Rehearse before the real thing</h3>
+                  <h3 className="font-semibold text-gray-900">
+                    {request.toolName.startsWith("interview") ? "Rehearse before your interview" : "Rehearse before the real thing"}
+                  </h3>
                   <p className="text-sm text-gray-500">
                     Practice with an AI persona built from this blitz&apos;s research
                   </p>
                 </div>
               </div>
               <a
-                href={`/practice?runRequestId=${request.id}&company=${encodeURIComponent(request.targetCompany)}&meetingType=discovery`}
+                href={`/practice?runRequestId=${request.id}&company=${encodeURIComponent(request.targetCompany)}&meetingType=${request.toolName.startsWith("interview") ? "hiring_manager" : "discovery"}`}
                 className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700 transition"
               >
                 <Video className="h-4 w-4" />

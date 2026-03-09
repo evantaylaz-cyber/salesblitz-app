@@ -84,6 +84,62 @@ export default function RequestPage() {
     linkedinUrl: string;
   }>>([]);
 
+  // Prior run pre-fill
+  interface PriorRun {
+    id: string;
+    toolName: string;
+    targetName: string;
+    targetCompany: string;
+    targetRole: string | null;
+    targetCompanyUrl: string | null;
+    linkedinUrl: string | null;
+    linkedinText: string | null;
+    meetingType: string | null;
+    jobDescription: string | null;
+    additionalNotes: string | null;
+    interviewInstructions: string | null;
+    createdAt: string;
+  }
+  const [priorRuns, setPriorRuns] = useState<PriorRun[]>([]);
+  const [matchingRun, setMatchingRun] = useState<PriorRun | null>(null);
+  const [prefillApplied, setPrefillApplied] = useState(false);
+
+  // Fetch prior runs on load
+  useEffect(() => {
+    if (isLoaded) {
+      fetch("/api/requests")
+        .then(res => res.json())
+        .then(data => setPriorRuns(data.requests || []))
+        .catch(() => {});
+    }
+  }, [isLoaded]);
+
+  // Check for matching prior run when company name changes
+  useEffect(() => {
+    if (!targetCompany.trim() || prefillApplied) {
+      setMatchingRun(null);
+      return;
+    }
+    const companyLower = targetCompany.trim().toLowerCase();
+    const match = priorRuns.find(
+      r => r.targetCompany?.toLowerCase() === companyLower && r.id !== undefined
+    );
+    setMatchingRun(match || null);
+  }, [targetCompany, priorRuns, prefillApplied]);
+
+  function applyPrefill(run: PriorRun) {
+    if (run.targetName) setTargetName(run.targetName);
+    if (run.targetRole) setTargetRole(run.targetRole);
+    if (run.targetCompanyUrl) setTargetCompanyUrl(run.targetCompanyUrl);
+    if (run.linkedinUrl) setLinkedinUrl(run.linkedinUrl);
+    if (run.linkedinText) setLinkedinText(run.linkedinText);
+    if (run.meetingType) setMeetingType(run.meetingType);
+    if (run.jobDescription) setJobDescription(run.jobDescription);
+    if (run.interviewInstructions) setInterviewInstructions(run.interviewInstructions);
+    setPrefillApplied(true);
+    setMatchingRun(null);
+  }
+
   // UI state
   const [engagementExpanded, setEngagementExpanded] = useState(true);
   const [panelExpanded, setPanelExpanded] = useState(false);
@@ -336,6 +392,34 @@ export default function RequestPage() {
                 <p className="mt-1 text-xs text-gray-400">Optional. We&apos;ll research them either way.</p>
               </div>
             </div>
+
+            {/* Pre-fill from prior run banner */}
+            {matchingRun && !prefillApplied && (
+              <div className="mt-4 flex items-center justify-between rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3">
+                <div className="flex items-center gap-2 text-sm text-emerald-800">
+                  <Sparkles className="h-4 w-4 text-emerald-600 shrink-0" />
+                  <span>
+                    You ran <strong>{TOOL_INFO[matchingRun.toolName]?.name || matchingRun.toolName}</strong> for {matchingRun.targetCompany}
+                    {matchingRun.targetName ? ` (${matchingRun.targetName})` : ""} on{" "}
+                    {new Date(matchingRun.createdAt).toLocaleDateString()}.
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => applyPrefill(matchingRun)}
+                  className="shrink-0 rounded-md bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-700 transition"
+                >
+                  Pre-fill
+                </button>
+              </div>
+            )}
+
+            {prefillApplied && (
+              <p className="mt-3 text-xs text-emerald-600">
+                <CheckCircle2 className="inline h-3 w-3 mr-1" />
+                Pre-filled from prior run. Update any fields as needed.
+              </p>
+            )}
           </div>
 
           {/* Meeting Type Selector — interview_prep & prospect_prep only */}

@@ -95,6 +95,16 @@ export default function SubscribePage() {
       <AppNav currentPage="/subscribe" />
 
       <main className="mx-auto max-w-7xl px-6 py-10">
+        {/* Headline */}
+        <div className="text-center mb-10">
+          <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">
+            Pick the plan that matches your pipeline
+          </h1>
+          <p className="mt-3 text-lg text-gray-500 max-w-2xl mx-auto">
+            Every blitz gives you a full research package, competitive playbook, outreach sequence, and practice-ready persona. Cancel anytime.
+          </p>
+        </div>
+
         {/* Billing Toggle */}
         <div className="mb-10 flex items-center justify-center gap-3">
           <span className={`text-sm font-medium ${!annual ? "text-gray-900" : "text-gray-400"}`}>

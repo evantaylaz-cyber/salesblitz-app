@@ -52,6 +52,7 @@ export async function POST(req: NextRequest) {
 
     const persona = session.personaConfig as Record<string, unknown>;
     const transcript = (session.transcript as Array<{ role: string; text: string }>) || [];
+    const focusAreas = (session.focusAreas as string[]) || [];
 
     // Add user message to transcript
     const updatedTranscript = [
@@ -80,6 +81,12 @@ export async function POST(req: NextRequest) {
       );
     } else {
       systemPrompt = buildPersonaSystemPrompt(persona as Parameters<typeof buildPersonaSystemPrompt>[0], persona._meetingType as string | undefined);
+    }
+
+    // Inject focus areas from prior session coaching into system prompt
+    if (focusAreas.length > 0) {
+      const coachingContext = focusAreas.join("\n").slice(0, 1500);
+      systemPrompt += `\n\nCOACHING CONTEXT FROM PRIOR SESSIONS:\n${coachingContext}\n\nUse this context to push harder on known weak areas. If the candidate/rep has improved, test at a deeper level. Reference specific patterns from prior sessions when appropriate.`;
     }
 
     // Get persona response from Claude

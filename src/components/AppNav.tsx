@@ -2,7 +2,20 @@
 
 import { useState } from "react";
 import { UserButton } from "@clerk/nextjs";
-import { Menu, X, Zap } from "lucide-react";
+import {
+  Menu,
+  X,
+  Zap,
+  LayoutDashboard,
+  Inbox,
+  Video,
+  UserCircle,
+  BookOpen,
+  FileText,
+  BarChart3,
+  Users,
+  type LucideIcon,
+} from "lucide-react";
 
 interface AppNavProps {
   /** Current page path for active state highlighting */
@@ -21,15 +34,15 @@ interface AppNavProps {
   hasPriority?: boolean;
 }
 
-const NAV_ITEMS = [
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/requests", label: "Requests", hasBadge: true },
-  { href: "/practice", label: "Practice" },
-  { href: "/profile", label: "Profile" },
-  { href: "/knowledge-base", label: "Knowledge Base" },
-  { href: "/playbooks", label: "Playbooks" },
-  { href: "/analytics", label: "Analytics" },
-  { href: "/teams", label: "Teams" },
+const NAV_ITEMS: Array<{ href: string; label: string; icon: LucideIcon; hasBadge?: boolean }> = [
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/requests", label: "Requests", icon: Inbox, hasBadge: true },
+  { href: "/practice", label: "Practice", icon: Video },
+  { href: "/profile", label: "Profile", icon: UserCircle },
+  { href: "/knowledge-base", label: "Knowledge Base", icon: BookOpen },
+  { href: "/playbooks", label: "Playbooks", icon: FileText },
+  { href: "/analytics", label: "Analytics", icon: BarChart3 },
+  { href: "/teams", label: "Teams", icon: Users },
 ];
 
 export default function AppNav({
@@ -126,15 +139,24 @@ export default function AppNav({
       {/* Mobile dropdown */}
       {mobileMenuOpen && (
         <div className="lg:hidden border-t bg-white px-6 py-3 space-y-1">
-          {NAV_ITEMS.filter((item) => item.href !== currentPage).map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              className="block rounded-lg px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
-            >
-              {item.label}
-            </a>
-          ))}
+          {NAV_ITEMS.filter((item) => item.href !== currentPage).map((item) => {
+            const Icon = item.icon;
+            return (
+              <a
+                key={item.href}
+                href={item.href}
+                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
+              >
+                <Icon className="h-4 w-4 text-gray-400" />
+                {item.label}
+                {item.hasBadge && pendingRequests > 0 && (
+                  <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-600 text-[10px] font-bold text-white">
+                    {pendingRequests}
+                  </span>
+                )}
+              </a>
+            );
+          })}
           {hasSubscription && onManageBilling && (
             <button
               onClick={() => {

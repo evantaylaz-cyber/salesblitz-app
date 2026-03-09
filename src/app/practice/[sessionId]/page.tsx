@@ -182,13 +182,11 @@ export default function PracticeSessionPage() {
 
   async function initSession() {
     try {
-      // Select avatar based on persona name (passed via URL query param)
-      const personaName = searchParams.get("persona") || "";
+      // Select avatar based on gender (passed via URL query param from start API)
+      const personaGender = searchParams.get("gender") || "male";
       const FEMALE_AVATAR = "b4fc2d60-3b82-4694-b243-93e9d2bb0242"; // Anastasia in Grey Shirt
       const MALE_AVATAR = "bb1f6ebc-b388-4a39-9e2b-8df618e0377c";   // Graham in Black Shirt
-      const femaleNames = ["sarah", "maria", "rachel", "jennifer", "jessica", "emily", "emma", "olivia", "sophia", "isabella", "ava", "mia", "charlotte", "amelia", "lisa", "patricia", "linda", "elizabeth", "barbara", "susan", "margaret", "dorothy", "sandra", "ashley", "kimberly", "donna", "carol", "michelle", "amanda", "melissa", "deborah", "stephanie", "rebecca", "laura", "helen", "anna", "samantha", "katherine", "christine", "debra", "diana", "natalie", "angela", "julie", "karen", "nancy", "betty", "parul", "aviva", "nina", "tracy"];
-      const firstNameLower = personaName.split(" ")[0]?.toLowerCase() || "";
-      const isFemale = femaleNames.includes(firstNameLower);
+      const isFemale = personaGender === "female";
       const avatarId = isFemale ? FEMALE_AVATAR : MALE_AVATAR;
       ttsVoiceRef.current = isFemale ? "nova" : "onyx";
 
@@ -234,9 +232,11 @@ export default function PracticeSessionPage() {
             videoRef.current.onplaying = () => startChromaKey();
           }
 
-          // Start timer
+          // Start timer (pauses while avatar is speaking so it tracks YOUR active time)
           timerRef.current = setInterval(() => {
-            setElapsed((prev) => prev + 1);
+            if (!isSpeakingRef.current) {
+              setElapsed((prev) => prev + 1);
+            }
           }, 1000);
         } else if (state === "DISCONNECTED" || state === "INACTIVE") {
           setAvatarReady(false);
@@ -509,7 +509,7 @@ export default function PracticeSessionPage() {
           )}
         </div>
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1.5 text-sm text-gray-400 tabular-nums">
+          <div className="flex items-center gap-1.5 text-sm text-gray-400 tabular-nums" title="Your active time (pauses while persona speaks)">
             <Clock className="h-4 w-4" />
             {formatTime(elapsed)}
           </div>

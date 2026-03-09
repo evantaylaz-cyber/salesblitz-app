@@ -580,3 +580,103 @@ Each tool card now shows a subtle "X runs" count based on the user's recent requ
 
 **DB Migration (1):**
 - Applied via Supabase: `add_practice_session_user_notes`
+
+---
+
+## Fixes Applied (Mar 8, 2026 final session: Context Accumulation & Gender Detection)
+
+### P1 Fix: Practice Start Route Reads Target.accumulatedIntel
+
+**File:** `api/practice/start/route.ts`
+
+Previously, session chaining only used `previousSession.feedback` (single session's feedback). The Target entity had `accumulatedIntel` being written to by the end route but never read back at session start. Fixed by:
+- Loading `Target.accumulatedIntel` after previousSession query
+- Building `priorSessionContext` from both accumulated intel (full history, up to 2K chars) and most recent session feedback (up to 1K chars)
+- Adding coaching directive: "Push harder on weak areas, test for improvement, probe deeper on strong areas"
+- Storing accumulated intel in session `focusAreas` (preferred over single-session feedback)
+
+### P1 Fix: Practice Message Route Injects focusAreas into System Prompt
+
+**File:** `api/practice/message/route.ts`
+
+The message route built system prompts from personaConfig but never used the session's `focusAreas`. This meant mid-conversation, the persona had no awareness of what the user struggled with in prior sessions. Fixed by:
+- Loading `session.focusAreas` as string array
+- Appending coaching context to the system prompt before the Claude API call
+- Context instructs the persona to push harder on known weak areas and test at deeper levels when improvement is shown
+
+### P2 Fix: Gender Detection Uses API-Returned Field Instead of Hardcoded Name List
+
+**Files:** `api/practice/start/route.ts`, `practice/page.tsx`, `practice/[sessionId]/page.tsx`
+
+The session page had ~50 hardcoded female names for avatar selection. Any uncommon name (Priya, Akiko, Fatima) defaulted to male avatar. Fixed across the full pipeline:
+- **Start route**: Both persona generation prompts (interview and sales) now include `"gender": "<male or female, inferred from the name>"` in the JSON schema. API response includes `gender: persona.gender || null`.
+- **Practice lobby**: `launchDirect()` passes gender in URL params alongside persona name.
+- **Session page**: Replaced hardcoded name list with `searchParams.get("gender")` for avatar/voice selection. `isFemale` now driven by API data, not name matching.
+
+### Updated Summary Stats (Final)
+
+| Severity | Original | After All Sessions |
+|----------|----------|--------------------|
+| P0       | 2        | 0                  |
+| P1       | 12       | 0                  |
+| P2       | 13       | 2                  |
+| P3       | 4        | 3                  |
+| **Total** | **31**  | **5**              |
+
+### Remaining Open Items (Final)
+
+**P2 (2):**
+1. Female avatar ID unverified (needs live test with HeyGen credits)
+2. Chroma key untested with real avatar (needs live test)
+
+**P3 (3):**
+1. Timer doesn't pause when avatar speaks
+2. No "run from previous" option on request form
+3. Mobile nav is basic
+
+### P3 Fix: Timer Pauses When Avatar Speaks
+
+**File:** `practice/[sessionId]/page.tsx`
+
+Timer interval now checks `isSpeakingRef.current` before incrementing. When the avatar is speaking, the timer pauses, so it reflects the user's active time rather than wall-clock time. Tooltip on the timer clarifies: "Your active time (pauses while persona speaks)."
+
+### P3 Fix: "Run from Previous" Pre-fill on Request Form
+
+**File:** `request/page.tsx`
+
+When a user starts a new blitz for a company they've run before, a banner appears offering to pre-fill the form from the prior run. On load, the page fetches all prior runs. When the company name matches (case-insensitive), a green banner shows: "You ran [tool] for [company] on [date]" with a "Pre-fill" button. Clicking it populates: target name, role, company URL, LinkedIn, meeting type, job description, and interview instructions. A confirmation badge shows after pre-fill.
+
+### P3 Fix: Mobile Nav with Icons
+
+**File:** `components/AppNav.tsx`
+
+Mobile dropdown nav items now include icons (LayoutDashboard, Inbox, Video, UserCircle, BookOpen, FileText, BarChart3, Users) alongside text labels. Provides visual hierarchy and makes navigation items easier to scan on mobile. Pending request badge also shows on the mobile Requests item.
+
+### Updated Summary Stats (Final)
+
+| Severity | Original | After All Sessions |
+|----------|----------|--------------------|
+| P0       | 2        | 0                  |
+| P1       | 12       | 0                  |
+| P2       | 13       | 2                  |
+| P3       | 4        | 0                  |
+| **Total** | **31**  | **2**              |
+
+### Remaining Open Items (Final)
+
+**P2 (2):**
+1. Female avatar ID unverified (needs live test with HeyGen credits)
+2. Chroma key untested with real avatar (needs live test)
+
+Both remaining items require live testing with HeyGen credits (currently exhausted). Cannot be resolved through code changes alone.
+
+### Files Changed This Session (ready for commit via GitHub Desktop)
+
+**Modified (7):**
+- `src/app/api/practice/start/route.ts` — Accumulated intel loading, richer prior context building, gender in persona schema and response
+- `src/app/api/practice/message/route.ts` — FocusAreas loading and injection into system prompt
+- `src/app/practice/[sessionId]/page.tsx` — Gender URL param instead of hardcoded name list, timer pauses during avatar speech
+- `src/app/practice/page.tsx` — Pass gender in URL params to session page
+- `src/app/request/page.tsx` — Pre-fill from prior runs (banner, state, apply function)
+- `src/components/AppNav.tsx` — Icons on mobile nav items
+- `PRODUCT_QUALITY_AUDIT.md` — Full session documentation
