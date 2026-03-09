@@ -2,6 +2,45 @@ import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import prisma from "@/lib/db";
 
+// Compute profile depth from actual field completeness (0-4)
+// Depth 1: Company essentials filled (name + product + differentiators)
+// Depth 2: Sales assets filled (deal stories or value props, plus selling style)
+// Depth 3: Career & territory context (career narrative or ICP definitions, plus territory focus)
+// Depth 4: Writing style customization (writing style, banned phrases, or signature patterns)
+function computeProfileDepth(profile: Record<string, unknown>): number {
+  let depth = 0;
+
+  // Layer 1: Company essentials
+  const hasCompany = !!(profile.companyName && profile.companyProduct);
+  if (hasCompany) depth = 1;
+
+  // Layer 2: Sales assets + methodology
+  const dealStories = profile.dealStories as unknown[];
+  const valueProps = profile.valueProps as unknown[];
+  const hasSalesAssets = (Array.isArray(dealStories) && dealStories.length > 0) ||
+    (Array.isArray(valueProps) && valueProps.length > 0);
+  const hasMethodology = !!(profile.sellingStyle && profile.sellingStyle !== "MEDDPICC") ||
+    !!profile.sellingPhilosophy;
+  if (depth >= 1 && (hasSalesAssets || hasMethodology)) depth = 2;
+
+  // Layer 3: Career & territory context
+  const icpDefs = profile.icpDefinitions as unknown[];
+  const hasCareerOrTerritory = !!profile.careerNarrative ||
+    (Array.isArray(icpDefs) && icpDefs.length > 0) ||
+    !!profile.territoryFocus;
+  if (depth >= 2 && hasCareerOrTerritory) depth = 3;
+
+  // Layer 4: Writing style customization
+  const bannedPhrases = profile.bannedPhrases as unknown[];
+  const sigPatterns = profile.signaturePatterns as unknown[];
+  const hasWritingStyle = !!profile.writingStyle ||
+    (Array.isArray(bannedPhrases) && bannedPhrases.length > 0) ||
+    (Array.isArray(sigPatterns) && sigPatterns.length > 0);
+  if (depth >= 3 && hasWritingStyle) depth = 4;
+
+  return depth;
+}
+
 // GET — fetch current user's profile
 export async function GET() {
   try {
@@ -60,8 +99,10 @@ export async function PUT(req: NextRequest) {
 
     const body = await req.json();
 
-    // Whitelist allowed fields
+    // Whitelist allowed fields — must include all UserProfile schema fields
+    // that the manual profile editor or onboarding chat can update
     const allowedFields = [
+      // Company context
       "companyName",
       "companyProduct",
       "companyDescription",
@@ -69,12 +110,34 @@ export async function PUT(req: NextRequest) {
       "companyCompetitors",
       "companyTargetMarket",
       "companyUrl",
+      // LinkedIn
       "linkedinAbout",
       "linkedinExperience",
       "linkedinEducation",
+      // Selling methodology
       "sellingStyle",
+      "sellingPhilosophy",
+      "sellerArchetype",
+      // Career & interview context
+      "careerNarrative",
+      "targetRoleTypes",
+      "keyStrengths",
+      "interviewHistory",
+      // Territory & ICP context
+      "icpDefinitions",
+      "territoryFocus",
+      "currentQuotaContext",
+      // Sales assets
       "dealStories",
+      "caseStudies",
       "valueProps",
+      // Writing & communication style
+      "writingStyle",
+      "bannedPhrases",
+      "signaturePatterns",
+      // Lifecycle & onboarding
+      "lifecycleStage",
+      "onboardingDepth",
       "preferredTone",
       "onboardingCompleted",
     ];
@@ -86,6 +149,7 @@ export async function PUT(req: NextRequest) {
       }
     }
 
+    // First save the update
     const profile = await prisma.userProfile.upsert({
       where: { userId: user.id },
       update: updateData,
@@ -94,6 +158,20 @@ export async function PUT(req: NextRequest) {
         ...updateData,
       },
     });
+
+    // Auto-compute depth from actual field completeness
+    // Use the higher of chat-based depth and computed depth
+    const computedDepth = computeProfileDepth(profile as unknown as Record<string, unknown>);
+    const currentDepth = (profile as unknown as Record<string, unknown>).onboardingDepth as number || 0;
+
+    if (computedDepth > currentDepth) {
+      await prisma.userProfile.update({
+        where: { userId: user.id },
+        data: { onboardingDepth: computedDepth },
+      });
+      // Update the response object
+      (profile as unknown as Record<string, unknown>).onboardingDepth = computedDepth;
+    }
 
     return NextResponse.json({ profile, success: true });
   } catch (error) {

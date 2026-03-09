@@ -39,7 +39,7 @@ export async function GET() {
       where: { userId: user.id, inviteStatus: "accepted" },
       select: { teamId: true },
     });
-    const teamIds = teamMemberships.map((m) => m.teamId);
+    const teamIds = teamMemberships.map((m: any) => m.teamId);
 
     const requests = await prisma.runRequest.findMany({
       where: {
@@ -53,7 +53,7 @@ export async function GET() {
     });
 
     // Normalize assets for each request so the UI gets consistent array format
-    const normalized = requests.map((r) => ({
+    const normalized = requests.map((r: any) => ({
       ...r,
       assets: normalizeAssets(r.assets, r.toolName),
     }));

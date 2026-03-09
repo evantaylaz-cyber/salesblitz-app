@@ -76,6 +76,23 @@ export default function PracticeHistoryPage() {
       <AppNav currentPage="/practice" />
 
       <main className="mx-auto max-w-5xl px-6 py-10">
+        {/* Header */}
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Practice History</h1>
+            <p className="mt-1 text-sm text-gray-500">
+              Track your sessions, scores & improvement over time.
+            </p>
+          </div>
+          <button
+            onClick={() => router.push("/practice")}
+            className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 transition"
+          >
+            <Video className="h-4 w-4" />
+            New Session
+          </button>
+        </div>
+
         {/* Stats */}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3 mb-10">
           <div className="rounded-xl border bg-white p-5 shadow-sm">

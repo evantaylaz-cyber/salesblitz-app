@@ -14,6 +14,9 @@ import {
   MessageSquare,
   BarChart3,
   RotateCcw,
+  Save,
+  CheckCircle2,
+  PenLine,
 } from "lucide-react";
 import AppNav from "@/components/AppNav";
 
@@ -70,6 +73,7 @@ interface SessionData {
   sessionSequence: number;
   targetId: string | null;
   runRequestId: string | null;
+  userNotes: string | null;
   createdAt: string;
 }
 
@@ -104,6 +108,9 @@ export default function PracticeReviewPage() {
   const [session, setSession] = useState<SessionData | null>(null);
   const [loading, setLoading] = useState(true);
   const [showTranscript, setShowTranscript] = useState(false);
+  const [userNotes, setUserNotes] = useState("");
+  const [notesSaving, setNotesSaving] = useState(false);
+  const [notesSaved, setNotesSaved] = useState(false);
 
   useEffect(() => {
     if (isLoaded && sessionId) fetchSession();
@@ -113,11 +120,33 @@ export default function PracticeReviewPage() {
     try {
       const res = await fetch(`/api/practice/session?id=${sessionId}`);
       const data = await res.json();
-      if (data.session) setSession(data.session);
+      if (data.session) {
+        setSession(data.session);
+        setUserNotes(data.session.userNotes || "");
+        if (data.session.userNotes) setNotesSaved(true);
+      }
     } catch {
       // silent
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function saveNotes() {
+    if (!sessionId || notesSaving) return;
+    setNotesSaving(true);
+    setNotesSaved(false);
+    try {
+      const res = await fetch(`/api/practice/session?id=${sessionId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userNotes }),
+      });
+      if (res.ok) setNotesSaved(true);
+    } catch {
+      // silent
+    } finally {
+      setNotesSaving(false);
     }
   }
 
@@ -276,6 +305,47 @@ export default function PracticeReviewPage() {
             </div>
           </div>
         )}
+
+        {/* Self-Debrief Notes */}
+        <div className="rounded-2xl border bg-white p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <PenLine className="h-5 w-5 text-gray-400" />
+              <h3 className="text-lg font-bold text-gray-900">Your Debrief</h3>
+            </div>
+            <div className="flex items-center gap-2">
+              {notesSaved && (
+                <span className="flex items-center gap-1 text-xs text-emerald-600">
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  Saved
+                </span>
+              )}
+              <button
+                onClick={saveNotes}
+                disabled={notesSaving}
+                className="flex items-center gap-1.5 rounded-lg bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-200 disabled:opacity-50 transition"
+              >
+                <Save className="h-3.5 w-3.5" />
+                {notesSaving ? "Saving..." : "Save"}
+              </button>
+            </div>
+          </div>
+          <p className="text-sm text-gray-500 mb-3">
+            What landed? What felt shaky? What do you want to nail next time?
+          </p>
+          <textarea
+            value={userNotes}
+            onChange={(e) => {
+              setUserNotes(e.target.value);
+              setNotesSaved(false);
+            }}
+            placeholder="Write your reflections here. These carry forward to your next practice session for this target."
+            rows={4}
+            maxLength={5000}
+            className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-800 placeholder-gray-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 resize-y"
+          />
+          <p className="mt-1 text-xs text-gray-400 text-right">{userNotes.length}/5000</p>
+        </div>
 
         {/* Transcript Toggle */}
         <div className="rounded-2xl border bg-white shadow-sm overflow-hidden">

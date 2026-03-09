@@ -62,14 +62,14 @@ const STATUS_ICON: Record<string, React.ElementType> = {
 };
 
 const STATUS_COLOR: Record<string, { text: string; bg: string }> = {
-  submitted: { text: "text-blue-400", bg: "bg-blue-950/40 border-blue-500/20" },
-  researching: { text: "text-amber-400", bg: "bg-amber-950/40 border-amber-500/20" },
-  processing: { text: "text-amber-400", bg: "bg-amber-950/40 border-amber-500/20" },
-  awaiting_clarification: { text: "text-yellow-400", bg: "bg-yellow-950/40 border-yellow-500/20" },
-  ready: { text: "text-emerald-400", bg: "bg-emerald-950/40 border-emerald-500/20" },
-  delivered: { text: "text-emerald-400", bg: "bg-emerald-950/40 border-emerald-500/20" },
-  completed: { text: "text-emerald-400", bg: "bg-emerald-950/40 border-emerald-500/20" },
-  failed: { text: "text-red-400", bg: "bg-red-950/40 border-red-500/20" },
+  submitted: { text: "text-blue-700", bg: "bg-blue-50 border-blue-200" },
+  researching: { text: "text-amber-700", bg: "bg-amber-50 border-amber-200" },
+  processing: { text: "text-amber-700", bg: "bg-amber-50 border-amber-200" },
+  awaiting_clarification: { text: "text-amber-700", bg: "bg-amber-50 border-amber-200" },
+  ready: { text: "text-emerald-700", bg: "bg-emerald-50 border-emerald-200" },
+  delivered: { text: "text-emerald-700", bg: "bg-emerald-50 border-emerald-200" },
+  completed: { text: "text-emerald-700", bg: "bg-emerald-50 border-emerald-200" },
+  failed: { text: "text-red-700", bg: "bg-red-50 border-red-200" },
 };
 
 const STEP_ORDER = ["per_account_research", "comparative_synthesis", "asset_generation", "batch_assets", "delivery"];
@@ -124,20 +124,20 @@ export default function BatchProgressPage() {
   }, [batchId, user]);
 
   if (!isLoaded || !user) {
-    return (<div className="flex min-h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" style={{ color: "#6366f1" }} /></div>);
+    return (<div className="flex min-h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-emerald-700" /></div>);
   }
   if (loading) {
-    return (<div className="flex min-h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" style={{ color: "#6366f1" }} /></div>);
+    return (<div className="flex min-h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-emerald-700" /></div>);
   }
 
   if (error || !batchJob) {
     return (
-      <div className="min-h-screen bg-zinc-950 text-white">
+      <div className="min-h-screen bg-gray-50">
         <AppNav currentPage="/requests" />
         <main className="mx-auto max-w-3xl px-6 py-8">
-          <div className="flex items-start gap-3 rounded-lg border border-red-500/20 bg-red-950/30 p-4">
+          <div className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4">
             <AlertCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
-            <p className="text-sm text-red-300">{error || "Batch not found"}</p>
+            <p className="text-sm text-red-700">{error || "Batch not found"}</p>
           </div>
         </main>
       </div>
@@ -149,25 +149,25 @@ export default function BatchProgressPage() {
   const isProcessing = !isComplete && !isAwaiting;
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white">
+    <div className="min-h-screen bg-gray-50">
       <AppNav currentPage="/requests" />
 
       <main className="mx-auto max-w-3xl px-6 py-8 space-y-8">
         {/* Overall Batch Status */}
-        <div className="rounded-xl border border-zinc-800/60 bg-zinc-900/30 p-6 space-y-4">
+        <div className="rounded-xl border bg-white p-6 shadow-sm space-y-4">
           <div className="flex items-start justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-white">Batch Status</h2>
-              <p className="text-sm text-zinc-400 mt-1">{batchJob.totalAccounts} account{batchJob.totalAccounts !== 1 ? "s" : ""} in batch</p>
+              <h2 className="text-lg font-semibold text-gray-900">Batch Status</h2>
+              <p className="text-sm text-gray-500 mt-1">{batchJob.totalAccounts} account{batchJob.totalAccounts !== 1 ? "s" : ""} in batch</p>
             </div>
             <span className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium ${
               batchJob.status === "completed" || batchJob.status === "delivered"
-                ? "text-emerald-400 bg-emerald-950/40 border-emerald-500/20"
+                ? "text-emerald-700 bg-emerald-50 border-emerald-200"
                 : batchJob.status === "failed"
-                ? "text-red-400 bg-red-950/40 border-red-500/20"
+                ? "text-red-700 bg-red-50 border-red-200"
                 : batchJob.status === "awaiting_clarification"
-                ? "text-yellow-400 bg-yellow-950/40 border-yellow-500/20"
-                : "text-amber-400 bg-amber-950/40 border-amber-500/20"
+                ? "text-amber-700 bg-amber-50 border-amber-200"
+                : "text-amber-700 bg-amber-50 border-amber-200"
             }`}>
               {isProcessing && <Loader2 className="h-3 w-3 animate-spin" />}
               {(batchJob.status === "completed" || batchJob.status === "delivered") && <CheckCircle2 className="h-3 w-3" />}
@@ -179,71 +179,71 @@ export default function BatchProgressPage() {
           </div>
 
           {isAwaiting && (
-            <div className="flex items-start gap-3 rounded-lg border border-yellow-500/20 bg-yellow-950/30 p-4">
-              <MessageCircle className="h-5 w-5 text-yellow-400 shrink-0 mt-0.5" />
+            <div className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4">
+              <MessageCircle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-medium text-yellow-300">Clarification Needed</p>
-                <p className="text-sm text-yellow-300/70 mt-1">We need more information to complete some accounts. Check your email for a clarification request.</p>
+                <p className="text-sm font-medium text-amber-800">Clarification Needed</p>
+                <p className="text-sm text-amber-700 mt-1">We need more information to complete some accounts. Check your email for a clarification request.</p>
               </div>
             </div>
           )}
 
           <div>
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm text-zinc-400">Overall Progress</span>
-              <span className="text-sm font-semibold text-white">{batchJob.percentComplete}%</span>
+              <span className="text-sm text-gray-500">Overall Progress</span>
+              <span className="text-sm font-semibold text-gray-900">{batchJob.percentComplete}%</span>
             </div>
-            <div className="h-2 rounded-full bg-zinc-800/60 overflow-hidden">
+            <div className="h-2 rounded-full bg-gray-100 overflow-hidden">
               <div className={`h-full rounded-full transition-all duration-500 ${
                 batchJob.status === "failed" ? "bg-red-500"
                 : batchJob.percentComplete === 100 ? "bg-emerald-500"
-                : isAwaiting ? "bg-yellow-500"
+                : isAwaiting ? "bg-amber-500"
                 : "bg-emerald-500"
               }`} style={{ width: `${batchJob.percentComplete}%` }} />
             </div>
           </div>
 
           <div className="grid grid-cols-3 gap-4 pt-2">
-            <div className="rounded-lg bg-zinc-800/30 p-3">
-              <p className="text-xs text-zinc-400 mb-1">Completed</p>
-              <p className="text-lg font-semibold text-emerald-400">{batchJob.completedAccounts}</p>
+            <div className="rounded-lg bg-gray-50 p-3">
+              <p className="text-xs text-gray-500 mb-1">Completed</p>
+              <p className="text-lg font-semibold text-emerald-600">{batchJob.completedAccounts}</p>
             </div>
-            <div className="rounded-lg bg-zinc-800/30 p-3">
-              <p className="text-xs text-zinc-400 mb-1">{(batchJob.awaitingAccounts || 0) > 0 ? "Awaiting Input" : "In Progress"}</p>
-              <p className={`text-lg font-semibold ${(batchJob.awaitingAccounts || 0) > 0 ? "text-yellow-400" : "text-amber-400"}`}>
+            <div className="rounded-lg bg-gray-50 p-3">
+              <p className="text-xs text-gray-500 mb-1">{(batchJob.awaitingAccounts || 0) > 0 ? "Awaiting Input" : "In Progress"}</p>
+              <p className={`text-lg font-semibold ${(batchJob.awaitingAccounts || 0) > 0 ? "text-amber-600" : "text-amber-600"}`}>
                 {batchJob.totalAccounts - batchJob.completedAccounts - batchJob.failedAccounts}
               </p>
             </div>
-            <div className="rounded-lg bg-zinc-800/30 p-3">
-              <p className="text-xs text-zinc-400 mb-1">Failed</p>
-              <p className="text-lg font-semibold text-red-400">{batchJob.failedAccounts}</p>
+            <div className="rounded-lg bg-gray-50 p-3">
+              <p className="text-xs text-gray-500 mb-1">Failed</p>
+              <p className="text-lg font-semibold text-red-600">{batchJob.failedAccounts}</p>
             </div>
           </div>
         </div>
 
         {/* Step Progress */}
-        <div className="rounded-xl border border-zinc-800/60 bg-zinc-900/30 p-6 space-y-4">
-          <h3 className="text-sm font-semibold text-white">Processing Steps</h3>
+        <div className="rounded-xl border bg-white p-6 shadow-sm space-y-4">
+          <h3 className="text-sm font-semibold text-gray-900">Processing Steps</h3>
           <div className="space-y-3">
             {batchJob.steps && batchJob.steps
               .sort((a, b) => STEP_ORDER.indexOf(a.name || a.id || "") - STEP_ORDER.indexOf(b.name || b.id || ""))
               .map((step, idx) => (
                 <div key={step.name || step.id || idx}>
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-sm text-zinc-300">{step.label}</span>
+                    <span className="text-sm text-gray-700">{step.label}</span>
                     <span className={`text-xs font-medium ${
-                      step.status === "completed" ? "text-emerald-400"
-                      : step.status === "in_progress" ? "text-amber-400"
-                      : step.status === "failed" ? "text-red-400"
-                      : "text-zinc-500"
+                      step.status === "completed" ? "text-emerald-600"
+                      : step.status === "in_progress" ? "text-amber-600"
+                      : step.status === "failed" ? "text-red-600"
+                      : "text-gray-400"
                     }`}>{step.status.charAt(0).toUpperCase() + step.status.slice(1).replace("_", " ")}</span>
                   </div>
-                  <div className="h-1.5 rounded-full bg-zinc-800/60 overflow-hidden">
+                  <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden">
                     <div className={`h-full rounded-full transition-all duration-500 ${
                       step.status === "completed" ? "bg-emerald-500 w-full"
                       : step.status === "in_progress" ? "bg-emerald-500 w-1/2"
                       : step.status === "failed" ? "bg-red-500 w-full"
-                      : "bg-zinc-700/50 w-0"
+                      : "bg-gray-200 w-0"
                     }`} />
                   </div>
                 </div>
@@ -252,8 +252,8 @@ export default function BatchProgressPage() {
         </div>
 
         {/* Per-Account Status */}
-        <div className="rounded-xl border border-zinc-800/60 bg-zinc-900/30 p-6 space-y-4">
-          <h3 className="text-sm font-semibold text-white">Account Progress</h3>
+        <div className="rounded-xl border bg-white p-6 shadow-sm space-y-4">
+          <h3 className="text-sm font-semibold text-gray-900">Account Progress</h3>
           <div className="space-y-3">
             {batchJob.accountStatuses && batchJob.accountStatuses.length > 0 ? (
               batchJob.accountStatuses.map((account) => {
@@ -262,18 +262,18 @@ export default function BatchProgressPage() {
                 return (
                   <button key={account.requestId}
                     onClick={() => account.requestId ? router.push(`/requests/${account.requestId}`) : undefined}
-                    className={`w-full text-left rounded-lg border px-4 py-3 transition hover:border-emerald-500/50 ${statusColor.bg}`}>
+                    className={`w-full text-left rounded-lg border px-4 py-3 transition hover:border-emerald-300 ${statusColor.bg}`}>
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
                           <StatusIcon className={`h-4 w-4 ${statusColor.text} ${["researching", "processing"].includes(account.status) ? "animate-spin" : ""}`} />
-                          <span className="font-medium text-white">{account.targetName}</span>
+                          <span className="font-medium text-gray-900">{account.targetName}</span>
                         </div>
-                        <p className="text-sm text-zinc-400">{account.targetCompany}</p>
+                        <p className="text-sm text-gray-500">{account.targetCompany}</p>
                         {account.status === "awaiting_clarification" && (
-                          <p className="text-xs text-yellow-400/70 mt-1.5">Check email for clarification request</p>
+                          <p className="text-xs text-amber-600 mt-1.5">Check email for clarification request</p>
                         )}
-                        {account.currentStep && (<p className="text-xs text-zinc-500 mt-1.5">{account.currentStep}</p>)}
+                        {account.currentStep && (<p className="text-xs text-gray-400 mt-1.5">{account.currentStep}</p>)}
                       </div>
                       <span className={`text-xs font-medium ${statusColor.text} whitespace-nowrap ml-4`}>
                         {account.status === "awaiting_clarification" ? "Awaiting Clarification" : account.status.charAt(0).toUpperCase() + account.status.slice(1).replace("_", " ")}
@@ -282,21 +282,21 @@ export default function BatchProgressPage() {
                   </button>
                 );
               })
-            ) : (<p className="text-sm text-zinc-400">No accounts yet</p>)}
+            ) : (<p className="text-sm text-gray-500">No accounts yet</p>)}
           </div>
         </div>
 
         {/* Synthesis Highlights */}
         {isComplete && batchJob.synthesisHighlights && (
-          <div className="rounded-xl border border-emerald-500/20 bg-emerald-950/30 p-6 space-y-4">
+          <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-6 space-y-4">
             <div className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-emerald-400" />
-              <h3 className="text-sm font-semibold text-emerald-300">Synthesis Highlights</h3>
+              <TrendingUp className="h-5 w-5 text-emerald-600" />
+              <h3 className="text-sm font-semibold text-emerald-800">Synthesis Highlights</h3>
             </div>
             {(batchJob.synthesisHighlights.topPriorityAccount || batchJob.synthesisHighlights.priorityRanking) && (
               <div>
-                <p className="text-xs text-emerald-400/70 uppercase tracking-wide mb-1">Top Priority Account</p>
-                <p className="text-white">
+                <p className="text-xs text-emerald-600 uppercase tracking-wide mb-1">Top Priority Account</p>
+                <p className="text-gray-900">
                   {batchJob.synthesisHighlights.topPriorityAccount ||
                     (Array.isArray(batchJob.synthesisHighlights.priorityRanking) && batchJob.synthesisHighlights.priorityRanking[0]?.account) ||
                     "See full report"}
@@ -305,8 +305,8 @@ export default function BatchProgressPage() {
             )}
             {(batchJob.synthesisHighlights.territoryStrategySummary || batchJob.synthesisHighlights.keyInsight) && (
               <div>
-                <p className="text-xs text-emerald-400/70 uppercase tracking-wide mb-1">Territory Strategy</p>
-                <p className="text-white text-sm leading-relaxed">
+                <p className="text-xs text-emerald-600 uppercase tracking-wide mb-1">Territory Strategy</p>
+                <p className="text-gray-800 text-sm leading-relaxed">
                   {batchJob.synthesisHighlights.territoryStrategySummary || batchJob.synthesisHighlights.keyInsight || "See full report"}
                 </p>
               </div>
@@ -316,15 +316,15 @@ export default function BatchProgressPage() {
 
         {/* Batch Assets */}
         {isComplete && batchJob.batchAssetUrls && batchJob.batchAssetUrls.length > 0 && (
-          <div className="rounded-xl border border-zinc-800/60 bg-zinc-900/30 p-6 space-y-4">
-            <h3 className="text-sm font-semibold text-white">Batch Assets</h3>
+          <div className="rounded-xl border bg-white p-6 shadow-sm space-y-4">
+            <h3 className="text-sm font-semibold text-gray-900">Batch Assets</h3>
             <div className="space-y-2">
               {batchJob.batchAssetUrls.map((asset: any, idx: number) => (
                 <a key={idx} href={asset.url} target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-3 rounded-lg border border-zinc-800/60 bg-zinc-800/20 px-4 py-3 hover:bg-zinc-800/40 transition">
-                  <FileText className="h-5 w-5 text-emerald-400" />
-                  <span className="flex-1 text-sm font-medium text-white">{asset.label || asset.id || `Asset ${idx + 1}`}</span>
-                  <span className="text-zinc-500">↗</span>
+                  className="flex items-center gap-3 rounded-lg border bg-gray-50 px-4 py-3 hover:bg-gray-100 transition">
+                  <FileText className="h-5 w-5 text-emerald-600" />
+                  <span className="flex-1 text-sm font-medium text-gray-900">{asset.label || asset.id || `Asset ${idx + 1}`}</span>
+                  <span className="text-gray-400 text-sm">View</span>
                 </a>
               ))}
             </div>
@@ -333,9 +333,9 @@ export default function BatchProgressPage() {
 
         {/* Status Message */}
         {isComplete && (
-          <div className="flex items-center gap-3 rounded-lg border border-emerald-500/20 bg-emerald-950/30 p-4">
-            <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0" />
-            <p className="text-sm text-emerald-300">
+          <div className="flex items-center gap-3 rounded-lg border border-emerald-200 bg-emerald-50 p-4">
+            <CheckCircle2 className="h-5 w-5 text-emerald-600 shrink-0" />
+            <p className="text-sm text-emerald-700">
               Batch processing{" "}
               {batchJob.status === "completed" || batchJob.status === "delivered"
                 ? "completed successfully"

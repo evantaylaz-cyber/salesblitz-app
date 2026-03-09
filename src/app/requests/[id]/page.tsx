@@ -211,7 +211,7 @@ export default function RequestDetailPage() {
         setError(data.error || "Retry failed");
       }
     } catch {
-      setError("Network error — retry failed");
+      setError("Network error. Retry failed.");
     } finally {
       setRetrying(false);
     }

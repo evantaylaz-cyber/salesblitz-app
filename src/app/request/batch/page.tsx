@@ -88,7 +88,7 @@ export default function BatchRequestPage() {
   if (!isLoaded || !user) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" style={{ color: "#6366f1" }} />
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-700" />
       </div>
     );
   }
@@ -172,20 +172,20 @@ export default function BatchRequestPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white">
+    <div className="min-h-screen bg-gray-50">
       <AppNav currentPage="/requests" />
 
       <main className="mx-auto max-w-3xl px-6 py-8">
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Tool Selection */}
           <div className="space-y-3">
-            <label className="block text-sm font-semibold text-white">
+            <label className="block text-sm font-semibold text-gray-900">
               Tool <span className="text-red-500">*</span>
             </label>
             <select
               value={toolName}
               onChange={(e) => setToolName(e.target.value as typeof toolName)}
-              className="w-full rounded-xl border border-zinc-800/60 bg-zinc-900/50 px-4 py-3 text-white placeholder-zinc-500 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition"
+              className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition"
             >
               {TOOL_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -197,13 +197,13 @@ export default function BatchRequestPage() {
 
           {/* Batch Type Selection */}
           <div className="space-y-3">
-            <label className="block text-sm font-semibold text-white">
+            <label className="block text-sm font-semibold text-gray-900">
               Batch Type <span className="text-red-500">*</span>
             </label>
             <select
               value={batchType}
               onChange={(e) => setBatchType(e.target.value as typeof batchType)}
-              className="w-full rounded-xl border border-zinc-800/60 bg-zinc-900/50 px-4 py-3 text-white placeholder-zinc-500 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition"
+              className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-gray-900 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition"
             >
               {BATCH_TYPE_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -216,10 +216,10 @@ export default function BatchRequestPage() {
           {/* Accounts Section */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <label className="block text-sm font-semibold text-white">
+              <label className="block text-sm font-semibold text-gray-900">
                 Accounts <span className="text-red-500">*</span>
               </label>
-              <span className="text-xs text-zinc-400">
+              <span className="text-xs text-gray-500">
                 {accounts.length} / 10
               </span>
             </div>
@@ -228,11 +228,11 @@ export default function BatchRequestPage() {
               {accounts.map((account) => (
                 <div
                   key={account.id}
-                  className="rounded-xl border border-zinc-800/60 bg-zinc-900/30 p-5 space-y-4"
+                  className="rounded-xl border bg-white p-5 shadow-sm space-y-4"
                 >
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-medium text-zinc-400 mb-2">
+                      <label className="block text-xs font-medium text-gray-500 mb-2">
                         Target Name <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -240,11 +240,11 @@ export default function BatchRequestPage() {
                         value={account.targetName}
                         onChange={(e) => updateAccount(account.id, "targetName", e.target.value)}
                         placeholder="e.g., John Smith"
-                        className="w-full rounded-lg border border-zinc-800/60 bg-zinc-900/50 px-3 py-2 text-sm text-white placeholder-zinc-600 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition"
+                        className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-zinc-400 mb-2">
+                      <label className="block text-xs font-medium text-gray-500 mb-2">
                         Target Company <span className="text-red-500">*</span>
                       </label>
                       <input
@@ -252,13 +252,13 @@ export default function BatchRequestPage() {
                         value={account.targetCompany}
                         onChange={(e) => updateAccount(account.id, "targetCompany", e.target.value)}
                         placeholder="e.g., Acme Corp"
-                        className="w-full rounded-lg border border-zinc-800/60 bg-zinc-900/50 px-3 py-2 text-sm text-white placeholder-zinc-600 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition"
+                        className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-zinc-400 mb-2">
+                    <label className="block text-xs font-medium text-gray-500 mb-2">
                       Target Role
                     </label>
                     <input
@@ -266,13 +266,13 @@ export default function BatchRequestPage() {
                       value={account.targetRole}
                       onChange={(e) => updateAccount(account.id, "targetRole", e.target.value)}
                       placeholder="e.g., VP Sales"
-                      className="w-full rounded-lg border border-zinc-800/60 bg-zinc-900/50 px-3 py-2 text-sm text-white placeholder-zinc-600 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition"
+                      className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition"
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-xs font-medium text-zinc-400 mb-2">
+                      <label className="block text-xs font-medium text-gray-500 mb-2">
                         LinkedIn URL
                       </label>
                       <input
@@ -280,11 +280,11 @@ export default function BatchRequestPage() {
                         value={account.linkedinUrl}
                         onChange={(e) => updateAccount(account.id, "linkedinUrl", e.target.value)}
                         placeholder="https://linkedin.com/in/..."
-                        className="w-full rounded-lg border border-zinc-800/60 bg-zinc-900/50 px-3 py-2 text-sm text-white placeholder-zinc-600 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition"
+                        className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-zinc-400 mb-2">
+                      <label className="block text-xs font-medium text-gray-500 mb-2">
                         Company URL
                       </label>
                       <input
@@ -292,7 +292,7 @@ export default function BatchRequestPage() {
                         value={account.targetCompanyUrl}
                         onChange={(e) => updateAccount(account.id, "targetCompanyUrl", e.target.value)}
                         placeholder="https://acmecorp.com"
-                        className="w-full rounded-lg border border-zinc-800/60 bg-zinc-900/50 px-3 py-2 text-sm text-white placeholder-zinc-600 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition"
+                        className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition"
                       />
                     </div>
                   </div>
@@ -301,7 +301,7 @@ export default function BatchRequestPage() {
                     <button
                       type="button"
                       onClick={() => removeAccount(account.id)}
-                      className="mt-2 flex items-center gap-2 text-xs text-red-500 hover:text-red-400"
+                      className="mt-2 flex items-center gap-2 text-xs text-red-500 hover:text-red-600"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                       Remove
@@ -315,7 +315,7 @@ export default function BatchRequestPage() {
               <button
                 type="button"
                 onClick={addAccount}
-                className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-zinc-800/60 py-3 text-sm font-medium text-zinc-400 hover:border-zinc-700 hover:text-zinc-300 transition"
+                className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-gray-300 py-3 text-sm font-medium text-gray-500 hover:border-gray-400 hover:text-gray-700 transition"
               >
                 <Plus className="h-4 w-4" />
                 Add Account
@@ -324,11 +324,11 @@ export default function BatchRequestPage() {
           </div>
 
           {/* Shared Context Section */}
-          <div className="space-y-4 rounded-xl border border-zinc-800/60 bg-zinc-900/30 p-5">
-            <h3 className="text-sm font-semibold text-white">Shared Context</h3>
+          <div className="space-y-4 rounded-xl border bg-white p-5 shadow-sm">
+            <h3 className="text-sm font-semibold text-gray-900">Shared Context</h3>
 
             <div>
-              <label className="block text-xs font-medium text-zinc-400 mb-2">
+              <label className="block text-xs font-medium text-gray-500 mb-2">
                 Engagement Type <span className="text-red-500">*</span>
               </label>
               <select
@@ -336,7 +336,7 @@ export default function BatchRequestPage() {
                 onChange={(e) =>
                   updateSharedContext("engagementType", e.target.value as any)
                 }
-                className="w-full rounded-lg border border-zinc-800/60 bg-zinc-900/50 px-3 py-2 text-sm text-white placeholder-zinc-500 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition"
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition"
               >
                 {ENGAGEMENT_TYPE_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
@@ -347,7 +347,7 @@ export default function BatchRequestPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-zinc-400 mb-2">
+              <label className="block text-xs font-medium text-gray-500 mb-2">
                 Additional Notes
               </label>
               <div className="relative">
@@ -356,8 +356,8 @@ export default function BatchRequestPage() {
                   onChange={(e) => updateSharedContext("additionalNotes", e.target.value)}
                   placeholder="Any additional context for the batch (optional)"
                   rows={4}
-                  className={`w-full rounded-lg border bg-zinc-900/50 px-3 py-2 text-sm text-white placeholder-zinc-600 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition resize-none ${
-                    isListening ? "border-red-500/50" : "border-zinc-800/60"
+                  className={`w-full rounded-lg border bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition resize-none ${
+                    isListening ? "border-red-300" : "border-gray-300"
                   } ${voiceSupported ? "pr-10" : ""}`}
                 />
                 {voiceSupported && (
@@ -367,8 +367,8 @@ export default function BatchRequestPage() {
                     title={isListening ? "Stop listening" : "Voice input"}
                     className={`absolute right-2 top-2 rounded-md p-1.5 transition ${
                       isListening
-                        ? "bg-red-900/50 text-red-400 animate-pulse"
-                        : "bg-zinc-800 text-zinc-500 hover:bg-zinc-700 hover:text-zinc-300"
+                        ? "bg-red-50 text-red-500 animate-pulse"
+                        : "bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-600"
                     }`}
                   >
                     {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
@@ -379,8 +379,8 @@ export default function BatchRequestPage() {
           </div>
 
           {/* Run Cost Display */}
-          <div className="rounded-lg border border-emerald-500/20 bg-emerald-950/30 p-4">
-            <div className="flex items-center gap-2 text-sm text-emerald-300">
+          <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4">
+            <div className="flex items-center gap-2 text-sm text-emerald-700">
               <Zap className="h-4 w-4" />
               This will use <span className="font-semibold">{runsCost}</span> run
               {runsCost !== 1 ? "s" : ""} from your balance
@@ -389,9 +389,9 @@ export default function BatchRequestPage() {
 
           {/* Error Message */}
           {error && (
-            <div className="flex items-start gap-3 rounded-lg border border-red-500/20 bg-red-950/30 p-4">
+            <div className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4">
               <AlertCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
-              <p className="text-sm text-red-300">{error}</p>
+              <p className="text-sm text-red-700">{error}</p>
             </div>
           )}
 
@@ -400,7 +400,7 @@ export default function BatchRequestPage() {
             <button
               type="button"
               onClick={() => router.push("/requests")}
-              className="flex-1 rounded-lg border border-zinc-800/60 px-4 py-3 text-sm font-medium text-zinc-300 hover:bg-zinc-900/50 transition"
+              className="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
             >
               Cancel
             </button>

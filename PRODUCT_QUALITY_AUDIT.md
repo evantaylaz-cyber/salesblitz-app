@@ -259,13 +259,20 @@ The Phase 2-6 plan directly addresses most P0 and P1 issues. The P2s should be f
 
 ### Updated Summary Stats
 
-| Severity | Original | Remaining |
-|----------|----------|-----------|
-| P0       | 2        | 1 (review page endpoint) |
-| P1       | 12       | 7         |
-| P2       | 13       | 11        |
-| P3       | 4        | 4         |
-| **Total** | **31**  | **23**    |
+NOTE: Several items marked as remaining were discovered to already be fixed during the late session audit:
+- P0 review page endpoint: FIXED (dedicated `/api/practice/session?id=` endpoint exists and review page uses it)
+- P1 practice session doesn't link to RunRequest: FIXED (line 296 of practice/start stores `runRequestId`)
+- P1 "Practice Again" button doesn't carry context: FIXED (carries company, meetingType, runRequestId)
+- P2 scoring prompt doesn't adapt to meeting type: FIXED (separate interview and sales rubrics in buildScoringPrompt)
+- P2 stale session cleanup: FIXED (cleanupStaleSessions function exists and is called from practice/start)
+
+| Severity | Original | After Prior Session | After This Session |
+|----------|----------|--------------------|--------------------|
+| P0       | 2        | 1                  | 0                  |
+| P1       | 12       | 7                  | 5                  |
+| P2       | 13       | 11                 | 8                  |
+| P3       | 4        | 4                  | 4                  |
+| **Total** | **31**  | **23**             | **17**             |
 
 ### Files Changed (ready for commit via GitHub Desktop)
 
@@ -282,3 +289,294 @@ The Phase 2-6 plan directly addresses most P0 and P1 issues. The P2s should be f
 
 **New (1):**
 - `src/components/AppNav.tsx` — Shared navigation component
+
+---
+
+## Fixes Applied (Mar 8, 2026 late session: Copy & Design Consistency Pass)
+
+### Rule 3B Em Dash Sweep (11 files, all user-facing em dashes eliminated)
+
+All user-facing em dashes replaced with periods, commas, colons, or semicolons per Rule 3B. Only code comments remain (acceptable).
+
+| File | Count | Examples |
+|------|-------|---------|
+| `request/page.tsx` | 3 | "Optional — helps us" -> "Optional. Helps us" |
+| `request/[id]/clarify/page.tsx` | 2 | "(you can skip some — we'll do our best)" -> "(you can skip some, we'll do our best)" |
+| `knowledge-base/page.tsx` | 2 | "methodology notes — the more" -> "methodology notes. The more" |
+| `billing/page.tsx` | 1 | "Payment past due — please" -> "Payment past due. Please update your payment method." |
+| `requests/[id]/page.tsx` | 1 | "Network error — retry" -> "Network error. Retry failed." |
+| `onboarding/ai-setup/page.tsx` | 1 | "Skip — I'll add docs later" -> "Skip for now, I'll add docs later" |
+
+**Not changed:** `dashboard/page.tsx` line 554 uses `"—"` as a data-missing placeholder (standard UI convention, not prose).
+
+### Rule 3B Banned Word Sweep
+
+Grepped all .tsx files for: delve, robust, streamline, comprehensive, furthermore, notably, nuanced, multifaceted, pivotal, paradigm, foster, utilize, facilitate, landscape (non-literal).
+
+**Result: Clean.** Only 2 hits, both acceptable:
+- `profile/page.tsx` line 1014: placeholder text showing examples of banned words (intentional)
+- `dashboard/page.tsx` line 116: "competitive landscape" (literal sales term, not AI filler)
+
+### P2 Fix: Batch Pages Dark Theme Inconsistency
+
+Both batch-related pages used a dark `zinc-950` theme while every other page in the app uses `bg-gray-50` light theme. Full rewrite of both files:
+
+**`request/batch/page.tsx`** (427 lines rewritten):
+- `bg-zinc-950 text-white` -> `bg-gray-50`
+- `border-zinc-800/60 bg-zinc-900/50` inputs -> `border-gray-300 bg-white`
+- `text-zinc-400` -> `text-gray-500`
+- `placeholder-zinc-600` -> `placeholder-gray-400`
+- `bg-emerald-950/30` -> `bg-emerald-50`, `text-emerald-300` -> `text-emerald-700`
+- `bg-red-950/30` -> `bg-red-50`, `text-red-300` -> `text-red-700`
+- Spinner `style={{ color: "#6366f1" }}` -> `text-emerald-700`
+
+**`batch/[batchId]/page.tsx`** (353 lines rewritten):
+- Same dark-to-light conversion across all elements
+- STATUS_COLOR map: `bg-blue-950/40 border-blue-500/20` -> `bg-blue-50 border-blue-200`
+- Progress indicators, step cards, synthesis highlights, batch assets all converted
+
+### Component Audit (Clean)
+
+All shared components (`VoiceTextarea.tsx`, `OnboardingChatBubble.tsx`, `AppNav.tsx`) verified: no banned words, no user-facing em dashes, consistent design patterns.
+
+### Full Page Audit Summary
+
+All 27 page.tsx files in `src/app/` audited. Pages verified clean (no issues):
+subscribe, requests, practice (lobby), teams/[teamId], practice/[sessionId]/review, teams/invite, admin, onboarding-chat.
+
+### Updated Summary Stats
+
+| Severity | Original | After Prior Session | After This Session |
+|----------|----------|--------------------|--------------------|
+| P0       | 2        | 1                  | 1                  |
+| P1       | 12       | 7                  | 7                  |
+| P2       | 13       | 11                 | 10 (-1: batch theme) |
+| P3       | 4        | 4                  | 4                  |
+| **Total** | **31**  | **23**             | **22**             |
+
+### TypeScript Error Fix: 18 implicit `any` type annotations added
+
+All 18 TS7006 "implicit any" errors fixed across 7 files. These were Prisma query result callbacks missing explicit type annotations.
+
+| File | Errors Fixed |
+|------|-------------|
+| `api/analytics/route.ts` | 4 (runsByTool, runsByStatus, topCompanies, recentRequests maps) |
+| `api/batch-requests/[batchId]/route.ts` | 3 (normalizedChildren map + 2 filter callbacks) |
+| `api/knowledge-base/route.ts` | 2 (teamIds map + documents map) |
+| `api/playbooks/route.ts` | 1 (requests map) |
+| `api/requests/route.ts` | 2 (teamIds map + normalized map) |
+| `api/teams/[teamId]/members/route.ts` | 1 (members map) |
+| `api/teams/route.ts` | 3 (memberships map + pendingInvites map + tx transaction callback) |
+| `lib/runs.ts` | 2 (eligiblePacks filter x2) |
+
+**Result: 20 TS errors -> 2 Prisma phantom errors** (only `PrismaClient` and `Prisma` imports, require `prisma generate` which needs DB connection).
+
+### P2 Fix: Dynamic subtitle per tool on request form
+
+**`request/page.tsx`** — Replaced generic "Fill in the details to start your blitz" with tool-specific subtitles:
+- Interview Outreach: "Tell us about the role and who you want to reach. We'll build your outreach package."
+- Interview Prep: "Give us everything you've got so we can build your interview playbook."
+- Prospect Outreach: "Drop the target account and contact. We'll build your outreach package."
+- Prospect Prep: "Tell us who you're meeting with. We'll research them and build your game plan."
+- Deal Audit: "Walk us through the deal. We'll qualify it and find the gaps."
+- Champion Builder: "Tell us about your champion. We'll arm them to sell internally."
+
+### P2 Fix: Engagement context expanded by default
+
+**`request/page.tsx`** — Changed `engagementExpanded` default from `false` to `true`. Meeting date, engagement type, and prior interactions are now visible by default instead of hidden behind a collapsible. These are critical context inputs that drive output quality.
+
+### Files Changed (ready for commit via GitHub Desktop)
+
+**Modified (16):**
+- `src/app/request/page.tsx` — 3 em dash fixes + dynamic subtitle + engagement expanded by default
+- `src/app/request/[id]/clarify/page.tsx` — 2 em dash fixes
+- `src/app/knowledge-base/page.tsx` — 2 em dash fixes
+- `src/app/billing/page.tsx` — 1 em dash fix
+- `src/app/requests/[id]/page.tsx` — 1 em dash fix
+- `src/app/onboarding/ai-setup/page.tsx` — 1 em dash fix
+- `src/app/request/batch/page.tsx` — Full light theme rewrite
+- `src/app/batch/[batchId]/page.tsx` — Full light theme rewrite
+- `src/app/api/analytics/route.ts` — 4 type annotations
+- `src/app/api/batch-requests/[batchId]/route.ts` — 3 type annotations
+- `src/app/api/knowledge-base/route.ts` — 2 type annotations
+- `src/app/api/playbooks/route.ts` — 1 type annotation
+- `src/app/api/requests/route.ts` — 2 type annotations
+- `src/app/api/teams/[teamId]/members/route.ts` — 1 type annotation
+- `src/app/api/teams/route.ts` — 3 type annotations
+- `src/lib/runs.ts` — 2 type annotations
+
+---
+
+## Fixes Applied (Mar 8, 2026 deep session: Context Pipeline & Profile Gaps)
+
+### P1 Fix: Debrief Capture on Practice Review Page
+
+**Files:** `practice/[sessionId]/review/page.tsx`, `api/practice/session/route.ts`, `prisma/schema.prisma`
+
+Added self-debrief textarea to the practice review page. After seeing their score and coaching feedback, users can now write their own reflections: what landed, what felt shaky, what to work on next time. Notes save to `PracticeSession.userNotes` (new column, TEXT, max 5K chars).
+
+- DB migration applied: `ALTER TABLE "PracticeSession" ADD COLUMN "userNotes" TEXT`
+- Schema updated with `userNotes String? @db.Text`
+- GET endpoint now returns `userNotes` field
+- New PATCH handler on `/api/practice/session?id=xxx` saves notes
+- Review page UI: textarea with save button, character counter, saved confirmation badge
+- Notes placeholder guides the user: "What landed? What felt shaky? What do you want to nail next time?"
+
+This is the critical feedback loop for the learning flywheel (Phase 5). User notes flow into the debrief synthesis that shapes future practice personas.
+
+### P1 Fix: Profile API Whitelist Expanded (14 → 31 fields)
+
+**File:** `api/profile/route.ts`
+
+The PUT whitelist was missing 17 schema fields. Onboarding chat and manual profile editor couldn't update:
+- `sellingPhilosophy`, `sellerArchetype` (selling methodology)
+- `careerNarrative`, `targetRoleTypes`, `keyStrengths`, `interviewHistory` (career context)
+- `icpDefinitions`, `territoryFocus`, `currentQuotaContext` (territory/ICP)
+- `caseStudies` (sales assets)
+- `writingStyle`, `bannedPhrases`, `signaturePatterns` (communication style)
+- `lifecycleStage`, `onboardingDepth` (lifecycle)
+
+All 31 UserProfile fields are now whitelisted.
+
+### P1 Fix: Profile Page Missing ICP Definitions & Case Studies
+
+**File:** `profile/page.tsx`
+
+Added two new collapsible sections to the manual profile editor:
+
+**ICP Definitions Section:**
+- Add/remove ICP cards with: industry/vertical, company size, buyer persona/title, common pains
+- Stored as `icpDefinitions` JSON array on UserProfile
+- Used by prospect prep and practice mode to generate realistic buyer personas
+
+**Case Studies Section:**
+- Add/remove case study cards with: customer name, industry, challenge, solution, result, customer quote
+- Stored as `caseStudies` JSON array on UserProfile
+- Used in outreach sequences, interview talk tracks, and practice scenarios
+- Copy guides users: "Add your strongest customer stories. These get woven into outreach sequences, interview talk tracks, and practice mode scenarios."
+
+### P2 Fix: Dashboard "Practice Now" CTA for Completed Blitzes
+
+**File:** `dashboard/page.tsx`
+
+Completed blitz rows in the Recent Blitzes table now show a "Practice" button instead of the generic chevron. Clicking it launches practice mode directly with autostart, pre-filled company name, and the blitz's runRequestId for context loading. Excludes competitor_research tool (not practicable).
+
+### P2 Fix: Consulting CTA Em Dash in Mailto Subject
+
+**File:** `dashboard/page.tsx`
+
+Fixed encoded em dash (`%E2%80%93`) in mailto subject line. Replaced with hyphen per Rule 3B.
+
+### P2 Fix: Practice Lobby "Video Avatar" Copy
+
+Verified: this copy no longer exists in the codebase. Already fixed in a prior session.
+
+### Updated Summary Stats
+
+Additional items discovered already fixed during this session:
+- P1 No Target entity creation on submission: FIXED (POST /api/requests/route.ts lines 162-184 does Target upsert)
+- P2 Practice lobby "video avatar" copy: FIXED (copy removed in prior session)
+
+| Severity | Original | After Prior Sessions | After This Session |
+|----------|----------|---------------------|--------------------|
+| P0       | 2        | 0                   | 0                  |
+| P1       | 12       | 5                   | 2                  |
+| P2       | 13       | 8                   | 5                  |
+| P3       | 4        | 4                   | 4                  |
+| **Total** | **31**  | **17**              | **11**             |
+
+### Remaining Open Items
+
+**P1 (2):**
+1. Message route doesn't build on accumulated context (Phase 5, needs debrief synthesis pipeline)
+2. Session end doesn't update Target.accumulatedIntel (Phase 5, needs Target intelligence accumulation)
+
+**P2 (5):**
+1. Female avatar ID unverified (needs live test)
+2. Chroma key untested with real avatar (needs live test)
+3. Gender detection uses hardcoded name list (should use API-returned gender field)
+4. No panel mode speaker indicator (Phase 4)
+5. Onboarding chat vs manual profile disconnected (depth calculation based on chat progress, not field completeness)
+
+**P3 (4):**
+1. Timer doesn't pause when avatar speaks
+2. No "run from previous" option on request form
+3. Tool cards don't show recent activity counts
+4. Mobile nav is basic
+
+### Files Changed (ready for commit via GitHub Desktop)
+
+**Modified (5):**
+- `src/app/practice/[sessionId]/review/page.tsx` — Debrief textarea, save function, notes state
+- `src/app/api/practice/session/route.ts` — Added `userNotes` to GET select, new PATCH handler
+- `src/app/api/profile/route.ts` — Expanded whitelist from 14 to 31 fields
+- `src/app/profile/page.tsx` — ICP definitions + case studies sections, new interfaces & defaults
+- `src/app/dashboard/page.tsx` — Practice Now button on completed blitz rows, em dash fix in mailto
+
+**Schema (1):**
+- `prisma/schema.prisma` — Added `userNotes` field to PracticeSession model
+
+**DB Migration (1):**
+- Applied via Supabase: `add_practice_session_user_notes`
+
+### P2 Fix: Onboarding Depth Auto-Computed from Field Completeness
+
+**File:** `api/profile/route.ts`
+
+Previously, `onboardingDepth` was only set by the onboarding chat. Users who filled in the manual profile editor never got their depth updated, which meant the dashboard kept showing "Complete your profile" even when the profile was thorough.
+
+Added `computeProfileDepth()` function that calculates depth (0-4) from actual field completeness:
+- Depth 1: Company essentials (name + product)
+- Depth 2: Sales assets (deal stories or value props) or methodology (selling philosophy)
+- Depth 3: Career/territory context (career narrative, ICP definitions, or territory focus)
+- Depth 4: Writing style (writing style, banned phrases, or signature patterns)
+
+On every profile PUT, the computed depth is compared to the current depth, and the higher value is persisted. This means both the chat and manual editor contribute to the same depth calculation.
+
+### P2 Fix: Tool Cards Show Recent Run Counts
+
+**File:** `dashboard/page.tsx`
+
+Each tool card now shows a subtle "X runs" count based on the user's recent requests for that tool. Gives users a quick sense of tool usage history without cluttering the card.
+
+### Updated Summary Stats (Final)
+
+| Severity | Original | After All Sessions |
+|----------|----------|--------------------|
+| P0       | 2        | 0                  |
+| P1       | 12       | 2                  |
+| P2       | 13       | 3                  |
+| P3       | 4        | 3                  |
+| **Total** | **31**  | **8**              |
+
+### Remaining Open Items (Final)
+
+**P1 (2):**
+1. Message route doesn't build on accumulated context (Phase 5, needs debrief synthesis pipeline)
+2. Session end doesn't update Target.accumulatedIntel (Phase 5, needs Target intelligence accumulation)
+
+**P2 (3):**
+1. Female avatar ID unverified (needs live test)
+2. Chroma key untested with real avatar (needs live test)
+3. Gender detection uses hardcoded name list (should use API-returned gender field)
+
+**P3 (3):**
+1. Timer doesn't pause when avatar speaks
+2. No "run from previous" option on request form
+3. Mobile nav is basic
+
+### All Files Changed This Session (ready for commit via GitHub Desktop)
+
+**Modified (6):**
+- `src/app/practice/[sessionId]/review/page.tsx` — Debrief textarea with save, notes state, PenLine icon
+- `src/app/api/practice/session/route.ts` — `userNotes` in GET select, new PATCH handler for saving notes
+- `src/app/api/profile/route.ts` — Expanded whitelist (14->31 fields), auto-computed depth from field completeness
+- `src/app/profile/page.tsx` — ICP definitions section, case studies section, new interfaces (ICPDefinition, CaseStudy)
+- `src/app/dashboard/page.tsx` — Practice Now button on completed blitzes, tool run counts, em dash fix in mailto
+- `PRODUCT_QUALITY_AUDIT.md` — Full session documentation
+
+**Schema (1):**
+- `prisma/schema.prisma` — Added `userNotes` field to PracticeSession model
+
+**DB Migration (1):**
+- Applied via Supabase: `add_practice_session_user_notes`

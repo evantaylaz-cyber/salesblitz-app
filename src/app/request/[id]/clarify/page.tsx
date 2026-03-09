@@ -337,7 +337,7 @@ export default function ClarifyPage() {
             {answeredCount} of {questions.length} answered
             {!allAnswered && (
               <span className="ml-2 text-xs text-gray-400">
-                (you can skip some — we&apos;ll do our best)
+                (you can skip some, we&apos;ll do our best)
               </span>
             )}
           </div>
@@ -365,7 +365,7 @@ export default function ClarifyPage() {
         {/* Skip option */}
         <div className="mt-4 text-center">
           <p className="text-xs text-gray-400">
-            Don&apos;t have time? No worries — if you don&apos;t respond within
+            Don&apos;t have time? No worries. If you don&apos;t respond within
             24 hours, we&apos;ll proceed with our best analysis.
           </p>
         </div>

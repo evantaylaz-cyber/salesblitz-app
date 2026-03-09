@@ -59,6 +59,7 @@ export default function PracticeSessionPage() {
   const [ending, setEnding] = useState(false);
   const [currentSpeaker, setCurrentSpeaker] = useState<string | null>(null);
   const [isPanelMode, setIsPanelMode] = useState(false);
+  const [showMobileTranscript, setShowMobileTranscript] = useState(false);
 
   // Refs
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -491,7 +492,7 @@ export default function PracticeSessionPage() {
       {/* Top Bar */}
       <div className="flex items-center justify-between border-b border-gray-800 px-6 py-3">
         <div className="flex items-center gap-3">
-          <button onClick={() => router.push("/practice")} className="text-gray-400 hover:text-white">
+          <button onClick={() => router.push("/practice")} className="text-gray-400 hover:text-white transition">
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div className="flex items-center gap-2">
@@ -500,9 +501,15 @@ export default function PracticeSessionPage() {
               {avatarReady ? "Live" : "Connecting..."}
             </span>
           </div>
+          {persona && (
+            <div className="hidden sm:flex items-center gap-2 ml-2 pl-3 border-l border-gray-700">
+              <span className="text-sm font-medium text-gray-200">{persona.name}</span>
+              <span className="text-xs text-gray-500">{persona.title}, {persona.company}</span>
+            </div>
+          )}
         </div>
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1.5 text-sm text-gray-400">
+          <div className="flex items-center gap-1.5 text-sm text-gray-400 tabular-nums">
             <Clock className="h-4 w-4" />
             {formatTime(elapsed)}
           </div>
@@ -572,6 +579,18 @@ export default function PracticeSessionPage() {
             <span className="text-sm text-gray-400">
               {isRecording ? "Listening... speak naturally" : isProcessing ? "Thinking..." : "Click mic to speak"}
             </span>
+            {/* Mobile transcript toggle */}
+            <button
+              onClick={() => setShowMobileTranscript(!showMobileTranscript)}
+              className="lg:hidden flex items-center gap-1.5 rounded-lg border border-gray-700 px-3 py-2 text-sm text-gray-400 hover:text-white hover:border-gray-500 transition"
+            >
+              <MessageSquare className="h-4 w-4" />
+              {transcript.length > 0 && (
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-600 text-xs text-white">
+                  {transcript.length}
+                </span>
+              )}
+            </button>
           </div>
 
           {error && (
@@ -582,13 +601,19 @@ export default function PracticeSessionPage() {
           )}
         </div>
 
-        {/* Transcript Panel */}
-        <div className="w-96 border-l border-gray-800 flex flex-col">
-          <div className="border-b border-gray-800 px-4 py-3">
+        {/* Transcript Panel — desktop: sidebar, mobile: overlay */}
+        <div className={`${showMobileTranscript ? "fixed inset-0 z-40 bg-gray-900" : "hidden"} lg:relative lg:block lg:w-96 border-l border-gray-800 flex flex-col`}>
+          <div className="border-b border-gray-800 px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <MessageSquare className="h-4 w-4 text-gray-400" />
               <span className="text-sm font-medium text-gray-300">Transcript</span>
             </div>
+            <button
+              onClick={() => setShowMobileTranscript(false)}
+              className="lg:hidden text-sm text-gray-400 hover:text-white transition"
+            >
+              Close
+            </button>
           </div>
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {transcript.length === 0 && (

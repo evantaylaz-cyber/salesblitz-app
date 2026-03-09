@@ -33,7 +33,7 @@ export async function GET() {
       },
     });
 
-    const teams = memberships.map((m) => ({
+    const teams = memberships.map((m: any) => ({
       id: m.team.id,
       name: m.team.name,
       slug: m.team.slug,
@@ -65,7 +65,7 @@ export async function GET() {
 
     return NextResponse.json({
       teams,
-      pendingInvites: pendingInvites.map((inv) => ({
+      pendingInvites: pendingInvites.map((inv: any) => ({
         id: inv.id,
         teamId: inv.team.id,
         teamName: inv.team.name,
@@ -117,7 +117,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Create team + owner membership in a transaction
-    const team = await prisma.$transaction(async (tx) => {
+    const team = await prisma.$transaction(async (tx: any) => {
       const newTeam = await tx.team.create({
         data: {
           name: name.trim(),

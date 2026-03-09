@@ -47,7 +47,7 @@ export async function consumeRun(
     user.subscriptionStatus === "active" &&
     canAccessTool(user.currentTier, tool.minimumTier);
 
-  const eligiblePacks = user.runPacks.filter((pack) => {
+  const eligiblePacks = user.runPacks.filter((pack: any) => {
     if (pack.allowedTools.length === 0) {
       return hasSubscriptionAccess;
     }
@@ -154,7 +154,7 @@ async function consumeTeamRun(
     canAccessTool(team.currentTier, tool.minimumTier);
 
   // Try team packs first
-  const eligiblePacks = team.runPacks.filter((pack) => {
+  const eligiblePacks = team.runPacks.filter((pack: any) => {
     if (pack.allowedTools.length === 0) return hasSubscriptionAccess;
     return pack.allowedTools.includes(toolName);
   });

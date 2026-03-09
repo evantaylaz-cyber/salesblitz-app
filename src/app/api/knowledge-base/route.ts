@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
         where: { userId: user.id, inviteStatus: "accepted" },
         select: { teamId: true },
       });
-      const teamIds = teamMemberships.map((m) => m.teamId);
+      const teamIds = teamMemberships.map((m: any) => m.teamId);
 
       whereClause = {
         OR: [
@@ -77,7 +77,7 @@ export async function GET(req: NextRequest) {
     });
 
     // Add content preview (first 200 chars) and length
-    const docs = documents.map((doc) => ({
+    const docs = documents.map((doc: any) => ({
       ...doc,
       contentPreview: doc.content.slice(0, 200) + (doc.content.length > 200 ? "..." : ""),
       contentLength: doc.content.length,

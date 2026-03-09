@@ -73,7 +73,7 @@ export default function BillingPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <AppNav currentPage="/dashboard" />
+      <AppNav currentPage="/billing" />
 
       <main className="mx-auto max-w-4xl px-6 py-10 space-y-8">
         {/* Current Plan */}
@@ -110,7 +110,7 @@ export default function BillingPage() {
               )}
               {user.subscriptionStatus === "past_due" && (
                 <p className="text-sm text-red-600 font-medium">
-                  Payment past due — please update your payment method.
+                  Payment past due. Please update your payment method.
                 </p>
               )}
             </div>

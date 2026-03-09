@@ -236,14 +236,6 @@ function CompanyCard({ group }: { group: CompanyGroup }) {
               <ExternalLink className="h-3 w-3" />
             </a>
           )}
-          {false && (
-            <a
-              href="#"
-              className="hidden"
-            >
-              <ExternalLink className="h-3 w-3" />
-            </a>
-          )}
           <button
             onClick={() => setExpanded(!expanded)}
             className="text-xs text-gray-400 hover:text-gray-600 px-2 py-1"
@@ -272,7 +264,7 @@ function CompanyCard({ group }: { group: CompanyGroup }) {
                 <span className="text-sm text-gray-700">
                   {run.targetName}
                   {run.targetRole ? (
-                    <span className="text-gray-400"> — {run.targetRole}</span>
+                    <span className="text-gray-400">, {run.targetRole}</span>
                   ) : null}
                 </span>
                 <span className="text-xs text-gray-400">

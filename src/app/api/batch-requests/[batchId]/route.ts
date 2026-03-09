@@ -43,7 +43,7 @@ export async function GET(
     }
 
     // Normalize assets for each child request
-    const normalizedChildren = batchJob.childRequests.map((r) => ({
+    const normalizedChildren = batchJob.childRequests.map((r: any) => ({
       ...r,
       assets: normalizeAssets(r.assets, r.toolName),
     }));
@@ -51,10 +51,10 @@ export async function GET(
     // Calculate progress
     const totalChildren = normalizedChildren.length;
     const completedChildren = normalizedChildren.filter(
-      (r) => r.status === "ready" || r.status === "delivered"
+      (r: any) => r.status === "ready" || r.status === "delivered"
     ).length;
     const failedChildren = normalizedChildren.filter(
-      (r) => r.status === "failed"
+      (r: any) => r.status === "failed"
     ).length;
 
     const batchSteps = (batchJob.steps as any[]) || [];

@@ -245,7 +245,7 @@ export default function KnowledgeBasePage() {
           <p className="text-sm text-emerald-900">
             <strong>Your Knowledge Base</strong> feeds directly into every run.
             Add product docs, competitive intel, ICP definitions, deal stories, or
-            methodology notes — the more context you provide, the more personalized
+            methodology notes. The more context you provide, the more personalized
             and accurate your deliverables become.
           </p>
         </div>
@@ -431,7 +431,7 @@ export default function KnowledgeBasePage() {
                         type="text"
                         value={formTitle}
                         onChange={(e) => setFormTitle(e.target.value)}
-                        placeholder="e.g., Product Overview — Enterprise Features"
+                        placeholder="e.g., Product Overview: Enterprise Features"
                         className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                         autoFocus
                       />

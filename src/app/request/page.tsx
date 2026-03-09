@@ -26,13 +26,13 @@ import {
 } from "lucide-react";
 import VoiceTextarea from "@/components/VoiceTextarea";
 
-const TOOL_INFO: Record<string, { name: string; category: "interview" | "prospect" | "deal" | "practice" }> = {
-  interview_outreach: { name: "Interview Outreach", category: "interview" },
-  interview_prep: { name: "Interview Prep", category: "interview" },
-  prospect_outreach: { name: "Prospect Outreach", category: "prospect" },
-  prospect_prep: { name: "Prospect Prep", category: "prospect" },
-  deal_audit: { name: "Deal Audit", category: "deal" },
-  champion_builder: { name: "Champion Builder", category: "deal" },
+const TOOL_INFO: Record<string, { name: string; category: "interview" | "prospect" | "deal" | "practice"; subtitle: string }> = {
+  interview_outreach: { name: "Interview Outreach", category: "interview", subtitle: "Tell us about the role and who you want to reach. We'll build your outreach package." },
+  interview_prep: { name: "Interview Prep", category: "interview", subtitle: "Give us everything you've got so we can build your interview playbook." },
+  prospect_outreach: { name: "Prospect Outreach", category: "prospect", subtitle: "Drop the target account and contact. We'll build your outreach package." },
+  prospect_prep: { name: "Prospect Prep", category: "prospect", subtitle: "Tell us who you're meeting with. We'll research them and build your game plan." },
+  deal_audit: { name: "Deal Audit", category: "deal", subtitle: "Walk us through the deal. We'll qualify it and find the gaps." },
+  champion_builder: { name: "Champion Builder", category: "deal", subtitle: "Tell us about your champion. We'll arm them to sell internally." },
   // practice_mode is NOT a blitz tool — it routes directly to /practice
 };
 
@@ -85,7 +85,7 @@ export default function RequestPage() {
   }>>([]);
 
   // UI state
-  const [engagementExpanded, setEngagementExpanded] = useState(false);
+  const [engagementExpanded, setEngagementExpanded] = useState(true);
   const [panelExpanded, setPanelExpanded] = useState(false);
   const [fetchingJd, setFetchingJd] = useState(false);
   const [fetchJdError, setFetchJdError] = useState<string | null>(null);
@@ -154,7 +154,7 @@ export default function RequestPage() {
         setFetchJdError(data.error || "Failed to extract job description");
       }
     } catch {
-      setFetchJdError("Network error — try pasting the JD manually");
+      setFetchJdError("Network error. Try pasting the JD manually.");
     } finally {
       setFetchingJd(false);
     }
@@ -258,7 +258,7 @@ export default function RequestPage() {
           </button>
           <div>
             <h1 className="text-lg font-bold text-gray-900">{toolInfo.name}</h1>
-            <p className="text-sm text-gray-500">Fill in the details to start your blitz</p>
+            <p className="text-sm text-gray-500">{toolInfo.subtitle}</p>
           </div>
         </div>
       </header>
@@ -333,7 +333,7 @@ export default function RequestPage() {
                   placeholder="https://stripe.com"
                   className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                 />
-                <p className="mt-1 text-xs text-gray-400">Optional — we&apos;ll research them either way</p>
+                <p className="mt-1 text-xs text-gray-400">Optional. We&apos;ll research them either way.</p>
               </div>
             </div>
           </div>
@@ -467,7 +467,7 @@ export default function RequestPage() {
                 value={linkedinText}
                 onChange={setLinkedinText}
                 rows={6}
-                placeholder="Go to their LinkedIn profile → select all (Ctrl+A / Cmd+A) → paste here. Include their About, Experience, Education — everything helps."
+                placeholder="Go to their LinkedIn profile, select all (Ctrl+A / Cmd+A), paste here. Include their About, Experience, Education. Everything helps."
               />
             </div>
           </div>
@@ -482,7 +482,7 @@ export default function RequestPage() {
               <div>
                 <h2 className="text-base font-semibold text-gray-900">Engagement Context</h2>
                 <p className="text-sm text-gray-500">
-                  Optional — helps us tailor the approach and urgency
+                  Optional. Helps us tailor the approach and urgency.
                 </p>
               </div>
               {engagementExpanded ? (
@@ -547,7 +547,7 @@ export default function RequestPage() {
             <div className="rounded-xl border bg-white p-6 shadow-sm">
               <h2 className="text-base font-semibold text-gray-900 mb-1">Job Description</h2>
               <p className="text-sm text-gray-500 mb-4">
-                Paste the JD or drop a link — we&apos;ll extract it automatically.
+                Paste the JD or drop a link. We&apos;ll extract it automatically.
               </p>
 
               {/* Job posting URL with fetch button */}
@@ -753,7 +753,7 @@ export default function RequestPage() {
               <h2 className="text-base font-semibold text-gray-900 mb-1">Account Context</h2>
               <p className="text-sm text-gray-500 mb-4">
                 {isDeal
-                  ? "Describe the deal situation — where it stands, what you're stuck on, what you need to close."
+                  ? "Describe the deal situation: where it stands, what you're stuck on, what you need to close."
                   : "What are you selling? Any context about this account or prospect that would help?"}
               </p>
               <div>
@@ -775,12 +775,14 @@ export default function RequestPage() {
             </div>
           )}
 
-          {/* Case Studies — prospect tools only */}
-          {isProspect && (
+          {/* Case Studies — all tools except interview outreach */}
+          {toolId !== "interview_outreach" && (
             <div className="rounded-xl border bg-white p-6 shadow-sm">
               <h2 className="text-base font-semibold text-gray-900 mb-1">Customer Stories &amp; Case Studies</h2>
               <p className="text-sm text-gray-500 mb-4">
-                Paste any case studies, customer wins, or proof points you want referenced in your outreach and materials. The more specific the better: include metrics, customer names, and outcomes.
+                {isInterview
+                  ? "Paste case studies or customer wins you can reference during your interview. Strong candidates weave in proof points to demonstrate impact."
+                  : "Paste any case studies, customer wins, or proof points you want referenced in your outreach and materials. The more specific the better: include metrics, customer names, and outcomes."}
               </p>
               <div>
                 <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-gray-700">
@@ -794,7 +796,9 @@ export default function RequestPage() {
                   placeholder={"Example:\n\nAccenture - Reduced procurement cycle time by 40% in 6 months. $2.3M annual savings. VP of Procurement quoted: \"This transformed how we buy.\"\n\nDeloitte - 3x pipeline coverage in Q1 after deploying our platform across 12 practice areas. Expanded from pilot to enterprise in 90 days."}
                 />
                 <p className="mt-1.5 text-xs text-gray-400">
-                  These will be woven into your outreach sequence, POV deck, and research brief as social proof.
+                  {isInterview
+                    ? "These will be available for your interview prep materials and practice persona."
+                    : "These will be woven into your outreach sequence, POV deck, and research brief as social proof."}
                 </p>
               </div>
             </div>

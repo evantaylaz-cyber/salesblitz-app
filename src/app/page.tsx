@@ -586,6 +586,9 @@ export default async function LandingPage() {
               <a href="#pricing" className="hover:text-gray-700">
                 Pricing
               </a>
+              <a href="mailto:evan@salesblitz.ai" className="hover:text-gray-700">
+                Contact
+              </a>
             </div>
             <p className="text-sm text-gray-400">
               &copy; {new Date().getFullYear()} Sales Blitz. All rights reserved.

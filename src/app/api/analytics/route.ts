@@ -156,11 +156,11 @@ export async function GET(req: NextRequest) {
       range: rangeDays,
       totalRuns,
       avgCompletionMinutes,
-      runsByTool: runsByTool.map((r) => ({ tool: r.toolName, count: r._count.id })),
-      runsByStatus: runsByStatus.map((r) => ({ status: r.status, count: r._count.id })),
+      runsByTool: runsByTool.map((r: any) => ({ tool: r.toolName, count: r._count.id })),
+      runsByStatus: runsByStatus.map((r: any) => ({ status: r.status, count: r._count.id })),
       dailyRuns,
-      topCompanies: topCompanies.map((c) => ({ company: c.targetCompany, count: c._count.id })),
-      recentRequests: recentRequests.map((r) => ({
+      topCompanies: topCompanies.map((c: any) => ({ company: c.targetCompany, count: c._count.id })),
+      recentRequests: recentRequests.map((r: any) => ({
         id: r.id,
         tool: r.toolName,
         status: r.status,

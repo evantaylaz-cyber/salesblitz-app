@@ -52,7 +52,7 @@ export async function GET() {
 
     // Filter to only requests that have a competitive playbook asset
     const playbooks = requests
-      .map((req) => {
+      .map((req: any) => {
         const assets = req.assets as Record<string, string> | null;
         if (!assets || typeof assets !== "object") return null;
 

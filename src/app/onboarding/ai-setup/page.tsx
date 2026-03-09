@@ -1034,7 +1034,7 @@ export default function AISetupPage() {
                     onClick={skipKB}
                     className="text-sm text-gray-500 hover:text-gray-700"
                   >
-                    Skip — I&apos;ll add docs later
+                    Skip for now, I&apos;ll add docs later
                   </button>
                   <button
                     onClick={saveKBDocs}

@@ -21,6 +21,8 @@ import {
   Briefcase,
   MapPin,
   Pen,
+  Users,
+  FileText,
 } from "lucide-react";
 import AppNav from "@/components/AppNav";
 import VoiceTextarea from "@/components/VoiceTextarea";
@@ -41,6 +43,22 @@ interface ValueProp {
   proofPoint: string;
 }
 
+interface ICPDefinition {
+  industry: string;
+  companySize: string;
+  buyerPersona: string;
+  commonPains: string;
+}
+
+interface CaseStudy {
+  customerName: string;
+  industry: string;
+  challenge: string;
+  solution: string;
+  result: string;
+  quote: string;
+}
+
 interface ProfileData {
   companyName: string;
   companyProduct: string;
@@ -57,6 +75,8 @@ interface ProfileData {
   sellerArchetype: string;
   dealStories: DealStory[];
   valueProps: ValueProp[];
+  caseStudies: CaseStudy[];
+  icpDefinitions: ICPDefinition[];
   preferredTone: string;
   onboardingCompleted: boolean;
   // Career & Territory (Layer 3)
@@ -90,6 +110,22 @@ const EMPTY_VALUE_PROP: ValueProp = {
   proofPoint: "",
 };
 
+const EMPTY_ICP: ICPDefinition = {
+  industry: "",
+  companySize: "",
+  buyerPersona: "",
+  commonPains: "",
+};
+
+const EMPTY_CASE_STUDY: CaseStudy = {
+  customerName: "",
+  industry: "",
+  challenge: "",
+  solution: "",
+  result: "",
+  quote: "",
+};
+
 const DEFAULT_PROFILE: ProfileData = {
   companyName: "",
   companyProduct: "",
@@ -106,6 +142,8 @@ const DEFAULT_PROFILE: ProfileData = {
   sellerArchetype: "",
   dealStories: [],
   valueProps: [],
+  caseStudies: [],
+  icpDefinitions: [],
   preferredTone: "professional",
   onboardingCompleted: false,
   careerNarrative: "",
@@ -393,7 +431,7 @@ export default function ProfilePage() {
         setError(data.error || "Failed to save");
       }
     } catch {
-      setError("Network error — please try again");
+      setError("Network error. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -553,7 +591,7 @@ export default function ProfilePage() {
           <CollapsibleSection
             title="Your Company"
             icon={Building2}
-            description="Paste your website — we'll extract the rest"
+            description="Paste your website. We'll extract the rest."
             defaultOpen={!profile.onboardingCompleted}
             completionPct={getCompanyCompletion()}
           >
@@ -620,13 +658,13 @@ export default function ProfilePage() {
                 value={profile.companyProduct}
                 onChange={(v) => updateField("companyProduct", v)}
                 placeholder="What does your company sell? Be specific."
-                hint="e.g., 'Sentinel — an EDR platform for mid-market enterprises'"
+                hint="e.g., 'Sentinel: an EDR platform for mid-market enterprises'"
               />
               <TextArea
                 label="Company Description"
                 value={profile.companyDescription}
                 onChange={(v) => updateField("companyDescription", v)}
-                placeholder="Elevator pitch — what problem do you solve and for whom?"
+                placeholder="Elevator pitch. What problem do you solve and for whom?"
               />
               <TextArea
                 label="Key Differentiators"
@@ -638,7 +676,7 @@ export default function ProfilePage() {
                 label="Main Competitors"
                 value={profile.companyCompetitors}
                 onChange={(v) => updateField("companyCompetitors", v)}
-                placeholder="Top 3-5 competitors — we'll use these in competitive research"
+                placeholder="Top 3-5 competitors. We'll use these in competitive research."
                 hint="e.g., 'CrowdStrike, SentinelOne, Microsoft Defender'"
               />
               <TextArea
@@ -655,7 +693,7 @@ export default function ProfilePage() {
           <CollapsibleSection
             title="Your LinkedIn"
             icon={User}
-            description="Your background — used to position you in deliverables"
+            description="Your background. Used to position you in deliverables."
             completionPct={getLinkedinCompletion()}
           >
             <div className="space-y-4">
@@ -726,7 +764,7 @@ export default function ProfilePage() {
                       Deal Stories
                     </h4>
                     <p className="text-xs text-gray-500">
-                      Your best wins — paste a case study link or fill in manually
+                      Your best wins. Paste a case study link or fill in manually.
                     </p>
                   </div>
                   <button
@@ -849,7 +887,7 @@ export default function ProfilePage() {
                       Value Propositions
                     </h4>
                     <p className="text-xs text-gray-500">
-                      Your core selling points — headline, detail, and proof
+                      Your core selling points: headline, detail, and proof
                     </p>
                   </div>
                   <button
@@ -993,7 +1031,185 @@ export default function ProfilePage() {
             </div>
           </CollapsibleSection>
 
-          {/* SECTION 5: Writing Style */}
+          {/* SECTION 5: ICP Definitions */}
+          <CollapsibleSection
+            title="Ideal Customer Profiles"
+            icon={Users}
+            description="Who are your best-fit buyers?"
+          >
+            <div className="space-y-4">
+              <p className="text-sm text-gray-500">
+                Define your ideal customer profiles. These are used in prospect prep, outreach, and practice mode to generate realistic buyer personas.
+              </p>
+              {(profile.icpDefinitions || []).map((icp: ICPDefinition, i: number) => (
+                <div key={i} className="rounded-lg border border-gray-200 bg-gray-50/50 p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-gray-700">ICP #{i + 1}</span>
+                    <button
+                      onClick={() => {
+                        const updated = [...(profile.icpDefinitions || [])];
+                        updated.splice(i, 1);
+                        updateField("icpDefinitions", updated);
+                      }}
+                      className="text-gray-400 hover:text-red-500 transition"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <TextInput
+                    label="Industry / Vertical"
+                    value={icp.industry}
+                    onChange={(v) => {
+                      const updated = [...(profile.icpDefinitions || [])];
+                      updated[i] = { ...updated[i], industry: v };
+                      updateField("icpDefinitions", updated);
+                    }}
+                    placeholder="e.g., Retail, Financial Services, Healthcare"
+                  />
+                  <TextInput
+                    label="Company Size"
+                    value={icp.companySize}
+                    onChange={(v) => {
+                      const updated = [...(profile.icpDefinitions || [])];
+                      updated[i] = { ...updated[i], companySize: v };
+                      updateField("icpDefinitions", updated);
+                    }}
+                    placeholder="e.g., Mid-market ($50M-$500M), Enterprise ($1B+)"
+                  />
+                  <TextInput
+                    label="Buyer Persona / Title"
+                    value={icp.buyerPersona}
+                    onChange={(v) => {
+                      const updated = [...(profile.icpDefinitions || [])];
+                      updated[i] = { ...updated[i], buyerPersona: v };
+                      updateField("icpDefinitions", updated);
+                    }}
+                    placeholder="e.g., VP Sales, CRO, Head of Revenue Operations"
+                  />
+                  <TextArea
+                    label="Common Pains"
+                    value={icp.commonPains}
+                    onChange={(v) => {
+                      const updated = [...(profile.icpDefinitions || [])];
+                      updated[i] = { ...updated[i], commonPains: v };
+                      updateField("icpDefinitions", updated);
+                    }}
+                    placeholder="What problems do they face that your product solves?"
+                    rows={2}
+                  />
+                </div>
+              ))}
+              <button
+                onClick={() => updateField("icpDefinitions", [...(profile.icpDefinitions || []), { ...EMPTY_ICP }])}
+                className="flex items-center gap-1.5 text-sm font-medium text-emerald-700 hover:text-emerald-800 transition"
+              >
+                <Plus className="h-4 w-4" /> Add ICP
+              </button>
+            </div>
+          </CollapsibleSection>
+
+          {/* SECTION 6: Case Studies */}
+          <CollapsibleSection
+            title="Case Studies"
+            icon={FileText}
+            description="Customer wins that power your outreach and interviews"
+          >
+            <div className="space-y-4">
+              <p className="text-sm text-gray-500">
+                Add your strongest customer stories. These get woven into outreach sequences, interview talk tracks, and practice mode scenarios.
+              </p>
+              {(profile.caseStudies || []).map((cs: CaseStudy, i: number) => (
+                <div key={i} className="rounded-lg border border-gray-200 bg-gray-50/50 p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-gray-700">Case Study #{i + 1}</span>
+                    <button
+                      onClick={() => {
+                        const updated = [...(profile.caseStudies || [])];
+                        updated.splice(i, 1);
+                        updateField("caseStudies", updated);
+                      }}
+                      className="text-gray-400 hover:text-red-500 transition"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <TextInput
+                      label="Customer Name"
+                      value={cs.customerName}
+                      onChange={(v) => {
+                        const updated = [...(profile.caseStudies || [])];
+                        updated[i] = { ...updated[i], customerName: v };
+                        updateField("caseStudies", updated);
+                      }}
+                      placeholder="e.g., Vuori"
+                    />
+                    <TextInput
+                      label="Industry"
+                      value={cs.industry}
+                      onChange={(v) => {
+                        const updated = [...(profile.caseStudies || [])];
+                        updated[i] = { ...updated[i], industry: v };
+                        updateField("caseStudies", updated);
+                      }}
+                      placeholder="e.g., Retail, DTC"
+                    />
+                  </div>
+                  <TextArea
+                    label="Challenge"
+                    value={cs.challenge}
+                    onChange={(v) => {
+                      const updated = [...(profile.caseStudies || [])];
+                      updated[i] = { ...updated[i], challenge: v };
+                      updateField("caseStudies", updated);
+                    }}
+                    placeholder="What problem did they face?"
+                    rows={2}
+                  />
+                  <TextArea
+                    label="Solution"
+                    value={cs.solution}
+                    onChange={(v) => {
+                      const updated = [...(profile.caseStudies || [])];
+                      updated[i] = { ...updated[i], solution: v };
+                      updateField("caseStudies", updated);
+                    }}
+                    placeholder="How did your product solve it?"
+                    rows={2}
+                  />
+                  <TextArea
+                    label="Result"
+                    value={cs.result}
+                    onChange={(v) => {
+                      const updated = [...(profile.caseStudies || [])];
+                      updated[i] = { ...updated[i], result: v };
+                      updateField("caseStudies", updated);
+                    }}
+                    placeholder="Measurable outcomes. Revenue impact, efficiency gains, time saved."
+                    rows={2}
+                  />
+                  <TextInput
+                    label="Customer Quote (optional)"
+                    value={cs.quote}
+                    onChange={(v) => {
+                      const updated = [...(profile.caseStudies || [])];
+                      updated[i] = { ...updated[i], quote: v };
+                      updateField("caseStudies", updated);
+                    }}
+                    placeholder="A direct quote from the customer, if you have one"
+                  />
+                </div>
+              ))}
+              <button
+                onClick={() => updateField("caseStudies", [...(profile.caseStudies || []), { ...EMPTY_CASE_STUDY }])}
+                className="flex items-center gap-1.5 text-sm font-medium text-emerald-700 hover:text-emerald-800 transition"
+              >
+                <Plus className="h-4 w-4" /> Add Case Study
+              </button>
+            </div>
+          </CollapsibleSection>
+
+          {/* SECTION 7: Writing Style */}
           <CollapsibleSection
             title="Writing Style"
             icon={Pen}

@@ -11,6 +11,7 @@ import {
   Circle,
   Loader2,
   ArrowRight,
+  ArrowLeft,
   Mic,
   MicOff,
 } from "lucide-react";
@@ -150,18 +151,37 @@ export default function OnboardingChatPage() {
       <main className="flex-1 flex flex-col">
         {/* Header */}
         <header className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white">
-          <div>
-            <h1 className="text-lg font-semibold text-gray-900">Sales Blitz Setup</h1>
-            <p className="text-sm text-gray-500">
-              {onboardingDone
-                ? "Setup complete. Head to the dashboard."
-                : "Tell me about yourself, your deals, and how you sell."}
-            </p>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => router.push("/dashboard")}
+              className="flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+              title="Back to dashboard"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </button>
+            <div>
+              <h1 className="text-lg font-semibold text-gray-900">Sales Blitz Setup</h1>
+              <p className="text-sm text-gray-500">
+                {onboardingDone
+                  ? "Setup complete. Head to the dashboard."
+                  : "Tell me about yourself, your deals, and how you sell."}
+              </p>
+            </div>
           </div>
 
-          {/* Mobile phase counter */}
-          <div className="md:hidden text-sm text-gray-500">
-            {completedPhases.size}/4 complete
+          <div className="flex items-center gap-4">
+            {/* Mobile phase counter */}
+            <div className="md:hidden text-sm text-gray-500">
+              {completedPhases.size}/4 complete
+            </div>
+            {!onboardingDone && (
+              <button
+                onClick={() => router.push("/dashboard")}
+                className="hidden md:inline-flex text-xs text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                Skip for now
+              </button>
+            )}
           </div>
         </header>
 

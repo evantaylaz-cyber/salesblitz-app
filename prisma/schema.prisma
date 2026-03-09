@@ -335,6 +335,9 @@ model PracticeSession {
   feedback          String?  @db.Text // AI-generated coaching feedback
   outcome           String?  // strong | developing | needs_work
 
+  // User self-debrief (notes after reviewing score)
+  userNotes         String?  @db.Text // User's own reflections, what to work on next
+
   // Status
   status            String   @default("created") // created | active | completed | failed
   errorMessage      String?  @db.Text

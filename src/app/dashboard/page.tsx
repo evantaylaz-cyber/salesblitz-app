@@ -17,6 +17,7 @@ import {
   Mail,
   Users,
   AlertCircle,
+  Play,
 } from "lucide-react";
 import AppNav from "@/components/AppNav";
 import dynamic from "next/dynamic";
@@ -42,15 +43,15 @@ interface UserData {
     type: string;
     allowedTools: string[];
   }[];
-  runLogs: {
-    id: string;
-    toolName: string;
-    targetName: string | null;
-    targetCompany: string | null;
-    createdAt: string;
-    source: string;
-    status: string;
-  }[];
+}
+
+interface RecentRequest {
+  id: string;
+  toolName: string;
+  targetName: string | null;
+  targetCompany: string | null;
+  createdAt: string;
+  status: string;
 }
 
 interface Tool {
@@ -153,6 +154,7 @@ const TOOLS: Tool[] = [
 export default function DashboardPage() {
   const { user: clerkUser, isLoaded } = useUser();
   const [userData, setUserData] = useState<UserData | null>(null);
+  const [recentRequests, setRecentRequests] = useState<RecentRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [pendingRequests, setPendingRequests] = useState(0);
   const [chatOpen, setChatOpen] = useState(false);
@@ -188,10 +190,21 @@ export default function DashboardPage() {
       const res = await fetch("/api/requests");
       if (res.ok) {
         const data = await res.json();
-        const active = data.requests.filter(
+        const requests = data.requests || [];
+        const active = requests.filter(
           (r: { status: string }) => r.status === "submitted" || r.status === "in_progress" || r.status === "ready"
         );
         setPendingRequests(active.length);
+        setRecentRequests(
+          requests.slice(0, 10).map((r: RecentRequest) => ({
+            id: r.id,
+            toolName: r.toolName,
+            targetName: r.targetName,
+            targetCompany: r.targetCompany,
+            createdAt: r.createdAt,
+            status: r.status,
+          }))
+        );
       }
     } catch {}
   }
@@ -420,7 +433,7 @@ export default function DashboardPage() {
         )}
 
         {/* Sample Run Banner */}
-        {userData && (!userData.runLogs || userData.runLogs.length === 0) && (
+        {userData && recentRequests.length === 0 && (
           <div className="mb-8 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
@@ -469,7 +482,15 @@ export default function DashboardPage() {
 
                 <div className="flex items-start justify-between">
                   <h3 className="font-semibold text-gray-900">{tool.name}</h3>
-                  {!accessible && !tool.comingSoon && <Lock className="h-4 w-4 text-gray-400" />}
+                  <div className="flex items-center gap-2">
+                    {(() => {
+                      const toolCount = recentRequests.filter((r) => r.toolName === tool.id).length;
+                      return toolCount > 0 ? (
+                        <span className="text-xs text-gray-400">{toolCount} run{toolCount !== 1 ? "s" : ""}</span>
+                      ) : null;
+                    })()}
+                    {!accessible && !tool.comingSoon && <Lock className="h-4 w-4 text-gray-400" />}
+                  </div>
                 </div>
                 <p className="mt-2 flex-1 text-sm text-gray-500">
                   <span className="font-medium text-gray-700">{tool.hook}</span>{" "}
@@ -510,8 +531,8 @@ export default function DashboardPage() {
           })}
         </div>
 
-        {/* Recent Runs */}
-        {userData?.runLogs && userData.runLogs.length > 0 && (
+        {/* Recent Blitzes */}
+        {recentRequests.length > 0 && (
           <div className="mt-10">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900">Recent Blitzes</h2>
@@ -524,36 +545,36 @@ export default function DashboardPage() {
                 <thead className="bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   <tr>
                     <th className="px-6 py-3">Tool</th>
-                    <th className="px-6 py-3">Prospect</th>
+                    <th className="px-6 py-3">Target</th>
                     <th className="px-6 py-3">Date</th>
                     <th className="px-6 py-3">Status</th>
                     <th className="px-6 py-3"></th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
-                  {userData.runLogs.map((log) => (
-                    <tr key={log.id} className="hover:bg-gray-50 cursor-pointer" onClick={() => window.location.href = `/requests/${log.id}`}>
+                  {recentRequests.map((req) => (
+                    <tr key={req.id} className="hover:bg-gray-50 cursor-pointer" onClick={() => window.location.href = `/requests/${req.id}`}>
                       <td className="px-6 py-3 font-medium text-gray-900">
-                        {TOOL_NAMES[log.toolName] || log.toolName}
+                        {TOOL_NAMES[req.toolName] || req.toolName}
                       </td>
                       <td className="px-6 py-3 text-gray-700">
-                        {log.targetName && log.targetCompany
-                          ? `${log.targetName} @ ${log.targetCompany}`
-                          : log.targetCompany || log.targetName || "—"}
+                        {req.targetName && req.targetCompany
+                          ? `${req.targetName} @ ${req.targetCompany}`
+                          : req.targetCompany || req.targetName || "—"}
                       </td>
                       <td className="px-6 py-3 text-gray-500">
-                        {new Date(log.createdAt).toLocaleDateString()}
+                        {new Date(req.createdAt).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-3">
-                        {log.status === "completed" || log.status === "delivered" ? (
+                        {req.status === "completed" || req.status === "delivered" || req.status === "ready" ? (
                           <span className="inline-flex items-center gap-1 text-emerald-600 text-xs font-medium">
                             <CheckCircle2 className="h-3.5 w-3.5" /> Done
                           </span>
-                        ) : log.status === "failed" ? (
+                        ) : req.status === "failed" ? (
                           <span className="inline-flex items-center gap-1 text-red-500 text-xs font-medium">
                             <XCircle className="h-3.5 w-3.5" /> Failed
                           </span>
-                        ) : log.status === "awaiting_clarification" ? (
+                        ) : req.status === "awaiting_clarification" ? (
                           <span className="inline-flex items-center gap-1 text-amber-600 text-xs font-medium">
                             <AlertCircle className="h-3.5 w-3.5" /> Needs Input
                           </span>
@@ -563,8 +584,25 @@ export default function DashboardPage() {
                           </span>
                         )}
                       </td>
-                      <td className="px-6 py-3">
-                        <ChevronRight className="h-4 w-4 text-gray-300" />
+                      <td className="px-6 py-3 text-right">
+                        {(req.status === "completed" || req.status === "delivered" || req.status === "ready") && req.toolName !== "competitor_research" ? (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const params = new URLSearchParams();
+                              params.set("autostart", "true");
+                              if (req.targetCompany) params.set("company", req.targetCompany);
+                              if (req.id) params.set("runRequestId", req.id);
+                              window.location.href = `/practice?${params.toString()}`;
+                            }}
+                            className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-100 transition"
+                          >
+                            <Play className="h-3 w-3" />
+                            Practice
+                          </button>
+                        ) : (
+                          <ChevronRight className="h-4 w-4 text-gray-300" />
+                        )}
                       </td>
                     </tr>
                   ))}
@@ -589,7 +627,7 @@ export default function DashboardPage() {
               </div>
             </div>
             <a
-              href="mailto:evan@salesblitz.ai?subject=Sales%20Blitz%20Consulting"
+              href="mailto:evan@salesblitz.ai?subject=Custom%20Outbound%20Engine%20-%20Let's%20Talk"
               className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700"
             >
               <Mail className="h-4 w-4" />
