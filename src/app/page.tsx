@@ -11,7 +11,7 @@ import {
   BarChart3,
   MessageSquare,
   Mail,
-  Users,
+  Users
   Rocket,
   Shield,
 } from "lucide-react";
@@ -65,9 +65,9 @@ export default async function LandingPage() {
         <div className="relative mx-auto max-w-7xl px-6 py-24 md:py-36">
           <div className="mx-auto max-w-3xl text-center">
             <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl md:text-6xl">
-              Walk into every deal{" "}
+              Research. Rehearse.{" "}
               <span className="bg-gradient-to-r from-emerald-600 to-green-500 bg-clip-text text-transparent">
-                fully armed
+                Close.
               </span>
             </h1>
             <p className="mt-6 text-lg text-gray-600 md:text-xl">
