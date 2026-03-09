@@ -114,7 +114,7 @@ const TOOLS: Tool[] = [
     id: "prospect_prep",
     name: "Prospect Prep",
     hook: "Own the call.",
-    description: "Walk in knowing their org chart, pain points & competitive landscape. CotM-structured.",
+    description: "Walk in knowing their org chart, pain points & competitive positioning. CotM-structured.",
     minimumTier: "pro",
   },
   {

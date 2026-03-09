@@ -2,7 +2,6 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import {
-  Zap,
   Target,
   ArrowRight,
   Check,
@@ -72,7 +71,7 @@ export default async function LandingPage() {
             <p className="mt-6 text-lg text-gray-600 md:text-xl">
               Drop in a company name. Get a research brief, competitive
               playbook, call prep docs, and POV deck in minutes. Then
-              practice your pitch against an AI buyer who pushes back.
+              practice your pitch against an AI buyer who actually pushes back.
             </p>
             <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
               <Link
@@ -114,7 +113,7 @@ export default async function LandingPage() {
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-3xl font-bold text-gray-900">How it works</h2>
             <p className="mt-4 text-lg text-gray-500">
-              Three inputs. Eight finished assets. In minutes.
+              Three inputs. Eight finished assets. Under 15 minutes.
             </p>
           </div>
           <div className="mt-16 grid grid-cols-1 gap-12 md:grid-cols-3">
@@ -123,19 +122,19 @@ export default async function LandingPage() {
                 step: "1",
                 title: "Drop in a target",
                 description:
-                  "Company name, prospect LinkedIn, and meeting type. Sales Blitz pulls everything else from public sources, your profile, and your knowledge base.",
+                  "Company name, prospect LinkedIn, and meeting type. We pull everything else from public sources, your profile, and your deal history.",
               },
               {
                 step: "2",
                 title: "AI does the research",
                 description:
-                  "Deep company analysis, competitive mapping, stakeholder intelligence, and pain-point identification. Structured around value-based selling, personalized to your resume and deal history.",
+                  "Company deep-dive, competitive mapping, stakeholder intel, and pain-point identification. Personalized to your resume, your methodology, and your deal history.",
               },
               {
                 step: "3",
                 title: "Walk in armed",
                 description:
-                  "Research brief, competitive playbook, call prep sheet, POV deck, and more. Finished assets, not templates. Then practice the call against an AI avatar before you go live.",
+                  "Research brief, competitive playbook, call prep sheet, POV deck, and handwritten card. Finished assets, not templates. Then rehearse the call against an AI buyer before you go live.",
               },
             ].map((item) => (
               <div key={item.step} className="text-center">
@@ -386,7 +385,7 @@ export default async function LandingPage() {
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-3xl font-bold text-gray-900">Simple pricing</h2>
             <p className="mt-4 text-lg text-gray-500">
-              Every run produces a full package. No per-asset charges.
+              One run. 8+ finished assets. No per-asset charges.
             </p>
             <p className="mt-1 text-sm text-gray-400">
               Prices shown with annual billing. Monthly plans also available.
@@ -624,38 +623,31 @@ export default async function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-gray-100 bg-gray-50 py-12">
+      <footer className="border-t border-gray-100 bg-gray-50 py-10">
         <div className="mx-auto max-w-7xl px-6">
-          <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
+          <div className="flex flex-col items-center gap-6 md:flex-row md:justify-between">
             <div className="flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-600">
-                <Zap className="h-4 w-4 text-white" />
-              </div>
-              <span className="font-bold text-gray-900">Sales Blitz</span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo-64.png" alt="Sales Blitz" className="h-6 w-6" />
+              <span className="text-sm font-semibold text-gray-900">Sales Blitz</span>
             </div>
-            <div className="flex items-center gap-6 text-sm text-gray-500">
-              <Link href="/sign-in" className="hover:text-gray-700">
+            <div className="flex flex-wrap items-center justify-center gap-5 text-sm text-gray-400">
+              <Link href="/sign-in" className="transition hover:text-gray-700">
                 Sign In
               </Link>
-              <Link href="/sign-up" className="hover:text-gray-700">
+              <Link href="/sign-up" className="transition hover:text-gray-700">
                 Sign Up
               </Link>
-              <a href="#pricing" className="hover:text-gray-700">
+              <a href="#pricing" className="transition hover:text-gray-700">
                 Pricing
               </a>
-              <a href="mailto:evan@salesblitz.ai" className="hover:text-gray-700">
+              <a href="mailto:evan@salesblitz.ai" className="transition hover:text-gray-700">
                 Contact
               </a>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1.5 text-xs text-gray-400">
-                <Shield className="h-3.5 w-3.5" />
-                TLS encrypted
-              </div>
-              <p className="text-sm text-gray-400">
-                &copy; {new Date().getFullYear()} Sales Blitz
-              </p>
-            </div>
+            <p className="text-sm text-gray-400">
+              &copy; {new Date().getFullYear()} Sales Blitz
+            </p>
           </div>
         </div>
       </footer>

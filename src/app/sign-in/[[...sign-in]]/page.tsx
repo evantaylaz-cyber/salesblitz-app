@@ -43,7 +43,7 @@ export default function SignInPage() {
               </div>
               <div>
                 <p className="text-sm font-medium text-white">Deep account research</p>
-                <p className="text-sm text-gray-500">Org charts, pain points & competitive landscape in minutes.</p>
+                <p className="text-sm text-gray-500">Org charts, pain points & competitive positioning in minutes.</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
