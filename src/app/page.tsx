@@ -2,6 +2,7 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import {
+  Zap,
   Target,
   ArrowRight,
   Check,
@@ -29,7 +30,7 @@ export default async function LandingPage() {
         <div className="relative mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600">
-              <Target className="h-5 w-5 text-white" />
+              <Zap className="h-5 w-5 text-white" />
             </div>
             <span className="text-xl font-bold text-gray-900">Sales Blitz</span>
           </div>
@@ -52,7 +53,7 @@ export default async function LandingPage() {
               href="/sign-up"
               className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700"
             >
-              Get Started
+              Start Free
             </Link>
           </div>
         </div>
@@ -79,7 +80,7 @@ export default async function LandingPage() {
                 href="/sign-up"
                 className="flex items-center gap-2 rounded-xl bg-emerald-600 px-8 py-4 text-base font-semibold text-white shadow-lg shadow-emerald-200 transition hover:bg-emerald-700 hover:shadow-xl"
               >
-                Get Started <ArrowRight className="h-5 w-5" />
+                Start Free <ArrowRight className="h-5 w-5" />
               </Link>
               <Link
                 href="/demo/prospect_prep"
@@ -87,6 +88,17 @@ export default async function LandingPage() {
               >
                 See a Sample Run
               </Link>
+            </div>
+            <p className="mt-4 text-sm text-gray-400">No credit card required. 2 free runs included.</p>
+
+            {/* Who it's for */}
+            <div className="mt-12 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+              <span className="text-xs font-medium tracking-wide text-gray-400 uppercase">Built for</span>
+              <span className="text-sm text-gray-500">Enterprise AEs prepping for six-figure meetings</span>
+              <span className="text-gray-300">&middot;</span>
+              <span className="text-sm text-gray-500">SDRs booking discovery calls</span>
+              <span className="text-gray-300">&middot;</span>
+              <span className="text-sm text-gray-500">Candidates preparing for career-changing interviews</span>
             </div>
           </div>
 
@@ -103,32 +115,32 @@ export default async function LandingPage() {
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-3xl font-bold text-gray-900">How it works</h2>
             <p className="mt-4 text-lg text-gray-500">
-              Three steps. Under fifteen minutes.
+              Three inputs. Eight finished assets. Under 15 minutes.
             </p>
           </div>
           <div className="mt-16 grid grid-cols-1 gap-12 md:grid-cols-3">
             {[
               {
-                step: "01",
-                title: "Pick a tool, drop in a name",
+                step: "1",
+                title: "Drop in a target",
                 description:
-                  "Company name, prospect LinkedIn, role context. That's all we need.",
+                  "Company name, prospect LinkedIn, and meeting type. Sales Blitz pulls everything else from public sources, your profile, and your knowledge base.",
               },
               {
-                step: "02",
-                title: "We build your package",
+                step: "2",
+                title: "AI does the research",
                 description:
-                  "Deep research, competitive analysis, strategic positioning. Synthesized into finished assets.",
+                  "Deep company analysis, competitive mapping, stakeholder intelligence, and pain-point identification. Structured around value-based selling, personalized to your resume and deal history.",
               },
               {
-                step: "03",
-                title: "Prep, practice, go",
+                step: "3",
+                title: "Walk in armed",
                 description:
-                  "Research briefs, decks, talk tracks & playbooks delivered to your inbox. Then practice against an AI buyer before the real thing.",
+                  "Research brief, competitive playbook, call prep sheet, POV deck, and more. Finished assets, not templates. Then practice the call against an AI avatar before you go live.",
               },
             ].map((item) => (
               <div key={item.step} className="text-center">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-600 text-xl font-bold text-white">
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-600 text-lg font-bold text-white">
                   {item.step}
                 </div>
                 <h3 className="mt-6 text-lg font-semibold text-gray-900">{item.title}</h3>
@@ -375,7 +387,10 @@ export default async function LandingPage() {
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-3xl font-bold text-gray-900">Simple pricing</h2>
             <p className="mt-4 text-lg text-gray-500">
-              Every run produces a complete deliverable package. No per-asset charges.
+              Every run produces a full package. No per-asset charges.
+            </p>
+            <p className="mt-1 text-sm text-gray-400">
+              Prices shown with annual billing. Monthly plans also available.
             </p>
           </div>
           <div className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -543,24 +558,67 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* Final CTA */}
+      {/* FAQ */}
       <section className="py-20">
+        <div className="mx-auto max-w-3xl px-6">
+          <h2 className="text-3xl font-bold text-gray-900 text-center mb-10">Common questions</h2>
+          <div className="space-y-3">
+            {[
+              {
+                q: "What exactly do I get from a single run?",
+                a: "Each tool produces a full package of finished assets, not templates. A Prospect Prep run delivers a research brief (PDF), competitive playbook (interactive HTML), call prep sheet, POV deck, and stakeholder map. Formatted, sourced, and ready to use before your meeting.",
+              },
+              {
+                q: "How does AI Practice Mode work?",
+                a: "You talk to an AI avatar that plays your buyer, interviewer, or panel member. The persona is built from your actual research data, not generic scripts. They push back, ask tough questions, and score you across 8 performance dimensions when you're done.",
+              },
+              {
+                q: "How long does a run take?",
+                a: "Most runs finish in 10 to 15 minutes. Enter a company name, a prospect LinkedIn URL, and pick a meeting type. Sales Blitz handles the rest. You get a notification when your deliverables are ready.",
+              },
+              {
+                q: "What's the difference between Interview and Prospect tools?",
+                a: "Interview tools are for job seekers. They research the company from your perspective as a candidate and build interview-specific prep. Prospect tools do the same for active deals: account research, stakeholder mapping, competitive positioning, and outreach.",
+              },
+              {
+                q: "Can I try it before subscribing?",
+                a: "Yes. Every new account gets 2 free runs, no credit card required. Pick any tool, run it against a real target, and see the full output. If you're between jobs, the Interview Sprint gives you 6 runs for $149 with no subscription.",
+              },
+              {
+                q: "Is my data private?",
+                a: "Your profile, research data, and practice sessions are yours. We don't share your data with other users or use it to train models. All data is encrypted at rest, and every connection uses TLS.",
+              },
+            ].map((item) => (
+              <details key={item.q} className="group rounded-xl border border-gray-200 bg-white">
+                <summary className="flex cursor-pointer items-center justify-between p-5 text-sm font-semibold text-gray-900">
+                  {item.q}
+                  <ArrowRight className="h-4 w-4 shrink-0 text-gray-400 transition-transform group-open:rotate-90" />
+                </summary>
+                <p className="px-5 pb-5 text-sm text-gray-500 leading-relaxed">{item.a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA */}
+      <section className="border-t border-gray-100 bg-gray-50 py-20">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-3xl font-bold text-gray-900">
-              Stop showing up unprepared
+              Your next meeting is too important to wing it
             </h2>
             <p className="mt-4 text-lg text-gray-500">
-              Your next meeting is too important to wing it. Research it. Rehearse it. Own it.
+              Research it. Rehearse it. Own it.
             </p>
             <Link
               href="/sign-up"
               className="mt-8 inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-8 py-4 text-base font-semibold text-white shadow-lg shadow-emerald-200 transition hover:bg-emerald-700 hover:shadow-xl"
             >
-              Get Started <ArrowRight className="h-5 w-5" />
+              Start Free <ArrowRight className="h-5 w-5" />
             </Link>
             <p className="mt-4 text-sm text-gray-400">
-              Cancel anytime.
+              No credit card required. 2 free runs included.
             </p>
           </div>
         </div>
@@ -572,7 +630,7 @@ export default async function LandingPage() {
           <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
             <div className="flex items-center gap-2">
               <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-600">
-                <Target className="h-4 w-4 text-white" />
+                <Zap className="h-4 w-4 text-white" />
               </div>
               <span className="font-bold text-gray-900">Sales Blitz</span>
             </div>
@@ -590,9 +648,15 @@ export default async function LandingPage() {
                 Contact
               </a>
             </div>
-            <p className="text-sm text-gray-400">
-              &copy; {new Date().getFullYear()} Sales Blitz. All rights reserved.
-            </p>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-1.5 text-xs text-gray-400">
+                <Shield className="h-3.5 w-3.5" />
+                TLS encrypted
+              </div>
+              <p className="text-sm text-gray-400">
+                &copy; {new Date().getFullYear()} Sales Blitz
+              </p>
+            </div>
           </div>
         </div>
       </footer>

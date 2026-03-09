@@ -622,7 +622,7 @@ export default function DashboardPage() {
               <div>
                 <h3 className="font-semibold text-white">Want us to do it for you?</h3>
                 <p className="mt-1 text-sm text-gray-400">
-                  We build target lists, run outreach, deliver qualified meetings, prep your calls & close deals alongside you if that's what it takes. Anything sales-related, we handle it. Pay per outcome.
+                  We build target lists, run outreach, deliver qualified meetings, prep your calls & work deals alongside you. Pay per outcome, not per hour.
                 </p>
               </div>
             </div>
