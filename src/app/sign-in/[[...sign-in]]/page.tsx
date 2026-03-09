@@ -26,13 +26,14 @@ export default function SignInPage() {
         {/* Hero content */}
         <div className="max-w-md">
           <h1 className="text-3xl font-bold leading-tight text-white">
-            Walk into every deal
+            Research. Rehearse.
             <br />
-            <span className="text-emerald-400">fully armed.</span>
+            <span className="text-emerald-400">Close.</span>
           </h1>
           <p className="mt-4 text-base text-gray-400 leading-relaxed">
-            AI-powered research, prep & practice that makes reps
-            dangerous before the first call.
+            Drop in a company name. Get a research brief, competitive
+            playbook, call prep docs, and POV deck in minutes. Then practice
+                        your pitch against an AI buyer who pushes back.
           </p>
 
           {/* Feature list */}
