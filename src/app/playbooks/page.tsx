@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useUser, UserButton } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 import {
   Loader2,
   ExternalLink,
@@ -10,9 +10,9 @@ import {
   Calendar,
   Globe,
   Zap,
-  ArrowLeft,
   Search,
 } from "lucide-react";
+import AppNav from "@/components/AppNav";
 
 interface PlaybookRun {
   id: string;
@@ -102,46 +102,7 @@ export default function PlaybooksPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Nav */}
-      <nav className="bg-white border-b border-gray-200 px-4 py-3">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <a
-              href="/dashboard"
-              className="text-gray-400 hover:text-gray-600 transition-colors"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </a>
-            <div className="flex items-center gap-2">
-              <Shield className="h-5 w-5 text-emerald-700" />
-              <h1 className="text-lg font-semibold text-gray-900">
-                Competitive Playbooks
-              </h1>
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <a
-              href="/knowledge-base"
-              className="text-sm text-gray-600 hover:text-gray-900"
-            >
-              Knowledge Base
-            </a>
-            <a
-              href="/requests"
-              className="text-sm text-gray-600 hover:text-gray-900"
-            >
-              Requests
-            </a>
-            <a
-              href="/profile"
-              className="text-sm text-gray-600 hover:text-gray-900"
-            >
-              Profile
-            </a>
-            <UserButton afterSignOutUrl="/" />
-          </div>
-        </div>
-      </nav>
+      <AppNav currentPage="/playbooks" />
 
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}

@@ -73,6 +73,8 @@ const TOOL_NAMES: Record<string, string> = {
   prospect_prep: "Prospect Prep",
   deal_audit: "Deal Audit",
   champion_builder: "Champion Builder",
+  practice_mode: "AI Practice Mode",
+  competitor_research: "Competitor Research",
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: React.ElementType }> = {

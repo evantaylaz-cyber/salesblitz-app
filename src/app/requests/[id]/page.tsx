@@ -337,8 +337,10 @@ export default function RequestDetailPage() {
           <div className="divide-y">
             {request.steps.map((step, i) => {
               const StepIcon = STEP_ICONS[step.id] || FileText;
-              const isActive = step.status === "in_progress";
-              const isComplete = step.status === "completed";
+              // If the overall run is delivered/completed, all steps should show as complete
+              const runFinished = request.status === "delivered" || request.status === "completed";
+              const isActive = !runFinished && step.status === "in_progress";
+              const isComplete = step.status === "completed" || (runFinished && step.status !== "failed");
               const isFailed = step.status === "failed";
 
               return (

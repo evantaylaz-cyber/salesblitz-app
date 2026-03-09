@@ -12,20 +12,35 @@ import { ToolName } from "./tools";
 const WORKER_KEY_TO_ASSET_ID: Record<string, string> = {
   briefPdf: "research_brief",
   povDeck: "pov_deck",
+  povDeckPptx: "pov_deck_pptx",
   notebookCard: "notebook_card",
   competitivePlaybook: "competitive_playbook",
   gammaDeck: "gamma_deck",
   callPrepSheet: "call_prep_sheet",
   atsResume: "ats_resume",
   outreachSequence: "outreach_sequence",
+  outreachSequenceJson: "outreach_sequence_json",
   stakeholderMap: "stakeholder_map",
   assignmentFramework: "assignment_framework",
+  landscape: "competitive_playbook",
+  callSheet1Img: "call_sheet_1",
+  callSheet2ImgA: "call_sheet_2a",
+  callSheet2ImgB: "call_sheet_2b",
   // Legacy keys — backward compat
   clientPovCard: "notebook_card",
   dealHealthCard: "notebook_card",
   championPovCard: "notebook_card",
   auditReport: "research_brief",   // deal_audit used to have separate key
   strategyBrief: "research_brief", // champion_builder used to have separate key
+};
+
+// Human-readable labels for assets that aren't in the standard template
+const EXTRA_ASSET_LABELS: Record<string, string> = {
+  pov_deck_pptx: "POV Deck (PowerPoint)",
+  outreach_sequence_json: "Outreach Sequence Data",
+  call_sheet_1: "Handwritten Call Sheet",
+  call_sheet_2a: "Handwritten Call Sheet (Alt A)",
+  call_sheet_2b: "Handwritten Call Sheet (Alt B)",
 };
 
 export interface NormalizedAsset {
@@ -78,11 +93,11 @@ export function normalizeAssets(
         if (existing) {
           existing.url = url;
         } else {
-          // Worker produced an asset not in the template — add it
+          // Worker produced an asset not in the template — add it with proper label
           const format = url.split(".").pop() || "pdf";
           result.push({
             id: templateId,
-            label: workerKey.replace(/([A-Z])/g, " $1").replace(/^./, (s) => s.toUpperCase()).trim(),
+            label: EXTRA_ASSET_LABELS[templateId] || workerKey.replace(/([A-Z])/g, " $1").replace(/^./, (s) => s.toUpperCase()).trim(),
             format,
             url,
             size: null,
@@ -92,9 +107,10 @@ export function normalizeAssets(
       } else {
         // Unknown worker key — still include it so users can access the asset
         const format = url.split(".").pop() || "pdf";
+        const fallbackId = workerKey.replace(/([A-Z])/g, "_$1").toLowerCase();
         result.push({
-          id: workerKey,
-          label: workerKey.replace(/([A-Z])/g, " $1").replace(/^./, (s) => s.toUpperCase()).trim(),
+          id: fallbackId,
+          label: EXTRA_ASSET_LABELS[fallbackId] || workerKey.replace(/([A-Z])/g, " $1").replace(/^./, (s) => s.toUpperCase()).trim(),
           format,
           url,
           size: null,

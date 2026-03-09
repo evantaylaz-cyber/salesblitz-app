@@ -229,3 +229,56 @@
 The two P0s (blitz card not launching directly, review page fetching from list endpoint) and the P1s around context depth (only 4 profile fields used, research truncated to 8K, no panel fields, no Target usage) are the core quality gaps. The architecture is sound but the context pipeline has holes at every stage: onboarding doesn't collect enough, submission doesn't collect enough, practice start doesn't use enough of what was collected, and practice end doesn't feed learnings back.
 
 The Phase 2-6 plan directly addresses most P0 and P1 issues. The P2s should be fixed as we touch each file.
+
+---
+
+## Fixes Applied (Mar 8, 2026 evening session)
+
+### P0 Fixes
+- **P0: Blitz card click doesn't launch session directly** — FIXED in prior commit. Practice lobby redesigned with one-click launch from blitz cards. Confirmed working: Radiant Logic card -> session starts immediately with HeyGen avatar.
+
+### P1 Fixes
+1. **Dashboard missing prospect context (#1)** — Added targetName/targetCompany columns to Recent Blitzes table, click-to-navigate rows, fixed "delivered" status recognition. `dashboard/page.tsx`
+2. **practice_mode display name (#2)** — Added "AI Practice Mode" label to requests/page.tsx and analytics/page.tsx TOOL_LABELS maps
+3. **Champion Builder step 6 stuck spinner (#4)** — Fixed via DB UPDATE (step status "in_progress" -> "completed") + defensive rendering: if overall run is delivered, all steps show complete. `requests/[id]/page.tsx`
+4. **Retry button for stalled requests (#5)** — Expanded retryable statuses to include "submitted" and stalled "researching" (no startedAt). `api/requests/[id]/retry/route.ts`
+5. **Practice Mode routes through worker pipeline (#6)** — Three-layer fix: (a) removed practice_mode from request form TOOL_INFO, (b) added redirect to /practice if URL param present, (c) added API guard rejecting practice_mode RunRequest submissions. `request/page.tsx`, `api/requests/route.ts`. Cleaned up stuck DB record.
+
+### P2 Fixes
+6. **Asset label normalization (#8)** — Added worker key mappings (povDeckPptx, callSheet1Img, callSheet2ImgA, callSheet2ImgB, landscape, outreachSequenceJson) and EXTRA_ASSET_LABELS for human-readable names. `lib/normalize-assets.ts`
+7. **Nav inconsistency (#10)** — Created shared AppNav component with consistent nav items. Integrated into analytics + playbooks pages. `components/AppNav.tsx`, `analytics/page.tsx`, `playbooks/page.tsx`
+
+### Knowledge Base Population
+8. **KB nearly empty** — Inserted 8 documents: CotM Framework, MEDDPICC, Discovery Philosophy, 4 deal stories (Vuori, Spectrum, Red Bull, CBRE), ICP Definitions. KB went from 2 docs (~2K chars) to 10 docs (~14.5K chars).
+
+### E2E Verification (Mar 8, 2026)
+- Full pipeline confirmed: profile fill -> blitz submit (Radiant Logic / Tre Menzel Prospect Prep) -> 11/11 steps completed -> 8 assets delivered (131K research data) -> competitive playbook shows proper CotM structure, persona-specific discovery questions, MEDDPICC-aligned stakeholder map -> practice lobby shows new card -> one-click launch -> HeyGen avatar loads & speaks in character -> review page with scoring
+
+### Polish Issue Noted
+- Practice persona name ("Marcus Chen") doesn't match actual target ("Tre Menzel"). Persona should use the target contact name from the blitz.
+
+### Updated Summary Stats
+
+| Severity | Original | Remaining |
+|----------|----------|-----------|
+| P0       | 2        | 1 (review page endpoint) |
+| P1       | 12       | 7         |
+| P2       | 13       | 11        |
+| P3       | 4        | 4         |
+| **Total** | **31**  | **23**    |
+
+### Files Changed (ready for commit via GitHub Desktop)
+
+**Modified (9):**
+- `src/app/analytics/page.tsx` — AppNav integration, practice_mode label
+- `src/app/api/requests/[id]/retry/route.ts` — Accept stalled requests for retry
+- `src/app/api/requests/route.ts` — Block practice_mode submissions via API
+- `src/app/dashboard/page.tsx` — Prospect columns, click-to-navigate, delivered status
+- `src/app/playbooks/page.tsx` — AppNav integration
+- `src/app/request/page.tsx` — Remove practice_mode from form, add redirect
+- `src/app/requests/[id]/page.tsx` — Defensive step rendering for delivered runs
+- `src/app/requests/page.tsx` — practice_mode & competitor_research labels
+- `src/lib/normalize-assets.ts` — Asset key mappings & labels
+
+**New (1):**
+- `src/components/AppNav.tsx` — Shared navigation component

@@ -46,6 +46,8 @@ interface UserData {
   runLogs: {
     id: string;
     toolName: string;
+    targetName: string | null;
+    targetCompany: string | null;
     createdAt: string;
     source: string;
     status: string;
@@ -606,21 +608,27 @@ export default function DashboardPage() {
                 <thead className="bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   <tr>
                     <th className="px-6 py-3">Tool</th>
+                    <th className="px-6 py-3">Prospect</th>
                     <th className="px-6 py-3">Date</th>
                     <th className="px-6 py-3">Status</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
                   {userData.runLogs.map((log) => (
-                    <tr key={log.id} className="hover:bg-gray-50">
+                    <tr key={log.id} className="hover:bg-gray-50 cursor-pointer" onClick={() => window.location.href = `/requests/${log.id}`}>
                       <td className="px-6 py-3 font-medium text-gray-900">
                         {TOOL_NAMES[log.toolName] || log.toolName}
+                      </td>
+                      <td className="px-6 py-3 text-gray-700">
+                        {log.targetName && log.targetCompany
+                          ? `${log.targetName} @ ${log.targetCompany}`
+                          : log.targetCompany || log.targetName || "—"}
                       </td>
                       <td className="px-6 py-3 text-gray-500">
                         {new Date(log.createdAt).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-3">
-                        {log.status === "completed" ? (
+                        {log.status === "completed" || log.status === "delivered" ? (
                           <CheckCircle2 className="h-4 w-4 text-emerald-500" />
                         ) : log.status === "failed" ? (
                           <XCircle className="h-4 w-4 text-red-500" />

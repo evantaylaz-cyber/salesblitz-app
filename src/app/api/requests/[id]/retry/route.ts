@@ -6,7 +6,7 @@ import { initializeSteps, getExpectedAssets } from "@/lib/job-steps";
 import { ToolName } from "@/lib/tools";
 import { triggerWorker } from "@/lib/trigger-worker";
 
-// POST — retry a failed request (does NOT consume another run credit)
+// POST — retry a failed or stalled request (does NOT consume another run credit)
 export async function POST(
   req: NextRequest,
   { params }: { params: { id: string } }
@@ -38,10 +38,12 @@ export async function POST(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Only allow retry on failed requests
-    if (request.status !== "failed") {
+    // Allow retry on failed requests, or stalled requests (submitted/researching with no progress)
+    const retryableStatuses = ["failed", "submitted"];
+    const isStalled = request.status === "researching" && !request.startedAt;
+    if (!retryableStatuses.includes(request.status) && !isStalled) {
       return NextResponse.json(
-        { error: "Only failed requests can be retried" },
+        { error: "Only failed or stalled requests can be retried" },
         { status: 400 }
       );
     }

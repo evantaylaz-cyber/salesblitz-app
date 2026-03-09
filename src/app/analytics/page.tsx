@@ -1,6 +1,6 @@
 "use client";
 
-import { useUser, UserButton } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -15,6 +15,7 @@ import {
   ArrowRight,
   Activity,
 } from "lucide-react";
+import AppNav from "@/components/AppNav";
 
 interface AnalyticsData {
   range: number;
@@ -45,6 +46,7 @@ const TOOL_LABELS: Record<string, string> = {
   deal_audit: "Deal Audit",
   champion_builder: "Champion Builder",
   competitor_research: "Competitor Research",
+  practice_mode: "AI Practice Mode",
 };
 
 const STATUS_COLORS: Record<string, string> = {
@@ -108,32 +110,7 @@ export default function AnalyticsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="border-b bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-3">
-            <Link href="/dashboard" className="text-xl font-bold text-gray-900">
-              Sales Blitz
-            </Link>
-            <span className="text-gray-300">/</span>
-            <span className="text-lg font-semibold text-gray-700">Analytics</span>
-            {teamId && (
-              <span className="ml-2 rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800">
-                Team
-              </span>
-            )}
-          </div>
-          <div className="flex items-center gap-4">
-            <Link href="/dashboard" className="text-sm text-gray-600 hover:text-gray-900">
-              Dashboard
-            </Link>
-            <Link href="/requests" className="text-sm text-gray-600 hover:text-gray-900">
-              Requests
-            </Link>
-            <UserButton />
-          </div>
-        </div>
-      </header>
+      <AppNav currentPage="/analytics" />
 
       <main className="mx-auto max-w-7xl px-6 py-8">
         {/* Range Selector */}

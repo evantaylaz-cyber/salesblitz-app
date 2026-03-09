@@ -114,6 +114,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Practice mode uses the live practice pipeline, not the blitz worker
+    if (toolName === "practice_mode") {
+      return NextResponse.json(
+        { error: "Practice mode sessions are started from /practice, not submitted as blitz requests." },
+        { status: 400 }
+      );
+    }
+
     const user = await prisma.user.findUnique({
       where: { clerkId: clerkUser.id },
     });

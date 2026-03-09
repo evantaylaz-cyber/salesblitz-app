@@ -33,7 +33,7 @@ const TOOL_INFO: Record<string, { name: string; category: "interview" | "prospec
   prospect_prep: { name: "Prospect Prep", category: "prospect" },
   deal_audit: { name: "Deal Audit", category: "deal" },
   champion_builder: { name: "Champion Builder", category: "deal" },
-  practice_mode: { name: "AI Practice Mode", category: "practice" },
+  // practice_mode is NOT a blitz tool — it routes directly to /practice
 };
 
 export default function RequestPage() {
@@ -42,6 +42,13 @@ export default function RequestPage() {
   const router = useRouter();
   const toolId = searchParams.get("tool") || "";
   const toolInfo = TOOL_INFO[toolId];
+
+  // Practice mode doesn't use the blitz pipeline — redirect to /practice
+  useEffect(() => {
+    if (toolId === "practice_mode") {
+      router.replace("/practice");
+    }
+  }, [toolId, router]);
 
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
