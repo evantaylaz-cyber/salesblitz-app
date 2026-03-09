@@ -284,7 +284,7 @@ export default function DashboardPage() {
         hasPriority={userData?.priorityProcessing}
       />
 
-      <main className="mx-auto max-w-7xl px-6 py-8">
+      <main className="mx-auto max-w-6xl px-6 py-6">
         {/* Pending requests banner */}
         {pendingRequests > 0 && (
           <a
@@ -304,14 +304,14 @@ export default function DashboardPage() {
         )}
 
         {/* Run Stats — Total first, then breakdown */}
-        <div className="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
           {/* Total Available */}
-          <div className="rounded-xl border-2 border-emerald-200 bg-white p-5 shadow-sm">
+          <div className="rounded-lg border-2 border-emerald-200 bg-white p-4 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-700">Blitzes Available</span>
-              <Zap className="h-4 w-4 text-emerald-600" />
+              <span className="text-xs font-medium text-gray-500">Blitzes Available</span>
+              <Zap className="h-3.5 w-3.5 text-emerald-600" />
             </div>
-            <p className="mt-2 text-3xl font-bold text-gray-900">{totalAvailableRuns()}</p>
+            <p className="mt-1 text-2xl font-bold text-gray-900">{totalAvailableRuns()}</p>
             {totalAvailableRuns() === 0 ? (
               <a
                 href="/subscribe#packs"
@@ -329,12 +329,12 @@ export default function DashboardPage() {
           </div>
 
           {/* Subscription Runs */}
-          <div className="rounded-xl border bg-white p-5 shadow-sm">
+          <div className="rounded-lg border bg-white p-4 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-500">Subscription</span>
-              <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+              <span className="text-xs font-medium text-gray-500">Subscription</span>
+              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
             </div>
-            <p className="mt-2 text-2xl font-bold text-gray-900">
+            <p className="mt-1 text-xl font-bold text-gray-900">
               {hasSubscription ? userData!.subscriptionRunsRemaining : 0}
               <span className="text-base font-normal text-gray-400">
                 /{hasSubscription ? userData!.subscriptionRunsTotal : 0}
@@ -353,12 +353,12 @@ export default function DashboardPage() {
           </div>
 
           {/* Pack Runs */}
-          <div className="rounded-xl border bg-white p-5 shadow-sm">
+          <div className="rounded-lg border bg-white p-4 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-500">Packs</span>
-              <Package className="h-4 w-4 text-emerald-500" />
+              <span className="text-xs font-medium text-gray-500">Packs</span>
+              <Package className="h-3.5 w-3.5 text-emerald-500" />
             </div>
-            <p className="mt-2 text-2xl font-bold text-gray-900">
+            <p className="mt-1 text-xl font-bold text-gray-900">
               {userData?.runPacks
                 .filter((p: { type: string }) => p.type !== "interview_sprint")
                 .reduce((sum: number, p: { runsRemaining: number }) => sum + p.runsRemaining, 0) || 0}
@@ -366,12 +366,12 @@ export default function DashboardPage() {
           </div>
 
           {/* Sprint Runs */}
-          <div className="rounded-xl border bg-white p-5 shadow-sm">
+          <div className="rounded-lg border bg-white p-4 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-500">Sprint</span>
-              <Clock className="h-4 w-4 text-orange-500" />
+              <span className="text-xs font-medium text-gray-500">Sprint</span>
+              <Clock className="h-3.5 w-3.5 text-orange-500" />
             </div>
-            <p className="mt-2 text-2xl font-bold text-gray-900">
+            <p className="mt-1 text-xl font-bold text-gray-900">
               {userData?.runPacks
                 .filter((p: { type: string }) => p.type === "interview_sprint")
                 .reduce((sum: number, p: { runsRemaining: number }) => sum + p.runsRemaining, 0) || 0}
@@ -381,10 +381,10 @@ export default function DashboardPage() {
 
         {/* AI Profile Setup Banner — depth-aware */}
         {onboardingDepth < 4 && (
-          <div className="mb-8 flex items-center justify-between rounded-xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-white p-5 shadow-sm">
-            <div className="flex items-center gap-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100">
-                <Sparkles className="h-5 w-5 text-emerald-700" />
+          <div className="mb-6 flex items-center justify-between rounded-lg border border-emerald-200 bg-gradient-to-r from-emerald-50 to-white p-4 shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100">
+                <Sparkles className="h-4 w-4 text-emerald-700" />
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900">
@@ -434,11 +434,11 @@ export default function DashboardPage() {
 
         {/* Sample Run Banner */}
         {userData && recentRequests.length === 0 && (
-          <div className="mb-8 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+          <div className="mb-6 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100">
-                  <Eye className="h-5 w-5 text-gray-600" />
+              <div className="flex items-center gap-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100">
+                  <Eye className="h-4 w-4 text-gray-600" />
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900">See a sample blitz</h3>
@@ -459,29 +459,29 @@ export default function DashboardPage() {
         )}
 
         {/* Tools Grid */}
-        <h2 className="mb-4 text-lg font-semibold text-gray-900">Blitz Tools</h2>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <h2 className="mb-3 text-sm font-semibold text-gray-900 uppercase tracking-wider">Blitz Tools</h2>
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
           {TOOLS.map((tool) => {
             const accessible = !tool.comingSoon && (canAccess(tool.minimumTier) || hasSprintAccess(tool.id));
 
             return (
               <div
                 key={tool.id}
-                className={`relative flex flex-col rounded-xl border bg-white p-6 shadow-sm transition ${
-                  tool.comingSoon ? "opacity-60" : accessible ? "hover:shadow-md" : "opacity-70"
+                className={`relative flex flex-col rounded-lg border bg-white p-4 shadow-sm transition ${
+                  tool.comingSoon ? "opacity-60" : accessible ? "hover:shadow-md hover:border-emerald-200" : "opacity-70"
                 }`}
               >
                 {/* Coming Soon overlay */}
                 {tool.comingSoon && (
-                  <div className="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-white/60 backdrop-blur-[1px]">
-                    <span className="rounded-full bg-gray-900 px-4 py-1.5 text-xs font-semibold text-white tracking-wide uppercase shadow-lg">
+                  <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-white/60 backdrop-blur-[1px]">
+                    <span className="rounded-full bg-gray-900 px-3 py-1 text-[10px] font-semibold text-white tracking-wide uppercase shadow-lg">
                       Coming Soon
                     </span>
                   </div>
                 )}
 
                 <div className="flex items-start justify-between">
-                  <h3 className="font-semibold text-gray-900">{tool.name}</h3>
+                  <h3 className="text-sm font-semibold text-gray-900">{tool.name}</h3>
                   <div className="flex items-center gap-2">
                     {(() => {
                       const toolCount = recentRequests.filter((r) => r.toolName === tool.id).length;
@@ -492,34 +492,34 @@ export default function DashboardPage() {
                     {!accessible && !tool.comingSoon && <Lock className="h-4 w-4 text-gray-400" />}
                   </div>
                 </div>
-                <p className="mt-2 flex-1 text-sm text-gray-500">
+                <p className="mt-1.5 flex-1 text-xs text-gray-500 leading-relaxed">
                   <span className="font-medium text-gray-700">{tool.hook}</span>{" "}
                   {tool.description}
                 </p>
 
-                <div className="mt-5">
+                <div className="mt-3">
                   {tool.comingSoon ? (
-                    <div className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm font-medium text-gray-400 text-center">
+                    <div className="w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-xs font-medium text-gray-400 text-center">
                       Coming Soon
                     </div>
                   ) : accessible ? (
                     <button
                       onClick={() => handleRunTool(tool.id)}
                       disabled={totalAvailableRuns() === 0}
-                      className="w-full rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      className="w-full rounded-md bg-emerald-600 px-3 py-2 text-xs font-medium text-white transition hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
                     >
                       {totalAvailableRuns() === 0 ? (
                         "No Blitzes Remaining"
                       ) : (
                         <>
-                          <Zap className="h-4 w-4" /> New Blitz
+                          <Zap className="h-3 w-3" /> New Blitz
                         </>
                       )}
                     </button>
                   ) : (
                     <a
                       href="/subscribe"
-                      className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-medium text-emerald-800 transition hover:bg-emerald-100"
+                      className="flex w-full items-center justify-center gap-1.5 rounded-md border-2 border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-800 transition hover:bg-emerald-100"
                     >
                       <ArrowUpRight className="h-4 w-4" />
                       Unlock with {TIER_NAMES[tool.minimumTier]}
@@ -613,11 +613,11 @@ export default function DashboardPage() {
         )}
 
         {/* Consulting CTA */}
-        <div className="mt-10 rounded-xl border border-gray-800 bg-gray-900 p-6 md:p-8">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div className="flex items-start gap-4">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/10">
-                <Users className="h-5 w-5 text-emerald-400" />
+        <div className="mt-8 rounded-lg border border-gray-800 bg-gray-900 p-5 md:p-6">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-start gap-3">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-500/10">
+                <Users className="h-4 w-4 text-emerald-400" />
               </div>
               <div>
                 <h3 className="font-semibold text-white">Want us to do it for you?</h3>

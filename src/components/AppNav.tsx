@@ -62,10 +62,9 @@ export default function AppNav({
         {/* Logo */}
         <div className="flex items-center gap-3">
           <a href="/dashboard" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-900">
-              <Zap className="h-4 w-4 text-emerald-400" />
-            </div>
-            <span className="text-lg font-bold tracking-tight text-gray-900">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo-64.png" alt="Sales Blitz" className="h-7 w-7" />
+            <span className="text-base font-bold tracking-tight text-gray-900">
               Sales Blitz
             </span>
           </a>

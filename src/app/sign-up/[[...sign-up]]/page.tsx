@@ -8,9 +8,8 @@ export default function SignUpPage() {
       <div className="hidden lg:flex lg:w-1/2 flex-col justify-between bg-gray-900 px-12 py-10">
         {/* Logo */}
         <div className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-600">
-            <Zap className="h-5 w-5 text-white" />
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo-128.png" alt="Sales Blitz" className="h-9 w-9" />
           <span className="text-xl font-bold tracking-tight text-white">
             Sales Blitz
           </span>
@@ -76,9 +75,8 @@ export default function SignUpPage() {
       <div className="flex w-full flex-col items-center justify-center bg-gray-50 px-6 py-10 lg:w-1/2">
         {/* Mobile logo */}
         <div className="mb-8 flex items-center gap-2 lg:hidden">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-600">
-            <Zap className="h-5 w-5 text-white" />
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo-64.png" alt="Sales Blitz" className="h-9 w-9" />
           <span className="text-xl font-bold tracking-tight text-gray-900">
             Sales Blitz
           </span>

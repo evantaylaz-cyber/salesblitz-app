@@ -29,9 +29,8 @@ export default async function LandingPage() {
       <nav className="sticky top-0 z-50 border-b border-gray-100 bg-white/80 backdrop-blur-md">
         <div className="relative mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600">
-              <Zap className="h-5 w-5 text-white" />
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo-64.png" alt="Sales Blitz" className="h-8 w-8" />
             <span className="text-xl font-bold text-gray-900">Sales Blitz</span>
           </div>
           <div className="absolute inset-x-0 hidden items-center justify-center gap-8 md:flex pointer-events-none">
