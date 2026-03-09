@@ -11,7 +11,7 @@ import {
   BarChart3,
   MessageSquare,
   Mail,
-  Users
+  Users,
   Rocket,
   Shield,
 } from "lucide-react";
