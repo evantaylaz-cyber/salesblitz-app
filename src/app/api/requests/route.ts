@@ -170,6 +170,7 @@ export async function POST(req: NextRequest) {
       update: {
         contactTitle: targetRole || undefined,
         roundCount: { increment: 1 },
+        currentRound: { increment: 1 },
       },
       create: {
         userId: user.id,

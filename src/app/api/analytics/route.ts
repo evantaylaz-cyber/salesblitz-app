@@ -110,7 +110,7 @@ export async function GET(req: NextRequest) {
 
     let avgCompletionMinutes: number | null = null;
     if (deliveredRequests.length > 0) {
-      const totalMs = deliveredRequests.reduce((sum, r) => {
+      const totalMs = deliveredRequests.reduce((sum: number, r: typeof deliveredRequests[0]) => {
         const diff = r.completedAt!.getTime() - r.createdAt.getTime();
         return sum + diff;
       }, 0);

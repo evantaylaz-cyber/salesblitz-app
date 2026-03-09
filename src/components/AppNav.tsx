@@ -24,6 +24,7 @@ interface AppNavProps {
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/requests", label: "Requests", hasBadge: true },
+  { href: "/practice", label: "Practice" },
   { href: "/profile", label: "Profile" },
   { href: "/knowledge-base", label: "Knowledge Base" },
   { href: "/playbooks", label: "Playbooks" },

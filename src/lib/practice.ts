@@ -67,6 +67,27 @@ export async function canStartPracticeSession(userId: string): Promise<{
 }
 
 /**
+ * Mark stale practice sessions as abandoned.
+ * Sessions stuck in "created" or "active" for over 1 hour are considered abandoned.
+ */
+export async function cleanupStaleSessions(): Promise<number> {
+  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+
+  const result = await prisma.practiceSession.updateMany({
+    where: {
+      status: { in: ["created", "active"] },
+      createdAt: { lt: oneHourAgo },
+    },
+    data: {
+      status: "abandoned",
+      completedAt: new Date(),
+    },
+  });
+
+  return result.count;
+}
+
+/**
  * Build the buyer persona system prompt for the practice conversation.
  */
 export function buildPersonaSystemPrompt(persona: {

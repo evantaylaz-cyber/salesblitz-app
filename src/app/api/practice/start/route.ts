@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import prisma from "@/lib/db";
-import { canStartPracticeSession } from "@/lib/practice";
+import { canStartPracticeSession, cleanupStaleSessions } from "@/lib/practice";
 import Anthropic from "@anthropic-ai/sdk";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -24,6 +24,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    // Clean up stale sessions before checking cap (non-blocking)
+    cleanupStaleSessions().catch((err) => console.error("Stale session cleanup error:", err));
+
     // Check practice session cap
     const capCheck = await canStartPracticeSession(user.id);
     if (!capCheck.allowed) {
@@ -45,6 +48,8 @@ export async function POST(req: NextRequest) {
     let linkedRunRequestId: string | null = null;
     let linkedTargetId: string | null = null;
     let linkedMeetingType: string | null = null;
+    let linkedTargetName: string | null = null;
+    let linkedTargetRole: string | null = null;
     let panelData: Array<{ name: string; title: string | null; roleInMeeting: string; personalityVibe: string | null; evaluationFocus: string | null }> | null = null;
     if (runRequestId) {
       const runRequest = await prisma.runRequest.findUnique({
@@ -66,6 +71,8 @@ export async function POST(req: NextRequest) {
         linkedRunRequestId = runRequest.id;
         linkedTargetId = runRequest.targetId;
         linkedMeetingType = runRequest.meetingType;
+        linkedTargetName = runRequest.targetName;
+        linkedTargetRole = runRequest.targetRole;
         if (runRequest.researchData) {
           researchContext = typeof runRequest.researchData === "string"
             ? runRequest.researchData
@@ -145,10 +152,58 @@ export async function POST(req: NextRequest) {
       ? `\nPRIOR SESSION FEEDBACK (session #${previousSession.sessionSequence}):\n${previousSession.feedback.slice(0, 1000)}\nPush harder on the areas where the candidate/rep was weakest. Don't repeat the same opening; pick up where they left off.`
       : "";
 
+    // Build smarter research extraction: prioritize structured sections over raw dump
+    const maxResearchChars = 30000;
+    let trimmedResearch = researchContext;
+    if (researchContext.length > maxResearchChars) {
+      // Try to extract the most useful sections first
+      const sections = ["executive summary", "key findings", "company overview", "competitive", "stakeholder", "pain point", "challenge", "opportunity", "decision"];
+      const lines = researchContext.split("\n");
+      let prioritized: string[] = [];
+      let rest: string[] = [];
+      let inPrioritySection = false;
+      for (const line of lines) {
+        const lower = line.toLowerCase();
+        if (sections.some(s => lower.includes(s))) {
+          inPrioritySection = true;
+        } else if (line.startsWith("# ") || line.startsWith("## ")) {
+          inPrioritySection = false;
+        }
+        if (inPrioritySection) {
+          prioritized.push(line);
+        } else {
+          rest.push(line);
+        }
+      }
+      const prioritizedText = prioritized.join("\n");
+      const restText = rest.join("\n");
+      trimmedResearch = prioritizedText.length > maxResearchChars
+        ? prioritizedText.slice(0, maxResearchChars)
+        : prioritizedText + "\n" + restText.slice(0, maxResearchChars - prioritizedText.length);
+    }
+
+    // Build name/title instructions for persona prompt
+    const nameInstruction = linkedTargetName
+      ? `"name": "${linkedTargetName}"`
+      : `"name": "<realistic full name>"`;
+    const titleInstructionInterview = linkedTargetRole
+      ? `"title": "${linkedTargetRole}"`
+      : `"title": "<realistic hiring manager or panel member title at this company>"`;
+    const titleInstructionSales = linkedTargetRole
+      ? `"title": "${linkedTargetRole}"`
+      : `"title": "<realistic title at this company>"`;
+    const nameGuidance = linkedTargetName
+      ? `IMPORTANT: The interviewer's name is ${linkedTargetName}${linkedTargetRole ? ` and their title is ${linkedTargetRole}` : ""}. Build the persona around this REAL person. Use any research data about them to inform personality, communication style, and priorities. Do NOT invent a different name.`
+      : "";
+    const nameGuidanceSales = linkedTargetName
+      ? `IMPORTANT: The prospect's name is ${linkedTargetName}${linkedTargetRole ? ` and their title is ${linkedTargetRole}` : ""}. Build the persona around this REAL person. Use any research data about them to inform personality, communication style, and priorities. Do NOT invent a different name.`
+      : "";
+
     const personaPrompt = isInterview
       ? `Generate a realistic interviewer persona for a practice interview at ${targetCompany}. The user is the CANDIDATE being interviewed.
+${nameGuidance}
 
-${researchContext ? `RESEARCH DATA ON THE COMPANY:\n${researchContext.slice(0, 12000)}` : "No prior research available. Generate a plausible persona based on the company name."}
+${trimmedResearch ? `RESEARCH DATA ON THE COMPANY:\n${trimmedResearch}` : "No prior research available. Generate a plausible persona based on the company name."}
 
 ${sellerContext ? `CANDIDATE CONTEXT:\n${sellerContext}` : ""}
 ${priorSessionContext}
@@ -156,8 +211,8 @@ MEETING TYPE: ${effectiveMeetingType}
 
 Generate a JSON object with this EXACT structure (no markdown, no code blocks, just the JSON):
 {
-  "name": "<realistic full name>",
-  "title": "<realistic hiring manager or panel member title at this company>",
+  ${nameInstruction},
+  ${titleInstructionInterview},
   "company": "${targetCompany}",
   "personality": "<2-3 sentence personality description as an interviewer>",
   "priorities": ["<what they care about in a candidate 1>", "<priority 2>", "<priority 3>"],
@@ -174,8 +229,9 @@ Generate a JSON object with this EXACT structure (no markdown, no code blocks, j
 
 Make the persona feel like a REAL interviewer. They should ask probing follow-ups, challenge vague answers, and test for depth. The questions should be specific to ${targetCompany}'s actual business challenges.`
       : `Generate a realistic persona for a practice sales call. The rep is selling to ${targetCompany}.
+${nameGuidanceSales}
 
-${researchContext ? `RESEARCH DATA ON THE COMPANY:\n${researchContext.slice(0, 12000)}` : "No prior research available. Generate a plausible persona based on the company name."}
+${trimmedResearch ? `RESEARCH DATA ON THE COMPANY:\n${trimmedResearch}` : "No prior research available. Generate a plausible persona based on the company name."}
 
 ${sellerContext ? `SELLER CONTEXT:\n${sellerContext}` : ""}
 ${priorSessionContext}
@@ -183,8 +239,8 @@ MEETING TYPE: ${effectiveMeetingType}
 
 Generate a JSON object with this EXACT structure (no markdown, no code blocks, just the JSON):
 {
-  "name": "<realistic full name>",
-  "title": "<realistic title at this company>",
+  ${nameInstruction},
+  ${titleInstructionSales},
   "company": "${targetCompany}",
   "personality": "<2-3 sentence personality description>",
   "priorities": ["<priority 1>", "<priority 2>", "<priority 3>"],

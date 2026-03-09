@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useParams, useRouter } from "next/navigation";
 import {
-  ArrowLeft,
   Clock,
   Target,
   TrendingUp,
@@ -14,7 +13,9 @@ import {
   Loader2,
   MessageSquare,
   BarChart3,
+  RotateCcw,
 } from "lucide-react";
+import AppNav from "@/components/AppNav";
 
 // Score keys differ between sales and interview rubrics
 type SalesScoreBreakdown = {
@@ -150,17 +151,14 @@ export default function PracticeReviewPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="border-b bg-white">
-        <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-3">
-            <button onClick={() => router.push("/practice")} className="text-gray-400 hover:text-gray-600">
-              <ArrowLeft className="h-5 w-5" />
-            </button>
-            <h1 className="text-xl font-bold text-gray-900">Session Review</h1>
-          </div>
+      <AppNav currentPage="/practice" />
+
+      {/* Practice Again action bar */}
+      <div className="border-b bg-white">
+        <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-3">
+          <h1 className="text-lg font-bold text-gray-900">Session Review</h1>
           <button
             onClick={() => {
-              // Auto-launch next session with full context carried forward
               const params = new URLSearchParams();
               params.set("autostart", "true");
               if (session?.targetCompany) params.set("company", session.targetCompany);
@@ -170,10 +168,11 @@ export default function PracticeReviewPage() {
             }}
             className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
           >
+            <RotateCcw className="h-4 w-4" />
             Practice Again
           </button>
         </div>
-      </header>
+      </div>
 
       <main className="mx-auto max-w-4xl px-6 py-10 space-y-8">
         {/* Session Header */}

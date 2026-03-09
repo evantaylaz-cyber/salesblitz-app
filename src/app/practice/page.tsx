@@ -2,10 +2,8 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useUser } from "@clerk/nextjs";
-import { UserButton } from "@clerk/nextjs";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
-  ArrowLeft,
   Video,
   Loader2,
   Clock,
@@ -16,6 +14,7 @@ import {
   Zap,
   Plus,
 } from "lucide-react";
+import AppNav from "@/components/AppNav";
 
 interface BlitzRun {
   id: string;
@@ -209,27 +208,19 @@ function PracticeLanding() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="border-b bg-white">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-3">
-            <a href="/dashboard" className="text-gray-400 hover:text-gray-600">
-              <ArrowLeft className="h-5 w-5" />
-            </a>
-            <div className="flex items-center gap-2">
-              <Video className="h-5 w-5 text-emerald-700" />
-              <h1 className="text-xl font-bold text-gray-900">AI Practice Mode</h1>
-            </div>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-500">
-              {usage.used}/{tierCap} sessions this month
-            </span>
-            <UserButton afterSignOutUrl="/sign-in" />
-          </div>
-        </div>
-      </header>
+      <AppNav currentPage="/practice" />
 
       <main className="mx-auto max-w-5xl px-6 py-10">
+        <div className="mb-8 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Video className="h-6 w-6 text-emerald-700" />
+            <h1 className="text-2xl font-bold text-gray-900">Practice Mode</h1>
+          </div>
+          <span className="rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-600">
+            {usage.used}/{tierCap} sessions this month
+          </span>
+        </div>
+
         {error && (
           <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
             {error}
