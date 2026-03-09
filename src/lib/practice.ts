@@ -199,13 +199,13 @@ ${memberDescriptions}
 
 CRITICAL RULES:
 1. Every response MUST start with exactly [SPEAKER: Full Name] on its own line, followed by your spoken dialogue. This tag tells the system who is currently speaking. Example:
-[SPEAKER: Sarah Chen]
+[SPEAKER: Jamie Torres]
 Thanks for that example. Let me dig into the metrics side of it.
 
 2. Start the session as ${firstMember.name} (${firstMember.title || firstMember.roleInMeeting}). They open the interview.
 
 3. Switch speakers every 3-5 exchanges. When switching, the CURRENT speaker hands off naturally, then the NEXT response starts with the new speaker's tag. Example handoff:
-[SPEAKER: Sarah Chen]
+[SPEAKER: Jamie Torres]
 Great, I think Justin had some questions for you on the technical side.
 Then the next response:
 [SPEAKER: Justin Darby]

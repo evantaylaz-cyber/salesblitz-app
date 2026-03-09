@@ -92,12 +92,12 @@ export default async function LandingPage() {
             <p className="mt-4 text-sm text-gray-400">No credit card required. 2 free runs included.</p>
 
             {/* Who it's for */}
-            <div className="mt-12 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+            <div className="mt-12 flex flex-col items-center justify-center gap-3 sm:flex-row sm:flex-wrap sm:gap-x-6 sm:gap-y-2">
               <span className="text-xs font-medium tracking-wide text-gray-400 uppercase">Built for</span>
               <span className="text-sm text-gray-500">Enterprise AEs prepping for six-figure meetings</span>
-              <span className="text-gray-300">&middot;</span>
+              <span className="hidden sm:inline text-gray-300">&middot;</span>
               <span className="text-sm text-gray-500">SDRs booking discovery calls</span>
-              <span className="text-gray-300">&middot;</span>
+              <span className="hidden sm:inline text-gray-300">&middot;</span>
               <span className="text-sm text-gray-500">Candidates preparing for career-changing interviews</span>
             </div>
           </div>
@@ -320,8 +320,8 @@ export default async function LandingPage() {
                   </div>
                   {/* Persona label */}
                   <div className="absolute top-3 left-3 rounded-lg bg-black/50 px-2 py-1">
-                    <p className="text-[10px] font-medium text-white">Sarah Chen</p>
-                    <p className="text-[9px] text-gray-400">VP Sales Enablement, Snowflake</p>
+                    <p className="text-[10px] font-medium text-white">Jamie Torres</p>
+                    <p className="text-[9px] text-gray-400">VP Procurement, Acme Corp</p>
                   </div>
                 </div>
 

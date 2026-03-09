@@ -344,7 +344,7 @@ export default function RequestPage() {
                   required
                   value={targetName}
                   onChange={(e) => setTargetName(e.target.value)}
-                  placeholder={isInterview ? "e.g., Sarah Chen" : "e.g., Mike Thompson"}
+                  placeholder={isInterview ? "e.g., Jamie Torres" : "e.g., Alex Rivera"}
                   className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                 />
               </div>
@@ -773,7 +773,7 @@ export default function RequestPage() {
                             type="text"
                             value={member.name}
                             onChange={(e) => updatePanelMember(idx, "name", e.target.value)}
-                            placeholder="Name (e.g., Sarah Chen)"
+                            placeholder="Name (e.g., Jamie Torres)"
                             className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                           />
                           <input

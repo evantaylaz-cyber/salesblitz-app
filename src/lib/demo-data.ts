@@ -67,7 +67,7 @@ const DEMO_TOOLS: Record<string, DemoRun> = {
       {
         id: "competitive_research",
         label: "Competitive Landscape",
-        description: "Mapping Databricks competitors: Snowflake, AWS Glue, Google BigQuery, Azure Synapse",
+        description: "Mapping competitors: market positioning, pricing strategy, feature gaps",
         status: "completed",
         startedAt: "2026-03-04T10:02:30Z",
         completedAt: "2026-03-04T10:04:45Z",

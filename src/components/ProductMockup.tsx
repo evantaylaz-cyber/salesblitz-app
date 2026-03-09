@@ -21,13 +21,13 @@ export default function ProductMockup() {
           <div className="flex items-center justify-between mb-5">
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-sm font-bold text-gray-900">Prospect Prep: Snowflake</h3>
+                <h3 className="text-sm font-bold text-gray-900">Prospect Prep: Acme Corp</h3>
                 <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
                   Delivered
                 </span>
               </div>
               <p className="mt-0.5 text-[11px] text-gray-500">
-                Sarah Chen, VP of Sales Enablement &bull; 4 min ago
+                Jamie Torres, VP Procurement &bull; 4 min ago
               </p>
             </div>
           </div>

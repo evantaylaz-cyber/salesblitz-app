@@ -73,7 +73,7 @@ export default function SignUpPage() {
       </div>
 
       {/* Right panel — auth */}
-      <div className="flex w-full flex-col items-center justify-center bg-gray-50 px-6 lg:w-1/2">
+      <div className="flex w-full flex-col items-center justify-center bg-gray-50 px-6 py-10 lg:w-1/2">
         {/* Mobile logo */}
         <div className="mb-8 flex items-center gap-2 lg:hidden">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-600">
@@ -84,12 +84,13 @@ export default function SignUpPage() {
           </span>
         </div>
 
+        <div className="w-full max-w-md mx-auto">
         <SignUp
           afterSignUpUrl="/dashboard"
           appearance={{
             elements: {
-              rootBox: "w-full max-w-md",
-              card: "shadow-none border-0 bg-transparent",
+              rootBox: "w-full max-w-md mx-auto",
+              card: "shadow-none border-0 bg-transparent p-0",
               headerTitle: "text-2xl font-bold text-gray-900",
               headerSubtitle: "text-gray-500",
               socialButtonsBlockButton:
@@ -102,6 +103,7 @@ export default function SignUpPage() {
             },
           }}
         />
+        </div>
 
         <p className="mt-6 text-center text-xs text-gray-400">
           Already have an account?{" "}

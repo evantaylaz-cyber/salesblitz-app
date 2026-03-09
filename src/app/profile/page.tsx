@@ -757,7 +757,7 @@ export default function ProfilePage() {
                 label="Experience"
                 value={profile.linkedinExperience}
                 onChange={(v) => updateField("linkedinExperience", v)}
-                placeholder="e.g., 'Senior Enterprise AE, Gong (2022-Present): $3.2M quota, 142% attainment. Closed CBRE ($1.1M ACV), Red Bull (displaced incumbent). Enterprise AE, Salesforce (2018-2022): Named accounts, $2.5M avg quota.'"
+                placeholder="e.g., 'Senior Enterprise AE, TechCo (2022-Present): $3.2M quota, 142% attainment. Closed largest net-new deal in segment ($1.1M ACV). Enterprise AE, PlatformCo (2018-2022): Named accounts, $2.5M avg quota.'"
                 rows={5}
                 hint="Paste your last 2-3 roles. We'll use this to position you in deliverables."
               />
@@ -922,7 +922,7 @@ export default function ProfilePage() {
                           onChange={(e) =>
                             updateDealStory(i, "title", e.target.value)
                           }
-                          placeholder="e.g., 'CBRE Cold to 7-Figure'"
+                          placeholder="e.g., 'Enterprise Cold to 7-Figure'"
                           className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                         />
                         <input
@@ -931,14 +931,14 @@ export default function ProfilePage() {
                           onChange={(e) =>
                             updateDealStory(i, "customer", e.target.value)
                           }
-                          placeholder="e.g., 'CBRE Managed Services'"
+                          placeholder="e.g., 'Acme Corp Managed Services'"
                           className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                         />
                       </div>
                       <VoiceTextarea
                         value={story.challenge}
                         onChange={(val) => updateDealStory(i, "challenge", val)}
-                        placeholder="e.g., 'CBRE was managing 400+ facilities with fragmented recruiting. Each property hired independently, no visibility into cost-per-hire across the portfolio.'"
+                        placeholder="e.g., 'Managing 400+ locations with fragmented processes. Each site operated independently, no visibility into cost-per-unit across the portfolio.'"
                         rows={2}
                       />
                       <VoiceTextarea

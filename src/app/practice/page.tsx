@@ -360,7 +360,7 @@ function PracticeLanding() {
                     type="text"
                     value={targetCompany}
                     onChange={(e) => setTargetCompany(e.target.value)}
-                    placeholder="e.g. CBRE, Salesforce"
+                    placeholder="e.g. Acme Corp, Globex"
                     className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                     onKeyDown={(e) => e.key === "Enter" && handleFreestyleStart()}
                   />

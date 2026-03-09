@@ -39,7 +39,7 @@ Start with question 1.`,
     prompt: `I need to document my best sales deals for a sales enablement tool. For each deal, I need to capture the full story.
 
 Walk me through 3-5 deals one at a time. For each deal, ask me:
-1. Give this deal a title (e.g., "CBRE — Enterprise Cold Hunt")
+1. Give this deal a title (e.g., "Acme Corp — Enterprise Expansion")
 2. Who was the customer?
 3. What was their challenge or pain point?
 4. What did you do to solve it? (your approach/solution)
@@ -158,7 +158,7 @@ Here's what I need to fill out:
 
 **DEAL STORIES (3-5 of your best deals):**
 For each deal:
-- Title (e.g., "CBRE — Enterprise Cold Hunt")
+- Title (e.g., "Acme Corp — Enterprise Expansion")
 - Customer name
 - Their challenge/pain point
 - Your solution/approach
