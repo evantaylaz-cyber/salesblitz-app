@@ -620,14 +620,14 @@ export default function DashboardPage() {
                 <Users className="h-5 w-5 text-emerald-400" />
               </div>
               <div>
-                <h3 className="font-semibold text-white">Want us to run it for you?</h3>
+                <h3 className="font-semibold text-white">Want us to do it for you?</h3>
                 <p className="mt-1 text-sm text-gray-400">
-                  Custom outbound engine for your sales team. We build targeting, sequencing & deliver qualified meetings. Outcome-based pricing.
+                  We build target lists, run outreach, deliver qualified meetings, prep your calls & close deals alongside you if that's what it takes. Anything sales-related, we handle it. Pay per outcome.
                 </p>
               </div>
             </div>
             <a
-              href="mailto:evan@salesblitz.ai?subject=Custom%20Outbound%20Engine%20-%20Let's%20Talk"
+              href="mailto:evan@salesblitz.ai?subject=Done-For-You%20Sales%20-%20Let's%20Talk"
               className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700"
             >
               <Mail className="h-4 w-4" />

@@ -79,7 +79,7 @@ export async function sendOrderNotification(order: OrderDetails) {
 
   const html = `
     <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:600px;margin:0 auto;">
-      <div style="background:#4f46e5;color:#fff;padding:20px 24px;border-radius:12px 12px 0 0;">
+      <div style="background:#059669;color:#fff;padding:20px 24px;border-radius:12px 12px 0 0;">
         <h1 style="margin:0;font-size:20px;">New Order Received ${priorityBadge}</h1>
         <p style="margin:4px 0 0;opacity:0.9;font-size:14px;">${toolLabel} — ${order.targetCompany}</p>
       </div>
@@ -101,7 +101,7 @@ export async function sendOrderNotification(order: OrderDetails) {
           </tr>` : ""}
           ${order.linkedinUrl ? `<tr>
             <td style="padding:8px 12px;background:#f9fafb;font-weight:600;border:1px solid #e5e7eb;">LinkedIn</td>
-            <td style="padding:8px 12px;border:1px solid #e5e7eb;"><a href="${order.linkedinUrl}" style="color:#4f46e5;">${order.linkedinUrl}</a></td>
+            <td style="padding:8px 12px;border:1px solid #e5e7eb;"><a href="${order.linkedinUrl}" style="color:#059669;">${order.linkedinUrl}</a></td>
           </tr>` : ""}
           ${order.customerName ? `<tr>
             <td style="padding:8px 12px;background:#f9fafb;font-weight:600;border:1px solid #e5e7eb;">Customer</td>
@@ -131,7 +131,7 @@ export async function sendOrderNotification(order: OrderDetails) {
 
         <div style="margin-top:24px;padding-top:16px;border-top:1px solid #e5e7eb;">
           <a href="https://salesblitz.ai/admin"
-             style="display:inline-block;background:#4f46e5;color:#fff;padding:10px 24px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">
+             style="display:inline-block;background:#059669;color:#fff;padding:10px 24px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px;">
             Open Admin Queue →
           </a>
           <p style="margin:12px 0 0;font-size:12px;color:#9ca3af;">Request ID: ${order.requestId}</p>
@@ -181,7 +181,7 @@ export async function sendTeamInviteEmail(invite: InviteDetails) {
 
   const html = `
     <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:600px;margin:0 auto;">
-      <div style="background:#4f46e5;color:#fff;padding:24px;border-radius:12px 12px 0 0;">
+      <div style="background:#059669;color:#fff;padding:24px;border-radius:12px 12px 0 0;">
         <h1 style="margin:0;font-size:22px;">You're invited to join a team on Sales Blitz</h1>
       </div>
 
@@ -196,7 +196,7 @@ export async function sendTeamInviteEmail(invite: InviteDetails) {
 
         <div style="text-align:center;margin:24px 0;">
           <a href="${acceptUrl}"
-             style="display:inline-block;background:#4f46e5;color:#fff;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">
+             style="display:inline-block;background:#059669;color:#fff;padding:12px 32px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px;">
             Accept Invite
           </a>
         </div>

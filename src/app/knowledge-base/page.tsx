@@ -48,7 +48,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   blue: "bg-blue-50 text-blue-700 border-blue-200",
   red: "bg-red-50 text-red-700 border-red-200",
   green: "bg-green-50 text-green-700 border-green-200",
-  purple: "bg-green-50 text-green-700 border-green-200",
+  emerald: "bg-green-50 text-green-700 border-green-200",
   amber: "bg-amber-50 text-amber-700 border-amber-200",
   orange: "bg-orange-50 text-orange-700 border-orange-200",
   gray: "bg-gray-50 text-gray-700 border-gray-200",

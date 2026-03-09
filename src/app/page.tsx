@@ -499,26 +499,26 @@ export default async function LandingPage() {
                     Done-For-You
                   </div>
                   <h2 className="mt-4 text-2xl font-bold text-white md:text-3xl">
-                    Want us to run it for you?
+                    Want us to do it for you?
                   </h2>
                   <p className="mt-4 text-gray-400">
                     The self-serve app handles research, prep & practice.
-                    But if you want a full outbound engine built for your sales team,
-                    we do that too. Custom targeting, sequencing & qualified meeting delivery.
+                    But if you want a team that builds target lists, runs outreach,
+                    preps your calls & closes deals alongside you, we do that too.
                   </p>
                   <div className="mt-6 space-y-3">
                     {[
                       {
                         icon: <Target className="h-4 w-4 text-emerald-400" />,
-                        text: "We build your ICP, research targets & write every touch",
+                        text: "We build target lists, run outreach & deliver qualified meetings",
                       },
                       {
                         icon: <Rocket className="h-4 w-4 text-emerald-400" />,
-                        text: "You get qualified meetings on your calendar, not leads in a spreadsheet",
+                        text: "We prep your calls, arm your champions & close deals alongside you",
                       },
                       {
                         icon: <Shield className="h-4 w-4 text-emerald-400" />,
-                        text: "Outcome-based pricing. Custom scoped to your team & market.",
+                        text: "Anything sales-related, we handle it. Pay per outcome.",
                       },
                     ].map((item, i) => (
                       <div key={i} className="flex items-start gap-3">

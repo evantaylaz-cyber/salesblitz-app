@@ -259,7 +259,7 @@ export default function OnboardingChatPage() {
                   {/* Avatar */}
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                      isUser ? "bg-blue-600" : "bg-gray-900"
+                      isUser ? "bg-emerald-600" : "bg-gray-900"
                     }`}
                   >
                     {isUser ? (
@@ -273,7 +273,7 @@ export default function OnboardingChatPage() {
                   <div
                     className={`px-4 py-3 max-w-lg text-sm leading-relaxed whitespace-pre-wrap ${
                       isUser
-                        ? "bg-blue-600 text-white rounded-2xl rounded-tr-md"
+                        ? "bg-emerald-600 text-white rounded-2xl rounded-tr-md"
                         : "bg-white border border-gray-200 text-gray-800 rounded-2xl rounded-tl-md"
                     }`}
                   >
