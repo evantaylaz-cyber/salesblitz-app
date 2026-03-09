@@ -270,6 +270,7 @@ export function buildScoringPrompt(
   persona: { name: string; title: string; company: string },
   meetingType?: string,
   isPanelMode?: boolean,
+  sellerContext?: string,
 ): string {
   const isInterview = meetingType === "interview" || ["phone_screen", "hiring_manager", "mock_pitch", "panel", "final", "executive"].includes(meetingType || "");
 
@@ -286,7 +287,7 @@ export function buildScoringPrompt(
 
 THE SCENARIO:
 The candidate was practicing ${isPanelMode ? "a panel interview" : "an interview"} at ${persona.company} with ${persona.name}, ${persona.title}.
-
+${sellerContext ? `\nCANDIDATE BACKGROUND (use this to evaluate role fit, story relevance, and whether they leveraged their experience effectively):\n${sellerContext}\n` : ""}
 TRANSCRIPT:
 ${formattedTranscript}
 
@@ -326,7 +327,7 @@ Return a JSON object with this exact structure:
 
 THE SCENARIO:
 The rep was practicing a sales call with ${persona.name}, ${persona.title} at ${persona.company}.
-
+${sellerContext ? `\nSELLER BACKGROUND (use this to evaluate whether they leveraged their strengths, used relevant stories, and positioned their experience effectively):\n${sellerContext}\n` : ""}
 TRANSCRIPT:
 ${formattedTranscript}
 

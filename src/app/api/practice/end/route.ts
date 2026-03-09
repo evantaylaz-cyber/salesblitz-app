@@ -17,6 +17,7 @@ export async function POST(req: NextRequest) {
 
     const user = await prisma.user.findUnique({
       where: { clerkId: clerkUser.id },
+      include: { userProfile: true },
     });
 
     if (!user) {
@@ -64,8 +65,25 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // Build seller context from user profile for scoring (resume-derived fields included)
+    const p = user.userProfile;
+    const keyStrengths = p?.keyStrengths as string[] | null;
+    const dealStories = p?.dealStories as Array<{ company?: string; dealSize?: string; summary?: string }> | null;
+    const sellerContext = p
+      ? [
+          p.companyName && `Company: ${p.companyName}`,
+          p.companyProduct && `Product: ${p.companyProduct}`,
+          p.sellingStyle && `Methodology: ${p.sellingStyle}`,
+          p.sellerArchetype && `Archetype: ${p.sellerArchetype}`,
+          p.careerNarrative && `Career: ${p.careerNarrative}`,
+          p.linkedinExperience && `Experience:\n${(p.linkedinExperience as string).slice(0, 1500)}`,
+          keyStrengths && keyStrengths.length > 0 && `Key Strengths: ${keyStrengths.join(", ")}`,
+          dealStories && dealStories.length > 0 && `Deal Stories: ${dealStories.slice(0, 3).map(s => `${s.company || "Unnamed"} (${s.dealSize || "N/A"}): ${s.summary || ""}`).join("; ")}`,
+        ].filter(Boolean).join("\n")
+      : undefined;
+
     // Score the conversation (uses interview or sales rubric based on meetingType)
-    const scoringPrompt = buildScoringPrompt(transcript, persona, meetingType, session.isPanelMode);
+    const scoringPrompt = buildScoringPrompt(transcript, persona, meetingType, session.isPanelMode, sellerContext);
 
     const scoringResponse = await anthropic.messages.create({
       model: "claude-sonnet-4-20250514",

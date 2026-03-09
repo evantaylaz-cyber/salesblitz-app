@@ -79,6 +79,8 @@ interface ProfileData {
   icpDefinitions: ICPDefinition[];
   preferredTone: string;
   onboardingCompleted: boolean;
+  // Resume (goldmine)
+  resumeText: string;
   // Career & Territory (Layer 3)
   careerNarrative: string;
   keyStrengths: string[];
@@ -146,6 +148,7 @@ const DEFAULT_PROFILE: ProfileData = {
   icpDefinitions: [],
   preferredTone: "professional",
   onboardingCompleted: false,
+  resumeText: "",
   careerNarrative: "",
   keyStrengths: [],
   targetRoleTypes: [],
@@ -294,6 +297,9 @@ export default function ProfilePage() {
   const [fetchingCompany, setFetchingCompany] = useState(false);
   const [fetchCompanyError, setFetchCompanyError] = useState<string | null>(null);
   const [fetchingStoryUrl, setFetchingStoryUrl] = useState<number | null>(null);
+  // Resume parsing states
+  const [parsingResume, setParsingResume] = useState(false);
+  const [resumeParseResult, setResumeParseResult] = useState<string | null>(null);
 
   useEffect(() => {
     if (isLoaded && clerkUser) {
@@ -406,6 +412,45 @@ export default function ProfilePage() {
       // Silent fail — user can still fill manually
     } finally {
       setFetchingStoryUrl(null);
+    }
+  }
+
+  // Parse resume: sends resume text to API, auto-fills career fields
+  async function parseResume() {
+    if (!profile.resumeText || profile.resumeText.trim().length < 50) return;
+    setParsingResume(true);
+    setResumeParseResult(null);
+    try {
+      const res = await fetch("/api/profile/parse-resume", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ resumeText: profile.resumeText }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        // Auto-fill profile fields from parsed resume
+        setProfile((prev) => ({
+          ...prev,
+          careerNarrative: data.careerNarrative || prev.careerNarrative,
+          sellerArchetype: data.sellerArchetype || prev.sellerArchetype,
+          keyStrengths: data.keyStrengths?.length ? data.keyStrengths : prev.keyStrengths,
+          targetRoleTypes: data.targetRoleTypes?.length ? data.targetRoleTypes : prev.targetRoleTypes,
+          linkedinExperience: data.linkedinExperience || prev.linkedinExperience,
+          linkedinEducation: data.education || prev.linkedinEducation,
+        }));
+        const parts = [];
+        if (data.careerNarrative) parts.push("career narrative");
+        if (data.sellerArchetype) parts.push("seller archetype");
+        if (data.keyStrengths?.length) parts.push(`${data.keyStrengths.length} strengths`);
+        if (data.dealStoriesFound > 0) parts.push(`${data.dealStoriesFound} potential deal stories`);
+        setResumeParseResult(`Extracted: ${parts.join(", ")}. Review the fields below.`);
+      } else {
+        setResumeParseResult(data.error || "Failed to parse resume");
+      }
+    } catch {
+      setResumeParseResult("Network error. Try again.");
+    } finally {
+      setParsingResume(false);
     }
   }
 
@@ -570,11 +615,11 @@ export default function ProfilePage() {
             <AlertCircle className="h-5 w-5 text-emerald-700 mt-0.5 shrink-0" />
             <div>
               <p className="font-medium text-emerald-900">
-                Set up your profile for better results
+                We'll do the heavy lifting
               </p>
               <p className="mt-1 text-sm text-emerald-800">
-                Drop your company website below and we&apos;ll auto-fill most of this.
-                The more context you provide, the more personalized your deliverables.
+                Drop your company website below and hit Auto-Fill. We&apos;ll research your company, competitors, and market.
+                You just verify what we found.
               </p>
             </div>
           </div>
@@ -664,13 +709,13 @@ export default function ProfilePage() {
                 label="Company Description"
                 value={profile.companyDescription}
                 onChange={(v) => updateField("companyDescription", v)}
-                placeholder="Elevator pitch. What problem do you solve and for whom?"
+                placeholder="e.g., 'Gong captures customer interactions across phone, email, and web, then uses AI to surface deal risks, coaching moments, and revenue intelligence for B2B sales teams.'"
               />
               <TextArea
                 label="Key Differentiators"
                 value={profile.companyDifferentiators}
                 onChange={(v) => updateField("companyDifferentiators", v)}
-                placeholder="What makes you different? Why do customers choose you?"
+                placeholder="e.g., 'Only platform that captures all customer interactions (not just calls). Proprietary AI models trained on 4B+ sales conversations. Real-time deal intelligence vs. retroactive CRM data entry.'"
               />
               <TextArea
                 label="Main Competitors"
@@ -683,7 +728,7 @@ export default function ProfilePage() {
                 label="Target Market"
                 value={profile.companyTargetMarket}
                 onChange={(v) => updateField("companyTargetMarket", v)}
-                placeholder="Who are your ideal customers? Size, industry, buyer persona."
+                placeholder="e.g., 'B2B SaaS companies with 50-5000 employees. Primary buyers: VP Sales, CRO, RevOps leaders. Sweet spot: companies with 20+ AEs doing complex deals.'"
                 rows={2}
               />
             </div>
@@ -705,16 +750,16 @@ export default function ProfilePage() {
                 label="About / Summary"
                 value={profile.linkedinAbout}
                 onChange={(v) => updateField("linkedinAbout", v)}
-                placeholder="Paste your LinkedIn About section"
+                placeholder="e.g., 'Enterprise AE with 10+ years selling platform solutions to F500. 5x President's Club, $25M+ career closed. I specialize in complex, multi-stakeholder deals in highly competitive markets.'"
                 rows={4}
               />
               <TextArea
                 label="Experience"
                 value={profile.linkedinExperience}
                 onChange={(v) => updateField("linkedinExperience", v)}
-                placeholder="Paste your recent experience (last 2-3 roles)"
+                placeholder="e.g., 'Senior Enterprise AE, Gong (2022-Present): $3.2M quota, 142% attainment. Closed CBRE ($1.1M ACV), Red Bull (displaced incumbent). Enterprise AE, Salesforce (2018-2022): Named accounts, $2.5M avg quota.'"
                 rows={5}
-                hint="Include company names, titles, key achievements"
+                hint="Paste your last 2-3 roles. We'll use this to position you in deliverables."
               />
               <TextArea
                 label="Education"
@@ -723,6 +768,49 @@ export default function ProfilePage() {
                 placeholder="Paste your education section"
                 rows={2}
               />
+            </div>
+          </CollapsibleSection>
+
+          {/* SECTION: Resume (Goldmine) */}
+          <CollapsibleSection
+            title="Resume"
+            icon={FileText}
+            description="Paste your resume. We'll extract career data, deal stories, and strengths automatically."
+            defaultOpen={!profile.resumeText}
+            completionPct={profile.resumeText ? 100 : 0}
+          >
+            <div className="space-y-4">
+              <p className="text-sm text-gray-500">
+                Your resume is the fastest way to fill your profile. Paste it below and we'll extract your career arc, key wins, seller archetype, and potential deal stories. Way faster than typing it out.
+              </p>
+              <VoiceTextarea
+                value={profile.resumeText}
+                onChange={(v: string) => updateField("resumeText", v)}
+                placeholder="Paste your full resume text here. Include everything: summary, experience, education, skills, accomplishments..."
+                rows={8}
+              />
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={parseResume}
+                  disabled={!profile.resumeText || profile.resumeText.trim().length < 50 || parsingResume}
+                  className="flex items-center gap-1.5 rounded-lg bg-emerald-50 border border-emerald-200 px-4 py-2 text-sm font-medium text-emerald-800 hover:bg-emerald-100 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                >
+                  {parsingResume ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Sparkles className="h-4 w-4" />
+                  )}
+                  {parsingResume ? "Parsing..." : "Extract Career Data"}
+                </button>
+                {resumeParseResult && (
+                  <p className={`text-xs ${resumeParseResult.startsWith("Extracted") ? "text-emerald-700" : "text-red-500"}`}>
+                    {resumeParseResult}
+                  </p>
+                )}
+              </div>
+              <p className="text-xs text-gray-400">
+                This auto-fills your career narrative, archetype, strengths, experience, and identifies accomplishments that could become deal stories. You can edit everything after.
+              </p>
             </div>
           </CollapsibleSection>
 
@@ -834,7 +922,7 @@ export default function ProfilePage() {
                           onChange={(e) =>
                             updateDealStory(i, "title", e.target.value)
                           }
-                          placeholder="Story name"
+                          placeholder="e.g., 'CBRE Cold to 7-Figure'"
                           className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                         />
                         <input
@@ -843,26 +931,26 @@ export default function ProfilePage() {
                           onChange={(e) =>
                             updateDealStory(i, "customer", e.target.value)
                           }
-                          placeholder="Customer name"
+                          placeholder="e.g., 'CBRE Managed Services'"
                           className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                         />
                       </div>
                       <VoiceTextarea
                         value={story.challenge}
                         onChange={(val) => updateDealStory(i, "challenge", val)}
-                        placeholder="What was the challenge?"
+                        placeholder="e.g., 'CBRE was managing 400+ facilities with fragmented recruiting. Each property hired independently, no visibility into cost-per-hire across the portfolio.'"
                         rows={2}
                       />
                       <VoiceTextarea
                         value={story.solution}
                         onChange={(val) => updateDealStory(i, "solution", val)}
-                        placeholder="What did you sell / how did you solve it?"
+                        placeholder="e.g., 'Positioned our platform as the centralized hiring layer across all 400+ locations. Built CFO-level ROI case showing 40% cost reduction vs. their per-location agency model.'"
                         rows={2}
                       />
                       <VoiceTextarea
                         value={story.result}
                         onChange={(val) => updateDealStory(i, "result", val)}
-                        placeholder="What was the outcome?"
+                        placeholder="e.g., 'Closed at $180K initial ACV, expanded to $1M+ within 12 months. CPA dropped from $95 to $35 across their portfolio. Became their largest vendor in category.'"
                         rows={2}
                       />
                       <input
@@ -871,7 +959,7 @@ export default function ProfilePage() {
                         onChange={(e) =>
                           updateDealStory(i, "metrics", e.target.value)
                         }
-                        placeholder="Key metrics (e.g., '$2.1M ACV, 340% ROI')"
+                        placeholder="e.g., '$1M+ ACV, 63% CPA reduction, 400+ locations consolidated'"
                         className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                       />
                     </div>

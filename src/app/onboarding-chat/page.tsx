@@ -164,7 +164,7 @@ export default function OnboardingChatPage() {
               <p className="text-sm text-gray-500">
                 {onboardingDone
                   ? "Setup complete. Head to the dashboard."
-                  : "Tell me about yourself, your deals, and how you sell."}
+                  : "Company name & URL. We'll research the rest."}
               </p>
             </div>
           </div>
@@ -199,10 +199,10 @@ export default function OnboardingChatPage() {
                 </div>
                 <div className="bg-white border border-gray-200 rounded-2xl rounded-tl-md px-4 py-3 max-w-lg">
                   <p className="text-sm text-gray-800 leading-relaxed">
-                    Let's get you set up. This takes about 10 minutes and makes everything Sales Blitz generates specific to you, your deals, and how you sell.
+                    Let's get you set up. Two things to start: your company name and website URL. I'll research the rest so you don't have to.
                   </p>
                   <p className="text-sm text-gray-800 leading-relaxed mt-2">
-                    First, tell me what you sell and who you sell it to.
+                    Takes about 3 minutes. Most of that is me doing homework, not you.
                   </p>
                 </div>
               </div>
@@ -211,10 +211,10 @@ export default function OnboardingChatPage() {
               {showSuggestions && (
                 <div className="ml-11 flex flex-wrap gap-2">
                   {[
-                    "I sell enterprise SaaS to mid-market companies",
-                    "I'm in tech sales, mostly selling to F500",
-                    "I sell into healthcare/pharma",
-                    "I'm between roles and prepping for interviews",
+                    "I work at Salesforce, salesforce.com",
+                    "I'm at a startup called Acme, acme.io",
+                    "I work at Gong, gong.io",
+                    "I'm between roles, prepping for interviews",
                   ].map((suggestion) => (
                     <button
                       key={suggestion}

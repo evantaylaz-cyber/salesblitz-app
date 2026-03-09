@@ -133,8 +133,10 @@ export async function POST(req: NextRequest) {
       accumulatedIntel = target?.accumulatedIntel || "";
     }
 
-    // Load user profile for seller context (use ALL available fields)
+    // Load user profile for seller context (use ALL available fields including resume-derived data)
     const p = user.userProfile;
+    const keyStrengths = p?.keyStrengths as string[] | null;
+    const dealStories = p?.dealStories as Array<{ company?: string; dealSize?: string; summary?: string }> | null;
     const sellerContext = p
       ? [
           p.companyName && `Company: ${p.companyName}`,
@@ -151,6 +153,10 @@ export async function POST(req: NextRequest) {
           p.territoryFocus && `Territory Focus: ${p.territoryFocus}`,
           p.currentQuotaContext && `Quota Context: ${p.currentQuotaContext}`,
           p.linkedinAbout && `LinkedIn About: ${p.linkedinAbout}`,
+          p.linkedinExperience && `Experience:\n${(p.linkedinExperience as string).slice(0, 1500)}`,
+          keyStrengths && keyStrengths.length > 0 && `Key Strengths: ${keyStrengths.join(", ")}`,
+          dealStories && dealStories.length > 0 && `Deal Stories (${dealStories.length}): ${dealStories.slice(0, 3).map(s => `${s.company || "Unnamed"} (${s.dealSize || "N/A"})`).join("; ")}`,
+          p.writingStyle && `Writing Style: ${p.writingStyle}`,
         ].filter(Boolean).join("\n")
       : "";
 

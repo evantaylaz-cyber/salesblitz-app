@@ -131,6 +131,8 @@ export async function PUT(req: NextRequest) {
       "dealStories",
       "caseStudies",
       "valueProps",
+      // Resume
+      "resumeText",
       // Writing & communication style
       "writingStyle",
       "bannedPhrases",

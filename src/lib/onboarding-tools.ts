@@ -15,6 +15,8 @@
 
 import { z } from "zod";
 import { tool } from "ai";
+import { generateText } from "ai";
+import { anthropic } from "@ai-sdk/anthropic";
 import prisma from "@/lib/db";
 
 export function createOnboardingTools(userId: string) {
@@ -508,6 +510,393 @@ export function createOnboardingTools(userId: string) {
           return { success: true, depth, message: `Onboarding depth advanced to level ${depth}.` };
         } catch (err: any) {
           console.error(`[ONBOARDING] Failed to advance depth:`, err.message);
+          return { success: false, error: err.message };
+        }
+      },
+    }),
+
+    research_company: tool({
+      description:
+        "DEEP RESEARCH: Fetches the company's actual website, scrapes real content from multiple pages (homepage, about, customers, case studies), then uses AI to extract accurate intel. This is NOT surface-level. Call this IMMEDIATELY when a user provides their company name or URL. Present findings for verification. The user can always override or edit anything on their profile page.",
+      parameters: z.object({
+        company_name: z.string().describe("Company name to research"),
+        company_url: z.string().optional().describe("Company website URL (e.g., https://gong.io)"),
+        linkedin_url: z.string().optional().describe("User's LinkedIn profile URL"),
+      }),
+      execute: async ({ company_name, company_url, linkedin_url }) => {
+        try {
+          // ── Step 1: Fetch real website content from multiple pages ──
+          let websiteContent = "";
+          let pagesScraped = 0;
+
+          const fetchPage = async (url: string, label: string): Promise<string> => {
+            try {
+              const res = await fetch(url, {
+                headers: {
+                  "User-Agent": "Mozilla/5.0 (compatible; SalesBlitz/1.0)",
+                  Accept: "text/html,application/xhtml+xml,text/plain",
+                },
+                signal: AbortSignal.timeout(10000),
+              });
+              if (!res.ok) return "";
+              const html = await res.text();
+              const text = html
+                .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
+                .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
+                .replace(/<nav[^>]*>[\s\S]*?<\/nav>/gi, "")
+                .replace(/<footer[^>]*>[\s\S]*?<\/footer>/gi, "")
+                .replace(/<[^>]+>/g, " ")
+                .replace(/&nbsp;/g, " ")
+                .replace(/&amp;/g, "&")
+                .replace(/&lt;/g, "<")
+                .replace(/&gt;/g, ">")
+                .replace(/&#\d+;/g, "")
+                .replace(/\s+/g, " ")
+                .trim()
+                .slice(0, 12000);
+              if (text.length > 100) {
+                pagesScraped++;
+                return `\n--- ${label} ---\n${text}\n`;
+              }
+              return "";
+            } catch {
+              return "";
+            }
+          }
+
+          if (company_url) {
+            // Normalize URL
+            let baseUrl = company_url.trim();
+            if (!baseUrl.startsWith("http")) baseUrl = "https://" + baseUrl;
+            baseUrl = baseUrl.replace(/\/+$/, "");
+
+            // Fetch multiple pages in parallel for depth
+            const pageResults = await Promise.allSettled([
+              fetchPage(baseUrl, "HOMEPAGE"),
+              fetchPage(`${baseUrl}/about`, "ABOUT PAGE"),
+              fetchPage(`${baseUrl}/about-us`, "ABOUT PAGE"),
+              fetchPage(`${baseUrl}/customers`, "CUSTOMERS PAGE"),
+              fetchPage(`${baseUrl}/case-studies`, "CASE STUDIES"),
+              fetchPage(`${baseUrl}/pricing`, "PRICING PAGE"),
+              fetchPage(`${baseUrl}/product`, "PRODUCT PAGE"),
+              fetchPage(`${baseUrl}/solutions`, "SOLUTIONS PAGE"),
+              fetchPage(`${baseUrl}/why-us`, "WHY US PAGE"),
+            ]);
+
+            for (const r of pageResults) {
+              if (r.status === "fulfilled" && r.value) {
+                websiteContent += r.value;
+              }
+            }
+
+            // Cap total content to avoid token explosion
+            websiteContent = websiteContent.slice(0, 40000);
+          }
+
+          console.log(`[ONBOARDING] Research for ${company_name}: scraped ${pagesScraped} pages, ${websiteContent.length} chars`);
+
+          // ── Step 2: Build research prompt with real content ──
+          const hasRealContent = websiteContent.length > 200;
+
+          const researchPrompt = `You are a B2B sales intelligence researcher doing a DEEP analysis of "${company_name}."${company_url ? ` Website: ${company_url}` : ""}
+
+${hasRealContent ? `## ACTUAL WEBSITE CONTENT (scraped from their site)\n${websiteContent}\n\n## YOUR TASK\nUsing the REAL website content above plus your training knowledge, extract accurate, specific intelligence. Prioritize what's actually on their website over guesses. If the website content contradicts your training data, trust the website.` : `## NO WEBSITE CONTENT AVAILABLE\nResearch this company from your training knowledge. Be honest about confidence levels. Mark anything you're uncertain about.`}
+
+Return a JSON object. Be SPECIFIC, not generic. Use real names, real numbers, real details from the content above. If you can't find something with confidence, use "NOT_FOUND".
+
+{
+  "company_product": "Exactly what they sell. Product name, category, core capability. One specific sentence.",
+  "company_description": "2-3 sentences. What they do, who they serve, how they're positioned in the market. Use their own language where possible.",
+  "company_target_market": "Who buys this? Be specific: industry verticals, company sizes (employee count or revenue ranges), buyer titles/roles, geographic focus if evident.",
+  "company_competitors": "Top 3-5 DIRECT competitors. Companies selling to the same buyer with a similar product. Comma-separated.",
+  "company_differentiators": "2-4 specific things that make them different. Not generic ('great customer service') but specific ('only platform that captures all customer interactions across phone, email, and web conferencing').",
+  "value_proposition": "Their primary value prop in one sentence. What outcome do they promise?",
+  "gtm_strategy": "Go-to-market motion: direct enterprise sales, PLG, channel/partner, hybrid? What's the primary sales motion? Evidence from pricing page, team structure, or website structure.",
+  "messaging_themes": "Top 3 messaging themes from their website. What value props do they lead with? What words/phrases repeat?",
+  "case_studies": [
+    {
+      "customer_name": "Real customer company name (from website)",
+      "industry": "Customer's industry",
+      "challenge": "Specific problem they faced",
+      "solution": "What was implemented",
+      "result": "Quantified outcome: specific numbers, percentages, dollar amounts",
+      "summary": "One sentence summary"
+    }
+  ],
+  "icp_definitions": [
+    {
+      "industry": "Primary target vertical",
+      "company_size": "Typical customer size (employees or revenue)",
+      "buyer_persona": "Primary buyer title/role",
+      "common_pains": "Pain points this ICP typically has that this product solves"
+    }
+  ],
+  "key_customers": "Notable customer logos or names mentioned on the website, comma-separated",
+  "funding_stage": "If known: seed, Series A/B/C, public, bootstrapped, PE-backed",
+  "employee_count_range": "Approximate headcount range if discernible",
+  "confidence_score": 0.85,
+  "confidence_notes": "What you're most/least confident about and why"
+}
+
+CRITICAL: Extract REAL customer names and REAL metrics from the website content. Do not fabricate case studies or customers. If you found customer logos but no case study details, list them under key_customers instead.`;
+
+          const result = await generateText({
+            model: anthropic("claude-sonnet-4-5-20250929"),
+            prompt: researchPrompt,
+            maxTokens: 4000,
+          });
+
+          // ── Step 3: Parse the AI response ──
+          let research: any = {};
+          try {
+            const jsonMatch = result.text.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+              research = JSON.parse(jsonMatch[0]);
+            }
+          } catch {
+            console.error("[ONBOARDING] Failed to parse research response");
+            return { success: false, error: "Research completed but failed to parse results. Try again." };
+          }
+
+          // ── Step 4: Save to profile (user verifies via chatbot) ──
+          const updateData: any = { companyName: company_name };
+          if (company_url) updateData.companyUrl = company_url;
+
+          const fieldMap: Record<string, string> = {
+            company_product: "companyProduct",
+            company_description: "companyDescription",
+            company_target_market: "companyTargetMarket",
+            company_competitors: "companyCompetitors",
+            company_differentiators: "companyDifferentiators",
+          };
+
+          for (const [src, dest] of Object.entries(fieldMap)) {
+            if (research[src] && research[src] !== "NOT_FOUND") {
+              updateData[dest] = research[src];
+            }
+          }
+
+          await prisma.userProfile.upsert({
+            where: { userId },
+            create: { userId, ...updateData },
+            update: updateData,
+          });
+
+          // Save case studies if found (only real ones from the website)
+          if (research.case_studies && Array.isArray(research.case_studies) && research.case_studies.length > 0) {
+            const validCaseStudies = research.case_studies
+              .filter((cs: any) => cs.customer_name && cs.customer_name !== "NOT_FOUND")
+              .map((cs: any) => ({
+                customerName: cs.customer_name,
+                industry: cs.industry || "",
+                challenge: cs.challenge || "",
+                solution: cs.solution || "",
+                result: cs.result || "",
+                quote: cs.quote || "",
+                summary: cs.summary || "",
+              }));
+
+            if (validCaseStudies.length > 0) {
+              await prisma.userProfile.update({
+                where: { userId },
+                data: { caseStudies: validCaseStudies },
+              });
+            }
+          }
+
+          // Save ICP definitions if found
+          if (research.icp_definitions && Array.isArray(research.icp_definitions) && research.icp_definitions.length > 0) {
+            const validICPs = research.icp_definitions
+              .filter((icp: any) => icp.industry && icp.industry !== "NOT_FOUND")
+              .map((icp: any) => ({
+                industry: icp.industry,
+                companySize: icp.company_size || "",
+                buyerPersona: icp.buyer_persona || "",
+                commonPains: icp.common_pains || "",
+              }));
+
+            if (validICPs.length > 0) {
+              await prisma.userProfile.update({
+                where: { userId },
+                data: { icpDefinitions: validICPs },
+              });
+            }
+          }
+
+          return {
+            success: true,
+            company_name,
+            pages_scraped: pagesScraped,
+            used_real_content: hasRealContent,
+            fields_filled: Object.keys(updateData).length,
+            case_studies_found: research.case_studies?.filter((cs: any) => cs.customer_name !== "NOT_FOUND").length || 0,
+            icp_definitions_found: research.icp_definitions?.filter((icp: any) => icp.industry !== "NOT_FOUND").length || 0,
+            confidence: research.confidence_score || 0,
+            confidence_notes: research.confidence_notes || "",
+            research_summary: {
+              product: research.company_product,
+              description: research.company_description,
+              target_market: research.company_target_market,
+              competitors: research.company_competitors,
+              differentiators: research.company_differentiators,
+              value_proposition: research.value_proposition,
+              gtm_strategy: research.gtm_strategy,
+              messaging_themes: research.messaging_themes,
+              key_customers: research.key_customers,
+              funding_stage: research.funding_stage,
+              employee_count_range: research.employee_count_range,
+            },
+          };
+        } catch (err: any) {
+          console.error(`[ONBOARDING] Company research failed:`, err.message);
+          return { success: false, error: err.message };
+        }
+      },
+    }),
+
+    parse_resume: tool({
+      description:
+        "GOLDMINE: Parse a pasted resume and extract structured career data. Resumes contain career arc, deal sizes, accomplishments, skills, companies, and writing patterns — all in one document. Call this when a user pastes their resume. Extracts and auto-fills: career narrative, key strengths, deal stories (from accomplishments), seller archetype, LinkedIn-equivalent experience, and target role types. Stores the raw resume text for downstream use by blitz tools.",
+      parameters: z.object({
+        resume_text: z.string().describe("The full text of the user's resume"),
+      }),
+      execute: async ({ resume_text }) => {
+        try {
+          // Store raw resume text
+          await prisma.userProfile.upsert({
+            where: { userId },
+            create: { userId, resumeText: resume_text },
+            update: { resumeText: resume_text },
+          });
+
+          // Use AI to extract structured data from the resume
+          const extractionPrompt = `You are analyzing a sales professional's resume to extract structured data for a sales enablement platform. Extract the following from this resume. Be specific and use actual numbers, company names, and achievements from the resume.
+
+RESUME:
+${resume_text.slice(0, 15000)}
+
+Return a JSON object with these fields:
+
+{
+  "career_narrative": "2-3 sentence career arc summary. Focus on progression, scale, and pattern (e.g., 'Enterprise seller with 10+ years scaling from SMB to F500. Consistent quota over-attainment across 3 companies.').",
+  "seller_archetype": "One of: hunter, farmer, hunter_farmer, consultative, challenger, relationship_builder. Based on their career pattern.",
+  "key_strengths": ["strength1", "strength2", "strength3"],
+  "years_experience": 0,
+  "current_or_last_company": "Company name",
+  "current_or_last_role": "Title",
+  "target_role_types": ["enterprise_ae", "strategic_ae", etc.],
+  "linkedin_experience_equivalent": "Formatted experience section reconstructed from resume data. Each role on its own line: Company, Title (dates): key accomplishments.",
+  "deal_stories_raw": [
+    {
+      "company_or_account": "Account name or description from an accomplishment",
+      "what_happened": "The accomplishment described in the resume",
+      "metrics": "Any numbers: revenue, deal size, growth %, quota attainment",
+      "could_be_deal_story": true
+    }
+  ],
+  "education": "Degree, school, year if listed",
+  "skills_and_tools": ["CRM tools", "methodologies", "certifications mentioned"],
+  "writing_patterns": "Any observations about how they write: formal vs casual, action-verb heavy, metrics-focused, etc."
+}
+
+Extract ONLY what's actually in the resume. Don't invent or embellish.`;
+
+          const result = await generateText({
+            model: anthropic("claude-sonnet-4-5-20250929"),
+            prompt: extractionPrompt,
+            maxTokens: 3000,
+          });
+
+          let parsed: any = {};
+          try {
+            const jsonMatch = result.text.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+              parsed = JSON.parse(jsonMatch[0]);
+            }
+          } catch {
+            console.error("[ONBOARDING] Failed to parse resume extraction");
+            return { success: false, error: "Resume stored but extraction failed. Try again." };
+          }
+
+          // Auto-fill profile fields from resume data
+          const updateData: any = {};
+          if (parsed.career_narrative) updateData.careerNarrative = parsed.career_narrative;
+          if (parsed.seller_archetype) updateData.sellerArchetype = parsed.seller_archetype;
+          if (parsed.key_strengths && Array.isArray(parsed.key_strengths)) {
+            updateData.keyStrengths = parsed.key_strengths;
+          }
+          if (parsed.target_role_types && Array.isArray(parsed.target_role_types)) {
+            updateData.targetRoleTypes = parsed.target_role_types;
+          }
+          if (parsed.linkedin_experience_equivalent) {
+            updateData.linkedinExperience = parsed.linkedin_experience_equivalent;
+          }
+          if (parsed.education) {
+            updateData.linkedinEducation = parsed.education;
+          }
+
+          if (Object.keys(updateData).length > 0) {
+            await prisma.userProfile.update({
+              where: { userId },
+              data: updateData,
+            });
+          }
+
+          // Also store as a KnowledgeDocument for the worker pipeline
+          const existingDoc = await prisma.knowledgeDocument.findFirst({
+            where: { userId, title: "Resume", category: "custom" },
+          });
+
+          if (existingDoc) {
+            await prisma.knowledgeDocument.update({
+              where: { id: existingDoc.id },
+              data: { content: resume_text.slice(0, 50000) },
+            });
+          } else {
+            await prisma.knowledgeDocument.create({
+              data: {
+                userId,
+                title: "Resume",
+                content: resume_text.slice(0, 50000),
+                category: "custom",
+              },
+            });
+          }
+
+          return {
+            success: true,
+            fields_filled: Object.keys(updateData).length,
+            career_narrative: parsed.career_narrative,
+            seller_archetype: parsed.seller_archetype,
+            key_strengths: parsed.key_strengths,
+            years_experience: parsed.years_experience,
+            current_company: parsed.current_or_last_company,
+            current_role: parsed.current_or_last_role,
+            deal_stories_found: parsed.deal_stories_raw?.length || 0,
+            deal_stories_raw: parsed.deal_stories_raw,
+            skills: parsed.skills_and_tools,
+            writing_patterns: parsed.writing_patterns,
+          };
+        } catch (err: any) {
+          console.error(`[ONBOARDING] Resume parse failed:`, err.message);
+          return { success: false, error: err.message };
+        }
+      },
+    }),
+
+    mark_onboarding_complete: tool({
+      description:
+        "Mark onboarding as complete. Call this when Layer 1 essentials are captured and the user is ready to run their first blitz.",
+      parameters: z.object({}),
+      execute: async () => {
+        try {
+          await prisma.userProfile.update({
+            where: { userId },
+            data: { onboardingCompleted: true },
+          });
+          return { success: true, message: "Onboarding marked as complete." };
+        } catch (err: any) {
+          console.error(`[ONBOARDING] Failed to mark complete:`, err.message);
           return { success: false, error: err.message };
         }
       },

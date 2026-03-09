@@ -261,6 +261,9 @@ model UserProfile {
   caseStudies           Json     @default("[]") @map("case_studies")       // [{customerName, challenge, solution, result, quote, industry}]
   valueProps            Json     @default("[]") @map("value_props")
 
+  // Resume (raw text — goldmine for career arc, deal stories, skills, writing patterns)
+  resumeText            String?  @map("resume_text") @db.Text
+
   // Writing & communication style
   writingStyle          String?  @map("writing_style") @db.Text           // Description of their writing voice
   bannedPhrases         Json     @default("[]") @map("banned_phrases")    // Phrases to never use in their output

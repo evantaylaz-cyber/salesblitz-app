@@ -551,7 +551,7 @@ export default function RequestPage() {
                 value={linkedinText}
                 onChange={setLinkedinText}
                 rows={6}
-                placeholder="Go to their LinkedIn profile, select all (Ctrl+A / Cmd+A), paste here. Include their About, Experience, Education. Everything helps."
+                placeholder={"Go to their LinkedIn profile, select all (Ctrl+A / Cmd+A), paste here.\n\nInclude their About, Experience, Education. We'll extract their career trajectory, key accomplishments, and shared connections to personalize your materials."}
               />
             </div>
           </div>
@@ -619,7 +619,7 @@ export default function RequestPage() {
                     value={priorInteractions}
                     onChange={setPriorInteractions}
                     rows={3}
-                    placeholder="Any previous emails, calls, or meetings with this person?"
+                    placeholder={"e.g., 'Had a 15-min intro call last Tuesday. She mentioned their current vendor's contract is up in Q3 and they're frustrated with reporting gaps. I sent a follow-up email with our ROI calculator.'"}
                   />
                 </div>
               </div>
@@ -677,7 +677,7 @@ export default function RequestPage() {
                   value={jobDescription}
                   onChange={setJobDescription}
                   rows={10}
-                  placeholder="Paste the complete job description here, or use the Fetch button above..."
+                  placeholder={"Paste the complete job description here, or drop a link above and hit Fetch.\n\nInclude everything: title, responsibilities, requirements, qualifications, compensation if listed. The more detail, the sharper your prep materials."}
                 />
               </div>
             </div>
@@ -851,8 +851,8 @@ export default function RequestPage() {
                   rows={6}
                   placeholder={
                     isDeal
-                      ? "What stage is the deal? Who are the stakeholders? What's blocking progress?"
-                      : "What product are you selling? What do you know about this account?"
+                      ? "e.g., 'Stage 3, $180K ACV. Champion is VP Ops (Maria Torres), but CFO (Dave Kim) is the economic buyer and hasn't been engaged yet. Stuck because they want a 90-day pilot but we need a 12-month commit to hit pricing.'"
+                      : "e.g., 'Selling our procurement platform to their COO. They currently use SAP Ariba but their mid-market division is underserved. I know they had a failed implementation with Coupa last year. LinkedIn shows they just hired a new VP of Supply Chain.'"
                   }
                 />
               </div>
@@ -899,7 +899,7 @@ export default function RequestPage() {
                 value={additionalNotes}
                 onChange={setAdditionalNotes}
                 rows={3}
-                placeholder="Anything else we should know? Specific areas to focus on, upcoming deadlines, etc."
+                placeholder={"e.g., 'Focus on how we handle enterprise security requirements. Their CISO will likely be involved. Also, they're a Gong customer so reference that integration if relevant.'"}
               />
             </div>
           </div>
