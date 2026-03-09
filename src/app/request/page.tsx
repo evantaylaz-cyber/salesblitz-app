@@ -217,13 +217,13 @@ export default function RequestPage() {
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
             <CheckCircle2 className="h-8 w-8 text-emerald-600" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Request Submitted</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Blitz Started</h1>
           <p className="mt-3 text-gray-600">
-            Your <strong>{toolInfo.name}</strong> request for{" "}
-            <strong>{targetName}</strong> at <strong>{targetCompany}</strong> has been submitted.
+            Your <strong>{toolInfo.name}</strong> blitz for{" "}
+            <strong>{targetName}</strong> at <strong>{targetCompany}</strong> is running.
           </p>
           <p className="mt-2 text-sm text-gray-500">
-            Your deliverables are being generated now. Track progress in real-time below.
+            We&apos;re researching and building your deliverables now. Track progress in real-time.
           </p>
           <div className="mt-6 flex gap-3 justify-center">
             {submittedRequestId && (
@@ -258,7 +258,7 @@ export default function RequestPage() {
           </button>
           <div>
             <h1 className="text-lg font-bold text-gray-900">{toolInfo.name}</h1>
-            <p className="text-sm text-gray-500">Submit your request details below</p>
+            <p className="text-sm text-gray-500">Fill in the details to start your blitz</p>
           </div>
         </div>
       </header>
@@ -819,7 +819,7 @@ export default function RequestPage() {
           {/* Submit */}
           <div className="flex items-center justify-between">
             <p className="text-xs text-gray-400">
-              This will use 1 run from your balance.
+              This will use 1 blitz from your balance.
             </p>
             <button
               type="submit"
@@ -829,12 +829,12 @@ export default function RequestPage() {
               {submitting ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Submitting...
+                  Starting...
                 </>
               ) : (
                 <>
                   <Send className="h-4 w-4" />
-                  Submit Request
+                  Start Blitz
                 </>
               )}
             </button>

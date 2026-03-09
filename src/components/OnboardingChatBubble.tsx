@@ -455,10 +455,10 @@ export default function OnboardingChatBubble({
         {!hasInteracted && messages.length === 0 && (
           <div className="flex items-center justify-center mt-2">
             <a
-              href="/onboarding/ai-setup"
+              href="/profile"
               className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
             >
-              Prefer manual setup? Use the paste-based wizard instead.
+              Prefer manual setup? Edit your profile directly.
             </a>
           </div>
         )}

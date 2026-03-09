@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useUser } from "@clerk/nextjs";
-import { UserButton } from "@clerk/nextjs";
 import {
   Building2,
   User,
@@ -13,7 +12,6 @@ import {
   Loader2,
   ChevronDown,
   ChevronRight,
-  ArrowLeft,
   Plus,
   Trash2,
   AlertCircle,
@@ -24,6 +22,7 @@ import {
   MapPin,
   Pen,
 } from "lucide-react";
+import AppNav from "@/components/AppNav";
 import VoiceTextarea from "@/components/VoiceTextarea";
 
 interface DealStory {
@@ -494,23 +493,15 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="border-b bg-white sticky top-0 z-10">
-        <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-4">
+      <AppNav currentPage="/profile" />
+
+      {/* Profile action bar */}
+      <div className="border-b bg-white sticky top-[57px] z-10">
+        <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-3">
+          <h1 className="text-lg font-bold text-gray-900">Your Profile</h1>
           <div className="flex items-center gap-3">
             <a
-              href="/dashboard"
-              className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900 transition"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Dashboard
-            </a>
-            <span className="text-gray-300">/</span>
-            <h1 className="text-lg font-bold text-gray-900">Your Profile</h1>
-          </div>
-          <div className="flex items-center gap-3">
-            <a
-              href="/onboarding/ai-setup"
+              href="/onboarding-chat"
               className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-800 transition hover:bg-emerald-100"
             >
               <Sparkles className="h-4 w-4" />
@@ -530,10 +521,9 @@ export default function ProfilePage() {
               )}
               {saving ? "Saving..." : saved ? "Saved!" : "Save Profile"}
             </button>
-            <UserButton afterSignOutUrl="/sign-in" />
           </div>
         </div>
-      </header>
+      </div>
 
       <main className="mx-auto max-w-4xl px-6 py-8">
         {/* Intro banner */}

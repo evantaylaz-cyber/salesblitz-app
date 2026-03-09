@@ -1,12 +1,10 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useUser } from "@clerk/nextjs";
-import { UserButton } from "@clerk/nextjs";
 import { useParams } from "next/navigation";
 import { useStepStream, StepUpdate } from "@/hooks/useStepStream";
 import {
-  ArrowLeft,
   Loader2,
   CheckCircle2,
   Clock,
@@ -23,6 +21,7 @@ import {
   RefreshCw,
   Video,
 } from "lucide-react";
+import AppNav from "@/components/AppNav";
 import DebriefSection from "@/components/DebriefSection";
 
 interface StepData {
@@ -98,10 +97,10 @@ const STATUS_STYLES: Record<string, { ring: string; bg: string; text: string; ic
   awaiting_clarification: { ring: "ring-emerald-200", bg: "bg-emerald-50", text: "text-emerald-800", icon: "text-emerald-600" },
 };
 
-const ASSET_CATEGORY_LABELS: Record<string, { label: string; color: string }> = {
-  interactive: { label: "Interactive", color: "bg-emerald-100 text-emerald-800" },
-  research: { label: "Research", color: "bg-blue-100 text-blue-700" },
-  deliverable: { label: "Deliverable", color: "bg-emerald-100 text-emerald-700" },
+const ASSET_CATEGORY_LABELS: Record<string, { label: string; description: string; color: string }> = {
+  interactive: { label: "Interactive", description: "Open in your browser. Bookmark these for live calls.", color: "bg-emerald-100 text-emerald-800" },
+  research: { label: "Research", description: "Background intel that powered your deliverables.", color: "bg-blue-100 text-blue-700" },
+  deliverable: { label: "Deliverable", description: "Ready to download, print, or share.", color: "bg-emerald-100 text-emerald-700" },
 };
 
 const FORMAT_ICONS: Record<string, string> = {
@@ -111,6 +110,66 @@ const FORMAT_ICONS: Record<string, string> = {
   url: "🌐",
   html: "🌐",
 };
+
+const FORMAT_LABELS: Record<string, string> = {
+  docx: "Word Doc",
+  pdf: "PDF",
+  pptx: "Slides",
+  url: "Web",
+  html: "Interactive",
+};
+
+function formatDuration(ms: number): string {
+  const totalSec = Math.floor(ms / 1000);
+  if (totalSec < 60) return `${totalSec}s`;
+  const min = Math.floor(totalSec / 60);
+  const sec = totalSec % 60;
+  return sec > 0 ? `${min}m ${sec}s` : `${min}m`;
+}
+
+function useElapsedTimer(startTime: string | null | undefined, isActive: boolean): number {
+  const [elapsed, setElapsed] = useState(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    if (!isActive || !startTime) {
+      setElapsed(0);
+      return;
+    }
+    const start = new Date(startTime).getTime();
+    const tick = () => setElapsed(Date.now() - start);
+    tick();
+    intervalRef.current = setInterval(tick, 1000);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [startTime, isActive]);
+
+  return elapsed;
+}
+
+function computeETA(steps: StepData[], startedAt: string | null): { etaText: string; totalElapsed: number } | null {
+  if (!startedAt) return null;
+  const totalElapsed = Date.now() - new Date(startedAt).getTime();
+  const completedSteps = steps.filter((s) => s.status === "completed" && s.startedAt && s.completedAt);
+  if (completedSteps.length === 0) return { etaText: "Estimating...", totalElapsed };
+
+  const totalCompletedMs = completedSteps.reduce((sum, s) => {
+    return sum + (new Date(s.completedAt!).getTime() - new Date(s.startedAt!).getTime());
+  }, 0);
+  const avgStepMs = totalCompletedMs / completedSteps.length;
+  const remainingSteps = steps.filter((s) => s.status === "pending" || s.status === "in_progress").length;
+  const activeStep = steps.find((s) => s.status === "in_progress");
+  const activeElapsed = activeStep?.startedAt ? Date.now() - new Date(activeStep.startedAt).getTime() : 0;
+  const estimatedRemaining = Math.max(0, avgStepMs * remainingSteps - activeElapsed);
+
+  if (estimatedRemaining < 30000) return { etaText: "Almost done", totalElapsed };
+  return { etaText: `~${formatDuration(estimatedRemaining)} remaining`, totalElapsed };
+}
 
 export default function RequestDetailPage() {
   const { isLoaded } = useUser();
@@ -165,6 +224,13 @@ export default function RequestDetailPage() {
   // Real-time step updates via SSE (falls back to polling if SSE fails)
   const isActive = !!request && ["submitted", "researching", "generating", "awaiting_clarification"].includes(request.status);
 
+  // Live elapsed timer for the active step
+  const activeStep = request?.steps.find((s) => s.status === "in_progress");
+  const activeStepElapsed = useElapsedTimer(activeStep?.startedAt, !!activeStep);
+
+  // Overall elapsed + ETA
+  const etaInfo = request ? computeETA(request.steps, request.startedAt) : null;
+
   useStepStream({
     requestId: requestId,
     enabled: isActive,
@@ -215,45 +281,40 @@ export default function RequestDetailPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="border-b bg-white">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-4">
-            <a href="/requests" className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600">
-              <ArrowLeft className="h-5 w-5" />
-            </a>
-            <div>
-              <h1 className="text-lg font-bold text-gray-900">
-                {TOOL_NAMES[request.toolName] || request.toolName}
-              </h1>
-              <p className="text-sm text-gray-500">
-                {request.targetName} · {request.targetCompany}
-                {request.targetRole ? ` · ${request.targetRole}` : ""}
-              </p>
-            </div>
+      <AppNav currentPage="/requests" />
+
+      {/* Request detail bar */}
+      <div className="border-b bg-white">
+        <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-3">
+          <div>
+            <h1 className="text-lg font-bold text-gray-900">
+              {TOOL_NAMES[request.toolName] || request.toolName}
+            </h1>
+            <p className="text-sm text-gray-500">
+              {request.targetName} · {request.targetCompany}
+              {request.targetRole ? ` · ${request.targetRole}` : ""}
+            </p>
           </div>
-          <div className="flex items-center gap-3">
-            {request.priority && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 border border-amber-200 px-2.5 py-1 text-xs font-medium text-amber-700">
-                <Zap className="h-3 w-3" /> Priority
-              </span>
-            )}
-            <UserButton afterSignOutUrl="/sign-in" />
-          </div>
+          {request.priority && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 border border-amber-200 px-2.5 py-1 text-xs font-medium text-amber-700">
+              <Zap className="h-3 w-3" /> Priority
+            </span>
+          )}
         </div>
-      </header>
+      </div>
 
       <main className="mx-auto max-w-3xl px-6 py-8 space-y-8">
         {/* Progress Bar */}
         <div className={`rounded-xl border ${statusStyle.ring} ring-1 ${statusStyle.bg} p-6`}>
           <div className="flex items-center justify-between mb-3">
-            <span className={`text-sm font-semibold ${statusStyle.text} capitalize`}>
-              {request.status === "researching" ? "Researching..." :
-               request.status === "generating" ? "Generating deliverables..." :
-               request.status === "ready" ? "Ready for download" :
+            <span className={`text-sm font-semibold ${statusStyle.text}`}>
+              {request.status === "researching" ? "Researching your target" :
+               request.status === "generating" ? "Building your deliverables" :
+               request.status === "ready" ? "Your blitz is ready" :
                request.status === "delivered" ? "Delivered" :
-               request.status === "failed" ? "Failed" :
-               request.status === "awaiting_clarification" ? "Waiting for your input" :
-               "Queued"}
+               request.status === "failed" ? "Something went wrong" :
+               request.status === "awaiting_clarification" ? "We need your input to continue" :
+               "In the queue"}
             </span>
             <span className={`text-sm font-medium ${statusStyle.text}`}>
               {request.progress}%
@@ -269,12 +330,22 @@ export default function RequestDetailPage() {
               style={{ width: `${request.progress}%` }}
             />
           </div>
-          <p className="mt-2 text-xs text-gray-500">
-            {request.completedSteps} of {request.totalSteps} steps completed
-            {request.startedAt && (
-              <> · Started {new Date(request.startedAt).toLocaleTimeString()}</>
+          <div className="mt-2 flex items-center justify-between">
+            <p className="text-xs text-gray-500">
+              {request.completedSteps} of {request.totalSteps} steps completed
+              {etaInfo && isActive && (
+                <> · {formatDuration(etaInfo.totalElapsed)} elapsed</>
+              )}
+              {!isActive && request.startedAt && request.completedAt && (
+                <> · Completed in {formatDuration(new Date(request.completedAt).getTime() - new Date(request.startedAt).getTime())}</>
+              )}
+            </p>
+            {isActive && etaInfo && (
+              <span className="text-xs font-medium text-emerald-600">
+                {etaInfo.etaText}
+              </span>
             )}
-          </p>
+          </div>
         </div>
 
         {/* Stalled Run Detection — only show if no steps have completed (active progress = not stalled) */}
@@ -286,9 +357,9 @@ export default function RequestDetailPage() {
             <div className="flex items-start gap-3">
               <Clock className="h-5 w-5 text-amber-500 mt-0.5" />
               <div className="flex-1">
-                <h3 className="font-semibold text-amber-800">This blitz appears stalled</h3>
+                <h3 className="font-semibold text-amber-800">Taking longer than usual</h3>
                 <p className="mt-1 text-sm text-amber-700">
-                  It&apos;s been queued longer than expected. You can retry it at no extra cost.
+                  This blitz has been in the queue for a while. Hit retry to kick it off again at no extra cost.
                 </p>
                 <button
                   onClick={retryRequest}
@@ -313,9 +384,9 @@ export default function RequestDetailPage() {
             <div className="flex items-start gap-4">
               <MessageCircleQuestion className="h-6 w-6 text-emerald-700 shrink-0 mt-0.5" />
               <div className="flex-1">
-                <h3 className="font-semibold text-emerald-900">We have a few questions</h3>
+                <h3 className="font-semibold text-emerald-900">Quick questions to sharpen your blitz</h3>
                 <p className="mt-1 text-sm text-emerald-800">
-                  Answering these will significantly improve your deliverables. Takes about 2 minutes.
+                  A couple of details will help us nail the specifics. Takes about 2 minutes.
                 </p>
                 <a
                   href={`/request/${request.id}/clarify`}
@@ -332,7 +403,7 @@ export default function RequestDetailPage() {
         {/* Execution Steps */}
         <div className="rounded-xl border bg-white shadow-sm">
           <div className="border-b px-6 py-4">
-            <h2 className="font-semibold text-gray-900">Execution Progress</h2>
+            <h2 className="font-semibold text-gray-900">What&apos;s happening</h2>
           </div>
           <div className="divide-y">
             {request.steps.map((step, i) => {
@@ -383,12 +454,17 @@ export default function RequestDetailPage() {
                     {(isActive || isComplete || isFailed) && (
                       <p className="mt-1 text-xs text-gray-500">{step.description}</p>
                     )}
+                    {isActive && step.startedAt && (
+                      <p className="mt-1 text-xs text-emerald-600 font-medium tabular-nums">
+                        Running for {formatDuration(activeStepElapsed)}
+                      </p>
+                    )}
                     {isFailed && step.error && (
                       <p className="mt-1 text-xs text-red-600">{step.error}</p>
                     )}
-                    {isComplete && step.completedAt && (
+                    {isComplete && step.startedAt && step.completedAt && (
                       <p className="mt-1 text-xs text-gray-400">
-                        Completed at {new Date(step.completedAt).toLocaleTimeString()}
+                        {formatDuration(new Date(step.completedAt).getTime() - new Date(step.startedAt).getTime())}
                       </p>
                     )}
                   </div>
@@ -419,9 +495,12 @@ export default function RequestDetailPage() {
                 const catInfo = ASSET_CATEGORY_LABELS[category];
                 return (
                   <div key={category} className="px-6 py-4">
-                    <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${catInfo.color} mb-3`}>
-                      {catInfo.label}
-                    </span>
+                    <div className="mb-3">
+                      <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${catInfo.color}`}>
+                        {catInfo.label}
+                      </span>
+                      <p className="mt-1 text-xs text-gray-400">{catInfo.description}</p>
+                    </div>
                     <div className="space-y-2">
                       {categoryAssets.map((asset: AssetData) => (
                         <a
@@ -432,11 +511,22 @@ export default function RequestDetailPage() {
                           className="flex items-center gap-3 rounded-lg border border-gray-100 px-4 py-3 hover:bg-gray-50 hover:border-gray-200 transition group"
                         >
                           <span className="text-lg">{FORMAT_ICONS[asset.format] || "📄"}</span>
-                          <span className="flex-1 text-sm font-medium text-gray-700 group-hover:text-gray-900">
-                            {asset.label}
+                          <div className="flex-1 min-w-0">
+                            <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900 block truncate">
+                              {asset.label}
+                            </span>
+                            {asset.size && (
+                              <span className="text-xs text-gray-400">
+                                {asset.size > 1024 * 1024
+                                  ? `${(asset.size / (1024 * 1024)).toFixed(1)} MB`
+                                  : `${Math.round(asset.size / 1024)} KB`}
+                              </span>
+                            )}
+                          </div>
+                          <span className="rounded bg-gray-50 border border-gray-100 px-2 py-0.5 text-xs text-gray-500">
+                            {FORMAT_LABELS[asset.format] || asset.format.toUpperCase()}
                           </span>
-                          <span className="text-xs text-gray-400 uppercase">{asset.format}</span>
-                          <ExternalLink className="h-4 w-4 text-gray-300 group-hover:text-emerald-600" />
+                          <ExternalLink className="h-4 w-4 text-gray-300 group-hover:text-emerald-600 shrink-0" />
                         </a>
                       ))}
                     </div>
@@ -461,9 +551,9 @@ export default function RequestDetailPage() {
                   <Video className="h-6 w-6 text-emerald-700" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">Practice This Call</h3>
+                  <h3 className="font-semibold text-gray-900">Rehearse before the real thing</h3>
                   <p className="text-sm text-gray-500">
-                    Rehearse with an AI avatar using the research from this blitz
+                    Practice with an AI persona built from this blitz&apos;s research
                   </p>
                 </div>
               </div>
@@ -484,7 +574,7 @@ export default function RequestDetailPage() {
             <div className="flex items-start gap-3">
               <AlertCircle className="h-5 w-5 text-red-500 mt-0.5" />
               <div className="flex-1">
-                <h3 className="font-semibold text-red-800">Execution Failed</h3>
+                <h3 className="font-semibold text-red-800">This blitz hit a snag</h3>
                 <p className="mt-1 text-sm text-red-700">{request.errorMessage}</p>
                 <div className="mt-4 flex items-center gap-3">
                   <button
@@ -497,12 +587,11 @@ export default function RequestDetailPage() {
                     ) : (
                       <RefreshCw className="h-4 w-4" />
                     )}
-                    {retrying ? "Retrying..." : "Retry This Run"}
+                    {retrying ? "Retrying..." : "Retry (no extra cost)"}
                   </button>
-                  <span className="text-xs text-gray-500">No additional credits consumed</span>
                 </div>
-                <p className="mt-3 text-xs text-red-600">
-                  Our team has been notified. You can also reach us at evan@salesblitz.ai
+                <p className="mt-3 text-xs text-gray-500">
+                  We&apos;ve been notified and are looking into it. If it keeps failing, reach out to support@salesblitz.ai
                 </p>
               </div>
             </div>

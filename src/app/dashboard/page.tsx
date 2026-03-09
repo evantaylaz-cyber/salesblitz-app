@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
-import { UserButton } from "@clerk/nextjs";
 import {
   Zap,
   Lock,
@@ -15,11 +14,11 @@ import {
   ChevronRight,
   Sparkles,
   Eye,
-  Menu,
-  X,
   Mail,
   Users,
+  AlertCircle,
 } from "lucide-react";
+import AppNav from "@/components/AppNav";
 import dynamic from "next/dynamic";
 
 const OnboardingChatBubble = dynamic(
@@ -107,14 +106,14 @@ const TOOLS: Tool[] = [
     id: "prospect_outreach",
     name: "Prospect Outreach",
     hook: "Get the meeting.",
-    description: "Multi-channel sequences backed by deep account intelligence.",
+    description: "Outreach sequences that earn replies. Personalized to each account's pain points.",
     minimumTier: "launch",
   },
   {
     id: "prospect_prep",
     name: "Prospect Prep",
     hook: "Own the call.",
-    description: "Discovery plans, stakeholder maps, and competitive positioning for any meeting type.",
+    description: "Walk in knowing their org chart, pain points & competitive landscape. CotM-structured.",
     minimumTier: "pro",
   },
   {
@@ -159,7 +158,7 @@ export default function DashboardPage() {
   const [chatOpen, setChatOpen] = useState(false);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
   const [onboardingDepth, setOnboardingDepth] = useState(0);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  // mobileMenuOpen state removed — now handled by AppNav component
 
   useEffect(() => {
     if (isLoaded && clerkUser) {
@@ -262,133 +261,65 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="border-b bg-white relative">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-3">
-            <h1 className="text-xl font-bold text-gray-900">Sales Blitz</h1>
-            {hasSubscription && (
-              <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800">
-                {TIER_NAMES[userData!.currentTier!]}
-              </span>
-            )}
-            {userData?.priorityProcessing && (
-              <span className="rounded-full bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-700">
-                Priority
-              </span>
-            )}
-          </div>
-
-          {/* Desktop nav */}
-          <div className="hidden lg:flex items-center gap-x-8">
-            <a href="/requests" className="relative text-sm text-gray-600 hover:text-gray-900">
-              Requests
-              {pendingRequests > 0 && (
-                <span className="absolute -top-1.5 -right-3 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-600 text-[10px] font-bold text-white">
-                  {pendingRequests}
-                </span>
-              )}
-            </a>
-            <a href="/profile" className="text-sm text-gray-600 hover:text-gray-900">
-              Profile
-            </a>
-            <a href="/knowledge-base" className="text-sm text-gray-600 hover:text-gray-900">
-              Knowledge Base
-            </a>
-            <a href="/playbooks" className="text-sm text-gray-600 hover:text-gray-900">
-              Playbooks
-            </a>
-            <a href="/teams" className="text-sm text-gray-600 hover:text-gray-900">
-              Teams
-            </a>
-            <a href="/analytics" className="text-sm text-gray-600 hover:text-gray-900">
-              Analytics
-            </a>
-            {hasSubscription && (
-              <button
-                onClick={handleManageBilling}
-                className="text-sm text-gray-600 hover:text-gray-900"
-              >
-                Billing
-              </button>
-            )}
-            {!isMaxTier && (
-              <a
-                href="/subscribe"
-                className="text-sm font-medium text-emerald-700 hover:text-emerald-900"
-              >
-                {hasSubscription ? "Upgrade" : "Subscribe"}
-              </a>
-            )}
-            <UserButton afterSignOutUrl="/sign-in" />
-          </div>
-
-          {/* Mobile nav */}
-          <div className="flex lg:hidden items-center gap-4">
-            <a href="/requests" className="relative text-sm text-gray-600 hover:text-gray-900">
-              Requests
-              {pendingRequests > 0 && (
-                <span className="absolute -top-1.5 -right-3 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-600 text-[10px] font-bold text-white">
-                  {pendingRequests}
-                </span>
-              )}
-            </a>
-            <UserButton afterSignOutUrl="/sign-in" />
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
-            >
-              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile dropdown */}
-        {mobileMenuOpen && (
-          <div className="lg:hidden border-t bg-white px-6 py-3 space-y-1">
-            <a href="/profile" className="block rounded-lg px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50">
-              Profile
-            </a>
-            <a href="/knowledge-base" className="block rounded-lg px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50">
-              Knowledge Base
-            </a>
-            <a href="/playbooks" className="block rounded-lg px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50">
-              Playbooks
-            </a>
-            <a href="/teams" className="block rounded-lg px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50">
-              Teams
-            </a>
-            <a href="/analytics" className="block rounded-lg px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50">
-              Analytics
-            </a>
-            {hasSubscription && (
-              <button
-                onClick={() => { handleManageBilling(); setMobileMenuOpen(false); }}
-                className="block w-full text-left rounded-lg px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
-              >
-                Billing
-              </button>
-            )}
-            {!isMaxTier && (
-              <a
-                href="/subscribe"
-                className="block rounded-lg px-3 py-2.5 text-sm font-medium text-emerald-700 hover:bg-emerald-50"
-              >
-                {hasSubscription ? "Upgrade" : "Subscribe"}
-              </a>
-            )}
-          </div>
-        )}
-      </header>
+      <AppNav
+        currentPage="/dashboard"
+        pendingRequests={pendingRequests}
+        hasSubscription={!!hasSubscription}
+        isMaxTier={isMaxTier}
+        onManageBilling={handleManageBilling}
+        tierBadge={hasSubscription && userData?.currentTier ? TIER_NAMES[userData.currentTier] : undefined}
+        hasPriority={userData?.priorityProcessing}
+      />
 
       <main className="mx-auto max-w-7xl px-6 py-8">
-        {/* Run Stats */}
+        {/* Pending requests banner */}
+        {pendingRequests > 0 && (
+          <a
+            href="/requests"
+            className="mb-6 flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-3 transition hover:bg-emerald-100"
+          >
+            <div className="flex items-center gap-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-600 text-white text-sm font-bold">
+                {pendingRequests}
+              </div>
+              <span className="text-sm font-medium text-emerald-900">
+                {pendingRequests === 1 ? "Blitz in progress" : `${pendingRequests} blitzes in progress`}
+              </span>
+            </div>
+            <ChevronRight className="h-4 w-4 text-emerald-600" />
+          </a>
+        )}
+
+        {/* Run Stats — Total first, then breakdown */}
         <div className="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
+          {/* Total Available */}
+          <div className="rounded-xl border-2 border-emerald-200 bg-white p-5 shadow-sm">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-700">Blitzes Available</span>
+              <Zap className="h-4 w-4 text-emerald-600" />
+            </div>
+            <p className="mt-2 text-3xl font-bold text-gray-900">{totalAvailableRuns()}</p>
+            {totalAvailableRuns() === 0 ? (
+              <a
+                href="/subscribe#packs"
+                className="mt-2 inline-flex items-center text-xs font-medium text-emerald-700 hover:text-emerald-900"
+              >
+                Get more blitzes <ChevronRight className="ml-0.5 h-3 w-3" />
+              </a>
+            ) : (
+              <p className="mt-2 text-xs text-gray-400">
+                {hasSubscription && userData!.currentPeriodEnd
+                  ? `Subscription resets ${new Date(userData!.currentPeriodEnd).toLocaleDateString()}`
+                  : "Use them on any tool below"}
+              </p>
+            )}
+          </div>
+
           {/* Subscription Runs */}
           <div className="rounded-xl border bg-white p-5 shadow-sm">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-gray-500">Subscription</span>
-              <Zap className="h-4 w-4 text-emerald-600" />
+              <CheckCircle2 className="h-4 w-4 text-emerald-500" />
             </div>
             <p className="mt-2 text-2xl font-bold text-gray-900">
               {hasSubscription ? userData!.subscriptionRunsRemaining : 0}
@@ -406,23 +337,18 @@ export default function DashboardPage() {
                 />
               </div>
             )}
-            {hasSubscription && userData!.currentPeriodEnd && (
-              <p className="mt-2 text-xs text-gray-400">
-                Resets {new Date(userData!.currentPeriodEnd).toLocaleDateString()}
-              </p>
-            )}
           </div>
 
           {/* Pack Runs */}
           <div className="rounded-xl border bg-white p-5 shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-500">Blitz Packs</span>
+              <span className="text-sm font-medium text-gray-500">Packs</span>
               <Package className="h-4 w-4 text-emerald-500" />
             </div>
             <p className="mt-2 text-2xl font-bold text-gray-900">
               {userData?.runPacks
-                .filter((p) => p.type !== "interview_sprint")
-                .reduce((sum, p) => sum + p.runsRemaining, 0) || 0}
+                .filter((p: { type: string }) => p.type !== "interview_sprint")
+                .reduce((sum: number, p: { runsRemaining: number }) => sum + p.runsRemaining, 0) || 0}
             </p>
           </div>
 
@@ -434,24 +360,9 @@ export default function DashboardPage() {
             </div>
             <p className="mt-2 text-2xl font-bold text-gray-900">
               {userData?.runPacks
-                .filter((p) => p.type === "interview_sprint")
-                .reduce((sum, p) => sum + p.runsRemaining, 0) || 0}
+                .filter((p: { type: string }) => p.type === "interview_sprint")
+                .reduce((sum: number, p: { runsRemaining: number }) => sum + p.runsRemaining, 0) || 0}
             </p>
-          </div>
-
-          {/* Total */}
-          <div className="rounded-xl border bg-white p-5 shadow-sm">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-500">Total</span>
-              <CheckCircle2 className="h-4 w-4 text-blue-500" />
-            </div>
-            <p className="mt-2 text-2xl font-bold text-gray-900">{totalAvailableRuns()}</p>
-            <a
-              href="/subscribe#packs"
-              className="mt-2 inline-flex items-center text-xs font-medium text-emerald-700 hover:text-emerald-900"
-            >
-              Buy more <ChevronRight className="ml-0.5 h-3 w-3" />
-            </a>
           </div>
         </div>
 
@@ -492,7 +403,7 @@ export default function DashboardPage() {
             </div>
             <div className="flex items-center gap-3">
               <a
-                href="/onboarding/ai-setup"
+                href="/profile"
                 className="text-xs text-gray-400 hover:text-gray-600 transition whitespace-nowrap"
               >
                 Manual setup
@@ -535,7 +446,7 @@ export default function DashboardPage() {
         )}
 
         {/* Tools Grid */}
-        <h2 className="mb-4 text-lg font-semibold text-gray-900">Your Tools</h2>
+        <h2 className="mb-4 text-lg font-semibold text-gray-900">Blitz Tools</h2>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {TOOLS.map((tool) => {
             const accessible = !tool.comingSoon && (canAccess(tool.minimumTier) || hasSprintAccess(tool.id));
@@ -602,7 +513,12 @@ export default function DashboardPage() {
         {/* Recent Runs */}
         {userData?.runLogs && userData.runLogs.length > 0 && (
           <div className="mt-10">
-            <h2 className="mb-4 text-lg font-semibold text-gray-900">Recent Blitzes</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">Recent Blitzes</h2>
+              <a href="/requests" className="text-sm text-emerald-700 hover:text-emerald-900">
+                View all
+              </a>
+            </div>
             <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
               <table className="w-full text-sm">
                 <thead className="bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -611,6 +527,7 @@ export default function DashboardPage() {
                     <th className="px-6 py-3">Prospect</th>
                     <th className="px-6 py-3">Date</th>
                     <th className="px-6 py-3">Status</th>
+                    <th className="px-6 py-3"></th>
                   </tr>
                 </thead>
                 <tbody className="divide-y">
@@ -629,12 +546,25 @@ export default function DashboardPage() {
                       </td>
                       <td className="px-6 py-3">
                         {log.status === "completed" || log.status === "delivered" ? (
-                          <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                          <span className="inline-flex items-center gap-1 text-emerald-600 text-xs font-medium">
+                            <CheckCircle2 className="h-3.5 w-3.5" /> Done
+                          </span>
                         ) : log.status === "failed" ? (
-                          <XCircle className="h-4 w-4 text-red-500" />
+                          <span className="inline-flex items-center gap-1 text-red-500 text-xs font-medium">
+                            <XCircle className="h-3.5 w-3.5" /> Failed
+                          </span>
+                        ) : log.status === "awaiting_clarification" ? (
+                          <span className="inline-flex items-center gap-1 text-amber-600 text-xs font-medium">
+                            <AlertCircle className="h-3.5 w-3.5" /> Needs Input
+                          </span>
                         ) : (
-                          <Loader2 className="h-4 w-4 animate-spin text-amber-500" />
+                          <span className="inline-flex items-center gap-1 text-blue-500 text-xs font-medium">
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" /> Running
+                          </span>
                         )}
+                      </td>
+                      <td className="px-6 py-3">
+                        <ChevronRight className="h-4 w-4 text-gray-300" />
                       </td>
                     </tr>
                   ))}

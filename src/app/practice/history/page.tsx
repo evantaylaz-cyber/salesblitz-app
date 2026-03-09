@@ -2,10 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
-import { UserButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import {
-  ArrowLeft,
   Clock,
   Target,
   TrendingUp,
@@ -14,6 +12,7 @@ import {
   BarChart3,
   Video,
 } from "lucide-react";
+import AppNav from "@/components/AppNav";
 
 interface PastSession {
   id: string;
@@ -74,20 +73,7 @@ export default function PracticeHistoryPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="border-b bg-white">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-3">
-            <button onClick={() => router.push("/practice")} className="text-gray-400 hover:text-gray-600">
-              <ArrowLeft className="h-5 w-5" />
-            </button>
-            <div className="flex items-center gap-2">
-              <Video className="h-5 w-5 text-emerald-700" />
-              <h1 className="text-xl font-bold text-gray-900">Practice History</h1>
-            </div>
-          </div>
-          <UserButton afterSignOutUrl="/sign-in" />
-        </div>
-      </header>
+      <AppNav currentPage="/practice" />
 
       <main className="mx-auto max-w-5xl px-6 py-10">
         {/* Stats */}

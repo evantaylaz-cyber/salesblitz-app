@@ -2,9 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
-import { UserButton } from "@clerk/nextjs";
 import {
-  ArrowLeft,
   Loader2,
   CheckCircle2,
   Clock,
@@ -16,7 +14,10 @@ import {
   Layers,
   Users,
   ArrowRight,
+  Filter,
+  ChevronDown,
 } from "lucide-react";
+import AppNav from "@/components/AppNav";
 
 interface StepData {
   id: string;
@@ -98,11 +99,34 @@ const BATCH_STATUS_CONFIG: Record<string, { label: string; color: string; bg: st
   awaiting_clarification: { label: "Your Input Needed", color: "text-emerald-800", bg: "bg-emerald-50 border-emerald-200", icon: MessageCircleQuestion },
 };
 
+type StatusFilter = "all" | "active" | "completed" | "failed" | "needs_input";
+type SortOrder = "newest" | "oldest";
+
+const STATUS_FILTERS: { key: StatusFilter; label: string }[] = [
+  { key: "all", label: "All" },
+  { key: "active", label: "Active" },
+  { key: "completed", label: "Completed" },
+  { key: "failed", label: "Failed" },
+  { key: "needs_input", label: "Needs Input" },
+];
+
+function matchesStatusFilter(status: string, filter: StatusFilter): boolean {
+  if (filter === "all") return true;
+  if (filter === "active") return ["submitted", "researching", "generating", "in_progress"].includes(status);
+  if (filter === "completed") return ["ready", "delivered", "completed"].includes(status);
+  if (filter === "failed") return status === "failed";
+  if (filter === "needs_input") return status === "awaiting_clarification";
+  return true;
+}
+
 export default function RequestsPage() {
   const { isLoaded } = useUser();
   const [requests, setRequests] = useState<RunRequest[]>([]);
   const [batchJobs, setBatchJobs] = useState<BatchJob[]>([]);
   const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [toolFilter, setToolFilter] = useState<string>("all");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("newest");
 
   useEffect(() => {
     if (isLoaded) fetchAll();
@@ -138,35 +162,130 @@ export default function RequestsPage() {
     );
   }
 
+  // Derive unique tool names for filter dropdown
+  const toolNames = Array.from(new Set(requests.map((r) => r.toolName)));
+
+  // Apply filters and sorting
+  const filteredRequests = requests
+    .filter((r) => matchesStatusFilter(r.status, statusFilter))
+    .filter((r) => toolFilter === "all" || r.toolName === toolFilter)
+    .sort((a, b) => {
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return sortOrder === "newest" ? dateB - dateA : dateA - dateB;
+    });
+
+  const filteredBatches = batchJobs
+    .filter((b) => matchesStatusFilter(b.status, statusFilter))
+    .filter((b) => toolFilter === "all" || b.toolName === toolFilter)
+    .sort((a, b) => {
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return sortOrder === "newest" ? dateB - dateA : dateA - dateB;
+    });
+
   const hasContent = requests.length > 0 || batchJobs.length > 0;
+  const hasFilteredContent = filteredRequests.length > 0 || filteredBatches.length > 0;
+  const isFiltered = statusFilter !== "all" || toolFilter !== "all";
+
+  // Count per status for filter badges
+  const statusCounts = {
+    all: requests.length + batchJobs.length,
+    active: requests.filter((r) => matchesStatusFilter(r.status, "active")).length +
+            batchJobs.filter((b) => matchesStatusFilter(b.status, "active")).length,
+    completed: requests.filter((r) => matchesStatusFilter(r.status, "completed")).length +
+               batchJobs.filter((b) => matchesStatusFilter(b.status, "completed")).length,
+    failed: requests.filter((r) => matchesStatusFilter(r.status, "failed")).length +
+            batchJobs.filter((b) => matchesStatusFilter(b.status, "failed")).length,
+    needs_input: requests.filter((r) => matchesStatusFilter(r.status, "needs_input")).length +
+                 batchJobs.filter((b) => matchesStatusFilter(b.status, "needs_input")).length,
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="border-b bg-white">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-4">
-            <a
-              href="/dashboard"
-              className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </a>
-            <h1 className="text-lg font-bold text-gray-900">My Requests</h1>
-          </div>
-          <div className="flex items-center gap-3">
-            <a
-              href="/request/batch"
-              className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 transition"
-            >
-              <Layers className="h-4 w-4" />
-              New Blitz
-            </a>
-            <UserButton afterSignOutUrl="/sign-in" />
-          </div>
+      <AppNav currentPage="/requests" />
+
+      {/* Requests action bar */}
+      <div className="border-b bg-white">
+        <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-3">
+          <h1 className="text-lg font-bold text-gray-900">My Requests</h1>
+          <a
+            href="/request/batch"
+            className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 transition"
+          >
+            <Layers className="h-4 w-4" />
+            New Blitz
+          </a>
         </div>
-      </header>
+      </div>
 
       <main className="mx-auto max-w-5xl px-6 py-8">
+        {/* Filters */}
+        {hasContent && (
+          <div className="mb-6 space-y-3">
+            {/* Status filter tabs */}
+            <div className="flex items-center gap-1 overflow-x-auto">
+              {STATUS_FILTERS.map((f) => {
+                const count = statusCounts[f.key];
+                const isActive = statusFilter === f.key;
+                return (
+                  <button
+                    key={f.key}
+                    onClick={() => setStatusFilter(f.key)}
+                    className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition whitespace-nowrap ${
+                      isActive
+                        ? "bg-emerald-100 text-emerald-800"
+                        : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                    }`}
+                  >
+                    {f.label}
+                    {count > 0 && (
+                      <span className={`text-xs rounded-full px-1.5 py-0.5 ${
+                        isActive ? "bg-emerald-200 text-emerald-900" : "bg-gray-100 text-gray-400"
+                      }`}>
+                        {count}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Tool filter + sort row */}
+            <div className="flex items-center gap-3">
+              {toolNames.length > 1 && (
+                <div className="relative">
+                  <select
+                    value={toolFilter}
+                    onChange={(e) => setToolFilter(e.target.value)}
+                    className="appearance-none rounded-lg border border-gray-200 bg-white pl-3 pr-8 py-1.5 text-sm text-gray-700 hover:border-gray-300 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 focus:outline-none"
+                  >
+                    <option value="all">All tools</option>
+                    {toolNames.map((t) => (
+                      <option key={t} value={t}>
+                        {TOOL_NAMES[t] || t}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 pointer-events-none" />
+                </div>
+              )}
+
+              <div className="relative ml-auto">
+                <select
+                  value={sortOrder}
+                  onChange={(e) => setSortOrder(e.target.value as SortOrder)}
+                  className="appearance-none rounded-lg border border-gray-200 bg-white pl-3 pr-8 py-1.5 text-sm text-gray-700 hover:border-gray-300 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 focus:outline-none"
+                >
+                  <option value="newest">Newest first</option>
+                  <option value="oldest">Oldest first</option>
+                </select>
+                <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 pointer-events-none" />
+              </div>
+            </div>
+          </div>
+        )}
+
         {!hasContent ? (
           <div className="text-center py-16">
             <Package className="mx-auto h-12 w-12 text-gray-300" />
@@ -180,16 +299,30 @@ export default function RequestsPage() {
           </div>
         ) : (
           <div className="space-y-8">
+            {/* Empty filter state */}
+            {isFiltered && !hasFilteredContent && (
+              <div className="text-center py-12">
+                <Filter className="mx-auto h-10 w-10 text-gray-300" />
+                <p className="mt-3 text-gray-500">No requests match your filters.</p>
+                <button
+                  onClick={() => { setStatusFilter("all"); setToolFilter("all"); }}
+                  className="mt-2 text-sm font-medium text-emerald-700 hover:text-emerald-900"
+                >
+                  Clear filters
+                </button>
+              </div>
+            )}
+
             {/* Batch Jobs Section */}
-            {batchJobs.length > 0 && (
+            {filteredBatches.length > 0 && (
               <section>
                 <div className="flex items-center gap-2 mb-4">
                   <Layers className="h-5 w-5 text-emerald-700" />
                   <h2 className="text-base font-semibold text-gray-900">Batch Jobs</h2>
-                  <span className="text-xs text-gray-400 ml-1">({batchJobs.length})</span>
+                  <span className="text-xs text-gray-400 ml-1">({filteredBatches.length})</span>
                 </div>
                 <div className="space-y-3">
-                  {batchJobs.map((batch) => {
+                  {filteredBatches.map((batch) => {
                     const statusInfo = BATCH_STATUS_CONFIG[batch.status] || BATCH_STATUS_CONFIG.submitted;
                     const StatusIcon = statusInfo.icon;
                     const isActive = batch.status === "processing" || batch.status === "submitted";
@@ -286,17 +419,17 @@ export default function RequestsPage() {
             )}
 
             {/* Individual Requests Section */}
-            {requests.length > 0 && (
+            {filteredRequests.length > 0 && (
               <section>
-                {batchJobs.length > 0 && (
+                {filteredBatches.length > 0 && (
                   <div className="flex items-center gap-2 mb-4">
                     <Package className="h-5 w-5 text-emerald-700" />
                     <h2 className="text-base font-semibold text-gray-900">Individual Requests</h2>
-                    <span className="text-xs text-gray-400 ml-1">({requests.length})</span>
+                    <span className="text-xs text-gray-400 ml-1">({filteredRequests.length})</span>
                   </div>
                 )}
                 <div className="space-y-4">
-                  {requests.map((req) => {
+                  {filteredRequests.map((req) => {
                     const statusInfo = STATUS_CONFIG[req.status] || STATUS_CONFIG.submitted;
                     const StatusIcon = statusInfo.icon;
                     const steps = Array.isArray(req.steps) ? req.steps as StepData[] : [];

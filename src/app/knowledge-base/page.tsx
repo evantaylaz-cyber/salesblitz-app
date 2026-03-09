@@ -2,9 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useUser } from "@clerk/nextjs";
-import { UserButton } from "@clerk/nextjs";
 import {
-  ArrowLeft,
   Plus,
   Trash2,
   Edit3,
@@ -22,6 +20,7 @@ import {
   Search,
   Check,
 } from "lucide-react";
+import AppNav from "@/components/AppNav";
 import VoiceTextarea from "@/components/VoiceTextarea";
 
 interface KnowledgeDoc {
@@ -219,35 +218,20 @@ export default function KnowledgeBasePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="border-b bg-white sticky top-0 z-10">
+      <AppNav currentPage="/knowledge-base" />
+
+      <div className="border-b bg-white">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-3">
-            <a
-              href="/dashboard"
-              className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900 transition"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Dashboard
-            </a>
-            <span className="text-gray-300">/</span>
-            <h1 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-              <BookOpen className="h-5 w-5 text-emerald-700" />
-              Knowledge Base
-            </h1>
-          </div>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={openCreate}
-              className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-700"
-            >
-              <Plus className="h-4 w-4" />
-              Add Document
-            </button>
-            <UserButton afterSignOutUrl="/sign-in" />
-          </div>
+          <div />
+          <button
+            onClick={openCreate}
+            className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-700"
+          >
+            <Plus className="h-4 w-4" />
+            Add Document
+          </button>
         </div>
-      </header>
+      </div>
 
       <main className="mx-auto max-w-5xl px-6 py-8">
         {error && (

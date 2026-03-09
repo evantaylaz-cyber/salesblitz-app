@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useUser } from "@clerk/nextjs";
-import { UserButton } from "@clerk/nextjs";
-import { Check, Zap, ArrowLeft, Loader2, Star } from "lucide-react";
+import { Check, Zap, Loader2, Star } from "lucide-react";
+import AppNav from "@/components/AppNav";
 
 const TIERS = [
   {
@@ -92,17 +92,7 @@ export default function SubscribePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="border-b bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-3">
-            <a href="/dashboard" className="text-gray-400 hover:text-gray-600">
-              <ArrowLeft className="h-5 w-5" />
-            </a>
-            <h1 className="text-xl font-bold text-gray-900">Choose Your Plan</h1>
-          </div>
-          <UserButton afterSignOutUrl="/sign-in" />
-        </div>
-      </header>
+      <AppNav currentPage="/subscribe" />
 
       <main className="mx-auto max-w-7xl px-6 py-10">
         {/* Billing Toggle */}

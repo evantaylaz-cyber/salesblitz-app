@@ -1,6 +1,6 @@
 "use client";
 
-import { useUser, UserButton } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -15,12 +15,12 @@ import {
   Trash2,
   Settings,
   CreditCard,
-  ArrowLeft,
   Clock,
   CheckCircle2,
   XCircle,
   ChevronDown,
 } from "lucide-react";
+import AppNav from "@/components/AppNav";
 
 interface Member {
   id: string;
@@ -204,38 +204,9 @@ export default function TeamDetailPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="border-b bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-3">
-            <Link href="/dashboard" className="text-xl font-bold text-gray-900">
-              Sales Blitz
-            </Link>
-            <span className="text-gray-300">/</span>
-            <Link href="/teams" className="text-lg text-gray-500 hover:text-gray-700">
-              Teams
-            </Link>
-            <span className="text-gray-300">/</span>
-            <span className="text-lg font-semibold text-gray-700">{team.name}</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <Link href="/dashboard" className="text-sm text-gray-600 hover:text-gray-900">
-              Dashboard
-            </Link>
-            <UserButton />
-          </div>
-        </div>
-      </header>
+      <AppNav currentPage="/teams" />
 
       <main className="mx-auto max-w-4xl px-6 py-8">
-        {/* Back Link */}
-        <Link
-          href="/teams"
-          className="mb-6 inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          All Teams
-        </Link>
 
         {/* Team Overview */}
         <div className="mb-8 grid gap-4 sm:grid-cols-3">

@@ -1,15 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useUser, UserButton } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 import {
-  ArrowLeft,
   Loader2,
   CreditCard,
   Package,
   Clock,
   Zap,
 } from "lucide-react";
+import AppNav from "@/components/AppNav";
 
 interface UserData {
   id: string;
@@ -73,19 +73,7 @@ export default function BillingPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="border-b bg-white">
-        <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-3">
-            <a href="/dashboard" className="text-gray-400 hover:text-gray-600">
-              <ArrowLeft className="h-5 w-5" />
-            </a>
-            <h1 className="text-xl font-bold text-gray-900">
-              Billing & Subscription
-            </h1>
-          </div>
-          <UserButton afterSignOutUrl="/sign-in" />
-        </div>
-      </header>
+      <AppNav currentPage="/dashboard" />
 
       <main className="mx-auto max-w-4xl px-6 py-10 space-y-8">
         {/* Current Plan */}

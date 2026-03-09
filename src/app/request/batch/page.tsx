@@ -3,9 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
-import { UserButton } from "@clerk/nextjs";
 import {
-  ArrowLeft,
   Loader2,
   Plus,
   Trash2,
@@ -14,6 +12,7 @@ import {
   Mic,
   MicOff,
 } from "lucide-react";
+import AppNav from "@/components/AppNav";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
 
 interface AccountInput {
@@ -174,20 +173,7 @@ export default function BatchRequestPage() {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white">
-      <header className="border-b border-zinc-800/60">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-4">
-            <a
-              href="/requests"
-              className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </a>
-            <h1 className="text-lg font-bold text-white">Batch Request</h1>
-          </div>
-          <UserButton afterSignOutUrl="/sign-in" />
-        </div>
-      </header>
+      <AppNav currentPage="/requests" />
 
       <main className="mx-auto max-w-3xl px-6 py-8">
         <form onSubmit={handleSubmit} className="space-y-8">

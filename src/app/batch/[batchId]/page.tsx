@@ -3,9 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
-import { UserButton } from "@clerk/nextjs";
 import {
-  ArrowLeft,
   Loader2,
   CheckCircle2,
   Clock,
@@ -16,6 +14,7 @@ import {
   Zap,
   MessageCircle,
 } from "lucide-react";
+import AppNav from "@/components/AppNav";
 
 interface AccountStatus {
   requestId: string;
@@ -134,15 +133,7 @@ export default function BatchProgressPage() {
   if (error || !batchJob) {
     return (
       <div className="min-h-screen bg-zinc-950 text-white">
-        <header className="border-b border-zinc-800/60">
-          <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
-            <div className="flex items-center gap-4">
-              <a href="/requests" className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200"><ArrowLeft className="h-5 w-5" /></a>
-              <h1 className="text-lg font-bold text-white">Batch Progress</h1>
-            </div>
-            <UserButton afterSignOutUrl="/sign-in" />
-          </div>
-        </header>
+        <AppNav currentPage="/requests" />
         <main className="mx-auto max-w-3xl px-6 py-8">
           <div className="flex items-start gap-3 rounded-lg border border-red-500/20 bg-red-950/30 p-4">
             <AlertCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
@@ -159,15 +150,7 @@ export default function BatchProgressPage() {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white">
-      <header className="border-b border-zinc-800/60">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-4">
-            <a href="/requests" className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200"><ArrowLeft className="h-5 w-5" /></a>
-            <h1 className="text-lg font-bold text-white">Batch Progress</h1>
-          </div>
-          <UserButton afterSignOutUrl="/sign-in" />
-        </div>
-      </header>
+      <AppNav currentPage="/requests" />
 
       <main className="mx-auto max-w-3xl px-6 py-8 space-y-8">
         {/* Overall Batch Status */}
