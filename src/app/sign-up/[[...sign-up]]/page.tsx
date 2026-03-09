@@ -19,13 +19,14 @@ export default function SignUpPage() {
         {/* Hero */}
         <div className="max-w-md">
           <h1 className="text-3xl font-bold leading-tight text-white">
-            Stop winging it.
+            Research. Rehearse.
             <br />
-            <span className="text-emerald-400">Start winning.</span>
+            <span className="text-emerald-400">Close.</span>
           </h1>
           <p className="mt-4 text-base text-gray-400 leading-relaxed">
-            Get AI-generated research, prep materials & live practice
-            for every deal on your pipeline. Set up in under 5 minutes.
+            Drop in a company name. Get a research brief, competitive
+            playbook, call prep docs, and POV deck in minutes. Then practice
+                        your pitch against an AI buyer who pushes back.
           </p>
 
           {/* What you get */}
