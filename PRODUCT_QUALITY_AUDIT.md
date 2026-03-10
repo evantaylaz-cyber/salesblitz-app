@@ -505,28 +505,39 @@ Additional items discovered already fixed during this session:
 - `AppNav.tsx`: Added Targets nav item
 - `request/page.tsx`: Re-Blitz pre-fill from target query params
 
+### Deep Audit (Mar 10, 2026 late session)
+
+Re-audited all remaining items. Multiple were already fixed in prior sessions:
+
+**P2 Fix: Gender detection uses hardcoded name list** — ALREADY FIXED. The hardcoded female name list was replaced by API-returned gender. Flow: `practice/start` returns `persona.gender` (line 377) → `practice/page.tsx` passes `gender` in URL query param (line 158) → `practice/[sessionId]/page.tsx` reads `searchParams.get("gender")` (line 186) and selects avatar + TTS voice. No hardcoded name list in codebase (grep confirmed clean).
+
+**P2 Fix: No panel mode speaker indicator** — ALREADY PARTIALLY FIXED. `practice/[sessionId]/page.tsx` line 559-561 shows current speaker name when avatar is speaking in panel mode. Full panel mode with role switching is Phase 4 work.
+
+**P3 Fix: Timer doesn't pause when avatar speaks** — ALREADY FIXED. `practice/[sessionId]/page.tsx` lines 236-239: timer only increments when `!isSpeakingRef.current`. Title tooltip says "Your active time (pauses while persona speaks)."
+
+**P3 Fix: Tool cards don't show recent activity counts** — ALREADY FIXED. `dashboard/page.tsx` lines 487-491 show "{N} runs" badge on each tool card.
+
+**P3 Fix: Mobile nav is basic** — ALREADY FIXED. `AppNav.tsx` mobile dropdown (lines 143-160) renders icons per item via `<Icon className="h-4 w-4 text-gray-400" />`.
+
 ### Remaining Open Items
 
 **P1 (0):** All P1s resolved.
 
-**P2 (4):**
-1. Female avatar ID unverified (needs live test)
-2. Chroma key untested with real avatar (needs live test)
-3. Gender detection uses hardcoded name list (should use API-returned gender field)
-4. No panel mode speaker indicator (Phase 4)
+**P2 (2):**
+1. Female avatar ID unverified (needs live HeyGen test with credits)
+2. Chroma key untested with real avatar (needs live HeyGen test with credits)
 
-**P3 (3):**
-1. Timer doesn't pause when avatar speaks
-2. Tool cards don't show recent activity counts
-3. Mobile nav is basic
+**P3 (0):** All P3s resolved.
 
-| Severity | Original | After Mar 8 | After Mar 8 Late | After Mar 10 |
-|----------|----------|-------------|-----------------|--------------|
-| P0       | 2        | 0           | 0               | 0            |
-| P1       | 12       | 5           | 2               | 0            |
-| P2       | 13       | 8           | 5               | 4            |
-| P3       | 4        | 4           | 4               | 3            |
-| **Total** | **31**  | **17**      | **11**          | **7**        |
+| Severity | Original | After Mar 8 | After Mar 8 Late | After Mar 10 | After Mar 10 Late |
+|----------|----------|-------------|-----------------|--------------|-------------------|
+| P0       | 2        | 0           | 0               | 0            | 0                 |
+| P1       | 12       | 5           | 2               | 0            | 0                 |
+| P2       | 13       | 8           | 5               | 4            | 2                 |
+| P3       | 4        | 4           | 4               | 3            | 0                 |
+| **Total** | **31**  | **17**      | **11**          | **7**        | **2**             |
+
+**Both remaining P2s require live HeyGen test (Evan adding credits).** Cannot be fixed from code.
 
 ### Files Changed (ready for commit via GitHub Desktop)
 

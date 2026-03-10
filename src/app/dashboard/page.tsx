@@ -80,26 +80,26 @@ const TOOL_NAMES: Record<string, string> = {
 };
 
 const TOOLS: Tool[] = [
-  // Row 1: Interview workflow + deal diagnostic
+  // Row 1: Interview workflow + practice
   {
     id: "interview_outreach",
     name: "Interview Outreach",
     hook: "Land the interview.",
-    description: "Resume, outreach sequence, and a research package that gets you noticed.",
+    description: "Research package, outreach sequence & resume tailored to the role. One blitz, not five tabs.",
     minimumTier: "launch",
   },
   {
     id: "interview_prep",
     name: "Interview Prep",
-    hook: "Win the interview.",
-    description: "Call playbooks, competitive intel, and prep docs tailored to your meeting.",
+    hook: "Walk in armed.",
+    description: "Playbooks, competitive intel & prep docs for every interviewer on the panel. Methodology-encoded.",
     minimumTier: "pro",
   },
   {
     id: "practice_mode",
     name: "AI Practice Mode",
-    hook: "Rehearse before the real thing.",
-    description: "Live roleplay against an AI persona built from your research. Works for prospect calls, interviews & panels. Scored on 8 dimensions.",
+    hook: "Rehearse with your research.",
+    description: "AI personas built from your blitz intel. Prospect calls, interviews & panels. Scored on CotM, then coached on what to fix.",
     minimumTier: "pro",
   },
   // Row 2: Prospect workflow + deal management
@@ -107,21 +107,21 @@ const TOOLS: Tool[] = [
     id: "prospect_outreach",
     name: "Prospect Outreach",
     hook: "Get the meeting.",
-    description: "Outreach sequences that earn replies. Personalized to each account's pain points.",
+    description: "Multi-channel sequences tied to account research. Not spray-and-pray; surgical outreach that earns replies.",
     minimumTier: "launch",
   },
   {
     id: "prospect_prep",
     name: "Prospect Prep",
-    hook: "Own the call.",
-    description: "Walk in knowing their org chart, pain points & competitive positioning. CotM-structured.",
+    hook: "Own the conversation.",
+    description: "Org chart, pain points, competitive positioning & talk tracks. CotM-structured, MEDDPICC-qualified.",
     minimumTier: "pro",
   },
   {
     id: "deal_audit",
     name: "Deal Audit",
     hook: "Stress-test your deal.",
-    description: "Qualification scorecard, risk flags, and a strategy to close the gaps.",
+    description: "MEDDPICC qualification scorecard, risk flags & a strategy to close the gaps. No hiding from reality.",
     minimumTier: "closer",
   },
   // Row 3: Deal management
@@ -129,7 +129,7 @@ const TOOLS: Tool[] = [
     id: "champion_builder",
     name: "Champion Builder",
     hook: "Arm your champion.",
-    description: "Stakeholder maps, internal selling kits, and competitive ammo.",
+    description: "Stakeholder maps, internal selling kits & competitive ammo so your champion sells when you're not in the room.",
     minimumTier: "closer",
   },
   // Row 4: Coming Soon — Closer tier teasers
@@ -137,7 +137,7 @@ const TOOLS: Tool[] = [
     id: "territory_blitz",
     name: "Territory Blitz",
     hook: "Map your entire territory.",
-    description: "Upload a target list, get research & outreach for every account in one blitz.",
+    description: "Upload a target list, get research & outreach for every account in one blitz. Territory prep in hours, not weeks.",
     minimumTier: "closer",
     comingSoon: true,
   },
@@ -145,7 +145,7 @@ const TOOLS: Tool[] = [
     id: "win_loss_analyst",
     name: "Win/Loss Analyst",
     hook: "Learn from every deal.",
-    description: "Upload closed deal transcripts. Get pattern analysis, methodology gaps, and coaching recs.",
+    description: "Pattern analysis across closed deals. Methodology gaps, coaching recs & the themes you keep missing.",
     minimumTier: "closer",
     comingSoon: true,
   },
@@ -620,9 +620,9 @@ export default function DashboardPage() {
                 <Users className="h-4 w-4 text-emerald-400" />
               </div>
               <div>
-                <h3 className="font-semibold text-white">Want us to do it for you?</h3>
+                <h3 className="font-semibold text-white">We run the playbook. You take the meetings.</h3>
                 <p className="mt-1 text-sm text-gray-400">
-                  We build target lists, run outreach, deliver qualified meetings, prep your calls & work deals alongside you. Pay per outcome, not per hour.
+                  We operate Sales Blitz on your behalf. Research, sequences & meeting-ready packages for your top accounts. Methodology-backed, not spray-and-pray.
                 </p>
               </div>
             </div>

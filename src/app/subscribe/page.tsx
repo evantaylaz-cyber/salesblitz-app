@@ -98,10 +98,10 @@ export default function SubscribePage() {
         {/* Headline */}
         <div className="text-center mb-10">
           <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">
-            Pick the plan that matches your pipeline
+            Name your target. Get armed for whatever&apos;s next.
           </h1>
           <p className="mt-3 text-lg text-gray-500 max-w-2xl mx-auto">
-            Every blitz gives you a full research package, competitive playbook, outreach sequence, and practice-ready persona. Cancel anytime.
+            Deep research, competitive intel, talk-track playbooks, outreach sequences & live AI practice. One blitz, not five tools. Cancel anytime.
           </p>
         </div>
 

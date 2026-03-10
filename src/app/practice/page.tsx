@@ -233,9 +233,9 @@ function PracticeLanding() {
         {/* HERO: Practice Your Blitz Runs */}
         {blitzRuns.length > 0 && (
           <div>
-            <h2 className="text-lg font-bold text-gray-900">Your Practice Scenarios</h2>
+            <h2 className="text-lg font-bold text-gray-900">Practice with Your Research</h2>
             <p className="mt-1 text-sm text-gray-500">
-              Each scenario uses real research from your blitz to build the persona. One click to start.
+              Each persona is built from your blitz intel. They know the company, the role & what to push on. One click to start.
             </p>
             <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2">
               {blitzRuns.slice(0, 8).map((run) => {
@@ -402,7 +402,7 @@ function PracticeLanding() {
             <Video className="mx-auto h-10 w-10 text-gray-300" />
             <h3 className="mt-4 text-sm font-semibold text-gray-700">No practice scenarios yet</h3>
             <p className="mt-1 text-sm text-gray-400">
-              Run a blitz from the dashboard to generate a research-powered practice scenario, or use freestyle mode below.
+              Run a blitz first. The research powers your persona, so every practice session gets smarter with more context.
             </p>
           </div>
         )}
