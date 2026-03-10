@@ -14,6 +14,7 @@ import {
   ArrowLeft,
   Mic,
   MicOff,
+  Paperclip,
 } from "lucide-react";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
 
@@ -29,8 +30,10 @@ export default function OnboardingChatPage() {
   const router = useRouter();
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const resumeFileRef = useRef<HTMLInputElement>(null);
   const [completedPhases, setCompletedPhases] = useState<Set<string>>(new Set());
   const [onboardingDone, setOnboardingDone] = useState(false);
+  const [uploadingFile, setUploadingFile] = useState(false);
 
   const { isListening, isSupported: voiceSupported, interimTranscript, toggleListening } =
     useVoiceInput({
@@ -91,6 +94,39 @@ export default function OnboardingChatPage() {
       if (form) form.requestSubmit();
     }, 50);
   };
+
+  // Handle resume file upload in chat
+  async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingFile(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/profile/upload-resume", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        // Inject extracted text as a user message so the AI can process it
+        const resumeMessage = `Here's my resume (uploaded from ${data.fileName}):\n\n${data.text}`;
+        setInput(resumeMessage);
+        // Auto-submit after brief delay
+        setTimeout(() => {
+          const form = document.getElementById("chat-form") as HTMLFormElement;
+          if (form) form.requestSubmit();
+        }, 50);
+      } else {
+        setInput(`I tried uploading my resume but got an error: ${data.error || "processing failed"}. Let me paste it instead.`);
+      }
+    } catch {
+      setInput("I tried uploading my resume but the upload failed. Let me paste it instead.");
+    } finally {
+      setUploadingFile(false);
+      if (resumeFileRef.current) resumeFileRef.current.value = "";
+    }
+  }
 
   // Show suggestions only when conversation is empty
   const showSuggestions = messages.length === 0;
@@ -337,6 +373,28 @@ export default function OnboardingChatPage() {
                 }}
               />
             </div>
+            {/* File attachment */}
+            <input
+              ref={resumeFileRef}
+              type="file"
+              accept=".pdf,.docx,.txt"
+              onChange={handleFileUpload}
+              className="hidden"
+              id="chat-file-upload"
+            />
+            <button
+              type="button"
+              onClick={() => resumeFileRef.current?.click()}
+              disabled={uploadingFile || isLoading}
+              title="Upload resume (PDF, DOCX, TXT)"
+              className={`flex items-center justify-center w-10 h-10 rounded-xl transition-colors flex-shrink-0 ${
+                uploadingFile
+                  ? "bg-emerald-100 text-emerald-600 animate-pulse"
+                  : "bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-600"
+              } disabled:opacity-50 disabled:cursor-not-allowed`}
+            >
+              {uploadingFile ? <Loader2 className="w-4 h-4 animate-spin" /> : <Paperclip className="w-4 h-4" />}
+            </button>
             {voiceSupported && (
               <button
                 type="button"

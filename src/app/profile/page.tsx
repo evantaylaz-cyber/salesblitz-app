@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useUser } from "@clerk/nextjs";
 import {
   Building2,
@@ -23,6 +23,7 @@ import {
   Pen,
   Users,
   FileText,
+  Upload,
 } from "lucide-react";
 import AppNav from "@/components/AppNav";
 import VoiceTextarea from "@/components/VoiceTextarea";
@@ -300,6 +301,8 @@ export default function ProfilePage() {
   // Resume parsing states
   const [parsingResume, setParsingResume] = useState(false);
   const [resumeParseResult, setResumeParseResult] = useState<string | null>(null);
+  const [uploadingResume, setUploadingResume] = useState(false);
+  const resumeFileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (isLoaded && clerkUser) {
@@ -416,6 +419,33 @@ export default function ProfilePage() {
   }
 
   // Parse resume: sends resume text to API, auto-fills career fields
+  async function handleResumeUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingResume(true);
+    setResumeParseResult(null);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/profile/upload-resume", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        updateField("resumeText", data.text);
+        setResumeParseResult(`Extracted ${data.charCount.toLocaleString()} characters from ${data.fileName}. Click "Extract Career Data" to auto-fill your profile.`);
+      } else {
+        setResumeParseResult(data.error || "Failed to process file.");
+      }
+    } catch {
+      setResumeParseResult("Upload failed. Try pasting your resume instead.");
+    } finally {
+      setUploadingResume(false);
+      if (resumeFileRef.current) resumeFileRef.current.value = "";
+    }
+  }
+
   async function parseResume() {
     if (!profile.resumeText || profile.resumeText.trim().length < 50) return;
     setParsingResume(true);
@@ -781,8 +811,41 @@ export default function ProfilePage() {
           >
             <div className="space-y-4">
               <p className="text-sm text-gray-500">
-                Your resume is the fastest way to fill your profile. Paste it below and we'll extract your career arc, key wins, seller archetype, and potential deal stories. Way faster than typing it out.
+                Your resume is the fastest way to fill your profile. Upload a file or paste it below. We'll extract your career arc, key wins, seller archetype, and potential deal stories.
               </p>
+
+              {/* File upload */}
+              <div className="flex items-center gap-3">
+                <input
+                  ref={resumeFileRef}
+                  type="file"
+                  accept=".pdf,.docx,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain"
+                  onChange={handleResumeUpload}
+                  className="hidden"
+                  id="resume-upload"
+                />
+                <button
+                  type="button"
+                  onClick={() => resumeFileRef.current?.click()}
+                  disabled={uploadingResume}
+                  className="flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                >
+                  {uploadingResume ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Upload className="h-4 w-4" />
+                  )}
+                  {uploadingResume ? "Processing..." : "Upload Resume"}
+                </button>
+                <span className="text-xs text-gray-400">PDF, DOCX, or TXT (max 5MB)</span>
+              </div>
+
+              <div className="relative">
+                <div className="absolute inset-x-0 top-0 flex justify-center -translate-y-1/2">
+                  <span className="bg-white px-2 text-xs text-gray-400">or paste below</span>
+                </div>
+              </div>
+
               <VoiceTextarea
                 value={profile.resumeText}
                 onChange={(v: string) => updateField("resumeText", v)}
