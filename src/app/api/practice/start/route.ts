@@ -171,6 +171,32 @@ export async function POST(req: NextRequest) {
     if (previousSession?.feedback) {
       priorSessionContext += `\nMOST RECENT SESSION FEEDBACK (session #${previousSession.sessionSequence}):\n${previousSession.feedback.slice(0, 1000)}\n`;
     }
+    // Fetch cross-session coaching intelligence from worker (non-blocking, with timeout)
+    try {
+      const workerUrl = process.env.WORKER_WEBHOOK_URL?.replace("/execute", "/coaching-context");
+      if (workerUrl && user.id) {
+        const coachingRes = await Promise.race([
+          fetch(workerUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "x-api-key": process.env.INTERNAL_API_KEY || "" },
+            body: JSON.stringify({ userId: user.id, targetCompany: session.targetCompany, meetingType: effectiveMeetingType }),
+          }),
+          new Promise<Response>((_, reject) => setTimeout(() => reject(new Error("timeout")), 3000)),
+        ]);
+        if (coachingRes.ok) {
+          const { coaching } = await coachingRes.json();
+          if (coaching && coaching.length > 0) {
+            priorSessionContext += `\nCROSS-SESSION COACHING (patterns from similar practice sessions at other companies):\n`;
+            for (const c of coaching.slice(0, 3)) {
+              priorSessionContext += `- ${c.target_company} (${c.outcome || "no outcome"}): ${c.feedback?.slice(0, 250) || ""}\n`;
+            }
+          }
+        }
+      }
+    } catch {
+      // Non-fatal — coaching context is a bonus, not a requirement
+    }
+
     if (priorSessionContext) {
       priorSessionContext += `\nCOACHING DIRECTIVE: Push harder on the areas where the candidate/rep was weakest in prior sessions. Test whether they've improved. Don't repeat the same opening; pick up where they left off. If they've been strong in certain areas, probe at a deeper level.`;
     }

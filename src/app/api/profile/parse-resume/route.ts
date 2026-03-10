@@ -3,6 +3,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import prisma from "@/lib/db";
 import { generateText } from "ai";
 import { anthropic } from "@ai-sdk/anthropic";
+import { triggerEmbed } from "@/lib/trigger-worker";
 
 // POST /api/profile/parse-resume
 // Parses resume text, extracts structured career data, auto-fills profile fields
@@ -108,18 +109,25 @@ Extract ONLY what's actually in the resume. Don't invent or embellish.`;
       });
     }
 
-    // Store as KnowledgeDocument for downstream use by worker pipeline
+    // Store resume as KnowledgeDocument for downstream semantic matching
+    // Use "custom" category for backward compat but also check for legacy docs
     const existingDoc = await prisma.knowledgeDocument.findFirst({
-      where: { userId: user.id, title: "Resume", category: "custom" },
+      where: { userId: user.id, title: "Resume", category: { in: ["custom", "resume"] } },
     });
 
+    let resumeDocId: string;
     if (existingDoc) {
       await prisma.knowledgeDocument.update({
         where: { id: existingDoc.id },
-        data: { content: resumeText.slice(0, 50000) },
+        data: {
+          content: resumeText.slice(0, 50000),
+          // Clear embeddingUpdatedAt to trigger re-embedding on next worker load
+          embeddingUpdatedAt: null,
+        },
       });
+      resumeDocId = existingDoc.id;
     } else {
-      await prisma.knowledgeDocument.create({
+      const newDoc = await prisma.knowledgeDocument.create({
         data: {
           userId: user.id,
           title: "Resume",
@@ -127,7 +135,61 @@ Extract ONLY what's actually in the resume. Don't invent or embellish.`;
           category: "custom",
         },
       });
+      resumeDocId = newDoc.id;
     }
+
+    // Store extracted deal stories as individual KB docs for semantic matching
+    const dealStoriesRaw = parsed.deal_stories_raw as Array<{
+      company_or_account?: string;
+      what_happened?: string;
+      metrics?: string;
+      could_be_deal_story?: boolean;
+    }> | undefined;
+
+    if (dealStoriesRaw && Array.isArray(dealStoriesRaw)) {
+      for (const story of dealStoriesRaw.filter(s => s.could_be_deal_story)) {
+        const storyTitle = `Deal Story: ${story.company_or_account || "Unknown"}`;
+        const storyContent = [
+          story.company_or_account && `Account: ${story.company_or_account}`,
+          story.what_happened && `What Happened: ${story.what_happened}`,
+          story.metrics && `Metrics: ${story.metrics}`,
+        ].filter(Boolean).join("\n");
+
+        if (storyContent.length > 20) {
+          // Upsert: don't duplicate if they re-upload the same resume
+          const existingStory = await prisma.knowledgeDocument.findFirst({
+            where: { userId: user.id, title: storyTitle, category: "deal_stories" },
+          });
+
+          if (existingStory) {
+            await prisma.knowledgeDocument.update({
+              where: { id: existingStory.id },
+              data: { content: storyContent, embeddingUpdatedAt: null },
+            });
+          } else {
+            await prisma.knowledgeDocument.create({
+              data: {
+                userId: user.id,
+                title: storyTitle,
+                content: storyContent,
+                category: "deal_stories",
+              },
+            });
+          }
+        }
+      }
+    }
+
+    // Trigger async embedding for the resume doc (fire-and-forget)
+    // The worker will embed this on next KB load, but we can also nudge it
+    triggerEmbed({
+      type: "debrief", // Reuse debrief embed pathway
+      id: resumeDocId,
+      content: `Resume for ${parsed.current_or_last_company || "user"}: ${(parsed.career_narrative as string || "").slice(0, 500)}`,
+      outcome: null,
+      targetCompany: parsed.current_or_last_company as string || null,
+      toolName: "resume_upload",
+    });
 
     return NextResponse.json({
       success: true,

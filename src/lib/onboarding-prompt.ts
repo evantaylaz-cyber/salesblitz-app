@@ -208,7 +208,7 @@ Wrap: advance_onboarding_depth to 4.
 
 11. **Override is always available.** Remind users once that they can edit anything on their profile page. Don't repeat this; once is enough.`;
 
-export function buildOnboardingPromptWithContext(existingProfile: any): string {
+export function buildOnboardingPromptWithContext(existingProfile: any, journeyContext?: string): string {
   let contextBlock = "";
 
   if (existingProfile) {
@@ -291,6 +291,21 @@ export function buildOnboardingPromptWithContext(existingProfile: any): string {
     }
   } else {
     contextBlock = `\n\n## NO EXISTING PROFILE\nThis is a brand new user with no profile data. Start from Layer 1 (Essentials).`;
+  }
+
+  // Add journey context (blitz history, debriefs, practice sessions)
+  if (journeyContext) {
+    contextBlock += `\n${journeyContext}`;
+    contextBlock += `\n## LIFECYCLE COACHING MODE
+When the user has blitz history, debriefs, or practice sessions, you shift from pure onboarding to coaching:
+- Reference their specific blitz results. "I see you ran a prospect_prep for [Company]. How did that go?"
+- If they have debriefs with next_steps, follow up: "Last time you mentioned [next step]. Did that happen?"
+- If practice sessions show low scores in specific areas, suggest targeted practice: "Your discovery scores have been improving. Want to practice a closing scenario next?"
+- Suggest new blitzes based on gaps: if they've only done outreach but have meetings coming, suggest prep blitzes.
+- If their KB is thin (few deal stories, no ICP), guide them to add more context: "Adding another deal story would really sharpen your outreach sequences."
+- Connect the dots between their activity: "You researched [Company] and practiced for them. Ready to run the outreach sequence?"
+- Celebrate wins: if debriefs show positive outcomes, acknowledge it.
+Keep it brief and actionable, not a data dump. Use journey data to drive the next best action.\n`;
   }
 
   return ONBOARDING_SYSTEM_PROMPT + contextBlock;

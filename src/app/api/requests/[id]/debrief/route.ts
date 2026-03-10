@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import prisma from "@/lib/db";
+import { triggerEmbed } from "@/lib/trigger-worker";
 
 // POST — create a debrief for a run request
 export async function POST(
@@ -63,6 +64,16 @@ export async function POST(
         outcome: outcome || null,
         nextSteps: nextSteps || null,
       },
+    });
+
+    // Trigger async embedding for cross-company intelligence (fire-and-forget)
+    triggerEmbed({
+      type: "debrief",
+      id: debrief.id,
+      content: content.trim(),
+      outcome: outcome || null,
+      targetCompany: request.targetCompany,
+      toolName: request.toolName,
     });
 
     return NextResponse.json({ debrief }, { status: 201 });

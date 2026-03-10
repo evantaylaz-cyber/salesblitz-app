@@ -18,6 +18,7 @@ import { tool } from "ai";
 import { generateText } from "ai";
 import { anthropic } from "@ai-sdk/anthropic";
 import prisma from "@/lib/db";
+import { triggerEmbed } from "@/lib/trigger-worker";
 
 export function createOnboardingTools(userId: string) {
   return {
@@ -105,13 +106,15 @@ export function createOnboardingTools(userId: string) {
                 where: { userId, title: "Current Situation", category: "custom" },
               });
 
+              let sitDocId: string;
               if (existingDoc) {
                 await prisma.knowledgeDocument.update({
                   where: { id: existingDoc.id },
-                  data: { content: situationParts.join("\n") },
+                  data: { content: situationParts.join("\n"), embeddingUpdatedAt: null },
                 });
+                sitDocId = existingDoc.id;
               } else {
-                await prisma.knowledgeDocument.create({
+                const newDoc = await prisma.knowledgeDocument.create({
                   data: {
                     userId,
                     title: "Current Situation",
@@ -119,7 +122,9 @@ export function createOnboardingTools(userId: string) {
                     category: "custom",
                   },
                 });
+                sitDocId = newDoc.id;
               }
+              triggerEmbed({ type: "kb_doc", id: sitDocId }).catch(() => {});
             }
           }
 
@@ -335,13 +340,15 @@ export function createOnboardingTools(userId: string) {
             where: { userId, title: `Deal Story: ${story.company}`, category: "deal_stories" },
           });
 
+          let kbDocId: string;
           if (existingDoc) {
             await prisma.knowledgeDocument.update({
               where: { id: existingDoc.id },
-              data: { content: docContent },
+              data: { content: docContent, embeddingUpdatedAt: null },
             });
+            kbDocId = existingDoc.id;
           } else {
-            await prisma.knowledgeDocument.create({
+            const newDoc = await prisma.knowledgeDocument.create({
               data: {
                 userId,
                 title: `Deal Story: ${story.company}`,
@@ -349,7 +356,11 @@ export function createOnboardingTools(userId: string) {
                 category: "deal_stories",
               },
             });
+            kbDocId = newDoc.id;
           }
+
+          // Fire-and-forget: embed this KB doc for semantic search
+          triggerEmbed({ type: "kb_doc", id: kbDocId }).catch(() => {});
 
           return { success: true, storyCount: existingStories.length, company: story.company };
         } catch (err: any) {
@@ -434,13 +445,15 @@ export function createOnboardingTools(userId: string) {
             where: { userId, title: `Case Study: ${caseStudy.customer_name}`, category: "case_studies" },
           });
 
+          let csDocId: string;
           if (existingDoc) {
             await prisma.knowledgeDocument.update({
               where: { id: existingDoc.id },
-              data: { content: docContent },
+              data: { content: docContent, embeddingUpdatedAt: null },
             });
+            csDocId = existingDoc.id;
           } else {
-            await prisma.knowledgeDocument.create({
+            const newDoc = await prisma.knowledgeDocument.create({
               data: {
                 userId,
                 title: `Case Study: ${caseStudy.customer_name}`,
@@ -448,7 +461,11 @@ export function createOnboardingTools(userId: string) {
                 category: "case_studies",
               },
             });
+            csDocId = newDoc.id;
           }
+
+          // Fire-and-forget: embed for semantic search
+          triggerEmbed({ type: "kb_doc", id: csDocId }).catch(() => {});
 
           return { success: true, customer: caseStudy.customer_name };
         } catch (err: any) {
@@ -847,13 +864,15 @@ Extract ONLY what's actually in the resume. Don't invent or embellish.`;
             where: { userId, title: "Resume", category: "custom" },
           });
 
+          let resumeDocId: string;
           if (existingDoc) {
             await prisma.knowledgeDocument.update({
               where: { id: existingDoc.id },
-              data: { content: resume_text.slice(0, 50000) },
+              data: { content: resume_text.slice(0, 50000), embeddingUpdatedAt: null },
             });
+            resumeDocId = existingDoc.id;
           } else {
-            await prisma.knowledgeDocument.create({
+            const newDoc = await prisma.knowledgeDocument.create({
               data: {
                 userId,
                 title: "Resume",
@@ -861,7 +880,9 @@ Extract ONLY what's actually in the resume. Don't invent or embellish.`;
                 category: "custom",
               },
             });
+            resumeDocId = newDoc.id;
           }
+          triggerEmbed({ type: "kb_doc", id: resumeDocId }).catch(() => {});
 
           return {
             success: true,

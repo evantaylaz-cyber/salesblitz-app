@@ -94,6 +94,31 @@ export async function triggerWorker(
  * Convenience: trigger the batch execution endpoint.
  * Replaces /execute with /execute-batch in the URL.
  */
+/**
+ * Trigger embedding on the worker (fire-and-forget, single attempt).
+ * Used for debrief and practice session embeddings.
+ */
+export async function triggerEmbed(
+  payload: Record<string, unknown>
+): Promise<void> {
+  const baseUrl = process.env.WORKER_WEBHOOK_URL;
+  if (!baseUrl) return;
+  const embedUrl = baseUrl.replace("/execute", "/embed");
+  try {
+    await fetch(embedUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.INTERNAL_API_KEY || "",
+      },
+      body: JSON.stringify(payload),
+    });
+  } catch (err) {
+    // Non-blocking — embedding failure should never break the user flow
+    console.warn("[EMBED] Trigger failed (non-fatal):", err instanceof Error ? err.message : err);
+  }
+}
+
 export async function triggerWorkerBatch(
   payload: Record<string, unknown>
 ): Promise<TriggerResult> {

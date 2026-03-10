@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import prisma from "@/lib/db";
 import { buildScoringPrompt } from "@/lib/practice";
+import { triggerEmbed } from "@/lib/trigger-worker";
 import Anthropic from "@anthropic-ai/sdk";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -130,6 +131,17 @@ export async function POST(req: NextRequest) {
         outcome: scoring.outcome,
       },
     });
+
+    // Trigger async embedding for cross-session coaching intelligence (fire-and-forget)
+    if (scoring.feedback) {
+      triggerEmbed({
+        type: "practice_session",
+        id: sessionId,
+        feedback: scoring.feedback,
+        cotmScore: scoring.overall ? { overall: scoring.overall, outcome: scoring.outcome, biggest_miss: scoring.biggest_miss, top_moment: scoring.top_moment } : null,
+        targetCompany: session.targetCompany,
+      });
+    }
 
     // Update Target.accumulatedIntel with key coaching points (context accumulation)
     if (session.targetId && scoring.feedback) {
