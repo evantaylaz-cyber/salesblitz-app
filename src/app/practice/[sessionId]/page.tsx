@@ -106,7 +106,12 @@ export default function PracticeSessionPage() {
       }
 
       for (const chunk of chunks) {
-        session.repeatAudio(chunk);
+        try {
+          await session.repeatAudio(chunk);
+        } catch (audioErr) {
+          console.error("Avatar audio playback failed:", audioErr);
+          // Don't crash the whole flow; skip this chunk and continue
+        }
       }
     } catch (err) {
       console.error("speakViaAvatar error:", err);
@@ -468,7 +473,7 @@ export default function PracticeSessionPage() {
     setIsRecording(true);
 
     // If already initialized in a mode, it's running. Just flag active.
-    if (sttMode === "realtime" && realtimeWsRef.current) return;
+    if (sttMode === "realtime" && realtimeWsRef.current?.readyState === WebSocket.OPEN) return;
     if (sttMode === "webspeech" && recognitionRef.current) return;
 
     // Try Realtime API first

@@ -7,7 +7,7 @@
 
 ---
 
-## CURRENT STATE (Mar 10, 2026) — SINGLE SOURCE OF TRUTH
+## CURRENT STATE (Mar 10, 2026 evening) — SINGLE SOURCE OF TRUTH
 
 **Read this section. Ignore all "Updated Summary Stats" tables below; they are historical snapshots that contradict each other.**
 
@@ -19,7 +19,7 @@
 | P3       | 4                 | 0                   |
 | **Total** | **31**           | **3**               |
 
-### What's left
+### What's left (from original audit)
 
 **P1 (1):**
 1. **No document upload on request form** (original item, Section 2). Users can paste text but can't upload PDF/DOCX files for resumes, assignments, case studies. The resume upload route exists (`/api/profile/upload-resume`) but isn't wired into the request form. `request/page.tsx`.
@@ -28,14 +28,38 @@
 1. **Female avatar ID unverified.** `FEMALE_AVATAR = "b4fc2d60..."` was set but never tested with real HeyGen credits. If wrong, female personas get no avatar.
 2. **Chroma key untested with real avatar.** Green-screen removal algorithm exists but threshold values may not match HeyGen's actual green screen color.
 
+### E2E Deep Audit (Mar 10 evening) — NEW FINDINGS
+
+A comprehensive E2E audit across asset quality, practice mode, and onboarding found and fixed additional issues:
+
+**Fixed this session (7 items):**
+1. **P0 FIXED:** Unvalidated persona object crash in `practice/message/route.ts`. Added null check for persona.name and persona.company before building system prompt.
+2. **P0 FIXED:** Transcript race condition in `practice/message/route.ts`. Replaced read-modify-write pattern with atomic SQL append (`|| jsonb`) to prevent lost messages under concurrent requests.
+3. **P1 FIXED:** Persona JSON schema validation in `practice/start/route.ts`. Added required field checks and safe defaults for optional fields after Claude generates persona.
+4. **P1 FIXED:** panelMemberStates validation in `practice/start/route.ts`. Added Array.isArray guard and name validation before entering panel mode.
+5. **P1 FIXED:** TTS audio playback error handling in `practice/[sessionId]/page.tsx`. Added try-catch around `session.repeatAudio()` so a failed chunk doesn't crash the whole flow.
+6. **P1 FIXED:** Realtime STT fallback in `practice/[sessionId]/page.tsx`. Changed WebSocket check from truthy to `readyState === OPEN` so dead connections trigger fallback to Web Speech API.
+7. **Informational FIXED:** Asset proxy now serves .pptx, .docx, .xlsx with correct MIME types (was falling back to octet-stream).
+
+**Remaining from E2E audit (not blocking, tracked for future):**
+- P2: No LiveAvatar token cleanup (cost risk if users abandon sessions)
+- P2: Panel speaker name validation (Claude could generate typo vs. panel member name)
+- P2: Unvalidated durationSeconds on session end (no range check)
+- P2: Score labels fallback for unexpected keys
+- P3: Accumulated intel grows unbounded (needs rotation after ~50 sessions)
+- P3: Panel speaker handoff timing not enforced (Claude decides when to switch)
+- P3: TTS voice preference not persisted across page reloads
+
+**RULE 16 (Zero-Homework) compliance: 60%.** Tools exist (research_company, parse_resume) but request form UX doesn't auto-trigger them on URL entry. Onboarding AI setup page still uses copy-paste flow instead of direct tool calls. Not P0/P1 but a significant product quality gap.
+
 ### Everything else: FIXED
 
-All other 28 items have been verified fixed across sessions Mar 7-10. Key fixes (chronological):
+All other 28 items from the original audit have been verified fixed across sessions Mar 7-10. Key fixes (chronological):
 - P0: Blitz card one-click launch, review page dedicated endpoint
 - P1: 18+ profile fields in practice persona, 30K research extraction, debrief capture, Target entity creation, session-to-RunRequest linking, Target.accumulatedIntel read/write, cross-session coaching, profile API whitelist (14->31 fields), ICP/case study sections on profile
 - P2: Batch pages light theme, dynamic request subtitles, engagement context expanded, gender detection via API, onboarding depth auto-computed, tool run counts, dashboard Practice Now CTA, targets pages light theme, panel speaker indicator, scoring adapts to meeting type, stale session cleanup
 - P3: Timer pauses during avatar speech, tool cards show run counts, mobile nav with icons
-- Trademark cleanup: All MEDDPICC/CotM references removed from public-facing content
+- Trademark cleanup: All MEDDPICC/CotM references removed from public-facing content, DB records updated
 - Copy: Em dashes eliminated, banned words clean, Rule 3B compliant
 - TypeScript: 18 implicit `any` errors fixed
 - Bug fix: pdf-parse v2 constructor corrected (`new PDFParse({ data: new Uint8Array(buffer) })`)

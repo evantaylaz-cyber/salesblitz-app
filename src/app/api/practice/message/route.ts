@@ -51,6 +51,10 @@ export async function POST(req: NextRequest) {
     }
 
     const persona = session.personaConfig as Record<string, unknown>;
+    if (!persona || !persona.name || !persona.company) {
+      console.error("Invalid persona config for session:", sessionId, persona);
+      return NextResponse.json({ error: "Session has invalid persona configuration" }, { status: 400 });
+    }
     const transcript = (session.transcript as Array<{ role: string; text: string }>) || [];
     const focusAreas = (session.focusAreas as string[]) || [];
 
@@ -130,11 +134,21 @@ export async function POST(req: NextRequest) {
       },
     ];
 
-    // Save updated transcript
-    await prisma.practiceSession.update({
-      where: { id: sessionId },
-      data: { transcript: finalTranscript },
-    });
+    // Save updated transcript (atomic: use raw SQL to append to JSON array to avoid race conditions)
+    // This prevents lost messages if two requests read the transcript simultaneously
+    await prisma.$executeRaw`
+      UPDATE "PracticeSession"
+      SET transcript = transcript || ${JSON.stringify([
+        { role: "user", text: userMessage, timestamp: new Date().toISOString() },
+        {
+          role: "persona",
+          text: displayText,
+          timestamp: new Date().toISOString(),
+          ...(speaker ? { speaker, speakerTitle } : {}),
+        },
+      ])}::jsonb
+      WHERE id = ${sessionId}
+    `;
 
     // Clean stage directions for TTS, but keep raw text in transcript
     const ttsText = cleanForTTS(displayText);

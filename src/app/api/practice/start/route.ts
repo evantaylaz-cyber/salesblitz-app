@@ -329,11 +329,27 @@ Make the persona feel REAL. Specific details, not generic business-speak. The ob
       return NextResponse.json({ error: "Failed to generate persona" }, { status: 500 });
     }
 
+    // Validate persona has required fields (Claude may return incomplete JSON)
+    const requiredPersonaFields = ["name", "company"];
+    for (const field of requiredPersonaFields) {
+      if (!persona[field]) {
+        console.error(`Persona missing required field '${field}':`, JSON.stringify(persona).slice(0, 500));
+        return NextResponse.json({ error: `Generated persona missing required field: ${field}` }, { status: 500 });
+      }
+    }
+    // Ensure optional fields have safe defaults
+    persona.title = persona.title || "Unknown Title";
+    persona.personality = persona.personality || "Professional and direct.";
+    persona.priorities = Array.isArray(persona.priorities) ? persona.priorities : [];
+    persona.objections = Array.isArray(persona.objections) ? persona.objections : [];
+    persona.communication_style = persona.communication_style || "";
+    persona.discovery_triggers = persona.discovery_triggers || {};
+
     // Store meetingType in personaConfig so message route can adapt behavior
     persona._meetingType = effectiveMeetingType;
 
-    // Panel mode: if we have panel data, store it for the message route
-    const isPanelMode = panelData !== null && panelData.length > 1;
+    // Panel mode: if we have valid panel data with 2+ members, enable panel mode
+    const isPanelMode = panelData !== null && Array.isArray(panelData) && panelData.length > 1 && panelData.every(m => m.name?.trim());
     if (isPanelMode) {
       persona._panelMembers = panelData;
       persona._isPanelMode = true;
