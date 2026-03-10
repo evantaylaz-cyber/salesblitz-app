@@ -282,16 +282,20 @@ model UserProfile {
 }
 
 model KnowledgeDocument {
-  id        String   @id @default(uuid())
-  userId    String?
-  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  teamId    String?
-  team      Team?    @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  title     String
-  content   String   @db.Text
-  category  String   @default("custom") // product_docs | competitive_intel | deal_stories | icp_definitions | methodology | objection_handling | custom
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                 String    @id @default(uuid())
+  userId             String?
+  user               User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  teamId             String?
+  team               Team?     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  title              String
+  content            String    @db.Text
+  category           String    @default("custom") // product_docs | competitive_intel | deal_stories | icp_definitions | methodology | objection_handling | custom
+  // pgvector embedding (768-dim via Gemini Embedding 2, Matryoshka scaled)
+  // Stored via direct SQL in worker; Prisma doesn't natively support vector type
+  // embedding        vector(768)  -- managed at DB level, not in Prisma
+  embeddingUpdatedAt DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 }
 
 // AI Practice Mode — real-time roleplay against HeyGen streaming avatar.
