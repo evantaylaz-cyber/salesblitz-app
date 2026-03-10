@@ -235,7 +235,7 @@ model UserProfile {
   linkedinEducation     String?  @map("linkedin_education") @db.Text
 
   // Selling methodology & style
-  sellingStyle          String?  @default("MEDDPICC") @map("selling_style")
+  sellingStyle          String?  @default("Value Messaging") @map("selling_style")
   sellingPhilosophy     String?  @map("selling_philosophy") @db.Text  // How they think about selling (discovery-led, challenger, consultative)
   sellerArchetype       String?  @map("seller_archetype")             // e.g., "enterprise_closer", "consultative_hunter", "expansion_farmer"
 
@@ -299,7 +299,7 @@ model KnowledgeDocument {
 }
 
 // AI Practice Mode — real-time roleplay against HeyGen streaming avatar.
-// Persona generated from account research, scored against CotM framework.
+// Persona generated from account research, scored against 8 messaging dimensions.
 model PracticeSession {
   id                String   @id @default(uuid())
   userId            String

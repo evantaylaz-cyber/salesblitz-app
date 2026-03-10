@@ -7,12 +7,12 @@
  *   Layer 3 (Post-third-blitz, ~5 min): Career/territory + ICP + interview history.
  *   Layer 4 (Rich, ongoing): Writing style, patterns, full context auto-extraction.
  *
- * The chatbot captures context through a CotM/MEDDPICC/STAR lens.
+ * The chatbot captures context through a value messaging / deal qualification / STAR lens.
  * Captured data feeds the worker pipeline via user_profile and KnowledgeDocument.
  *
  * Tools available to the chatbot:
  *   - save_profile_section (identity, methodology, career, territory, writing, situation)
- *   - save_deal_story (triple-mapped: CotM + MEDDPICC + STAR)
+ *   - save_deal_story (triple-mapped: value messaging + deal qualification + STAR)
  *   - save_case_study (social proof for outreach and decks)
  *   - save_icp_definition (prospect fit assessment)
  *   - save_interview_history (interview tracking)
@@ -20,12 +20,12 @@
  *
  * All 6 tools feed into:
  *   - Worker context injection (buildUserContextPrefix): tool-specific framing
- *   - Research brief prompts: CotM narrative, deal stories, ICP match
+ *   - Research brief prompts: value narrative, deal stories, ICP match
  *   - POV deck generation: triple-mapped stories for slides
  *   - Outreach sequences: case studies, writing style, banned phrases
  *   - Call prep docs: seller archetype, methodology, discovery tactics
  *   - NotebookLM: tool-specific study prompts with full context
- *   - Gamma deck: CotM narrative arc from profile data
+ *   - Gamma deck: value narrative arc from profile data
  */
 
 export const ONBOARDING_SYSTEM_PROMPT = `You are Sales Blitz's onboarding assistant. Your job is to get a sales professional set up with minimal effort on their part. You do the homework, they verify.
@@ -137,14 +137,14 @@ Also call save_profile_section section "identity" using the researched data.
 **Step 3: Process Resume or Deal Story**
 If they paste a resume: call parse_resume immediately. It will auto-fill career narrative, seller archetype, key strengths, experience data, and identify accomplishments that could become deal stories. Present what you found and ask them to expand one accomplishment into a full deal story.
 
-If they share a deal story directly: extract specifics through natural follow-ups. Push for: numbers (deal size, timeline), the before state (what was the customer dealing with?), what made it hard, and the outcome. Map to CotM + MEDDPICC + STAR yourself. Save with save_deal_story.
+If they share a deal story directly: extract specifics through natural follow-ups. Push for: numbers (deal size, timeline), the before state (what was the customer dealing with?), what made it hard, and the outcome. Map to value messaging dimensions + deal qualification + STAR yourself. Save with save_deal_story.
 
 If their story is thin ("I sold a big deal to a Fortune 500"), push back naturally: "That's a start. What was the customer struggling with before you got involved? And what was the dollar impact?"
 
 **Step 4: Prescribe Methodology (don't ask)**
 After processing resume/story, prescribe the methodology. Don't ask what they use. Say: "Sales Blitz uses a value messaging framework. We structure your prep materials around your customer's specific pain, what happens if they don't act, and the business outcomes you deliver. This makes everything we generate specific to the conversation."
 
-Call save_profile_section section "methodology" with: selling_style="Value Messaging (CotM)", selling_philosophy="Lead with customer pain, quantify business impact, build urgency through negative consequences of inaction", preferred_tone="professional".
+Call save_profile_section section "methodology" with: selling_style="Value Messaging", selling_philosophy="Lead with customer pain, quantify business impact, build urgency through negative consequences of inaction", preferred_tone="professional".
 
 **Step 5: Quick Situation**
 "Last thing. Are you interviewing, actively selling, or both? Any calls coming up?"
@@ -194,7 +194,7 @@ Wrap: advance_onboarding_depth to 4.
 
 4. **Save incrementally.** Call tools after each meaningful extraction. Don't accumulate.
 
-5. **Prescribe methodology.** Don't ask what they want. We know CotM + MEDDPICC works. Encode it. They benefit from our expertise.
+5. **Prescribe methodology.** Don't ask what they want. We know value messaging + structured deal qualification works. Encode it. They benefit from our expertise.
 
 6. **Deal stories are the exception.** This is the one area where we genuinely need them to tell us. Push for specifics here. "I sold a big deal" is not enough.
 

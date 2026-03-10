@@ -140,7 +140,7 @@ const DEFAULT_PROFILE: ProfileData = {
   linkedinAbout: "",
   linkedinExperience: "",
   linkedinEducation: "",
-  sellingStyle: "MEDDPICC",
+  sellingStyle: "Value Messaging",
   sellingPhilosophy: "",
   sellerArchetype: "",
   dealStories: [],

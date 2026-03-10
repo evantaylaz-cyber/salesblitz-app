@@ -30,8 +30,8 @@ const TOOL_INFO: Record<string, { name: string; category: "interview" | "prospec
   interview_outreach: { name: "Interview Outreach", category: "interview", subtitle: "Name the role & the person you want to reach. We build the outreach package; you send it." },
   interview_prep: { name: "Interview Prep", category: "interview", subtitle: "Give us the details. We build your playbook, competitive intel & talk tracks for every interviewer." },
   prospect_outreach: { name: "Prospect Outreach", category: "prospect", subtitle: "Drop the account & contact. We research them and build multi-channel sequences that earn replies." },
-  prospect_prep: { name: "Prospect Prep", category: "prospect", subtitle: "Tell us who you're meeting. We deliver research, talk tracks & a CotM-structured game plan." },
-  deal_audit: { name: "Deal Audit", category: "deal", subtitle: "Walk us through the deal. We qualify it with MEDDPICC and surface the gaps you're not seeing." },
+  prospect_prep: { name: "Prospect Prep", category: "prospect", subtitle: "Tell us who you're meeting. We deliver research, talk tracks & a methodology-structured game plan." },
+  deal_audit: { name: "Deal Audit", category: "deal", subtitle: "Walk us through the deal. We qualify it and surface the gaps you're not seeing." },
   champion_builder: { name: "Champion Builder", category: "deal", subtitle: "Tell us about your champion. We arm them to sell internally when you're not in the room." },
   // practice_mode is NOT a blitz tool — it routes directly to /practice
 };

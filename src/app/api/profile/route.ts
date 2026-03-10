@@ -19,7 +19,7 @@ function computeProfileDepth(profile: Record<string, unknown>): number {
   const valueProps = profile.valueProps as unknown[];
   const hasSalesAssets = (Array.isArray(dealStories) && dealStories.length > 0) ||
     (Array.isArray(valueProps) && valueProps.length > 0);
-  const hasMethodology = !!(profile.sellingStyle && profile.sellingStyle !== "MEDDPICC") ||
+  const hasMethodology = !!(profile.sellingStyle && profile.sellingStyle !== "Value Messaging") ||
     !!profile.sellingPhilosophy;
   if (depth >= 1 && (hasSalesAssets || hasMethodology)) depth = 2;
 

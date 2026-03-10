@@ -99,7 +99,7 @@ const TOOLS: Tool[] = [
     id: "practice_mode",
     name: "AI Practice Mode",
     hook: "Rehearse with your research.",
-    description: "AI personas built from your blitz intel. Prospect calls, interviews & panels. Scored on CotM, then coached on what to fix.",
+    description: "AI personas built from your blitz intel. Prospect calls, interviews & panels. Scored on 8 messaging dimensions, then coached on what to fix.",
     minimumTier: "pro",
   },
   // Row 2: Prospect workflow + deal management
@@ -114,14 +114,14 @@ const TOOLS: Tool[] = [
     id: "prospect_prep",
     name: "Prospect Prep",
     hook: "Own the conversation.",
-    description: "Org chart, pain points, competitive positioning & talk tracks. CotM-structured, MEDDPICC-qualified.",
+    description: "Org chart, pain points, competitive positioning & talk tracks. Methodology-structured, deal-qualified.",
     minimumTier: "pro",
   },
   {
     id: "deal_audit",
     name: "Deal Audit",
     hook: "Stress-test your deal.",
-    description: "MEDDPICC qualification scorecard, risk flags & a strategy to close the gaps. No hiding from reality.",
+    description: "Deal qualification scorecard, risk flags & a strategy to close the gaps. No hiding from reality.",
     minimumTier: "closer",
   },
   // Row 3: Deal management

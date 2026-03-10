@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
     let extractedText = "";
 
     if (ext === "pdf" || file.type === "application/pdf") {
-      const parser = new PDFParse(buffer);
+      const parser = new PDFParse({ data: new Uint8Array(buffer) });
       const textResult = await parser.getText();
       extractedText = textResult.text;
     } else if (
