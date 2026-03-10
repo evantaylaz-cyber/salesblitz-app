@@ -14,25 +14,22 @@ import {
   AlertCircle,
 } from "lucide-react";
 
-// Web Speech API type declarations (not in default TS lib)
-interface ISpeechRecognition {
-  continuous: boolean;
-  interimResults: boolean;
-  lang: string;
-  start(): void;
-  stop(): void;
-  abort(): void;
-  onresult: ((event: { results: { [index: number]: { [index: number]: { transcript: string }; isFinal: boolean }; length: number } }) => void) | null;
-  onerror: ((event: { error: string }) => void) | null;
-  onend: (() => void) | null;
-}
-
 interface TranscriptEntry {
   role: "user" | "persona";
   text: string;
   timestamp: string;
   speaker?: string;
   speakerTitle?: string;
+}
+
+// Helper: convert Int16Array (PCM16) to base64 string for Realtime API
+function int16ToBase64(int16Array: Int16Array): string {
+  const bytes = new Uint8Array(int16Array.buffer);
+  let binary = "";
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
 }
 
 export default function PracticeSessionPage() {
@@ -60,27 +57,37 @@ export default function PracticeSessionPage() {
   const [currentSpeaker, setCurrentSpeaker] = useState<string | null>(null);
   const [isPanelMode, setIsPanelMode] = useState(false);
   const [showMobileTranscript, setShowMobileTranscript] = useState(false);
+  const [sttMode, setSttMode] = useState<"realtime" | "webspeech" | "none">("none");
 
-  // Refs
+  // Refs - Avatar & video
   const videoRef = useRef<HTMLVideoElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sessionRef = useRef<any>(null);
-  const recognitionRef = useRef<ISpeechRecognition | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const transcriptEndRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const chromaKeyFrameRef = useRef<number | null>(null);
-  const isSpeakingRef = useRef(false);  // tracks avatar speaking for mic gating
-  const micActiveRef = useRef(false);   // tracks if user has mic toggled on
-  const ttsVoiceRef = useRef("onyx");   // TTS voice: onyx (male) or nova (female)
+  const isSpeakingRef = useRef(false);
+  const micActiveRef = useRef(false);
+  const ttsVoiceRef = useRef("onyx");
 
-  // Convert text to audio via OpenAI TTS, then send to LiveAvatar via repeatAudio()
+  // Refs - OpenAI Realtime API (STT)
+  const realtimeWsRef = useRef<WebSocket | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const workletNodeRef = useRef<AudioWorkletNode | null>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
+
+  // Refs - Web Speech API fallback
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const recognitionRef = useRef<any>(null);
+
+  // ─── TTS + HeyGen ─────────────────────────────────────────────────────
+
   async function speakViaAvatar(text: string) {
     const session = sessionRef.current;
     if (!session) return;
 
     try {
-      // Get PCM audio from our TTS endpoint
       const ttsRes = await fetch("/api/practice/tts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -93,13 +100,11 @@ export default function PracticeSessionPage() {
       }
 
       const { chunks } = await ttsRes.json();
-
       if (!chunks || chunks.length === 0) {
         console.error("TTS returned no audio chunks");
         return;
       }
 
-      // Send each ~1s chunk to LiveAvatar via repeatAudio (maps to agent.speak)
       for (const chunk of chunks) {
         session.repeatAudio(chunk);
       }
@@ -108,7 +113,8 @@ export default function PracticeSessionPage() {
     }
   }
 
-  // Chroma key: process video frames to remove green background
+  // ─── Chroma Key ────────────────────────────────────────────────────────
+
   function startChromaKey() {
     const video = videoRef.current;
     const canvas = canvasRef.current;
@@ -124,7 +130,6 @@ export default function PracticeSessionPage() {
         return;
       }
 
-      // Match canvas size to video
       if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
@@ -134,18 +139,16 @@ export default function PracticeSessionPage() {
       const frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const data = frame.data;
 
-      // Replace green pixels with dark gray (matching bg-gray-800 = #1f2937)
       for (let i = 0; i < data.length; i += 4) {
         const r = data[i];
         const g = data[i + 1];
         const b = data[i + 2];
 
-        // Green screen detection: high green, low red, low blue
         if (g > 100 && g > r * 1.4 && g > b * 1.4) {
-          data[i] = 31;      // R (gray-800)
-          data[i + 1] = 41;  // G
-          data[i + 2] = 55;  // B
-          data[i + 3] = 255; // A
+          data[i] = 31;
+          data[i + 1] = 41;
+          data[i + 2] = 55;
+          data[i + 3] = 255;
         }
       }
 
@@ -163,7 +166,351 @@ export default function PracticeSessionPage() {
     }
   }
 
-  // Load session data and initialize avatar
+  // ─── Process User Speech (shared between Realtime & Web Speech) ────────
+
+  const handleUserTranscript = useCallback(async (userText: string) => {
+    if (!userText.trim()) return;
+    // Drop transcriptions that arrive while avatar is speaking (echo safety net)
+    if (isSpeakingRef.current) return;
+
+    setTranscript((prev) => [
+      ...prev,
+      { role: "user", text: userText.trim(), timestamp: new Date().toISOString() },
+    ]);
+
+    setIsProcessing(true);
+    try {
+      const res = await fetch("/api/practice/message", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId, userMessage: userText.trim() }),
+      });
+
+      const data = await res.json();
+      if (data.response) {
+        const personaEntry: TranscriptEntry = {
+          role: "persona",
+          text: data.response,
+          timestamp: new Date().toISOString(),
+        };
+
+        if (data.speaker) {
+          personaEntry.speaker = data.speaker;
+          personaEntry.speakerTitle = data.speakerTitle;
+          setCurrentSpeaker(data.speaker);
+        }
+
+        setTranscript((prev) => [...prev, personaEntry]);
+        speakViaAvatar(data.response);
+      }
+    } catch {
+      setError("Failed to get response");
+    } finally {
+      setIsProcessing(false);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionId]);
+
+  // ─── OpenAI Realtime API STT ──────────────────────────────────────────
+
+  async function initRealtimeSTT() {
+    try {
+      // 1. Get ephemeral token from our backend
+      const tokenRes = await fetch("/api/practice/realtime-token", { method: "POST" });
+      if (!tokenRes.ok) {
+        console.warn("[Realtime] Token endpoint failed, falling back to Web Speech API");
+        return false;
+      }
+
+      const { ephemeralKey } = await tokenRes.json();
+      if (!ephemeralKey) {
+        console.warn("[Realtime] No ephemeral key returned, falling back to Web Speech API");
+        return false;
+      }
+
+      // 2. Connect to Realtime API via WebSocket
+      const ws = new WebSocket(
+        "wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-12-17",
+        [
+          "realtime",
+          `openai-insecure-api-key.${ephemeralKey}`,
+          "openai-beta.realtime-v1",
+        ]
+      );
+
+      // 3. Handle WebSocket events
+      ws.onopen = () => {
+        console.log("[Realtime] WebSocket connected");
+
+        // Update session config (in case defaults differ from token creation)
+        ws.send(JSON.stringify({
+          type: "session.update",
+          session: {
+            modalities: ["text"],
+            input_audio_transcription: { model: "whisper-1" },
+            turn_detection: {
+              type: "server_vad",
+              threshold: 0.5,
+              prefix_padding_ms: 300,
+              silence_duration_ms: 800,
+            },
+          },
+        }));
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const msg = JSON.parse(event.data);
+          handleRealtimeEvent(msg);
+        } catch {
+          // ignore parse errors
+        }
+      };
+
+      ws.onerror = (err) => {
+        console.error("[Realtime] WebSocket error:", err);
+      };
+
+      ws.onclose = (event) => {
+        console.log("[Realtime] WebSocket closed:", event.code, event.reason);
+        realtimeWsRef.current = null;
+      };
+
+      realtimeWsRef.current = ws;
+
+      // 4. Start mic capture via AudioWorklet
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+          sampleRate: 48000,
+        },
+      });
+      mediaStreamRef.current = stream;
+
+      const audioCtx = new AudioContext({ sampleRate: 48000 });
+      audioContextRef.current = audioCtx;
+
+      await audioCtx.audioWorklet.addModule("/audio-processor.js");
+
+      const source = audioCtx.createMediaStreamSource(stream);
+      const worklet = new AudioWorkletNode(audioCtx, "realtime-audio-processor");
+
+      worklet.port.onmessage = (e) => {
+        if (e.data.type === "audio" && realtimeWsRef.current?.readyState === WebSocket.OPEN) {
+          // Convert ArrayBuffer to Int16Array, then to base64
+          const pcm16 = new Int16Array(e.data.buffer);
+          const base64Audio = int16ToBase64(pcm16);
+
+          realtimeWsRef.current.send(JSON.stringify({
+            type: "input_audio_buffer.append",
+            audio: base64Audio,
+          }));
+        }
+      };
+
+      source.connect(worklet);
+      worklet.connect(audioCtx.destination); // required to keep worklet running
+      workletNodeRef.current = worklet;
+
+      return true;
+    } catch (err) {
+      console.warn("[Realtime] Init failed, falling back to Web Speech API:", err);
+      return false;
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function handleRealtimeEvent(msg: any) {
+    switch (msg.type) {
+      case "session.created":
+        console.log("[Realtime] Session created");
+        break;
+
+      case "session.updated":
+        console.log("[Realtime] Session config updated");
+        break;
+
+      case "input_audio_buffer.speech_started":
+        // VAD detected user started speaking
+        console.log("[Realtime] Speech started");
+        break;
+
+      case "input_audio_buffer.speech_stopped":
+        // VAD detected user stopped speaking
+        console.log("[Realtime] Speech stopped");
+        break;
+
+      case "input_audio_buffer.committed":
+        // Audio buffer committed, transcription will follow
+        console.log("[Realtime] Buffer committed");
+        break;
+
+      case "conversation.item.input_audio_transcription.completed":
+        // Got the transcription from Whisper
+        if (msg.transcript) {
+          console.log("[Realtime] Transcription:", msg.transcript);
+          handleUserTranscript(msg.transcript);
+        }
+        break;
+
+      case "response.created":
+        // The Realtime model auto-started a response. Cancel it immediately.
+        // We use Claude for responses, not the Realtime model.
+        if (realtimeWsRef.current?.readyState === WebSocket.OPEN) {
+          realtimeWsRef.current.send(JSON.stringify({
+            type: "response.cancel",
+          }));
+        }
+        break;
+
+      case "response.cancelled":
+        // Expected after our cancel. No action needed.
+        break;
+
+      case "error":
+        console.error("[Realtime] Error:", msg.error);
+        break;
+
+      default:
+        // Ignore other events (response.done, etc.)
+        break;
+    }
+  }
+
+  function stopRealtimeSTT() {
+    // Close WebSocket
+    if (realtimeWsRef.current) {
+      try { realtimeWsRef.current.close(); } catch { /* ok */ }
+      realtimeWsRef.current = null;
+    }
+
+    // Disconnect AudioWorklet
+    if (workletNodeRef.current) {
+      try { workletNodeRef.current.disconnect(); } catch { /* ok */ }
+      workletNodeRef.current = null;
+    }
+
+    // Close AudioContext
+    if (audioContextRef.current) {
+      try { audioContextRef.current.close(); } catch { /* ok */ }
+      audioContextRef.current = null;
+    }
+
+    // Stop media stream tracks
+    if (mediaStreamRef.current) {
+      mediaStreamRef.current.getTracks().forEach((t) => t.stop());
+      mediaStreamRef.current = null;
+    }
+  }
+
+  // ─── Web Speech API Fallback ──────────────────────────────────────────
+
+  function createWebSpeechRecognition() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const SpeechRecognitionCtor = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognitionCtor) return null;
+
+    const recognition = new SpeechRecognitionCtor();
+    recognition.continuous = true;
+    recognition.interimResults = false;
+    recognition.lang = "en-US";
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    recognition.onresult = async (event: any) => {
+      const last = event.results[event.results.length - 1];
+      if (last.isFinal) {
+        if (isSpeakingRef.current) return;
+        const userText = last[0].transcript.trim();
+        if (userText) handleUserTranscript(userText);
+      }
+    };
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    recognition.onerror = (event: any) => {
+      if (event.error !== "aborted") {
+        console.error("[WebSpeech] Error:", event.error);
+      }
+    };
+
+    recognition.onend = () => {
+      if (micActiveRef.current && !isSpeakingRef.current) {
+        try { recognition.start(); } catch { recognitionRef.current = null; }
+      } else {
+        recognitionRef.current = null;
+      }
+    };
+
+    recognition.start();
+    recognitionRef.current = recognition;
+    return recognition;
+  }
+
+  function stopWebSpeechRecognition() {
+    try { recognitionRef.current?.stop(); } catch { /* ok */ }
+    recognitionRef.current = null;
+  }
+
+  // Resume Web Speech after avatar finishes (fallback mode only)
+  function resumeWebSpeechListening() {
+    if (sttMode !== "webspeech") return;
+    if (!micActiveRef.current) return;
+    if (isSpeakingRef.current) return;
+    if (recognitionRef.current) return;
+    createWebSpeechRecognition();
+  }
+
+  // ─── Mic Toggle ───────────────────────────────────────────────────────
+
+  const startListening = useCallback(async () => {
+    micActiveRef.current = true;
+    setIsRecording(true);
+
+    // If already initialized in a mode, it's running. Just flag active.
+    if (sttMode === "realtime" && realtimeWsRef.current) return;
+    if (sttMode === "webspeech" && recognitionRef.current) return;
+
+    // Try Realtime API first
+    const realtimeOk = await initRealtimeSTT();
+    if (realtimeOk) {
+      setSttMode("realtime");
+      return;
+    }
+
+    // Fallback to Web Speech API
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const hasSpeechApi = ("webkitSpeechRecognition" in window) || ("SpeechRecognition" in window);
+    if (hasSpeechApi) {
+      if (!isSpeakingRef.current) {
+        createWebSpeechRecognition();
+      }
+      setSttMode("webspeech");
+      return;
+    }
+
+    // Neither available
+    setError("Speech recognition not available. Check microphone permissions.");
+    setIsRecording(false);
+    micActiveRef.current = false;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sttMode]);
+
+  const stopListening = useCallback(() => {
+    micActiveRef.current = false;
+    setIsRecording(false);
+
+    if (sttMode === "realtime") {
+      stopRealtimeSTT();
+      setSttMode("none");
+    } else if (sttMode === "webspeech") {
+      stopWebSpeechRecognition();
+      setSttMode("none");
+    }
+  }, [sttMode]);
+
+  // ─── Init Session & Avatar ─────────────────────────────────────────────
+
   useEffect(() => {
     if (isLoaded && sessionId) {
       initSession();
@@ -182,15 +529,14 @@ export default function PracticeSessionPage() {
 
   async function initSession() {
     try {
-      // Select avatar based on gender (passed via URL query param from start API)
       const personaGender = searchParams.get("gender") || "male";
-      const FEMALE_AVATAR = "b4fc2d60-3b82-4694-b243-93e9d2bb0242"; // Anastasia in Grey Shirt
-      const MALE_AVATAR = "bb1f6ebc-b388-4a39-9e2b-8df618e0377c";   // Graham in Black Shirt
+      const FEMALE_AVATAR = "b4fc2d60-3b82-4694-b243-93e9d2bb0242";
+      const MALE_AVATAR = "bb1f6ebc-b388-4a39-9e2b-8df618e0377c";
       const isFemale = personaGender === "female";
       const avatarId = isFemale ? FEMALE_AVATAR : MALE_AVATAR;
       ttsVoiceRef.current = isFemale ? "nova" : "onyx";
 
-      // Get LiveAvatar session token from our backend
+      // Get LiveAvatar session token
       const tokenRes = await fetch("/api/practice/token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -206,33 +552,27 @@ export default function PracticeSessionPage() {
         return;
       }
 
-      // Dynamic import of LiveAvatar SDK (client-side only)
+      // Dynamic import of LiveAvatar SDK
       const { LiveAvatarSession, SessionEvent, AgentEventsEnum } = await import(
         "@heygen/liveavatar-web-sdk"
       );
 
-      // Create session in CUSTOM mode (voiceChat: false)
-      // We handle STT (Web Speech API), LLM (Claude), and TTS (OpenAI) ourselves
-      // LiveAvatar handles avatar video rendering + lip sync only
       const session = new LiveAvatarSession(tokenData.sessionToken, {
         voiceChat: false,
       });
 
       sessionRef.current = session;
 
-      // Listen for session state changes
       session.on(SessionEvent.SESSION_STATE_CHANGED, (state: string) => {
         if (state === "CONNECTED") {
           setAvatarReady(true);
           setAvatarLoading(false);
 
-          // Attach video stream to element
           if (videoRef.current) {
             session.attach(videoRef.current);
             videoRef.current.onplaying = () => startChromaKey();
           }
 
-          // Start timer (pauses while avatar is speaking so it tracks YOUR active time)
           timerRef.current = setInterval(() => {
             if (!isSpeakingRef.current) {
               setElapsed((prev) => prev + 1);
@@ -244,20 +584,21 @@ export default function PracticeSessionPage() {
       });
 
       session.on(SessionEvent.SESSION_STREAM_READY, () => {
-        // Stream is ready, attach to video element
         if (videoRef.current) {
           session.attach(videoRef.current);
-          // Start chroma key processing once video is playing
           videoRef.current.onplaying = () => startChromaKey();
         }
       });
 
-      // Avatar speaking events: mute mic to prevent feedback loop
+      // Avatar speaking events
+      // With Realtime API: we DON'T abort STT. Echo cancellation handles feedback.
+      // We just set the flag so transcriptions during avatar speech are dropped.
       session.on(AgentEventsEnum.AVATAR_SPEAK_STARTED, () => {
         setIsSpeaking(true);
         isSpeakingRef.current = true;
-        // Pause speech recognition while avatar is speaking
-        if (recognitionRef.current) {
+
+        // Web Speech fallback: still need to pause recognition
+        if (sttMode === "webspeech" && recognitionRef.current) {
           try { recognitionRef.current.abort(); } catch { /* ok */ }
         }
       });
@@ -265,16 +606,18 @@ export default function PracticeSessionPage() {
       session.on(AgentEventsEnum.AVATAR_SPEAK_ENDED, () => {
         setIsSpeaking(false);
         isSpeakingRef.current = false;
-        // Resume speech recognition if user had mic on
-        if (micActiveRef.current && !recognitionRef.current) {
-          resumeListening();
+
+        // Web Speech fallback: resume recognition
+        if (sttMode === "webspeech" && micActiveRef.current && !recognitionRef.current) {
+          resumeWebSpeechListening();
         }
+        // Realtime API: no action needed. WebSocket stays connected,
+        // echo cancellation keeps audio clean, VAD handles next turn.
       });
 
-      // Start the LiveAvatar session
       await session.start();
 
-      // Send opening line via our Claude-powered backend
+      // Send opening line
       const openingRes = await fetch("/api/practice/message", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -292,7 +635,6 @@ export default function PracticeSessionPage() {
           timestamp: new Date().toISOString(),
         };
 
-        // Handle panel mode speaker info
         if (openingData.speaker) {
           entry.speaker = openingData.speaker;
           entry.speakerTitle = openingData.speakerTitle;
@@ -302,12 +644,10 @@ export default function PracticeSessionPage() {
 
         setTranscript([entry]);
 
-        // Set persona info from the response if available
         if (openingData.persona) {
           setPersona(openingData.persona);
         }
 
-        // Convert text to audio via OpenAI TTS, send to avatar for lip sync
         speakViaAvatar(openingData.response);
       }
     } catch (err) {
@@ -317,128 +657,7 @@ export default function PracticeSessionPage() {
     }
   }
 
-  // Helper: create and start a new speech recognition instance
-  function createRecognition() {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const SpeechRecognitionCtor = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SpeechRecognitionCtor) return null;
-
-    const recognition = new SpeechRecognitionCtor() as ISpeechRecognition;
-    recognition.continuous = true;
-    recognition.interimResults = false;
-    recognition.lang = "en-US";
-
-    recognition.onresult = async (event) => {
-      const last = event.results[event.results.length - 1];
-      if (last.isFinal) {
-        // Drop any transcript that arrives while avatar is speaking (safety net)
-        if (isSpeakingRef.current) return;
-
-        const userText = last[0].transcript.trim();
-        if (!userText) return;
-
-        // Add to transcript
-        setTranscript((prev) => [
-          ...prev,
-          { role: "user", text: userText, timestamp: new Date().toISOString() },
-        ]);
-
-        // Send to Claude backend
-        setIsProcessing(true);
-        try {
-          const res = await fetch("/api/practice/message", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ sessionId, userMessage: userText }),
-          });
-
-          const data = await res.json();
-          if (data.response) {
-            const personaEntry: TranscriptEntry = {
-              role: "persona",
-              text: data.response,
-              timestamp: new Date().toISOString(),
-            };
-
-            // Handle panel mode speaker info
-            if (data.speaker) {
-              personaEntry.speaker = data.speaker;
-              personaEntry.speakerTitle = data.speakerTitle;
-              setCurrentSpeaker(data.speaker);
-            }
-
-            setTranscript((prev) => [...prev, personaEntry]);
-
-            // Convert text to audio via OpenAI TTS, send to avatar for lip sync
-            speakViaAvatar(data.response);
-          }
-        } catch {
-          setError("Failed to get response");
-        } finally {
-          setIsProcessing(false);
-        }
-      }
-    };
-
-    recognition.onerror = (event) => {
-      if (event.error !== "aborted") {
-        console.error("Speech error:", event.error);
-      }
-    };
-
-    // Auto-restart if recognition ends while mic should be active
-    recognition.onend = () => {
-      if (micActiveRef.current && !isSpeakingRef.current) {
-        // Recognition ended unexpectedly (Chrome does this), restart
-        try {
-          recognition.start();
-        } catch {
-          recognitionRef.current = null;
-        }
-      } else {
-        recognitionRef.current = null;
-      }
-    };
-
-    recognition.start();
-    recognitionRef.current = recognition;
-    return recognition;
-  }
-
-  // Resume listening after avatar finishes speaking
-  function resumeListening() {
-    if (!micActiveRef.current) return;
-    if (isSpeakingRef.current) return;
-    if (recognitionRef.current) return;
-    createRecognition();
-    setIsRecording(true);
-  }
-
-  // Speech recognition (Web Speech API)
-  const startListening = useCallback(() => {
-    if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) {
-      setError("Speech recognition not supported in this browser. Use Chrome.");
-      return;
-    }
-
-    // Don't start if avatar is currently speaking
-    if (isSpeakingRef.current) {
-      micActiveRef.current = true;  // flag so it auto-starts when avatar finishes
-      setIsRecording(true);
-      return;
-    }
-
-    micActiveRef.current = true;
-    createRecognition();
-    setIsRecording(true);
-  }, [sessionId]);
-
-  const stopListening = useCallback(() => {
-    micActiveRef.current = false;
-    try { recognitionRef.current?.stop(); } catch { /* ok */ }
-    recognitionRef.current = null;
-    setIsRecording(false);
-  }, []);
+  // ─── Session End & Cleanup ─────────────────────────────────────────────
 
   async function handleEndSession() {
     setEnding(true);
@@ -462,6 +681,9 @@ export default function PracticeSessionPage() {
 
   async function cleanup() {
     stopChromaKey();
+    stopRealtimeSTT();
+    stopWebSpeechRecognition();
+
     try {
       const session = sessionRef.current;
       if (session) {
@@ -478,6 +700,8 @@ export default function PracticeSessionPage() {
     const sec = s % 60;
     return `${m}:${sec.toString().padStart(2, "0")}`;
   };
+
+  // ─── Render ────────────────────────────────────────────────────────────
 
   if (!isLoaded) {
     return (
@@ -509,6 +733,12 @@ export default function PracticeSessionPage() {
           )}
         </div>
         <div className="flex items-center gap-4">
+          {/* STT mode indicator */}
+          {isRecording && (
+            <span className="hidden sm:inline text-xs text-gray-500 tabular-nums">
+              {sttMode === "realtime" ? "Realtime STT" : sttMode === "webspeech" ? "Web Speech" : ""}
+            </span>
+          )}
           <div className="flex items-center gap-1.5 text-sm text-gray-400 tabular-nums" title="Your active time (pauses while persona speaks)">
             <Clock className="h-4 w-4" />
             {formatTime(elapsed)}
@@ -535,7 +765,6 @@ export default function PracticeSessionPage() {
                 <p className="text-sm text-gray-400">Starting avatar...</p>
               </div>
             )}
-            {/* Hidden video element receives the LiveAvatar stream */}
             <video
               ref={videoRef}
               autoPlay
@@ -544,7 +773,6 @@ export default function PracticeSessionPage() {
               className="absolute opacity-0 pointer-events-none"
               style={{ width: 1, height: 1 }}
             />
-            {/* Canvas displays chroma-keyed video (green screen removed) */}
             <canvas
               ref={canvasRef}
               className={`h-full w-full object-cover ${avatarLoading ? "opacity-0" : "opacity-100"} transition-opacity duration-500`}
@@ -579,7 +807,6 @@ export default function PracticeSessionPage() {
             <span className="text-sm text-gray-400">
               {isRecording ? "Listening... speak naturally" : isProcessing ? "Thinking..." : "Click mic to speak"}
             </span>
-            {/* Mobile transcript toggle */}
             <button
               onClick={() => setShowMobileTranscript(!showMobileTranscript)}
               className="lg:hidden flex items-center gap-1.5 rounded-lg border border-gray-700 px-3 py-2 text-sm text-gray-400 hover:text-white hover:border-gray-500 transition"
@@ -601,7 +828,7 @@ export default function PracticeSessionPage() {
           )}
         </div>
 
-        {/* Transcript Panel — desktop: sidebar, mobile: overlay */}
+        {/* Transcript Panel */}
         <div className={`${showMobileTranscript ? "fixed inset-0 z-40 bg-gray-900" : "hidden"} lg:relative lg:block lg:w-96 border-l border-gray-800 flex flex-col`}>
           <div className="border-b border-gray-800 px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
