@@ -184,7 +184,7 @@ export function getExpectedAssets(toolName: ToolName): Omit<Asset, "url" | "size
     ],
     practice_mode: [
       { id: "session_transcript", label: "Session Transcript", format: "pdf", category: "research" },
-      { id: "cotm_scorecard", label: "Sales Scorecard", format: "pdf", category: "deliverable" },
+      { id: "messaging_scorecard", label: "Sales Scorecard", format: "pdf", category: "deliverable" },
     ],
   };
 

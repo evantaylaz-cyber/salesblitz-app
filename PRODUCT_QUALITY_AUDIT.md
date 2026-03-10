@@ -1,9 +1,44 @@
 # Sales Blitz Product Quality Audit
 
-**Date:** 2026-03-07
+**Date:** 2026-03-07 (original), last updated 2026-03-10
 **Auditor:** Claude (directed by Evan)
 **Standard:** "Would an Apple product exec ship this?"
 **Scope:** Every user-facing page, API route, form, and piece of copy in the app
+
+---
+
+## CURRENT STATE (Mar 10, 2026) — SINGLE SOURCE OF TRUTH
+
+**Read this section. Ignore all "Updated Summary Stats" tables below; they are historical snapshots that contradict each other.**
+
+| Severity | Original (Mar 7) | Remaining (Mar 10) |
+|----------|-------------------|---------------------|
+| P0       | 2                 | 0                   |
+| P1       | 12                | 1                   |
+| P2       | 13                | 2                   |
+| P3       | 4                 | 0                   |
+| **Total** | **31**           | **3**               |
+
+### What's left
+
+**P1 (1):**
+1. **No document upload on request form** (original item, Section 2). Users can paste text but can't upload PDF/DOCX files for resumes, assignments, case studies. The resume upload route exists (`/api/profile/upload-resume`) but isn't wired into the request form. `request/page.tsx`.
+
+**P2 (2) — both need live HeyGen testing, can't fix from code:**
+1. **Female avatar ID unverified.** `FEMALE_AVATAR = "b4fc2d60..."` was set but never tested with real HeyGen credits. If wrong, female personas get no avatar.
+2. **Chroma key untested with real avatar.** Green-screen removal algorithm exists but threshold values may not match HeyGen's actual green screen color.
+
+### Everything else: FIXED
+
+All other 28 items have been verified fixed across sessions Mar 7-10. Key fixes (chronological):
+- P0: Blitz card one-click launch, review page dedicated endpoint
+- P1: 18+ profile fields in practice persona, 30K research extraction, debrief capture, Target entity creation, session-to-RunRequest linking, Target.accumulatedIntel read/write, cross-session coaching, profile API whitelist (14->31 fields), ICP/case study sections on profile
+- P2: Batch pages light theme, dynamic request subtitles, engagement context expanded, gender detection via API, onboarding depth auto-computed, tool run counts, dashboard Practice Now CTA, targets pages light theme, panel speaker indicator, scoring adapts to meeting type, stale session cleanup
+- P3: Timer pauses during avatar speech, tool cards show run counts, mobile nav with icons
+- Trademark cleanup: All MEDDPICC/CotM references removed from public-facing content
+- Copy: Em dashes eliminated, banned words clean, Rule 3B compliant
+- TypeScript: 18 implicit `any` errors fixed
+- Bug fix: pdf-parse v2 constructor corrected (`new PDFParse({ data: new Uint8Array(buffer) })`)
 
 ---
 

@@ -337,6 +337,12 @@ export default function ProfilePage() {
             signaturePatterns: Array.isArray(data.profile.signaturePatterns)
               ? data.profile.signaturePatterns
               : [],
+            icpDefinitions: Array.isArray(data.profile.icpDefinitions)
+              ? data.profile.icpDefinitions
+              : [],
+            caseStudies: Array.isArray(data.profile.caseStudies)
+              ? data.profile.caseStudies
+              : [],
           });
         }
       }
@@ -895,14 +901,13 @@ export default function ProfilePage() {
                   onChange={(e) => updateField("sellingStyle", e.target.value)}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                 >
-                  <option value="MEDDPICC">MEDDPICC</option>
-                  <option value="MEDDIC">MEDDIC</option>
                   <option value="Value Messaging">Value Messaging</option>
-                  <option value="MEDDPICC + Value Messaging">MEDDPICC + Value Messaging</option>
+                  <option value="Value Messaging + Deal Qualification">Value Messaging + Deal Qualification</option>
                   <option value="Challenger Sale">Challenger Sale</option>
                   <option value="SPIN Selling">SPIN Selling</option>
                   <option value="Sandler">Sandler</option>
                   <option value="Solution Selling">Solution Selling</option>
+                  <option value="Consultative Selling">Consultative Selling</option>
                   <option value="Other">Other</option>
                 </select>
               </div>
