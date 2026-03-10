@@ -485,24 +485,48 @@ Additional items discovered already fixed during this session:
 | P3       | 4        | 4                   | 4                  |
 | **Total** | **31**  | **17**              | **11**             |
 
+### Fixes Applied (Mar 10, 2026 session: Intelligence Infrastructure + Territory Hub)
+
+**P1 Fix: Session end doesn't update Target.accumulatedIntel** — FIXED in prior session. `practice/end/route.ts` lines 146-170 write coaching summary to Target.accumulatedIntel after scoring.
+
+**P1 Fix: Message route doesn't build on accumulated context** — FIXED via session chaining architecture. `practice/start/route.ts` loads Target.accumulatedIntel (line 128-134), stores in `focusAreas` (line 360-364), then `practice/message/route.ts` injects into system prompt (lines 86-90). Cross-session coaching also loaded from worker `/coaching-context` endpoint. No per-message DB query needed; coaching context is baked into persona at session start.
+
+**P1 Fix: Practice start only uses 4 profile fields** — FIXED in prior session. `practice/start/route.ts` lines 136-161 now use 18+ profile fields including companyDescription, companyCompetitors, sellingStyle, sellingPhilosophy, sellerArchetype, careerNarrative, lifecycleStage, territoryFocus, currentQuotaContext, linkedinAbout, linkedinExperience, keyStrengths, dealStories, writingStyle.
+
+**P1 Fix: Research data truncated to 8K chars** — FIXED in prior session. `practice/start/route.ts` lines 205-232 now use 30K char limit with smart section prioritization (executive summary, competitive intel, stakeholders, etc. extracted first before general text).
+
+**P2 Fix: Targets pages dark theme inconsistency** — FIXED. `targets/page.tsx` and `targets/[id]/page.tsx` rewritten from `bg-zinc-950` dark theme to `bg-gray-50` light theme matching the rest of the app.
+
+**New Feature: Territory Intelligence Hub** — Built complete target management UI:
+- `targets/page.tsx`: List view with intel depth badges, filter tabs, clickable cards
+- `targets/[id]/page.tsx`: Detail view with accumulated intel, editable notes/status, blitz history with inline debriefs, practice session history, Re-Blitz button
+- `api/targets/route.ts`: List API with activity counts, intel depth classification
+- `api/targets/[id]/route.ts`: Detail API (GET + PATCH)
+- `AppNav.tsx`: Added Targets nav item
+- `request/page.tsx`: Re-Blitz pre-fill from target query params
+
 ### Remaining Open Items
 
-**P1 (2):**
-1. Message route doesn't build on accumulated context (Phase 5, needs debrief synthesis pipeline)
-2. Session end doesn't update Target.accumulatedIntel (Phase 5, needs Target intelligence accumulation)
+**P1 (0):** All P1s resolved.
 
-**P2 (5):**
+**P2 (4):**
 1. Female avatar ID unverified (needs live test)
 2. Chroma key untested with real avatar (needs live test)
 3. Gender detection uses hardcoded name list (should use API-returned gender field)
 4. No panel mode speaker indicator (Phase 4)
-5. Onboarding chat vs manual profile disconnected (depth calculation based on chat progress, not field completeness)
 
-**P3 (4):**
+**P3 (3):**
 1. Timer doesn't pause when avatar speaks
-2. No "run from previous" option on request form
-3. Tool cards don't show recent activity counts
-4. Mobile nav is basic
+2. Tool cards don't show recent activity counts
+3. Mobile nav is basic
+
+| Severity | Original | After Mar 8 | After Mar 8 Late | After Mar 10 |
+|----------|----------|-------------|-----------------|--------------|
+| P0       | 2        | 0           | 0               | 0            |
+| P1       | 12       | 5           | 2               | 0            |
+| P2       | 13       | 8           | 5               | 4            |
+| P3       | 4        | 4           | 4               | 3            |
+| **Total** | **31**  | **17**      | **11**          | **7**        |
 
 ### Files Changed (ready for commit via GitHub Desktop)
 

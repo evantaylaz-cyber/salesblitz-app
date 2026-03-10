@@ -17,7 +17,6 @@ import {
   MessageSquare,
   BarChart3,
   ArrowUpRight,
-  FileText,
   Video,
   PenLine,
   RefreshCw,
@@ -77,18 +76,10 @@ interface TargetDetail {
 }
 
 const INTEL_COLORS: Record<string, { bg: string; text: string; label: string }> = {
-  none: { bg: "bg-zinc-800", text: "text-zinc-500", label: "No Intel" },
-  light: { bg: "bg-amber-900/30", text: "text-amber-400", label: "Light" },
-  moderate: { bg: "bg-blue-900/30", text: "text-blue-400", label: "Growing" },
-  deep: { bg: "bg-emerald-900/30", text: "text-emerald-400", label: "Deep" },
-};
-
-const STATUS_CONFIG: Record<string, { color: string; icon: any; label: string }> = {
-  active: { color: "text-emerald-400", icon: CheckCircle2, label: "Active" },
-  paused: { color: "text-amber-400", icon: Pause, label: "Paused" },
-  closed: { color: "text-zinc-500", icon: XCircle, label: "Closed" },
-  won: { color: "text-emerald-400", icon: Trophy, label: "Won" },
-  lost: { color: "text-red-400", icon: XCircle, label: "Lost" },
+  none: { bg: "bg-gray-100", text: "text-gray-400", label: "No Intel" },
+  light: { bg: "bg-amber-50", text: "text-amber-600", label: "Light" },
+  moderate: { bg: "bg-blue-50", text: "text-blue-600", label: "Growing" },
+  deep: { bg: "bg-emerald-50", text: "text-emerald-600", label: "Deep" },
 };
 
 const TOOL_LABELS: Record<string, string> = {
@@ -182,10 +173,10 @@ export default function TargetDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-zinc-950 text-white">
+      <div className="min-h-screen bg-gray-50">
         <AppNav />
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-6 w-6 animate-spin text-zinc-500" />
+          <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
         </div>
       </div>
     );
@@ -193,11 +184,11 @@ export default function TargetDetailPage() {
 
   if (!target) {
     return (
-      <div className="min-h-screen bg-zinc-950 text-white">
+      <div className="min-h-screen bg-gray-50">
         <AppNav />
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
-          <p className="text-zinc-400">Target not found.</p>
-          <Link href="/targets" className="text-orange-400 hover:underline mt-2 inline-block">
+        <div className="max-w-4xl mx-auto px-6 py-8">
+          <p className="text-gray-500">Target not found.</p>
+          <Link href="/targets" className="text-emerald-600 hover:underline mt-2 inline-block">
             Back to Targets
           </Link>
         </div>
@@ -206,75 +197,71 @@ export default function TargetDetailPage() {
   }
 
   const intel = INTEL_COLORS[target.intelDepth];
-  const statusCfg = STATUS_CONFIG[target.status] || STATUS_CONFIG.active;
   const TypeIcon = target.type === "interview" ? GraduationCap : Briefcase;
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white">
+    <div className="min-h-screen bg-gray-50">
       <AppNav />
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+      <div className="max-w-4xl mx-auto px-6 py-6">
         {/* Back link */}
         <Link
           href="/targets"
-          className="inline-flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-300 mb-6 transition-colors"
+          className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-600 mb-6 transition-colors"
         >
           <ChevronLeft className="h-4 w-4" />
           All Targets
         </Link>
 
         {/* Header */}
-        <div className="flex items-start justify-between mb-8">
+        <div className="flex items-start justify-between mb-6">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-zinc-800 rounded-xl">
-              <Building2 className="h-7 w-7 text-zinc-300" />
+            <div className="p-3 bg-gray-100 rounded-xl">
+              <Building2 className="h-7 w-7 text-gray-500" />
             </div>
             <div>
               <div className="flex items-center gap-3">
-                <h1 className="text-2xl font-bold">{target.companyName}</h1>
-                <TypeIcon className="h-5 w-5 text-zinc-500" />
+                <h1 className="text-2xl font-bold text-gray-900">{target.companyName}</h1>
+                <TypeIcon className="h-5 w-5 text-gray-400" />
                 <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${intel.bg} ${intel.text}`}>
                   <Brain className="h-3.5 w-3.5" />
-                  {intel.label} — R{target.roundCount}
+                  {intel.label} R{target.roundCount}
                 </div>
               </div>
               {target.contactName && (
-                <div className="flex items-center gap-1.5 text-sm text-zinc-400 mt-1">
+                <div className="flex items-center gap-1.5 text-sm text-gray-500 mt-1">
                   <User className="h-3.5 w-3.5" />
                   {target.contactName}
                   {target.contactTitle && (
-                    <span className="text-zinc-600"> — {target.contactTitle}</span>
+                    <span className="text-gray-400">, {target.contactTitle}</span>
                   )}
                 </div>
               )}
-              <div className="flex items-center gap-1.5 text-xs text-zinc-600 mt-1">
+              <div className="flex items-center gap-1.5 text-xs text-gray-400 mt-1">
                 <Clock className="h-3 w-3" />
-                Created {formatDate(target.createdAt)} — Updated {timeAgo(target.updatedAt)}
+                Created {formatDate(target.createdAt)} &middot; Updated {timeAgo(target.updatedAt)}
               </div>
             </div>
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-2">
-            <Link
-              href={`/request?target=${target.id}&company=${encodeURIComponent(target.companyName)}${target.contactName ? `&contact=${encodeURIComponent(target.contactName)}` : ""}${target.type === "interview" ? "&tool=interview_prep" : "&tool=prospect_prep"}`}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-sm font-medium transition-colors"
-            >
-              <RefreshCw className="h-4 w-4" />
-              Re-Blitz
-            </Link>
-          </div>
+          <Link
+            href={`/request?target=${target.id}&company=${encodeURIComponent(target.companyName)}${target.contactName ? `&contact=${encodeURIComponent(target.contactName)}` : ""}${target.type === "interview" ? "&tool=interview_prep" : "&tool=prospect_prep"}`}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-medium transition-colors"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Re-Blitz
+          </Link>
         </div>
 
         {/* Status + Stats Row */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-8">
-          {/* Status selector */}
-          <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-3">
-            <div className="text-xs text-zinc-500 mb-2">Status</div>
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
+          <div className="rounded-lg border bg-white p-3 shadow-sm">
+            <div className="text-xs text-gray-500 mb-2">Status</div>
             <select
               value={target.status}
               onChange={(e) => updateStatus(e.target.value)}
               disabled={statusUpdating}
-              className="bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm w-full focus:outline-none focus:border-orange-500"
+              className="bg-gray-50 border border-gray-200 rounded px-2 py-1 text-sm w-full focus:outline-none focus:border-emerald-500 text-gray-700"
             >
               <option value="active">Active</option>
               <option value="paused">Paused</option>
@@ -283,31 +270,31 @@ export default function TargetDetailPage() {
               <option value="closed">Closed</option>
             </select>
           </div>
-          <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-3">
-            <div className="text-xs text-zinc-500">Blitzes</div>
-            <div className="text-xl font-bold mt-1 flex items-center gap-1.5">
-              <Zap className="h-4 w-4 text-orange-400" />
+          <div className="rounded-lg border bg-white p-3 shadow-sm">
+            <div className="text-xs text-gray-500">Blitzes</div>
+            <div className="text-xl font-bold mt-1 flex items-center gap-1.5 text-gray-900">
+              <Zap className="h-4 w-4 text-emerald-500" />
               {target.counts.blitzes}
             </div>
           </div>
-          <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-3">
-            <div className="text-xs text-zinc-500">Debriefs</div>
-            <div className="text-xl font-bold mt-1 flex items-center gap-1.5">
-              <MessageSquare className="h-4 w-4 text-blue-400" />
+          <div className="rounded-lg border bg-white p-3 shadow-sm">
+            <div className="text-xs text-gray-500">Debriefs</div>
+            <div className="text-xl font-bold mt-1 flex items-center gap-1.5 text-gray-900">
+              <MessageSquare className="h-4 w-4 text-blue-500" />
               {target.counts.debriefs}
             </div>
           </div>
-          <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-3">
-            <div className="text-xs text-zinc-500">Practice</div>
-            <div className="text-xl font-bold mt-1 flex items-center gap-1.5">
-              <Video className="h-4 w-4 text-purple-400" />
+          <div className="rounded-lg border bg-white p-3 shadow-sm">
+            <div className="text-xs text-gray-500">Practice</div>
+            <div className="text-xl font-bold mt-1 flex items-center gap-1.5 text-gray-900">
+              <Video className="h-4 w-4 text-purple-500" />
               {target.counts.practices}
             </div>
           </div>
-          <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-3">
-            <div className="text-xs text-zinc-500">Rounds</div>
-            <div className="text-xl font-bold mt-1 flex items-center gap-1.5">
-              <BarChart3 className="h-4 w-4 text-emerald-400" />
+          <div className="rounded-lg border bg-white p-3 shadow-sm">
+            <div className="text-xs text-gray-500">Rounds</div>
+            <div className="text-xl font-bold mt-1 flex items-center gap-1.5 text-gray-900">
+              <BarChart3 className="h-4 w-4 text-emerald-500" />
               {target.roundCount}
             </div>
           </div>
@@ -315,13 +302,13 @@ export default function TargetDetailPage() {
 
         {/* Accumulated Intel */}
         {target.accumulatedIntel && (
-          <div className="mb-8">
-            <h2 className="text-sm font-semibold text-zinc-300 uppercase tracking-wider mb-3 flex items-center gap-2">
-              <Brain className="h-4 w-4 text-orange-400" />
+          <div className="mb-6">
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+              <Brain className="h-4 w-4 text-emerald-500" />
               Accumulated Intelligence
             </h2>
-            <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
-              <pre className="text-sm text-zinc-400 font-mono whitespace-pre-wrap leading-relaxed">
+            <div className="rounded-xl border bg-white p-5 shadow-sm">
+              <pre className="text-sm text-gray-600 font-mono whitespace-pre-wrap leading-relaxed">
                 {target.accumulatedIntel}
               </pre>
             </div>
@@ -329,18 +316,18 @@ export default function TargetDetailPage() {
         )}
 
         {/* Notes */}
-        <div className="mb-8">
-          <h2 className="text-sm font-semibold text-zinc-300 uppercase tracking-wider mb-3 flex items-center gap-2">
-            <PenLine className="h-4 w-4 text-orange-400" />
+        <div className="mb-6">
+          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+            <PenLine className="h-4 w-4 text-emerald-500" />
             Notes
           </h2>
-          <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
+          <div className="rounded-xl border bg-white p-5 shadow-sm">
             {editingNotes ? (
               <div>
                 <textarea
                   value={notesValue}
                   onChange={(e) => setNotesValue(e.target.value)}
-                  className="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-3 text-sm text-zinc-300 focus:outline-none focus:border-orange-500 resize-none"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm text-gray-700 focus:outline-none focus:border-emerald-500 resize-none"
                   rows={4}
                   placeholder="Add notes about this target..."
                 />
@@ -348,7 +335,7 @@ export default function TargetDetailPage() {
                   <button
                     onClick={saveNotes}
                     disabled={savingNotes}
-                    className="px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white rounded text-sm font-medium transition-colors disabled:opacity-50"
+                    className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-sm font-medium transition-colors disabled:opacity-50"
                   >
                     {savingNotes ? "Saving..." : "Save"}
                   </button>
@@ -357,7 +344,7 @@ export default function TargetDetailPage() {
                       setEditingNotes(false);
                       setNotesValue(target.notes || "");
                     }}
-                    className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 rounded text-sm transition-colors"
+                    className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-500 rounded text-sm transition-colors"
                   >
                     Cancel
                   </button>
@@ -366,10 +353,10 @@ export default function TargetDetailPage() {
             ) : (
               <div
                 onClick={() => setEditingNotes(true)}
-                className="cursor-pointer text-sm text-zinc-400 hover:text-zinc-300 transition-colors min-h-[40px]"
+                className="cursor-pointer text-sm text-gray-500 hover:text-gray-700 transition-colors min-h-[40px]"
               >
                 {target.notes || (
-                  <span className="text-zinc-600 italic">Click to add notes...</span>
+                  <span className="text-gray-300 italic">Click to add notes...</span>
                 )}
               </div>
             )}
@@ -377,13 +364,13 @@ export default function TargetDetailPage() {
         </div>
 
         {/* Blitz History */}
-        <div className="mb-8">
-          <h2 className="text-sm font-semibold text-zinc-300 uppercase tracking-wider mb-3 flex items-center gap-2">
-            <Zap className="h-4 w-4 text-orange-400" />
+        <div className="mb-6">
+          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+            <Zap className="h-4 w-4 text-emerald-500" />
             Blitz History ({target.runRequests.length})
           </h2>
           {target.runRequests.length === 0 ? (
-            <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5 text-sm text-zinc-600">
+            <div className="rounded-xl border bg-white p-5 shadow-sm text-sm text-gray-400">
               No blitzes yet. Hit Re-Blitz above to start.
             </div>
           ) : (
@@ -391,34 +378,34 @@ export default function TargetDetailPage() {
               {target.runRequests.map((rr) => (
                 <div
                   key={rr.id}
-                  className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 hover:border-zinc-700 transition-colors"
+                  className="rounded-xl border bg-white p-4 shadow-sm hover:shadow-md transition-shadow"
                 >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <Zap className="h-4 w-4 text-orange-400" />
-                      <span className="text-sm font-medium">
+                      <Zap className="h-4 w-4 text-emerald-500" />
+                      <span className="text-sm font-medium text-gray-900">
                         {TOOL_LABELS[rr.toolName] || rr.toolName}
                       </span>
                       {rr.meetingType && (
-                        <span className="text-xs text-zinc-600">({rr.meetingType})</span>
+                        <span className="text-xs text-gray-400">({rr.meetingType})</span>
                       )}
                       <span
                         className={`text-xs px-2 py-0.5 rounded-full ${
-                          rr.status === "completed"
-                            ? "bg-emerald-900/30 text-emerald-400"
+                          rr.status === "completed" || rr.status === "delivered"
+                            ? "bg-emerald-50 text-emerald-600"
                             : rr.status === "failed"
-                            ? "bg-red-900/30 text-red-400"
-                            : "bg-amber-900/30 text-amber-400"
+                            ? "bg-red-50 text-red-500"
+                            : "bg-amber-50 text-amber-600"
                         }`}
                       >
                         {rr.status}
                       </span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="text-xs text-zinc-600">{formatDate(rr.createdAt)}</span>
+                      <span className="text-xs text-gray-400">{formatDate(rr.createdAt)}</span>
                       <Link
                         href={`/requests/${rr.id}`}
-                        className="text-xs text-orange-400 hover:text-orange-300 flex items-center gap-1 transition-colors"
+                        className="text-xs text-emerald-600 hover:text-emerald-700 flex items-center gap-1 transition-colors"
                       >
                         View <ArrowUpRight className="h-3 w-3" />
                       </Link>
@@ -431,21 +418,21 @@ export default function TargetDetailPage() {
                       {rr.debriefs.map((d) => (
                         <div
                           key={d.id}
-                          className="bg-zinc-800/50 rounded-lg p-3 text-xs"
+                          className="bg-gray-50 rounded-lg p-3 text-xs border border-gray-100"
                         >
                           <div className="flex items-center gap-2 mb-1">
-                            <MessageSquare className="h-3 w-3 text-blue-400" />
-                            <span className="text-zinc-400 font-medium">Debrief</span>
+                            <MessageSquare className="h-3 w-3 text-blue-500" />
+                            <span className="text-gray-600 font-medium">Debrief</span>
                             {d.outcome && (
-                              <span className="text-zinc-500">— {d.outcome}</span>
+                              <span className="text-gray-400">{d.outcome}</span>
                             )}
-                            <span className="text-zinc-600 ml-auto">
+                            <span className="text-gray-300 ml-auto">
                               {formatDate(d.createdAt)}
                             </span>
                           </div>
-                          <p className="text-zinc-500 line-clamp-2">{d.content}</p>
+                          <p className="text-gray-500 line-clamp-2">{d.content}</p>
                           {d.nextSteps && (
-                            <p className="text-zinc-600 mt-1 italic">
+                            <p className="text-gray-400 mt-1 italic">
                               Next: {d.nextSteps}
                             </p>
                           )}
@@ -460,13 +447,13 @@ export default function TargetDetailPage() {
         </div>
 
         {/* Practice History */}
-        <div className="mb-8">
-          <h2 className="text-sm font-semibold text-zinc-300 uppercase tracking-wider mb-3 flex items-center gap-2">
-            <Video className="h-4 w-4 text-purple-400" />
+        <div className="mb-6">
+          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+            <Video className="h-4 w-4 text-purple-500" />
             Practice Sessions ({target.practiceSessions.length})
           </h2>
           {target.practiceSessions.length === 0 ? (
-            <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5 text-sm text-zinc-600">
+            <div className="rounded-xl border bg-white p-5 shadow-sm text-sm text-gray-400">
               No practice sessions yet. Complete a blitz, then practice from it.
             </div>
           ) : (
@@ -474,47 +461,47 @@ export default function TargetDetailPage() {
               {target.practiceSessions.map((ps) => (
                 <div
                   key={ps.id}
-                  className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 hover:border-zinc-700 transition-colors"
+                  className="rounded-xl border bg-white p-4 shadow-sm hover:shadow-md transition-shadow"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Video className="h-4 w-4 text-purple-400" />
-                      <span className="text-sm font-medium">
+                      <Video className="h-4 w-4 text-purple-500" />
+                      <span className="text-sm font-medium text-gray-900">
                         {ps.targetRole || "Practice"}
                       </span>
                       {ps.outcome && (
                         <span
                           className={`text-xs px-2 py-0.5 rounded-full ${
                             ps.outcome === "passed"
-                              ? "bg-emerald-900/30 text-emerald-400"
+                              ? "bg-emerald-50 text-emerald-600"
                               : ps.outcome === "failed"
-                              ? "bg-red-900/30 text-red-400"
-                              : "bg-zinc-800 text-zinc-400"
+                              ? "bg-red-50 text-red-500"
+                              : "bg-gray-100 text-gray-500"
                           }`}
                         >
                           {ps.outcome}
                         </span>
                       )}
                       {ps.cotmScore && (
-                        <span className="text-xs text-zinc-500">
+                        <span className="text-xs text-gray-400">
                           Score: {typeof ps.cotmScore === "object" ? JSON.stringify(ps.cotmScore).slice(0, 40) : ps.cotmScore}
                         </span>
                       )}
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="text-xs text-zinc-600">
+                      <span className="text-xs text-gray-400">
                         {formatDate(ps.completedAt || ps.createdAt)}
                       </span>
                       <Link
                         href={`/practice/${ps.id}/review`}
-                        className="text-xs text-purple-400 hover:text-purple-300 flex items-center gap-1 transition-colors"
+                        className="text-xs text-purple-500 hover:text-purple-600 flex items-center gap-1 transition-colors"
                       >
                         Review <ArrowUpRight className="h-3 w-3" />
                       </Link>
                     </div>
                   </div>
                   {ps.overallFeedback && (
-                    <p className="text-xs text-zinc-500 mt-2 line-clamp-2 ml-6">
+                    <p className="text-xs text-gray-400 mt-2 line-clamp-2 ml-6">
                       {ps.overallFeedback}
                     </p>
                   )}

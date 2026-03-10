@@ -61,18 +61,18 @@ interface TargetData {
 }
 
 const INTEL_COLORS: Record<string, { bg: string; text: string; label: string }> = {
-  none: { bg: "bg-zinc-800", text: "text-zinc-500", label: "No Intel" },
-  light: { bg: "bg-amber-900/30", text: "text-amber-400", label: "Light" },
-  moderate: { bg: "bg-blue-900/30", text: "text-blue-400", label: "Growing" },
-  deep: { bg: "bg-emerald-900/30", text: "text-emerald-400", label: "Deep" },
+  none: { bg: "bg-gray-100", text: "text-gray-400", label: "No Intel" },
+  light: { bg: "bg-amber-50", text: "text-amber-600", label: "Light" },
+  moderate: { bg: "bg-blue-50", text: "text-blue-600", label: "Growing" },
+  deep: { bg: "bg-emerald-50", text: "text-emerald-600", label: "Deep" },
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  active: "text-emerald-400",
-  paused: "text-amber-400",
-  closed: "text-zinc-500",
-  won: "text-emerald-400",
-  lost: "text-red-400",
+  active: "text-emerald-600",
+  paused: "text-amber-600",
+  closed: "text-gray-400",
+  won: "text-emerald-600",
+  lost: "text-red-500",
 };
 
 const TOOL_LABELS: Record<string, string> = {
@@ -116,43 +116,54 @@ export default function TargetsPage() {
 
   const totalBlitzes = targets.reduce((sum, t) => sum + t.counts.blitzes, 0);
   const totalPractice = targets.reduce((sum, t) => sum + t.counts.practices, 0);
-  const totalDebriefs = targets.reduce((sum, t) => sum + t.counts.debriefs, 0);
   const deepTargets = targets.filter((t) => t.intelDepth === "deep" || t.intelDepth === "moderate").length;
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white">
+    <div className="min-h-screen bg-gray-50">
       <AppNav />
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+      <div className="max-w-6xl mx-auto px-6 py-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold flex items-center gap-2">
-              <Target className="h-6 w-6 text-orange-400" />
+            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+              <Target className="h-6 w-6 text-emerald-600" />
               Territory Intelligence
             </h1>
-            <p className="text-zinc-400 mt-1">
+            <p className="text-gray-500 mt-1">
               Every blitz, debrief, and practice session compounds here.
             </p>
           </div>
         </div>
 
         {/* Stats Row */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
-            <div className="text-sm text-zinc-500">Active Targets</div>
-            <div className="text-2xl font-bold mt-1">{targets.length}</div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+          <div className="rounded-lg border bg-white p-4 shadow-sm">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium text-gray-500">Active Targets</span>
+              <Target className="h-3.5 w-3.5 text-emerald-500" />
+            </div>
+            <p className="mt-1 text-2xl font-bold text-gray-900">{targets.length}</p>
           </div>
-          <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
-            <div className="text-sm text-zinc-500">Total Blitzes</div>
-            <div className="text-2xl font-bold mt-1">{totalBlitzes}</div>
+          <div className="rounded-lg border bg-white p-4 shadow-sm">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium text-gray-500">Total Blitzes</span>
+              <Zap className="h-3.5 w-3.5 text-emerald-500" />
+            </div>
+            <p className="mt-1 text-2xl font-bold text-gray-900">{totalBlitzes}</p>
           </div>
-          <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
-            <div className="text-sm text-zinc-500">Practice Sessions</div>
-            <div className="text-2xl font-bold mt-1">{totalPractice}</div>
+          <div className="rounded-lg border bg-white p-4 shadow-sm">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium text-gray-500">Practice Sessions</span>
+              <BarChart3 className="h-3.5 w-3.5 text-emerald-500" />
+            </div>
+            <p className="mt-1 text-2xl font-bold text-gray-900">{totalPractice}</p>
           </div>
-          <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
-            <div className="text-sm text-zinc-500">Deep Intel Targets</div>
-            <div className="text-2xl font-bold mt-1 text-emerald-400">{deepTargets}</div>
+          <div className="rounded-lg border bg-white p-4 shadow-sm">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium text-gray-500">Deep Intel Targets</span>
+              <Brain className="h-3.5 w-3.5 text-emerald-500" />
+            </div>
+            <p className="mt-1 text-2xl font-bold text-emerald-600">{deepTargets}</p>
           </div>
         </div>
 
@@ -164,8 +175,8 @@ export default function TargetsPage() {
               onClick={() => setFilter(f)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 filter === f
-                  ? "bg-orange-500/20 text-orange-400 border border-orange-500/30"
-                  : "bg-zinc-900 text-zinc-400 border border-zinc-800 hover:border-zinc-700"
+                  ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                  : "bg-white text-gray-500 border border-gray-200 hover:border-gray-300"
               }`}
             >
               {f === "all" ? "All" : f === "prospect" ? "Prospects" : "Interviews"}
@@ -179,22 +190,22 @@ export default function TargetsPage() {
         {/* Loading State */}
         {loading && (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="h-6 w-6 animate-spin text-zinc-500" />
+            <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
           </div>
         )}
 
         {/* Empty State */}
         {!loading && targets.length === 0 && (
           <div className="text-center py-20">
-            <Target className="h-12 w-12 text-zinc-700 mx-auto mb-4" />
-            <h2 className="text-lg font-medium text-zinc-400 mb-2">No targets yet</h2>
-            <p className="text-zinc-600 mb-6 max-w-md mx-auto">
+            <Target className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+            <h2 className="text-lg font-medium text-gray-600 mb-2">No targets yet</h2>
+            <p className="text-gray-400 mb-6 max-w-md mx-auto">
               Targets are created automatically when you run a blitz or start a practice session.
               Each target accumulates intelligence across rounds.
             </p>
             <Link
               href="/request"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-sm font-medium transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-medium transition-colors"
             >
               <Zap className="h-4 w-4" />
               Run Your First Blitz
@@ -204,35 +215,35 @@ export default function TargetsPage() {
 
         {/* Target Cards */}
         {!loading && filtered.length > 0 && (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {filtered.map((target) => {
               const intel = INTEL_COLORS[target.intelDepth];
-              const statusColor = STATUS_COLORS[target.status] || "text-zinc-400";
+              const statusColor = STATUS_COLORS[target.status] || "text-gray-400";
               const TypeIcon = target.type === "interview" ? GraduationCap : Briefcase;
 
               return (
                 <div
                   key={target.id}
                   onClick={() => router.push(`/targets/${target.id}`)}
-                  className="cursor-pointer bg-zinc-900 border border-zinc-800 rounded-xl p-5 hover:border-zinc-700 transition-colors"
+                  className="cursor-pointer rounded-xl border bg-white p-5 shadow-sm hover:shadow-md hover:border-gray-300 transition-all"
                 >
                   {/* Top Row: Company + Intel Badge */}
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-zinc-800 rounded-lg">
-                        <Building2 className="h-5 w-5 text-zinc-400" />
+                      <div className="p-2 bg-gray-100 rounded-lg">
+                        <Building2 className="h-5 w-5 text-gray-500" />
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <h3 className="text-lg font-semibold">{target.companyName}</h3>
-                          <TypeIcon className="h-4 w-4 text-zinc-500" />
+                          <h3 className="text-lg font-semibold text-gray-900">{target.companyName}</h3>
+                          <TypeIcon className="h-4 w-4 text-gray-400" />
                           <span className={`text-xs capitalize ${statusColor}`}>{target.status}</span>
                         </div>
                         {target.contactName && (
-                          <div className="flex items-center gap-1.5 text-sm text-zinc-400">
+                          <div className="flex items-center gap-1.5 text-sm text-gray-500">
                             <User className="h-3.5 w-3.5" />
                             {target.contactName}
-                            {target.contactTitle && <span className="text-zinc-600"> — {target.contactTitle}</span>}
+                            {target.contactTitle && <span className="text-gray-400">, {target.contactTitle}</span>}
                           </div>
                         )}
                       </div>
@@ -244,7 +255,7 @@ export default function TargetsPage() {
                       {intel.label}
                       {target.roundCount > 0 && (
                         <span className="opacity-60">
-                          — R{target.roundCount}
+                          R{target.roundCount}
                         </span>
                       )}
                     </div>
@@ -252,19 +263,19 @@ export default function TargetsPage() {
 
                   {/* Activity Counts */}
                   <div className="flex gap-4 mb-3 text-sm">
-                    <div className="flex items-center gap-1.5 text-zinc-500">
+                    <div className="flex items-center gap-1.5 text-gray-400">
                       <Zap className="h-3.5 w-3.5" />
                       <span>{target.counts.blitzes} blitz{target.counts.blitzes !== 1 ? "es" : ""}</span>
                     </div>
-                    <div className="flex items-center gap-1.5 text-zinc-500">
+                    <div className="flex items-center gap-1.5 text-gray-400">
                       <MessageSquare className="h-3.5 w-3.5" />
                       <span>{target.counts.debriefs} debrief{target.counts.debriefs !== 1 ? "s" : ""}</span>
                     </div>
-                    <div className="flex items-center gap-1.5 text-zinc-500">
+                    <div className="flex items-center gap-1.5 text-gray-400">
                       <BarChart3 className="h-3.5 w-3.5" />
                       <span>{target.counts.practices} practice</span>
                     </div>
-                    <div className="flex items-center gap-1.5 text-zinc-600 ml-auto">
+                    <div className="flex items-center gap-1.5 text-gray-300 ml-auto">
                       <Clock className="h-3.5 w-3.5" />
                       <span>{timeAgo(target.updatedAt)}</span>
                     </div>
@@ -272,7 +283,7 @@ export default function TargetsPage() {
 
                   {/* Intel Preview */}
                   {target.intelPreview && (
-                    <div className="bg-zinc-800/50 rounded-lg p-3 mb-3 text-xs text-zinc-400 font-mono leading-relaxed">
+                    <div className="bg-gray-50 rounded-lg p-3 mb-3 text-xs text-gray-500 font-mono leading-relaxed border border-gray-100">
                       {target.intelPreview}
                       {target.intelPreview.length >= 200 && "..."}
                     </div>
@@ -285,11 +296,11 @@ export default function TargetsPage() {
                         <Link
                           key={blitz.id}
                           href={`/requests/${blitz.id}`}
-                          className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-zinc-800 hover:bg-zinc-750 rounded-md text-xs text-zinc-400 hover:text-zinc-300 transition-colors"
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 hover:bg-gray-200 rounded-md text-xs text-gray-500 hover:text-gray-700 transition-colors"
                         >
-                          <Zap className="h-3 w-3 text-orange-400" />
+                          <Zap className="h-3 w-3 text-emerald-500" />
                           {TOOL_LABELS[blitz.toolName] || blitz.toolName}
-                          <span className="text-zinc-600">{timeAgo(blitz.createdAt)}</span>
+                          <span className="text-gray-300">{timeAgo(blitz.createdAt)}</span>
                           <ArrowUpRight className="h-3 w-3" />
                         </Link>
                       ))}
