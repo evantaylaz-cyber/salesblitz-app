@@ -54,7 +54,7 @@ export async function GET(
             targetRole: true,
             outcome: true,
             cotmScore: true,
-            overallFeedback: true,
+            feedback: true,
             completedAt: true,
             createdAt: true,
           },
