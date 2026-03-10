@@ -42,6 +42,9 @@ export default function RequestPage() {
   const router = useRouter();
   const toolId = searchParams.get("tool") || "";
   const toolInfo = TOOL_INFO[toolId];
+  const prefillTargetId = searchParams.get("target") || "";
+  const prefillCompany = searchParams.get("company") || "";
+  const prefillContact = searchParams.get("contact") || "";
 
   // Practice mode doesn't use the blitz pipeline — redirect to /practice
   useEffect(() => {
@@ -113,6 +116,12 @@ export default function RequestPage() {
         .catch(() => {});
     }
   }, [isLoaded]);
+
+  // Pre-fill from target query params (Re-Blitz from target detail page)
+  useEffect(() => {
+    if (prefillCompany) setTargetCompany(prefillCompany);
+    if (prefillContact) setTargetName(prefillContact);
+  }, [prefillCompany, prefillContact]);
 
   // Check for matching prior run when company name changes
   useEffect(() => {
@@ -227,6 +236,7 @@ export default function RequestPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           toolName: toolId,
+          targetId: prefillTargetId || undefined,
           targetName,
           targetCompany,
           targetRole: targetRole || undefined,

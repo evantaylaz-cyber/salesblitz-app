@@ -14,6 +14,7 @@ import {
   FileText,
   BarChart3,
   Users,
+  Target,
   type LucideIcon,
 } from "lucide-react";
 
@@ -41,6 +42,7 @@ const NAV_ITEMS: Array<{ href: string; label: string; icon: LucideIcon; hasBadge
   { href: "/profile", label: "Profile", icon: UserCircle },
   { href: "/knowledge-base", label: "Knowledge Base", icon: BookOpen },
   { href: "/playbooks", label: "Playbooks", icon: FileText },
+  { href: "/targets", label: "Targets", icon: Target },
   { href: "/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/teams", label: "Teams", icon: Users },
 ];
