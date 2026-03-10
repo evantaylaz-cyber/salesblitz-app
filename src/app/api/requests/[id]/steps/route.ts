@@ -115,6 +115,48 @@ export async function PATCH(
         updateData.completedAt = new Date();
       }
 
+      // Accumulate blitz intel into Target when run completes
+      const isCompleting =
+        (stepId === "delivery" && stepStatus === "completed") ||
+        (stepId === "formatting" && stepStatus === "completed");
+
+      if (isCompleting && request.targetId) {
+        try {
+          const target = await prisma.target.findUnique({
+            where: { id: request.targetId },
+            select: { accumulatedIntel: true, roundCount: true },
+          });
+
+          // Build a summary from researchData if available
+          const rd = (researchData || request.researchData) as Record<string, any> | null;
+          const summaryParts: string[] = [
+            `[Blitz ${new Date().toISOString().slice(0, 10)} — ${request.toolName}]`,
+          ];
+
+          if (rd) {
+            if (rd.companyOverview) summaryParts.push(`Company: ${String(rd.companyOverview).slice(0, 200)}`);
+            if (rd.strategicPriorities) summaryParts.push(`Priorities: ${String(rd.strategicPriorities).slice(0, 200)}`);
+            if (rd.painPoints) summaryParts.push(`Pain points: ${String(rd.painPoints).slice(0, 200)}`);
+            if (rd.competitiveIntel) summaryParts.push(`Competitive: ${String(rd.competitiveIntel).slice(0, 150)}`);
+            if (rd.financialContext) summaryParts.push(`Financial: ${String(rd.financialContext).slice(0, 150)}`);
+          }
+
+          const blitzSummary = summaryParts.join(" | ");
+          const existing = target?.accumulatedIntel || "";
+          const combined = `${blitzSummary}\n${existing}`.slice(0, 5000);
+
+          await prisma.target.update({
+            where: { id: request.targetId },
+            data: {
+              accumulatedIntel: combined,
+              roundCount: (target?.roundCount || 0) + 1,
+            },
+          });
+        } catch (targetErr) {
+          console.warn("[STEPS] Target intel accumulation failed:", targetErr);
+        }
+      }
+
       updateData.steps = steps;
     }
 

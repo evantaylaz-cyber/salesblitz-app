@@ -67,7 +67,7 @@ export async function POST(req: Request) {
         select: {
           id: true,
           targetCompany: true,
-          meetingType: true,
+          targetRole: true,
           outcome: true,
           feedback: true,
           cotmScore: true,
@@ -117,7 +117,7 @@ export async function POST(req: Request) {
       for (const session of recentPractice) {
         const date = session.completedAt ? new Date(session.completedAt).toLocaleDateString() : "unknown";
         const score = (session.cotmScore as any)?.overall;
-        journeyBlock += `- ${session.targetCompany || "General"} (${session.meetingType || "discovery"}, ${date}): ${session.outcome || "no outcome"}`;
+        journeyBlock += `- ${session.targetCompany || "General"} (${session.targetRole || "discovery"}, ${date}): ${session.outcome || "no outcome"}`;
         if (score) journeyBlock += ` — Score: ${score}/5`;
         journeyBlock += `\n`;
         if (session.feedback) {

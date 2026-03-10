@@ -179,7 +179,7 @@ export async function POST(req: NextRequest) {
           fetch(workerUrl, {
             method: "POST",
             headers: { "Content-Type": "application/json", "x-api-key": process.env.INTERNAL_API_KEY || "" },
-            body: JSON.stringify({ userId: user.id, targetCompany: session.targetCompany, meetingType: effectiveMeetingType }),
+            body: JSON.stringify({ userId: user.id, targetCompany, meetingType: effectiveMeetingType }),
           }),
           new Promise<Response>((_, reject) => setTimeout(() => reject(new Error("timeout")), 3000)),
         ]);

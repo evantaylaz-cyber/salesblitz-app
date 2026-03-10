@@ -76,6 +76,35 @@ export async function POST(
       toolName: request.toolName,
     });
 
+    // Accumulate debrief learnings into Target.accumulatedIntel
+    if (request.targetId) {
+      try {
+        const target = await prisma.target.findUnique({
+          where: { id: request.targetId },
+          select: { accumulatedIntel: true },
+        });
+
+        const debriefSummary = [
+          `[Debrief ${new Date().toISOString().slice(0, 10)}]`,
+          outcome ? `Outcome: ${outcome}` : "",
+          `Key takeaways: ${content.trim().slice(0, 500)}`,
+          nextSteps ? `Next steps: ${nextSteps}` : "",
+        ].filter(Boolean).join(" | ");
+
+        const existing = target?.accumulatedIntel || "";
+        // Keep most recent at top, cap at 5K
+        const combined = `${debriefSummary}\n${existing}`.slice(0, 5000);
+
+        await prisma.target.update({
+          where: { id: request.targetId },
+          data: { accumulatedIntel: combined },
+        });
+      } catch (targetErr) {
+        // Non-fatal: don't fail the debrief save
+        console.warn("[DEBRIEF] Target intel accumulation failed:", targetErr);
+      }
+    }
+
     return NextResponse.json({ debrief }, { status: 201 });
   } catch (error) {
     console.error("[DEBRIEF] Error creating debrief:", error);
