@@ -71,7 +71,7 @@ export default async function LandingPage() {
             <p className="mt-6 text-lg text-gray-600 md:text-xl">
               Drop in a company name. Get a research brief, competitive
               playbook, call prep docs, and POV deck in minutes. Then
-              practice your pitch against an AI buyer who actually pushes back.
+              practice your pitch or interview against an AI buyer who actually pushes back.
             </p>
             <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
               <Link
@@ -134,7 +134,7 @@ export default async function LandingPage() {
                 step: "3",
                 title: "Walk in armed",
                 description:
-                  "Research brief, competitive playbook, call prep sheet, POV deck, and handwritten card. Finished assets, not templates. Then rehearse the call against an AI buyer before you go live.",
+                  "Research brief, competitive playbook, call prep sheet, POV deck, and handwritten card. Finished assets, not templates. Then rehearse the call or interview against an AI avatar before you go live.",
               },
             ].map((item) => (
               <div key={item.step} className="text-center">
@@ -154,10 +154,10 @@ export default async function LandingPage() {
         <div className="mx-auto max-w-7xl px-6">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-3xl font-bold text-gray-900">
-              A tool for every stage of the deal
+              A tool for every high-stakes conversation
             </h2>
             <p className="mt-4 text-lg text-gray-500">
-              Whether you&apos;re landing the meeting, prepping for it, or closing the deal.
+              Whether you&apos;re landing the meeting, prepping for the interview, or closing the deal.
             </p>
           </div>
           <div className="mt-16 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -245,7 +245,7 @@ export default async function LandingPage() {
                 AI Practice Mode
               </div>
               <h2 className="mt-4 text-3xl font-bold text-white">
-                Rehearse against someone who knows your deal
+                Rehearse against someone who knows your target
               </h2>
               <p className="mt-4 text-lg text-gray-400">
                 Name a target company. We generate a persona from real
@@ -572,7 +572,7 @@ export default async function LandingPage() {
               },
               {
                 q: "How long does a run take?",
-                a: "Most runs finish in 10 to 15 minutes. Enter a company name, a prospect LinkedIn URL, and pick a meeting type. Sales Blitz handles the rest. You get a notification when your deliverables are ready.",
+                a: "Most runs finish in 10 to 15 minutes. Enter a company name, a LinkedIn URL for your contact or interviewer, and pick a meeting type. Sales Blitz handles the rest. You get a notification when your deliverables are ready.",
               },
               {
                 q: "What's the difference between Interview and Prospect tools?",

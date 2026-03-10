@@ -32,7 +32,7 @@ export default function SignInPage() {
           <p className="mt-4 text-base text-gray-400 leading-relaxed">
             Drop in a company name. Get a research brief, competitive
             playbook, call prep docs, and POV deck in minutes. Then practice
-                        your pitch against an AI buyer who pushes back.
+                        your pitch or interview against an AI buyer who pushes back.
           </p>
 
           {/* Feature list */}
@@ -42,8 +42,8 @@ export default function SignInPage() {
                 <Target className="h-4 w-4 text-emerald-400" />
               </div>
               <div>
-                <p className="text-sm font-medium text-white">Deep account research</p>
-                <p className="text-sm text-gray-500">Org charts, pain points & competitive positioning in minutes.</p>
+                <p className="text-sm font-medium text-white">Deep research on any target</p>
+                <p className="text-sm text-gray-500">Org charts, pain points & competitive positioning for deals or interviews.</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
@@ -52,7 +52,7 @@ export default function SignInPage() {
               </div>
               <div>
                 <p className="text-sm font-medium text-white">Battle-ready deliverables</p>
-                <p className="text-sm text-gray-500">POV decks, call playbooks & outreach sequences tailored to each deal.</p>
+                <p className="text-sm text-gray-500">POV decks, call playbooks & outreach sequences for every meeting type.</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
