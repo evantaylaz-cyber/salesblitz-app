@@ -25,6 +25,17 @@ import {
   Trash2,
 } from "lucide-react";
 import VoiceTextarea from "@/components/VoiceTextarea";
+import { Upload } from "lucide-react";
+
+// File upload helper: sends to upload-resume endpoint, returns extracted text
+async function extractFileText(file: File): Promise<{ text: string; fileName: string } | { error: string }> {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await fetch("/api/profile/upload-resume", { method: "POST", body: formData });
+  const data = await res.json();
+  if (!res.ok) return { error: data.error || "Upload failed" };
+  return { text: data.text, fileName: data.fileName };
+}
 
 const TOOL_INFO: Record<string, { name: string; category: "interview" | "prospect" | "deal" | "practice"; subtitle: string }> = {
   interview_outreach: { name: "Interview Outreach", category: "interview", subtitle: "Name the role & the person you want to reach. We build the outreach package; you send it." },
@@ -149,6 +160,43 @@ export default function RequestPage() {
     setMatchingRun(null);
   }
 
+  // Document upload state
+  const [uploadedDocs, setUploadedDocs] = useState<Array<{ fileName: string; text: string }>>([]);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
+  async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+    setUploading(true);
+    setUploadError(null);
+    try {
+      for (const file of Array.from(files)) {
+        if (file.size > MAX_SIZE) {
+          setUploadError(`${file.name} is too large. Max 5MB per file.`);
+          continue;
+        }
+        const result = await extractFileText(file);
+        if ("error" in result) {
+          setUploadError(result.error);
+        } else {
+          setUploadedDocs(prev => [...prev, { fileName: result.fileName, text: result.text }]);
+        }
+      }
+    } catch {
+      setUploadError("Failed to process file. Try pasting the content instead.");
+    } finally {
+      setUploading(false);
+      // Reset file input
+      e.target.value = "";
+    }
+  }
+
+  function removeUploadedDoc(idx: number) {
+    setUploadedDocs(prev => prev.filter((_, i) => i !== idx));
+  }
+
   // UI state
   const [engagementExpanded, setEngagementExpanded] = useState(true);
   const [panelExpanded, setPanelExpanded] = useState(false);
@@ -248,7 +296,10 @@ export default function RequestPage() {
           engagementType: engagementType || undefined,
           meetingDate: meetingDate || undefined,
           priorInteractions: priorInteractions || undefined,
-          additionalNotes: additionalNotes || undefined,
+          additionalNotes: [
+            additionalNotes,
+            ...uploadedDocs.map(d => `\n--- Uploaded: ${d.fileName} ---\n${d.text}`)
+          ].filter(Boolean).join("\n") || undefined,
           caseStudies: caseStudies || undefined,
           interviewInstructions: interviewInstructions || undefined,
           // Panel composition (interview_prep only)
@@ -897,6 +948,60 @@ export default function RequestPage() {
               </div>
             </div>
           )}
+
+          {/* Document Upload */}
+          <div className="rounded-xl border bg-white p-6 shadow-sm">
+            <h2 className="text-base font-semibold text-gray-900 mb-1">Upload Documents</h2>
+            <p className="text-sm text-gray-500 mb-4">
+              {isInterview
+                ? "Upload your resume, the assignment, case studies, or any other prep materials. PDF, DOCX, or TXT."
+                : "Upload relevant documents: proposals, case studies, prior decks, or any reference material. PDF, DOCX, or TXT."}
+            </p>
+            <label className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 px-4 py-6 text-sm text-gray-500 hover:border-emerald-500 hover:text-emerald-700 transition">
+              {uploading ? (
+                <>
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <Upload className="h-5 w-5" />
+                  Click to upload (PDF, DOCX, TXT, max 5MB)
+                </>
+              )}
+              <input
+                type="file"
+                accept=".pdf,.docx,.txt"
+                multiple
+                onChange={handleFileUpload}
+                disabled={uploading}
+                className="hidden"
+              />
+            </label>
+            {uploadError && (
+              <p className="mt-2 text-xs text-red-500">{uploadError}</p>
+            )}
+            {uploadedDocs.length > 0 && (
+              <div className="mt-3 space-y-2">
+                {uploadedDocs.map((doc, idx) => (
+                  <div key={idx} className="flex items-center justify-between rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2.5">
+                    <div className="flex items-center gap-2 text-sm text-emerald-800">
+                      <FileText className="h-4 w-4 text-emerald-600 shrink-0" />
+                      <span className="font-medium">{doc.fileName}</span>
+                      <span className="text-emerald-600">({Math.round(doc.text.length / 1000)}K chars extracted)</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeUploadedDoc(idx)}
+                      className="text-emerald-600 hover:text-red-500 transition"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
           {/* Additional Notes */}
           <div className="rounded-xl border bg-white p-6 shadow-sm">

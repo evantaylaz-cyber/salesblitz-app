@@ -11,18 +11,18 @@
 
 **Read this section. Ignore all "Updated Summary Stats" tables below; they are historical snapshots that contradict each other.**
 
-| Severity | Original (Mar 7) | Remaining (Mar 10) |
-|----------|-------------------|---------------------|
-| P0       | 2                 | 0                   |
-| P1       | 12                | 1                   |
-| P2       | 13                | 2                   |
-| P3       | 4                 | 0                   |
-| **Total** | **31**           | **3**               |
+| Severity | Original (Mar 7) | Remaining (Mar 10 late) |
+|----------|-------------------|--------------------------|
+| P0       | 2                 | 0                        |
+| P1       | 12                | 0                        |
+| P2       | 13                | 2                        |
+| P3       | 4                 | 0                        |
+| **Total** | **31**           | **2**                    |
 
 ### What's left (from original audit)
 
-**P1 (1):**
-1. **No document upload on request form** (original item, Section 2). Users can paste text but can't upload PDF/DOCX files for resumes, assignments, case studies. The resume upload route exists (`/api/profile/upload-resume`) but isn't wired into the request form. `request/page.tsx`.
+**P1: ALL FIXED.**
+- Document upload now wired into request form (Mar 10 session 2). File size validation added (5MB cap).
 
 **P2 (2) — both need live HeyGen testing, can't fix from code:**
 1. **Female avatar ID unverified.** `FEMALE_AVATAR = "b4fc2d60..."` was set but never tested with real HeyGen credits. If wrong, female personas get no avatar.
@@ -41,10 +41,31 @@ A comprehensive E2E audit across asset quality, practice mode, and onboarding fo
 6. **P1 FIXED:** Realtime STT fallback in `practice/[sessionId]/page.tsx`. Changed WebSocket check from truthy to `readyState === OPEN` so dead connections trigger fallback to Web Speech API.
 7. **Informational FIXED:** Asset proxy now serves .pptx, .docx, .xlsx with correct MIME types (was falling back to octet-stream).
 
+**Additional fixes (Mar 10 session 3 — continuation):**
+8. **P1 FIXED:** Missing sessionId validation in practice lobby. `practice/page.tsx` now checks `data.sessionId` before navigating.
+9. **P1 FIXED:** Notes save silent failure in `practice/[sessionId]/review/page.tsx`. Added error state display so users know when save fails.
+10. **P2 FIXED:** Practice cap enforcement hidden from user. Added amber banner explaining usage limit with upgrade link.
+11. **P2 FIXED:** Empty transcript no warning. Added message when transcript is empty on review page.
+12. **P2 FIXED:** Resume file size hint not enforced. Added 5MB validation in `handleResumeUpload` on profile page.
+13. **P2 FIXED:** Request form file size not validated. Added 5MB per-file check in `handleFileUpload`.
+14. **P2 FIXED:** durationSeconds unvalidated. Added range check (>0, <86400) and Math.round in `practice/end/route.ts`.
+15. **Build FIXED:** `Prisma.JsonNull` doesn't exist in Prisma 5.22. Changed to `null` in retry route.
+16. **Build FIXED:** Implicit `any` types in targets routes. Added type annotations.
+
+**Marketing site quality pass (Mar 10 session 3):**
+- Hero copy rewritten: outcome-forward instead of feature dump
+- Methodology section: now shows actual framework sequence
+- Pricing CTAs differentiated: "Try Launch", "Start with Pro", "Become a Closer"
+- FAQ answers tightened (30-40% shorter)
+- "Rep-portable" replaced with clearer language throughout
+- Mobile sticky CTA added
+- Button hover glow increased for better contrast
+- OG meta description updated
+- 15+ copy edits: removed vague terms, added specificity, outcome-driven language
+
 **Remaining from E2E audit (not blocking, tracked for future):**
 - P2: No LiveAvatar token cleanup (cost risk if users abandon sessions)
 - P2: Panel speaker name validation (Claude could generate typo vs. panel member name)
-- P2: Unvalidated durationSeconds on session end (no range check)
 - P2: Score labels fallback for unexpected keys
 - P3: Accumulated intel grows unbounded (needs rotation after ~50 sessions)
 - P3: Panel speaker handoff timing not enforced (Claude decides when to switch)

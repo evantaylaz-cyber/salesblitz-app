@@ -54,7 +54,8 @@ export async function GET(req: NextRequest) {
 
     // Also count debriefs per target (via runRequests)
     const targetData = await Promise.all(
-      targets.map(async (target) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      targets.map(async (target: any) => {
         const debriefCount = await prisma.runDebrief.count({
           where: {
             runRequest: {

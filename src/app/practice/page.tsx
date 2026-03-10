@@ -154,6 +154,12 @@ function PracticeLanding() {
         return;
       }
 
+      if (!data.sessionId) {
+        setError("Session created but no ID returned. Please try again.");
+        setStarting(false);
+        return;
+      }
+
       const queryParams = new URLSearchParams();
       if (data.persona?.gender) queryParams.set("gender", data.persona.gender);
       if (data.persona?.name) queryParams.set("persona", encodeURIComponent(data.persona.name));
@@ -227,6 +233,16 @@ function PracticeLanding() {
         {error && (
           <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
             {error}
+          </div>
+        )}
+
+        {atCap && (
+          <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+            You&apos;ve used all {tierCap} practice sessions for this month.{" "}
+            {usage.tier !== "closer" && (
+              <a href="/settings" className="font-semibold underline hover:text-amber-900">Upgrade your plan</a>
+            )}{" "}
+            to unlock more sessions.
           </div>
         )}
 

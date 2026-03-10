@@ -428,6 +428,12 @@ export default function ProfilePage() {
   async function handleResumeUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
+    const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+    if (file.size > MAX_SIZE) {
+      setResumeParseResult("File too large. Please upload a file under 5MB.");
+      if (resumeFileRef.current) resumeFileRef.current.value = "";
+      return;
+    }
     setUploadingResume(true);
     setResumeParseResult(null);
     try {

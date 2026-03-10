@@ -26,7 +26,11 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { sessionId, durationSeconds } = body;
+    const { sessionId, durationSeconds: rawDuration } = body;
+    // Validate durationSeconds: must be positive and under 24 hours
+    const durationSeconds = typeof rawDuration === "number" && rawDuration > 0 && rawDuration < 86400
+      ? Math.round(rawDuration)
+      : null;
 
     if (!sessionId) {
       return NextResponse.json({ error: "sessionId required" }, { status: 400 });

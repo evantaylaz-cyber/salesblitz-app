@@ -74,7 +74,7 @@ export async function GET(
 
     // Count debriefs across all run requests
     const totalDebriefs = target.runRequests.reduce(
-      (sum, rr) => sum + rr.debriefs.length,
+      (sum: number, rr: { debriefs: unknown[] }) => sum + rr.debriefs.length,
       0
     );
 
@@ -108,7 +108,8 @@ export async function GET(
           practices: target.practiceSessions.length,
           debriefs: totalDebriefs,
         },
-        runRequests: target.runRequests.map((rr) => ({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        runRequests: target.runRequests.map((rr: any) => ({
           id: rr.id,
           toolName: rr.toolName,
           status: rr.status,

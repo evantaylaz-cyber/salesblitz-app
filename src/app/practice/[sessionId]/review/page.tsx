@@ -132,19 +132,26 @@ export default function PracticeReviewPage() {
     }
   }
 
+  const [notesError, setNotesError] = useState<string | null>(null);
+
   async function saveNotes() {
     if (!sessionId || notesSaving) return;
     setNotesSaving(true);
     setNotesSaved(false);
+    setNotesError(null);
     try {
       const res = await fetch(`/api/practice/session?id=${sessionId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userNotes }),
       });
-      if (res.ok) setNotesSaved(true);
+      if (res.ok) {
+        setNotesSaved(true);
+      } else {
+        setNotesError("Failed to save notes. Try again.");
+      }
     } catch {
-      // silent
+      setNotesError("Network error. Check your connection and try again.");
     } finally {
       setNotesSaving(false);
     }
@@ -314,7 +321,12 @@ export default function PracticeReviewPage() {
               <h3 className="text-lg font-bold text-gray-900">Your Debrief</h3>
             </div>
             <div className="flex items-center gap-2">
-              {notesSaved && (
+              {notesError && (
+                <span className="flex items-center gap-1 text-xs text-red-600">
+                  {notesError}
+                </span>
+              )}
+              {notesSaved && !notesError && (
                 <span className="flex items-center gap-1 text-xs text-emerald-600">
                   <CheckCircle2 className="h-3.5 w-3.5" />
                   Saved
@@ -366,6 +378,9 @@ export default function PracticeReviewPage() {
           </button>
           {showTranscript && (
             <div className="border-t px-6 py-4 space-y-4 max-h-96 overflow-y-auto">
+              {(session.transcript || []).length === 0 && (
+                <p className="text-sm text-amber-600 py-2">This session has no transcript. It may have ended before any conversation took place.</p>
+              )}
               {(session.transcript || []).map((entry, i) => (
                 <div key={i} className={`flex ${entry.role === "user" ? "justify-end" : "justify-start"}`}>
                   <div
