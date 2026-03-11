@@ -209,7 +209,7 @@ export default function OnboardingChatBubble({
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col w-[420px] h-[600px] max-h-[80vh] rounded-2xl bg-[#141414] border border-[#262626] shadow-2xl overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[#1a1a1a] bg-gradient-to-r from-emerald-50 to-[#141414]">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-[#262626] bg-gradient-to-r from-emerald-950/40 to-[#141414]">
         <div className="flex items-center gap-3">
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500/15">
             <Bot className="h-4 w-4 text-emerald-400" />
