@@ -11,6 +11,7 @@ import {
   Eye,
   Video,
   Presentation,
+  Shield,
 } from "lucide-react";
 
 interface AssetGuideProps {
@@ -109,12 +110,12 @@ function ScreenSetupWidget() {
   const setup = getScreenSetup(monitors, mode);
 
   return (
-    <div className="mt-4 rounded-lg border border-gray-100 bg-gray-50/50 p-4">
-      <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-3">Screen Setup</p>
+    <div className="mt-4 rounded-lg border border-[#1a1a1a] bg-[#0a0a0a]/50 p-4">
+      <p className="text-xs font-semibold text-neutral-300 uppercase tracking-wider mb-3">Screen Setup</p>
 
       <div className="flex gap-4 mb-4">
         <div>
-          <p className="text-xs text-gray-500 mb-1.5">Monitors</p>
+          <p className="text-xs text-neutral-400 mb-1.5">Monitors</p>
           <div className="flex gap-1">
             {([1, 2, 3] as const).map((n) => (
               <button
@@ -123,7 +124,7 @@ function ScreenSetupWidget() {
                 className={`px-3 py-1.5 text-xs font-medium rounded-md border transition ${
                   monitors === n
                     ? "bg-emerald-600 text-white border-emerald-600"
-                    : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
+                    : "bg-[#141414] text-neutral-300 border-[#262626] hover:border-[#333333]"
                 }`}
               >
                 {n === 1 ? "Laptop only" : n === 2 ? "Laptop + 1" : "Laptop + 2"}
@@ -133,7 +134,7 @@ function ScreenSetupWidget() {
         </div>
 
         <div>
-          <p className="text-xs text-gray-500 mb-1.5">Call type</p>
+          <p className="text-xs text-neutral-400 mb-1.5">Call type</p>
           <div className="flex gap-1">
             {([
               { key: "video" as const, label: "Video", Icon: Video },
@@ -146,7 +147,7 @@ function ScreenSetupWidget() {
                 className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border transition ${
                   mode === key
                     ? "bg-emerald-600 text-white border-emerald-600"
-                    : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
+                    : "bg-[#141414] text-neutral-300 border-[#262626] hover:border-[#333333]"
                 }`}
               >
                 <Icon className="h-3 w-3" />
@@ -159,34 +160,34 @@ function ScreenSetupWidget() {
 
       {/* Visual layout */}
       <div className="flex gap-2 mb-3">
-        <div className="flex-1 rounded-lg border-2 border-emerald-300 bg-emerald-50 p-3">
+        <div className="flex-1 rounded-lg border-2 border-emerald-500/30 bg-emerald-500/10 p-3">
           <div className="flex items-center gap-1.5 mb-1">
-            <Laptop className="h-3.5 w-3.5 text-emerald-600" />
-            <span className="text-xs font-semibold text-emerald-700">{setup.laptop.label}</span>
+            <Laptop className="h-3.5 w-3.5 text-emerald-400" />
+            <span className="text-xs font-semibold text-emerald-400">{setup.laptop.label}</span>
           </div>
-          <p className="text-xs text-emerald-800">{setup.laptop.content}</p>
+          <p className="text-xs text-emerald-400">{setup.laptop.content}</p>
         </div>
         {setup.external1 && (
-          <div className="flex-1 rounded-lg border border-gray-200 bg-white p-3">
+          <div className="flex-1 rounded-lg border border-[#262626] bg-[#141414] p-3">
             <div className="flex items-center gap-1.5 mb-1">
-              <Monitor className="h-3.5 w-3.5 text-gray-500" />
-              <span className="text-xs font-semibold text-gray-600">{setup.external1.label}</span>
+              <Monitor className="h-3.5 w-3.5 text-neutral-400" />
+              <span className="text-xs font-semibold text-neutral-300">{setup.external1.label}</span>
             </div>
-            <p className="text-xs text-gray-600">{setup.external1.content}</p>
+            <p className="text-xs text-neutral-300">{setup.external1.content}</p>
           </div>
         )}
         {setup.external2 && (
-          <div className="flex-1 rounded-lg border border-gray-200 bg-white p-3">
+          <div className="flex-1 rounded-lg border border-[#262626] bg-[#141414] p-3">
             <div className="flex items-center gap-1.5 mb-1">
-              <Monitor className="h-3.5 w-3.5 text-gray-500" />
-              <span className="text-xs font-semibold text-gray-600">{setup.external2.label}</span>
+              <Monitor className="h-3.5 w-3.5 text-neutral-400" />
+              <span className="text-xs font-semibold text-neutral-300">{setup.external2.label}</span>
             </div>
-            <p className="text-xs text-gray-600">{setup.external2.content}</p>
+            <p className="text-xs text-neutral-300">{setup.external2.content}</p>
           </div>
         )}
       </div>
 
-      <p className="text-xs text-gray-500 italic">{setup.tip}</p>
+      <p className="text-xs text-neutral-400 italic">{setup.tip}</p>
     </div>
   );
 }
@@ -222,10 +223,11 @@ function getGuideContent(toolName: string): GuideSection[] {
         icon: Eye,
         title: "During the call",
         items: [
-          "Call Playbook is your primary reference. Bullet points only; glance, don't read.",
+          "Stay present. Ask good questions and listen. Your prep is the work; the call is the performance.",
+          "Your documents are a safety net, not a script. Glance at bullet points if you need a reminder, but never read paragraphs.",
+          "Call Playbook is your primary reference. Bullet format, designed for quick glances.",
           "Arsenal is emergency backup. Side monitor. Only if things go completely off-script.",
           "If presenting slides, speaker notes have your talking points per slide.",
-          "Competitive Playbook stays bookmarked for quick data pulls if asked about competitors.",
         ],
       },
       {
@@ -256,10 +258,11 @@ function getGuideContent(toolName: string): GuideSection[] {
         icon: Eye,
         title: "During the call",
         items: [
+          "Stay present. Your #1 job is to listen and ask good questions. The prep is the work; the call is about connection.",
+          "Documents are your safety net, not a teleprompter. A quick glance at a bullet point is fine; reading sentences is not.",
           "Call Playbook guides you phase by phase. Discovery questions are highlighted in amber.",
           "Listen-for signals are in green. When you hear one, that's a buying trigger.",
-          "Arsenal has word-for-word recovery lines if you get pushback you didn't expect.",
-          "Everything on screen is bullet format. Glance for reminders, don't read scripts.",
+          "Arsenal has word-for-word recovery lines. Side monitor. Only when things go off-script.",
         ],
       },
       {
@@ -384,19 +387,19 @@ export default function AssetGuide({ toolName, meetingType }: AssetGuideProps) {
   const isPrep = toolName.includes("prep");
 
   return (
-    <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
+    <div className="rounded-xl border bg-[#141414] shadow-sm shadow-black/20 overflow-hidden">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition"
+        className="w-full flex items-center justify-between px-6 py-4 hover:bg-[#0a0a0a] transition"
       >
         <div className="flex items-center gap-3">
-          <BookOpen className="h-5 w-5 text-emerald-600" />
-          <h2 className="font-semibold text-gray-900 text-left">How to use your deliverables</h2>
+          <BookOpen className="h-5 w-5 text-emerald-400" />
+          <h2 className="font-semibold text-white text-left">How to use your deliverables</h2>
         </div>
         {expanded ? (
-          <ChevronUp className="h-4 w-4 text-gray-400" />
+          <ChevronUp className="h-4 w-4 text-neutral-500" />
         ) : (
-          <ChevronDown className="h-4 w-4 text-gray-400" />
+          <ChevronDown className="h-4 w-4 text-neutral-500" />
         )}
       </button>
 
@@ -407,12 +410,12 @@ export default function AssetGuide({ toolName, meetingType }: AssetGuideProps) {
             return (
               <div key={i}>
                 <div className="flex items-center gap-2 mb-2">
-                  <Icon className="h-4 w-4 text-emerald-600" />
-                  <h3 className="text-sm font-semibold text-gray-800">{section.title}</h3>
+                  <Icon className="h-4 w-4 text-emerald-400" />
+                  <h3 className="text-sm font-semibold text-neutral-100">{section.title}</h3>
                 </div>
                 <ul className="space-y-1.5 ml-6">
                   {section.items.map((item, j) => (
-                    <li key={j} className="text-sm text-gray-600 leading-relaxed">
+                    <li key={j} className="text-sm text-neutral-300 leading-relaxed">
                       <span className="text-emerald-400 mr-2">&#8250;</span>
                       {item}
                     </li>
@@ -425,20 +428,49 @@ export default function AssetGuide({ toolName, meetingType }: AssetGuideProps) {
           {/* Screen setup widget for prep tools */}
           {isPrep && <ScreenSetupWidget />}
 
+          {/* Recording disclosure coaching - shows for prep tools (anything with a live call) */}
+          {isPrep && (
+            <div className="mt-3 rounded-lg border border-blue-100 bg-blue-500/10/50 p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Shield className="h-4 w-4 text-blue-400" />
+                <p className="text-xs font-semibold text-blue-400">Recording &amp; note-taking etiquette</p>
+              </div>
+              <p className="text-xs text-blue-400 mb-2">
+                If you are using any recording or note-taking tool (our extension, Otter, Fathom, etc.), always disclose it at the start of the call. Even in one-party consent states, transparency builds trust.
+              </p>
+              <div className="rounded-md bg-blue-500/15/60 p-3 mb-2">
+                <p className="text-xs text-blue-400 italic">
+                  &quot;Hey, before we get started, this conversation is really important to me so I have an AI note-taker running. It just helps me stay present and focused on what you are saying instead of scribbling notes. Totally fine?&quot;
+                </p>
+              </div>
+              <ul className="space-y-1 ml-1">
+                <li className="text-xs text-blue-400">
+                  <span className="font-semibold">If they say no:</span> Turn it off immediately. No pushback. Use your Call Playbook and take manual notes.
+                </li>
+                <li className="text-xs text-blue-400">
+                  <span className="font-semibold">If others have bots:</span> Their recording is separate from yours. You still need to disclose your own, and they should disclose theirs.
+                </li>
+                <li className="text-xs text-blue-400">
+                  <span className="font-semibold">11 US states require all-party consent:</span> CA, CT, FL, IL, MD, MA, MI, MT, NH, PA, WA. If any participant is in one of these states, you must get consent.
+                </li>
+              </ul>
+            </div>
+          )}
+
           {/* Google Slides beautification guidance - shows for all tools that generate decks */}
-          <div className="mt-3 rounded-lg border border-green-100 bg-green-50/50 p-4">
-            <p className="text-xs font-semibold text-green-800 mb-2">Polish your deck in Google Slides</p>
-            <p className="text-xs text-green-700 mb-2">
+          <div className="mt-3 rounded-lg border border-green-100 bg-green-500/10/50 p-4">
+            <p className="text-xs font-semibold text-green-400 mb-2">Polish your deck in Google Slides</p>
+            <p className="text-xs text-green-400 mb-2">
               Your PPTX is structured for Google Slides&apos; AI design tools. Upload to Google Drive, open with Slides, then use these features:
             </p>
             <ul className="space-y-1.5 ml-1">
-              <li className="text-xs text-green-700">
+              <li className="text-xs text-green-400">
                 <span className="font-semibold">Beautify This Slide:</span> Click any slide, then click &quot;Beautify this slide&quot; in the toolbar. Gemini redesigns it with professional layout and colors. Click &quot;Insert as new slide&quot; to keep it.
               </li>
-              <li className="text-xs text-green-700">
+              <li className="text-xs text-green-400">
                 <span className="font-semibold">Refine Text:</span> Click any text box, then click the pencil-sparkle icon. Choose Shorten, Rephrase, or More Formal, or type a custom prompt.
               </li>
-              <li className="text-xs text-green-700">
+              <li className="text-xs text-green-400">
                 <span className="font-semibold">Add AI Visuals:</span> Insert &gt; Help me visualize. Describe what you need (e.g., &quot;competitive quadrant chart&quot; or &quot;market share breakdown&quot;).
               </li>
             </ul>
@@ -449,8 +481,8 @@ export default function AssetGuide({ toolName, meetingType }: AssetGuideProps) {
 
           {/* Handwritten card guidance */}
           {!isPrep && toolName.includes("outreach") && (
-            <div className="mt-3 rounded-lg border border-amber-100 bg-amber-50/50 p-3">
-              <p className="text-xs text-amber-800">
+            <div className="mt-3 rounded-lg border border-amber-100 bg-amber-500/10/50 p-3">
+              <p className="text-xs text-amber-400">
                 <span className="font-semibold">About the handwritten cards:</span> These are designed to send, not to reference during calls. Mail or hand-deliver them as a creative first touch. If the cards didn&apos;t generate the way you wanted, you can regenerate them in Google AI Studio using the prompt in your delivery email.
               </p>
             </div>

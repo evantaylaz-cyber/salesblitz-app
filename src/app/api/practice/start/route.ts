@@ -4,6 +4,7 @@ import prisma from "@/lib/db";
 import { canStartPracticeSession, cleanupStaleSessions } from "@/lib/practice";
 import Anthropic from "@anthropic-ai/sdk";
 import { aiLimiter, rateLimitResponse } from "@/lib/rate-limit";
+import { auditPracticeStarted } from "@/lib/audit-log";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -387,6 +388,10 @@ Make the persona feel REAL. Specific details, not generic business-speak. The ob
         transcript: [],
       },
     });
+
+    // Fire-and-forget audit log (non-blocking)
+    auditPracticeStarted(user.id, clerkUser.id, session.id, { targetCompany, meetingType: effectiveMeetingType }, req)
+      .catch((err) => console.error("Audit log failed:", err));
 
     return NextResponse.json({
       sessionId: session.id,

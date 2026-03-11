@@ -220,7 +220,7 @@ export default function AISetupPage() {
   if (!isLoaded) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-emerald-700" />
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-400" />
       </div>
     );
   }
@@ -235,22 +235,22 @@ export default function AISetupPage() {
   const currentStepIndex = steps.findIndex((s) => s.id === step);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       {/* Header */}
-      <header className="border-b bg-white">
+      <header className="border-b bg-[#141414]">
         <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-3">
             <button
               onClick={() => router.push("/profile")}
-              className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
+              className="flex items-center gap-1 text-sm text-neutral-400 hover:text-neutral-200"
             >
               <ArrowLeft className="h-4 w-4" />
               Back to Profile
             </button>
           </div>
           <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-emerald-700" />
-            <span className="font-semibold text-gray-900">AI Profile Setup</span>
+            <Sparkles className="h-5 w-5 text-emerald-400" />
+            <span className="font-semibold text-white">AI Profile Setup</span>
           </div>
         </div>
       </header>
@@ -264,7 +264,7 @@ export default function AISetupPage() {
                 className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium ${
                   i <= currentStepIndex
                     ? "bg-emerald-600 text-white"
-                    : "bg-gray-200 text-gray-500"
+                    : "bg-[#262626] text-neutral-400"
                 }`}
               >
                 {i < currentStepIndex ? (
@@ -275,7 +275,7 @@ export default function AISetupPage() {
               </div>
               <span
                 className={`text-sm ${
-                  i <= currentStepIndex ? "text-gray-900 font-medium" : "text-gray-400"
+                  i <= currentStepIndex ? "text-white font-medium" : "text-neutral-500"
                 }`}
               >
                 {s.label}
@@ -283,7 +283,7 @@ export default function AISetupPage() {
               {i < steps.length - 1 && (
                 <div
                   className={`flex-1 h-0.5 ${
-                    i < currentStepIndex ? "bg-emerald-600" : "bg-gray-200"
+                    i < currentStepIndex ? "bg-emerald-600" : "bg-[#262626]"
                   }`}
                 />
               )}
@@ -298,10 +298,10 @@ export default function AISetupPage() {
         {step === "choose" && (
           <div className="space-y-6">
             <div className="text-center space-y-2">
-              <h1 className="text-2xl font-bold text-gray-900">
+              <h1 className="text-2xl font-bold text-white">
                 Set Up Your Profile with AI
               </h1>
-              <p className="text-gray-500 max-w-lg mx-auto">
+              <p className="text-neutral-400 max-w-lg mx-auto">
                 Use your own ChatGPT, Claude, or Gemini to extract your professional context.
                 Copy a prompt, run it in your AI, then paste the output back here.
               </p>
@@ -314,18 +314,18 @@ export default function AISetupPage() {
                   setMethod("quick_interview");
                   setStep("prompts");
                 }}
-                className="rounded-xl border-2 bg-white p-6 text-left hover:border-emerald-300 hover:shadow-md transition group"
+                className="rounded-xl border-2 bg-[#141414] p-6 text-left hover:border-emerald-500/30 hover:shadow-md transition group"
               >
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-50 group-hover:bg-emerald-100 transition">
-                    <MessageSquare className="h-5 w-5 text-emerald-700" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10 group-hover:bg-emerald-500/100/15 transition">
+                    <MessageSquare className="h-5 w-5 text-emerald-400" />
                   </div>
-                  <h3 className="font-semibold text-gray-900">Quick Interview</h3>
+                  <h3 className="font-semibold text-white">Quick Interview</h3>
                 </div>
-                <p className="text-sm text-gray-500 mb-3">
+                <p className="text-sm text-neutral-400 mb-3">
                   5 focused prompts, one topic at a time. The AI interviews you conversationally, then outputs JSON you paste back.
                 </p>
-                <div className="flex items-center text-sm text-emerald-700 font-medium">
+                <div className="flex items-center text-sm text-emerald-400 font-medium">
                   Recommended for first-timers
                   <ChevronRight className="h-4 w-4 ml-1" />
                 </div>
@@ -337,18 +337,18 @@ export default function AISetupPage() {
                   setMethod("one_shot");
                   setStep("prompts");
                 }}
-                className="rounded-xl border-2 bg-white p-6 text-left hover:border-emerald-300 hover:shadow-md transition group"
+                className="rounded-xl border-2 bg-[#141414] p-6 text-left hover:border-emerald-500/30 hover:shadow-md transition group"
               >
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-50 group-hover:bg-gray-100 transition">
-                    <FileText className="h-5 w-5 text-gray-600" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#0a0a0a] group-hover:bg-[#1a1a1a] transition">
+                    <FileText className="h-5 w-5 text-neutral-300" />
                   </div>
-                  <h3 className="font-semibold text-gray-900">One-Shot Paste</h3>
+                  <h3 className="font-semibold text-white">One-Shot Paste</h3>
                 </div>
-                <p className="text-sm text-gray-500 mb-3">
+                <p className="text-sm text-neutral-400 mb-3">
                   Single mega-prompt that covers everything. One conversation, one paste. Faster but requires more upfront effort.
                 </p>
-                <div className="flex items-center text-sm text-gray-500 font-medium">
+                <div className="flex items-center text-sm text-neutral-400 font-medium">
                   For experienced users
                   <ChevronRight className="h-4 w-4 ml-1" />
                 </div>
@@ -366,12 +366,12 @@ export default function AISetupPage() {
                   setStep("choose");
                   setMethod(null);
                 }}
-                className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
+                className="flex items-center gap-1 text-sm text-neutral-400 hover:text-neutral-200"
               >
                 <ChevronLeft className="h-4 w-4" />
                 Change method
               </button>
-              <span className="text-sm text-gray-400">
+              <span className="text-sm text-neutral-500">
                 Prompt {currentPromptIndex + 1} of {QUICK_INTERVIEW_PROMPTS.length}
               </span>
             </div>
@@ -383,10 +383,10 @@ export default function AISetupPage() {
               return (
                 <div className="space-y-4">
                   <div>
-                    <h2 className="text-xl font-bold text-gray-900">
+                    <h2 className="text-xl font-bold text-white">
                       {prompt.title}
                     </h2>
-                    <p className="text-sm text-gray-500">{prompt.description}</p>
+                    <p className="text-sm text-neutral-400">{prompt.description}</p>
                   </div>
 
                   {/* Prompt to copy */}
@@ -394,7 +394,7 @@ export default function AISetupPage() {
                     <div className="absolute top-3 right-3">
                       <button
                         onClick={() => copyPrompt(prompt.prompt)}
-                        className="flex items-center gap-1.5 rounded-md bg-gray-700 px-3 py-1.5 text-xs text-gray-200 hover:bg-gray-600 transition"
+                        className="flex items-center gap-1.5 rounded-md bg-[#262626] px-3 py-1.5 text-xs text-neutral-200 hover:bg-[#333333] transition"
                       >
                         {copied ? (
                           <>
@@ -412,12 +412,12 @@ export default function AISetupPage() {
                     </pre>
                   </div>
 
-                  <div className="flex items-center gap-2 text-sm text-gray-500">
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-xs font-medium text-emerald-700">1</span>
+                  <div className="flex items-center gap-2 text-sm text-neutral-400">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/15 text-xs font-medium text-emerald-400">1</span>
                     Copy the prompt above
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-xs font-medium text-emerald-700 ml-3">2</span>
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/15 text-xs font-medium text-emerald-400 ml-3">2</span>
                     Run it in ChatGPT, Claude, or Gemini
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-xs font-medium text-emerald-700 ml-3">3</span>
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/15 text-xs font-medium text-emerald-400 ml-3">3</span>
                     Paste the final JSON output below
                   </div>
 
@@ -428,16 +428,16 @@ export default function AISetupPage() {
                       onChange={(e) => setPasteInput(e.target.value)}
                       placeholder="Paste the AI's JSON output here..."
                       rows={8}
-                      className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 font-mono"
+                      className="w-full rounded-lg border border-[#333333] bg-[#0a0a0a] px-4 py-3 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 font-mono"
                     />
                   </div>
 
                   {/* Parse errors */}
                   {parseErrors.length > 0 && (
-                    <div className="rounded-lg border border-amber-200 bg-amber-50 p-3">
+                    <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 p-3">
                       <div className="flex items-start gap-2">
-                        <AlertCircle className="h-4 w-4 text-amber-600 mt-0.5" />
-                        <div className="text-sm text-amber-800">
+                        <AlertCircle className="h-4 w-4 text-amber-400 mt-0.5" />
+                        <div className="text-sm text-amber-400">
                           {parseErrors.map((e, i) => (
                             <p key={i}>{e}</p>
                           ))}
@@ -448,8 +448,8 @@ export default function AISetupPage() {
 
                   {/* Success indicator */}
                   {hasPasted && (
-                    <div className="rounded-lg border border-green-200 bg-green-50 p-3">
-                      <div className="flex items-center gap-2 text-sm text-green-700">
+                    <div className="rounded-lg border border-green-200 bg-green-500/10 p-3">
+                      <div className="flex items-center gap-2 text-sm text-green-400">
                         <Check className="h-4 w-4" />
                         Parsed successfully
                       </div>
@@ -467,7 +467,7 @@ export default function AISetupPage() {
                         }
                       }}
                       disabled={currentPromptIndex === 0}
-                      className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-30"
+                      className="flex items-center gap-1 text-sm text-neutral-400 hover:text-neutral-200 disabled:opacity-30"
                     >
                       <ChevronLeft className="h-4 w-4" />
                       Previous
@@ -485,7 +485,7 @@ export default function AISetupPage() {
                           }
                         }}
                         disabled={!pasteInput.trim() || parsing}
-                        className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50 transition"
+                        className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-600 disabled:opacity-50 transition"
                       >
                         {parsing ? (
                           <Loader2 className="h-4 w-4 animate-spin" />
@@ -501,7 +501,7 @@ export default function AISetupPage() {
                       {Object.keys(pastedTexts).length > 0 && (
                         <button
                           onClick={goToReview}
-                          className="flex items-center gap-1 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+                          className="flex items-center gap-1 rounded-lg border border-[#333333] bg-[#0a0a0a] px-4 py-2 text-sm font-medium text-neutral-200 hover:bg-[#0a0a0a] transition"
                         >
                           Review
                           <ChevronRight className="h-4 w-4" />
@@ -522,10 +522,10 @@ export default function AISetupPage() {
                         }}
                         className={`flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition ${
                           pastedTexts[p.id]
-                            ? "bg-green-100 text-green-700"
+                            ? "bg-green-100 text-green-400"
                             : i === currentPromptIndex
-                            ? "bg-emerald-100 text-emerald-800"
-                            : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                            ? "bg-emerald-500/15 text-emerald-400"
+                            : "bg-[#1a1a1a] text-neutral-400 hover:bg-[#262626]"
                         }`}
                       >
                         {pastedTexts[p.id] ? (
@@ -550,7 +550,7 @@ export default function AISetupPage() {
                   setStep("choose");
                   setMethod(null);
                 }}
-                className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
+                className="flex items-center gap-1 text-sm text-neutral-400 hover:text-neutral-200"
               >
                 <ChevronLeft className="h-4 w-4" />
                 Change method
@@ -558,10 +558,10 @@ export default function AISetupPage() {
             </div>
 
             <div>
-              <h2 className="text-xl font-bold text-gray-900">
+              <h2 className="text-xl font-bold text-white">
                 One-Shot Profile Extraction
               </h2>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-neutral-400">
                 Copy this prompt into ChatGPT, Claude, or Gemini. Answer all the questions in one conversation, then paste the final JSON output below.
               </p>
             </div>
@@ -571,7 +571,7 @@ export default function AISetupPage() {
               <div className="absolute top-3 right-3">
                 <button
                   onClick={() => copyPrompt(ONE_SHOT_PROMPT)}
-                  className="flex items-center gap-1.5 rounded-md bg-gray-700 px-3 py-1.5 text-xs text-gray-200 hover:bg-gray-600 transition"
+                  className="flex items-center gap-1.5 rounded-md bg-[#262626] px-3 py-1.5 text-xs text-neutral-200 hover:bg-[#333333] transition"
                 >
                   {copied ? (
                     <>
@@ -589,12 +589,12 @@ export default function AISetupPage() {
               </pre>
             </div>
 
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-xs font-medium text-emerald-700">1</span>
+            <div className="flex items-center gap-2 text-sm text-neutral-400">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/15 text-xs font-medium text-emerald-400">1</span>
               Copy the prompt above
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-xs font-medium text-emerald-700 ml-3">2</span>
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/15 text-xs font-medium text-emerald-400 ml-3">2</span>
               Complete the conversation in your AI
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-xs font-medium text-emerald-700 ml-3">3</span>
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/15 text-xs font-medium text-emerald-400 ml-3">3</span>
               Paste the final JSON output below
             </div>
 
@@ -604,15 +604,15 @@ export default function AISetupPage() {
               onChange={(e) => setPasteInput(e.target.value)}
               placeholder="Paste the AI's final JSON output here..."
               rows={10}
-              className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 font-mono"
+              className="w-full rounded-lg border border-[#333333] bg-[#0a0a0a] px-4 py-3 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 font-mono"
             />
 
             {/* Parse errors */}
             {parseErrors.length > 0 && (
-              <div className="rounded-lg border border-amber-200 bg-amber-50 p-3">
+              <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 p-3">
                 <div className="flex items-start gap-2">
-                  <AlertCircle className="h-4 w-4 text-amber-600 mt-0.5" />
-                  <div className="text-sm text-amber-800">
+                  <AlertCircle className="h-4 w-4 text-amber-400 mt-0.5" />
+                  <div className="text-sm text-amber-400">
                     {parseErrors.map((e, i) => (
                       <p key={i}>{e}</p>
                     ))}
@@ -657,7 +657,7 @@ export default function AISetupPage() {
                   }
                 }}
                 disabled={!pasteInput.trim() || parsing}
-                className="flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50 transition"
+                className="flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-emerald-600 disabled:opacity-50 transition"
               >
                 {parsing ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -674,35 +674,35 @@ export default function AISetupPage() {
         {step === "review" && (
           <div className="space-y-6">
             <div>
-              <h2 className="text-xl font-bold text-gray-900">Review Your Profile</h2>
-              <p className="text-sm text-gray-500">
+              <h2 className="text-xl font-bold text-white">Review Your Profile</h2>
+              <p className="text-sm text-neutral-400">
                 Edit any fields before saving. {confidence > 0 && `Confidence: ${Math.round(confidence * 100)}%`}
               </p>
             </div>
 
             {/* Company section */}
-            <div className="rounded-xl border bg-white p-6 space-y-4">
-              <h3 className="font-semibold text-gray-900">Company Information</h3>
+            <div className="rounded-xl border bg-[#141414] p-6 space-y-4">
+              <h3 className="font-semibold text-white">Company Information</h3>
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
+                  <label className="block text-sm font-medium text-neutral-200 mb-1">Company Name</label>
                   <input
                     value={reviewData.companyName || ""}
                     onChange={(e) => setReviewData({ ...reviewData, companyName: e.target.value })}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                    className="w-full rounded-lg border border-[#333333] bg-[#0a0a0a] px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Website URL</label>
+                  <label className="block text-sm font-medium text-neutral-200 mb-1">Website URL</label>
                   <input
                     value={reviewData.companyUrl || ""}
                     onChange={(e) => setReviewData({ ...reviewData, companyUrl: e.target.value })}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                    className="w-full rounded-lg border border-[#333333] bg-[#0a0a0a] px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Product/Service</label>
+                <label className="block text-sm font-medium text-neutral-200 mb-1">Product/Service</label>
                 <VoiceTextarea
                   value={reviewData.companyProduct || ""}
                   onChange={(val) => setReviewData({ ...reviewData, companyProduct: val })}
@@ -710,7 +710,7 @@ export default function AISetupPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Company Description</label>
+                <label className="block text-sm font-medium text-neutral-200 mb-1">Company Description</label>
                 <VoiceTextarea
                   value={reviewData.companyDescription || ""}
                   onChange={(val) => setReviewData({ ...reviewData, companyDescription: val })}
@@ -718,7 +718,7 @@ export default function AISetupPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Differentiators</label>
+                <label className="block text-sm font-medium text-neutral-200 mb-1">Differentiators</label>
                 <VoiceTextarea
                   value={reviewData.companyDifferentiators || ""}
                   onChange={(val) => setReviewData({ ...reviewData, companyDifferentiators: val })}
@@ -727,7 +727,7 @@ export default function AISetupPage() {
               </div>
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Competitors</label>
+                  <label className="block text-sm font-medium text-neutral-200 mb-1">Competitors</label>
                   <VoiceTextarea
                     value={reviewData.companyCompetitors || ""}
                     onChange={(val) => setReviewData({ ...reviewData, companyCompetitors: val })}
@@ -735,7 +735,7 @@ export default function AISetupPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Target Market</label>
+                  <label className="block text-sm font-medium text-neutral-200 mb-1">Target Market</label>
                   <VoiceTextarea
                     value={reviewData.companyTargetMarket || ""}
                     onChange={(val) => setReviewData({ ...reviewData, companyTargetMarket: val })}
@@ -746,10 +746,10 @@ export default function AISetupPage() {
             </div>
 
             {/* LinkedIn section */}
-            <div className="rounded-xl border bg-white p-6 space-y-4">
-              <h3 className="font-semibold text-gray-900">LinkedIn Profile</h3>
+            <div className="rounded-xl border bg-[#141414] p-6 space-y-4">
+              <h3 className="font-semibold text-white">LinkedIn Profile</h3>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">About / Summary</label>
+                <label className="block text-sm font-medium text-neutral-200 mb-1">About / Summary</label>
                 <VoiceTextarea
                   value={reviewData.linkedinAbout || ""}
                   onChange={(val) => setReviewData({ ...reviewData, linkedinAbout: val })}
@@ -757,7 +757,7 @@ export default function AISetupPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Experience</label>
+                <label className="block text-sm font-medium text-neutral-200 mb-1">Experience</label>
                 <VoiceTextarea
                   value={reviewData.linkedinExperience || ""}
                   onChange={(val) => setReviewData({ ...reviewData, linkedinExperience: val })}
@@ -765,7 +765,7 @@ export default function AISetupPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Education</label>
+                <label className="block text-sm font-medium text-neutral-200 mb-1">Education</label>
                 <VoiceTextarea
                   value={reviewData.linkedinEducation || ""}
                   onChange={(val) => setReviewData({ ...reviewData, linkedinEducation: val })}
@@ -776,20 +776,20 @@ export default function AISetupPage() {
 
             {/* Deal Stories section */}
             {reviewData.dealStories && reviewData.dealStories.length > 0 && (
-              <div className="rounded-xl border bg-white p-6 space-y-4">
-                <h3 className="font-semibold text-gray-900">
+              <div className="rounded-xl border bg-[#141414] p-6 space-y-4">
+                <h3 className="font-semibold text-white">
                   Deal Stories ({reviewData.dealStories.length})
                 </h3>
                 {reviewData.dealStories.map((story, i) => (
                   <div key={i} className="rounded-lg border p-4 space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="font-medium text-gray-900">
+                      <span className="font-medium text-white">
                         {story.title || story.customer || `Deal ${i + 1}`}
                       </span>
                     </div>
                     <div className="grid gap-3 md:grid-cols-2">
                       <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1">Customer</label>
+                        <label className="block text-xs font-medium text-neutral-400 mb-1">Customer</label>
                         <input
                           value={story.customer}
                           onChange={(e) => {
@@ -797,11 +797,11 @@ export default function AISetupPage() {
                             updated[i] = { ...updated[i], customer: e.target.value };
                             setReviewData({ ...reviewData, dealStories: updated });
                           }}
-                          className="w-full rounded border border-gray-200 px-2 py-1.5 text-sm"
+                          className="w-full rounded border border-[#262626] px-2 py-1.5 text-sm"
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-medium text-gray-500 mb-1">Metrics</label>
+                        <label className="block text-xs font-medium text-neutral-400 mb-1">Metrics</label>
                         <input
                           value={story.metrics}
                           onChange={(e) => {
@@ -809,12 +809,12 @@ export default function AISetupPage() {
                             updated[i] = { ...updated[i], metrics: e.target.value };
                             setReviewData({ ...reviewData, dealStories: updated });
                           }}
-                          className="w-full rounded border border-gray-200 px-2 py-1.5 text-sm"
+                          className="w-full rounded border border-[#262626] px-2 py-1.5 text-sm"
                         />
                       </div>
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 mb-1">Challenge</label>
+                      <label className="block text-xs font-medium text-neutral-400 mb-1">Challenge</label>
                       <VoiceTextarea
                         value={story.challenge}
                         onChange={(val) => {
@@ -826,7 +826,7 @@ export default function AISetupPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 mb-1">Result</label>
+                      <label className="block text-xs font-medium text-neutral-400 mb-1">Result</label>
                       <VoiceTextarea
                         value={story.result}
                         onChange={(val) => {
@@ -844,14 +844,14 @@ export default function AISetupPage() {
 
             {/* Value Props section */}
             {reviewData.valueProps && reviewData.valueProps.length > 0 && (
-              <div className="rounded-xl border bg-white p-6 space-y-4">
-                <h3 className="font-semibold text-gray-900">
+              <div className="rounded-xl border bg-[#141414] p-6 space-y-4">
+                <h3 className="font-semibold text-white">
                   Value Propositions ({reviewData.valueProps.length})
                 </h3>
                 {reviewData.valueProps.map((vp, i) => (
                   <div key={i} className="rounded-lg border p-4 space-y-3">
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 mb-1">Headline</label>
+                      <label className="block text-xs font-medium text-neutral-400 mb-1">Headline</label>
                       <input
                         value={vp.headline}
                         onChange={(e) => {
@@ -859,11 +859,11 @@ export default function AISetupPage() {
                           updated[i] = { ...updated[i], headline: e.target.value };
                           setReviewData({ ...reviewData, valueProps: updated });
                         }}
-                        className="w-full rounded border border-gray-200 px-2 py-1.5 text-sm"
+                        className="w-full rounded border border-[#262626] px-2 py-1.5 text-sm"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 mb-1">Description</label>
+                      <label className="block text-xs font-medium text-neutral-400 mb-1">Description</label>
                       <VoiceTextarea
                         value={vp.description}
                         onChange={(val) => {
@@ -875,7 +875,7 @@ export default function AISetupPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-medium text-gray-500 mb-1">Proof Point</label>
+                      <label className="block text-xs font-medium text-neutral-400 mb-1">Proof Point</label>
                       <input
                         value={vp.proofPoint}
                         onChange={(e) => {
@@ -883,7 +883,7 @@ export default function AISetupPage() {
                           updated[i] = { ...updated[i], proofPoint: e.target.value };
                           setReviewData({ ...reviewData, valueProps: updated });
                         }}
-                        className="w-full rounded border border-gray-200 px-2 py-1.5 text-sm"
+                        className="w-full rounded border border-[#262626] px-2 py-1.5 text-sm"
                       />
                     </div>
                   </div>
@@ -892,23 +892,23 @@ export default function AISetupPage() {
             )}
 
             {/* Methodology section */}
-            <div className="rounded-xl border bg-white p-6 space-y-4">
-              <h3 className="font-semibold text-gray-900">Sales Methodology</h3>
+            <div className="rounded-xl border bg-[#141414] p-6 space-y-4">
+              <h3 className="font-semibold text-white">Sales Methodology</h3>
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Selling Style</label>
+                  <label className="block text-sm font-medium text-neutral-200 mb-1">Selling Style</label>
                   <input
                     value={reviewData.sellingStyle || ""}
                     onChange={(e) => setReviewData({ ...reviewData, sellingStyle: e.target.value })}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                    className="w-full rounded-lg border border-[#333333] bg-[#0a0a0a] px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Preferred Tone</label>
+                  <label className="block text-sm font-medium text-neutral-200 mb-1">Preferred Tone</label>
                   <input
                     value={reviewData.preferredTone || ""}
                     onChange={(e) => setReviewData({ ...reviewData, preferredTone: e.target.value })}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                    className="w-full rounded-lg border border-[#333333] bg-[#0a0a0a] px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                   />
                 </div>
               </div>
@@ -918,7 +918,7 @@ export default function AISetupPage() {
             <div className="flex items-center justify-between">
               <button
                 onClick={() => setStep("prompts")}
-                className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700"
+                className="flex items-center gap-1 text-sm text-neutral-400 hover:text-neutral-200"
               >
                 <ChevronLeft className="h-4 w-4" />
                 Back to prompts
@@ -926,7 +926,7 @@ export default function AISetupPage() {
               <button
                 onClick={saveProfile}
                 disabled={savingProfile}
-                className="flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50 transition"
+                className="flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-emerald-600 disabled:opacity-50 transition"
               >
                 {savingProfile ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -943,10 +943,10 @@ export default function AISetupPage() {
         {step === "knowledge_base" && (
           <div className="space-y-6">
             <div>
-              <h2 className="text-xl font-bold text-gray-900">
+              <h2 className="text-xl font-bold text-white">
                 Auto-Generated Knowledge Base
               </h2>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-neutral-400">
                 Based on your profile, we&apos;ve generated starter documents for your knowledge base.
                 Toggle off any you don&apos;t want, then save.
               </p>
@@ -955,19 +955,19 @@ export default function AISetupPage() {
             {generatingKB ? (
               <div className="flex items-center justify-center py-12">
                 <div className="text-center space-y-3">
-                  <Loader2 className="h-8 w-8 animate-spin text-emerald-700 mx-auto" />
-                  <p className="text-sm text-gray-500">Generating knowledge base documents...</p>
+                  <Loader2 className="h-8 w-8 animate-spin text-emerald-400 mx-auto" />
+                  <p className="text-sm text-neutral-400">Generating knowledge base documents...</p>
                 </div>
               </div>
             ) : kbDocs.length === 0 ? (
-              <div className="rounded-xl border bg-white p-8 text-center">
-                <BookOpen className="h-10 w-10 text-gray-300 mx-auto mb-3" />
-                <p className="text-gray-500">
+              <div className="rounded-xl border bg-[#141414] p-8 text-center">
+                <BookOpen className="h-10 w-10 text-neutral-500 mx-auto mb-3" />
+                <p className="text-neutral-400">
                   Not enough profile data to auto-generate KB docs. You can add them manually later from your profile page.
                 </p>
                 <button
                   onClick={skipKB}
-                  className="mt-4 rounded-lg bg-emerald-600 px-6 py-2 text-sm font-medium text-white hover:bg-emerald-700 transition"
+                  className="mt-4 rounded-lg bg-emerald-600 px-6 py-2 text-sm font-medium text-white hover:bg-emerald-600 transition"
                 >
                   Finish Setup
                 </button>
@@ -978,8 +978,8 @@ export default function AISetupPage() {
                   {kbDocs.map((doc, i) => (
                     <div
                       key={i}
-                      className={`rounded-xl border bg-white transition ${
-                        doc.enabled ? "border-gray-200" : "border-gray-100 opacity-60"
+                      className={`rounded-xl border bg-[#141414] transition ${
+                        doc.enabled ? "border-[#262626]" : "border-[#1a1a1a] opacity-60"
                       }`}
                     >
                       <div className="flex items-center justify-between px-5 py-4">
@@ -993,14 +993,14 @@ export default function AISetupPage() {
                             className={`flex h-5 w-5 items-center justify-center rounded border-2 transition ${
                               doc.enabled
                                 ? "border-emerald-600 bg-emerald-600"
-                                : "border-gray-300"
+                                : "border-[#333333]"
                             }`}
                           >
                             {doc.enabled && <Check className="h-3 w-3 text-white" />}
                           </button>
                           <div>
-                            <span className="font-medium text-gray-900">{doc.title}</span>
-                            <span className="ml-2 inline-flex rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500">
+                            <span className="font-medium text-white">{doc.title}</span>
+                            <span className="ml-2 inline-flex rounded-full bg-[#1a1a1a] px-2 py-0.5 text-xs text-neutral-400">
                               {doc.category.replace(/_/g, " ")}
                             </span>
                           </div>
@@ -1009,7 +1009,7 @@ export default function AISetupPage() {
                           onClick={() =>
                             setExpandedKB(expandedKB === i ? null : i)
                           }
-                          className="text-gray-400 hover:text-gray-600"
+                          className="text-neutral-500 hover:text-neutral-300"
                         >
                           {expandedKB === i ? (
                             <EyeOff className="h-4 w-4" />
@@ -1020,7 +1020,7 @@ export default function AISetupPage() {
                       </div>
                       {expandedKB === i && (
                         <div className="border-t px-5 py-4">
-                          <pre className="text-sm text-gray-600 whitespace-pre-wrap max-h-60 overflow-y-auto">
+                          <pre className="text-sm text-neutral-300 whitespace-pre-wrap max-h-60 overflow-y-auto">
                             {doc.content}
                           </pre>
                         </div>
@@ -1032,14 +1032,14 @@ export default function AISetupPage() {
                 <div className="flex items-center justify-between">
                   <button
                     onClick={skipKB}
-                    className="text-sm text-gray-500 hover:text-gray-700"
+                    className="text-sm text-neutral-400 hover:text-neutral-200"
                   >
                     Skip for now, I&apos;ll add docs later
                   </button>
                   <button
                     onClick={saveKBDocs}
                     disabled={savingKB || kbDocs.filter((d) => d.enabled).length === 0}
-                    className="flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50 transition"
+                    className="flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-emerald-600 disabled:opacity-50 transition"
                   >
                     {savingKB ? (
                       <Loader2 className="h-4 w-4 animate-spin" />

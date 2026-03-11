@@ -92,10 +92,10 @@ export default function InviteAcceptPage() {
 
   if (!isLoaded || status === "loading") {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <div className="flex min-h-screen items-center justify-center bg-[#0a0a0a]">
         <div className="text-center">
-          <Loader2 className="mx-auto h-8 w-8 animate-spin text-emerald-700" />
-          <p className="mt-3 text-sm text-gray-500">Loading invite...</p>
+          <Loader2 className="mx-auto h-8 w-8 animate-spin text-emerald-400" />
+          <p className="mt-3 text-sm text-neutral-400">Loading invite...</p>
         </div>
       </div>
     );
@@ -103,10 +103,10 @@ export default function InviteAcceptPage() {
 
   if (status === "accepting") {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <div className="flex min-h-screen items-center justify-center bg-[#0a0a0a]">
         <div className="text-center">
-          <Loader2 className="mx-auto h-8 w-8 animate-spin text-emerald-700" />
-          <p className="mt-3 text-sm text-gray-500">Accepting invite...</p>
+          <Loader2 className="mx-auto h-8 w-8 animate-spin text-emerald-400" />
+          <p className="mt-3 text-sm text-neutral-400">Accepting invite...</p>
         </div>
       </div>
     );
@@ -114,23 +114,23 @@ export default function InviteAcceptPage() {
 
   if (status === "accepted") {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <div className="mx-auto max-w-md rounded-xl border bg-white p-8 text-center shadow-sm">
+      <div className="flex min-h-screen items-center justify-center bg-[#0a0a0a]">
+        <div className="mx-auto max-w-md rounded-xl border bg-[#141414] p-8 text-center shadow-sm shadow-black/20">
           <CheckCircle2 className="mx-auto h-12 w-12 text-emerald-500" />
-          <h1 className="mt-4 text-xl font-bold text-gray-900">You're in!</h1>
-          <p className="mt-2 text-sm text-gray-600">
+          <h1 className="mt-4 text-xl font-bold text-white">You're in!</h1>
+          <p className="mt-2 text-sm text-neutral-300">
             You've joined <strong>{teamName}</strong>. Your team's shared runs, knowledge base, and playbooks are now available.
           </p>
           <div className="mt-6 flex justify-center gap-3">
             <Link
               href={`/teams/${teamId}`}
-              className="rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-700"
+              className="rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-600"
             >
               View Team
             </Link>
             <Link
               href="/dashboard"
-              className="rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              className="rounded-lg border border-[#333333] bg-[#141414] px-5 py-2.5 text-sm font-medium text-neutral-200 hover:bg-[#0a0a0a]"
             >
               Go to Dashboard
             </Link>
@@ -142,23 +142,23 @@ export default function InviteAcceptPage() {
 
   // Error or no-invite
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <div className="mx-auto max-w-md rounded-xl border bg-white p-8 text-center shadow-sm">
+    <div className="flex min-h-screen items-center justify-center bg-[#0a0a0a]">
+      <div className="mx-auto max-w-md rounded-xl border bg-[#141414] p-8 text-center shadow-sm shadow-black/20">
         <XCircle className="mx-auto h-12 w-12 text-red-400" />
-        <h1 className="mt-4 text-xl font-bold text-gray-900">
+        <h1 className="mt-4 text-xl font-bold text-white">
           {status === "no-invite" ? "Invite Not Found" : "Something Went Wrong"}
         </h1>
-        <p className="mt-2 text-sm text-gray-600">{errorMsg}</p>
+        <p className="mt-2 text-sm text-neutral-300">{errorMsg}</p>
         <div className="mt-6 flex justify-center gap-3">
           <Link
             href="/teams"
-            className="rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-700"
+            className="rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-600"
           >
             View Your Teams
           </Link>
           <Link
             href="/dashboard"
-            className="rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            className="rounded-lg border border-[#333333] bg-[#141414] px-5 py-2.5 text-sm font-medium text-neutral-200 hover:bg-[#0a0a0a]"
           >
             Dashboard
           </Link>

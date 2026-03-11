@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { authLimiter, rateLimitResponse } from "@/lib/rate-limit";
+import { auditTokenGenerated } from "@/lib/audit-log";
 
 /**
  * GET /api/auth/extension-token
@@ -35,6 +36,10 @@ export async function GET() {
         { status: 500 }
       );
     }
+
+    // Fire-and-forget audit log (non-blocking)
+    auditTokenGenerated(userId, { source: "chrome_extension" })
+      .catch((err) => console.error("Audit log failed:", err));
 
     return NextResponse.json({
       token,

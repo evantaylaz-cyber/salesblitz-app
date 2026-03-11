@@ -179,24 +179,24 @@ function CollapsibleSection({
 }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="rounded-xl border bg-white shadow-sm overflow-hidden">
+    <div className="rounded-xl border bg-[#141414] shadow-sm shadow-black/20 overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between px-6 py-4 text-left hover:bg-gray-50 transition"
+        className="flex w-full items-center justify-between px-6 py-4 text-left hover:bg-[#0a0a0a] transition"
       >
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-50">
-            <Icon className="h-5 w-5 text-emerald-700" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/10">
+            <Icon className="h-5 w-5 text-emerald-400" />
           </div>
           <div>
-            <h3 className="font-semibold text-gray-900">{title}</h3>
-            <p className="text-sm text-gray-500">{description}</p>
+            <h3 className="font-semibold text-white">{title}</h3>
+            <p className="text-sm text-neutral-400">{description}</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           {completionPct !== undefined && (
             <div className="flex items-center gap-2">
-              <div className="h-2 w-20 rounded-full bg-gray-100">
+              <div className="h-2 w-20 rounded-full bg-[#1a1a1a]">
                 <div
                   className="h-2 rounded-full transition-all"
                   style={{
@@ -210,13 +210,13 @@ function CollapsibleSection({
                   }}
                 />
               </div>
-              <span className="text-xs text-gray-400">{completionPct}%</span>
+              <span className="text-xs text-neutral-500">{completionPct}%</span>
             </div>
           )}
           {open ? (
-            <ChevronDown className="h-5 w-5 text-gray-400" />
+            <ChevronDown className="h-5 w-5 text-neutral-500" />
           ) : (
-            <ChevronRight className="h-5 w-5 text-gray-400" />
+            <ChevronRight className="h-5 w-5 text-neutral-500" />
           )}
         </div>
       </button>
@@ -246,7 +246,7 @@ function TextInput({
 }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
+      <label className="block text-sm font-medium text-neutral-200 mb-1">
         {label}
         {required && <span className="text-red-500 ml-1">*</span>}
       </label>
@@ -259,11 +259,11 @@ function TextInput({
         className={`w-full rounded-lg border px-3 py-2 text-sm focus:ring-1 outline-none transition ${
           error
             ? "border-red-500 focus:border-red-500 focus:ring-red-500"
-            : "border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
+            : "border-[#333333] focus:border-emerald-500 focus:ring-emerald-500"
         }`}
       />
       {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
-      {hint && !error && <p className="mt-1 text-xs text-gray-400">{hint}</p>}
+      {hint && !error && <p className="mt-1 text-xs text-neutral-500">{hint}</p>}
     </div>
   );
 }
@@ -291,7 +291,7 @@ function TextArea({
 }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
+      <label className="block text-sm font-medium text-neutral-200 mb-1">
         {label}
         {required && <span className="text-red-500 ml-1">*</span>}
       </label>
@@ -305,7 +305,7 @@ function TextArea({
         />
       </div>
       {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
-      {hint && !error && <p className="mt-1 text-xs text-gray-400">{hint}</p>}
+      {hint && !error && <p className="mt-1 text-xs text-neutral-500">{hint}</p>}
     </div>
   );
 }
@@ -708,23 +708,23 @@ export default function ProfilePage() {
   if (!isLoaded || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-emerald-700" />
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-400" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <AppNav currentPage="/profile" />
 
       {/* Profile action bar */}
-      <div className="border-b bg-white sticky top-[57px] z-10">
+      <div className="border-b bg-[#141414] sticky top-[57px] z-10">
         <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-3">
-          <h1 className="text-lg font-bold text-gray-900">Your Profile</h1>
+          <h1 className="text-lg font-bold text-white">Your Profile</h1>
           <div className="flex items-center gap-3">
             <a
               href="/onboarding-chat"
-              className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-800 transition hover:bg-emerald-100"
+              className="flex items-center gap-2 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-4 py-2 text-sm font-medium text-emerald-400 transition hover:bg-emerald-500/100/15"
             >
               <Sparkles className="h-4 w-4" />
               Fill with AI
@@ -732,7 +732,7 @@ export default function ProfilePage() {
             <button
               onClick={saveProfile}
               disabled={saving || isFormValid()}
-              className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {saving ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -750,13 +750,13 @@ export default function ProfilePage() {
       <main className="mx-auto max-w-4xl px-6 py-8">
         {/* Intro banner */}
         {!profile.onboardingCompleted && (
-          <div className="mb-6 flex items-start gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-4">
-            <AlertCircle className="h-5 w-5 text-emerald-700 mt-0.5 shrink-0" />
+          <div className="mb-6 flex items-start gap-3 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4">
+            <AlertCircle className="h-5 w-5 text-emerald-400 mt-0.5 shrink-0" />
             <div>
-              <p className="font-medium text-emerald-900">
+              <p className="font-medium text-emerald-300">
                 We'll do the heavy lifting
               </p>
-              <p className="mt-1 text-sm text-emerald-800">
+              <p className="mt-1 text-sm text-emerald-400">
                 Drop your company website below and hit Auto-Fill. We&apos;ll research your company, competitors, and market.
                 You just verify what we found.
               </p>
@@ -765,13 +765,13 @@ export default function ProfilePage() {
         )}
 
         {error && (
-          <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          <div className="mb-6 rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-400">
             {error}
           </div>
         )}
 
         {saved && (
-          <div className="mb-6 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700 flex items-start gap-3">
+          <div className="mb-6 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-sm text-emerald-400 flex items-start gap-3">
             <Check className="h-5 w-5 mt-0.5 shrink-0" />
             <span>Profile saved successfully!</span>
           </div>
@@ -789,7 +789,7 @@ export default function ProfilePage() {
             <div className="space-y-4">
               {/* Company URL with fetch button */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-neutral-200 mb-1">
                   Company Website
                 </label>
                 <div className="flex gap-2">
@@ -798,12 +798,12 @@ export default function ProfilePage() {
                     value={profile.companyUrl}
                     onChange={(e) => updateField("companyUrl", e.target.value)}
                     placeholder="https://yourcompany.com"
-                    className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition"
+                    className="flex-1 rounded-lg border border-[#333333] bg-[#0a0a0a] px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition"
                   />
                   <button
                     onClick={fetchCompanyFromUrl}
                     disabled={!profile.companyUrl || fetchingCompany}
-                    className="flex items-center gap-1.5 rounded-lg bg-emerald-50 border border-emerald-200 px-4 py-2 text-sm font-medium text-emerald-800 hover:bg-emerald-100 disabled:opacity-50 disabled:cursor-not-allowed transition whitespace-nowrap"
+                    className="flex items-center gap-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 text-sm font-medium text-emerald-400 hover:bg-emerald-500/100/15 disabled:opacity-50 disabled:cursor-not-allowed transition whitespace-nowrap"
                   >
                     {fetchingCompany ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -816,7 +816,7 @@ export default function ProfilePage() {
                 {fetchCompanyError && (
                   <p className="mt-1 text-xs text-red-500">{fetchCompanyError}</p>
                 )}
-                <p className="mt-1 text-xs text-gray-400">
+                <p className="mt-1 text-xs text-neutral-500">
                   We&apos;ll pull your company info automatically. Review and edit below.
                 </p>
               </div>
@@ -832,13 +832,13 @@ export default function ProfilePage() {
                   error={touchedFields.has("companyName") ? validationErrors.companyName : ""}
                 />
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-neutral-200 mb-1">
                     Preferred Tone
                   </label>
                   <select
                     value={profile.preferredTone}
                     onChange={(e) => updateField("preferredTone", e.target.value)}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+                    className="w-full rounded-lg border border-[#333333] bg-[#0a0a0a] px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                   >
                     <option value="professional">Professional</option>
                     <option value="conversational">Conversational</option>
@@ -894,7 +894,7 @@ export default function ProfilePage() {
             completionPct={getLinkedinCompletion()}
           >
             <div className="space-y-4">
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-neutral-400">
                 Paste sections from your own LinkedIn profile. This helps us
                 position you credibly in research briefs and POV decks.
               </p>
@@ -932,7 +932,7 @@ export default function ProfilePage() {
             completionPct={profile.resumeText ? 100 : 0}
           >
             <div className="space-y-4">
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-neutral-400">
                 Your resume is the fastest way to fill your profile. Upload a file or paste it below. We'll extract your career arc, key wins, seller archetype, and potential deal stories.
               </p>
 
@@ -950,7 +950,7 @@ export default function ProfilePage() {
                   type="button"
                   onClick={() => resumeFileRef.current?.click()}
                   disabled={uploadingResume}
-                  className="flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                  className="flex items-center gap-1.5 rounded-lg border border-[#333333] bg-[#141414] px-4 py-2 text-sm font-medium text-neutral-200 hover:bg-[#0a0a0a] disabled:opacity-50 disabled:cursor-not-allowed transition"
                 >
                   {uploadingResume ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -959,12 +959,12 @@ export default function ProfilePage() {
                   )}
                   {uploadingResume ? "Processing..." : "Upload Resume"}
                 </button>
-                <span className="text-xs text-gray-400">PDF, DOCX, or TXT (max 5MB)</span>
+                <span className="text-xs text-neutral-500">PDF, DOCX, or TXT (max 5MB)</span>
               </div>
 
               <div className="relative">
                 <div className="absolute inset-x-0 top-0 flex justify-center -translate-y-1/2">
-                  <span className="bg-white px-2 text-xs text-gray-400">or paste below</span>
+                  <span className="bg-[#141414] px-2 text-xs text-neutral-500">or paste below</span>
                 </div>
               </div>
 
@@ -978,7 +978,7 @@ export default function ProfilePage() {
                 <button
                   onClick={parseResume}
                   disabled={!profile.resumeText || profile.resumeText.trim().length < 50 || parsingResume}
-                  className="flex items-center gap-1.5 rounded-lg bg-emerald-50 border border-emerald-200 px-4 py-2 text-sm font-medium text-emerald-800 hover:bg-emerald-100 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                  className="flex items-center gap-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 text-sm font-medium text-emerald-400 hover:bg-emerald-500/100/15 disabled:opacity-50 disabled:cursor-not-allowed transition"
                 >
                   {parsingResume ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -988,12 +988,12 @@ export default function ProfilePage() {
                   {parsingResume ? "Parsing..." : "Extract Career Data"}
                 </button>
                 {resumeParseResult && (
-                  <p className={`text-xs ${resumeParseResult.startsWith("Extracted") ? "text-emerald-700" : "text-red-500"}`}>
+                  <p className={`text-xs ${resumeParseResult.startsWith("Extracted") ? "text-emerald-400" : "text-red-500"}`}>
                     {resumeParseResult}
                   </p>
                 )}
               </div>
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-neutral-500">
                 This auto-fills your career narrative, archetype, strengths, experience, and identifies accomplishments that could become deal stories. You can edit everything after.
               </p>
             </div>
@@ -1009,13 +1009,13 @@ export default function ProfilePage() {
             <div className="space-y-6">
               {/* Selling style dropdown */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-neutral-200 mb-1">
                   Sales Methodology
                 </label>
                 <select
                   value={profile.sellingStyle}
                   onChange={(e) => updateField("sellingStyle", e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+                  className="w-full rounded-lg border border-[#333333] bg-[#0a0a0a] px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                 >
                   <option value="Value Messaging">Value Messaging</option>
                   <option value="Value Messaging + Deal Qualification">Value Messaging + Deal Qualification</option>
@@ -1032,25 +1032,25 @@ export default function ProfilePage() {
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <div>
-                    <h4 className="text-sm font-medium text-gray-900">
+                    <h4 className="text-sm font-medium text-white">
                       Deal Stories
                     </h4>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-neutral-400">
                       Your best wins. Paste a case study link or fill in manually.
                     </p>
                   </div>
                   <button
                     onClick={addDealStory}
-                    className="flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-800 hover:bg-emerald-100 transition"
+                    className="flex items-center gap-1 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5 text-xs font-medium text-emerald-400 hover:bg-emerald-500/100/15 transition"
                   >
                     <Plus className="h-3 w-3" /> Add Story
                   </button>
                 </div>
 
                 {profile.dealStories.length === 0 && (
-                  <div className="rounded-lg border-2 border-dashed border-gray-200 p-6 text-center">
-                    <BookOpen className="mx-auto h-8 w-8 text-gray-300" />
-                    <p className="mt-2 text-sm text-gray-500">
+                  <div className="rounded-lg border-2 border-dashed border-[#262626] p-6 text-center">
+                    <BookOpen className="mx-auto h-8 w-8 text-neutral-500" />
+                    <p className="mt-2 text-sm text-neutral-400">
                       No deal stories yet. Add a link to a case study or type one in.
                     </p>
                   </div>
@@ -1060,15 +1060,15 @@ export default function ProfilePage() {
                   {profile.dealStories.map((story, i) => (
                     <div
                       key={i}
-                      className="rounded-lg border bg-gray-50 p-4 space-y-3"
+                      className="rounded-lg border bg-[#0a0a0a] p-4 space-y-3"
                     >
                       <div className="flex items-start justify-between">
-                        <span className="text-xs font-semibold text-gray-400 uppercase">
+                        <span className="text-xs font-semibold text-neutral-500 uppercase">
                           Story {i + 1}
                         </span>
                         <button
                           onClick={() => removeDealStory(i)}
-                          className="text-gray-400 hover:text-red-500 transition"
+                          className="text-neutral-500 hover:text-red-500 transition"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -1083,12 +1083,12 @@ export default function ProfilePage() {
                             updateDealStory(i, "sourceUrl", e.target.value)
                           }
                           placeholder="Paste a case study or blog post URL..."
-                          className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+                          className="flex-1 rounded-lg border border-[#333333] bg-[#0a0a0a] px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                         />
                         <button
                           onClick={() => fetchDealStoryFromUrl(i)}
                           disabled={!story.sourceUrl || fetchingStoryUrl === i}
-                          className="flex items-center gap-1 rounded-lg bg-emerald-50 border border-emerald-200 px-3 py-2 text-xs font-medium text-emerald-800 hover:bg-emerald-100 disabled:opacity-50 transition whitespace-nowrap"
+                          className="flex items-center gap-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 px-3 py-2 text-xs font-medium text-emerald-400 hover:bg-emerald-500/100/15 disabled:opacity-50 transition whitespace-nowrap"
                         >
                           {fetchingStoryUrl === i ? (
                             <Loader2 className="h-3 w-3 animate-spin" />
@@ -1107,7 +1107,7 @@ export default function ProfilePage() {
                             updateDealStory(i, "title", e.target.value)
                           }
                           placeholder="e.g., 'Enterprise Cold to 7-Figure'"
-                          className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+                          className="rounded-lg border border-[#333333] bg-[#0a0a0a] px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                         />
                         <input
                           type="text"
@@ -1116,7 +1116,7 @@ export default function ProfilePage() {
                             updateDealStory(i, "customer", e.target.value)
                           }
                           placeholder="e.g., 'Acme Corp Managed Services'"
-                          className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+                          className="rounded-lg border border-[#333333] bg-[#0a0a0a] px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                         />
                       </div>
                       <VoiceTextarea
@@ -1144,7 +1144,7 @@ export default function ProfilePage() {
                           updateDealStory(i, "metrics", e.target.value)
                         }
                         placeholder="e.g., '$1M+ ACV, 63% CPA reduction, 400+ locations consolidated'"
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+                        className="w-full rounded-lg border border-[#333333] bg-[#0a0a0a] px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                       />
                     </div>
                   ))}
@@ -1155,25 +1155,25 @@ export default function ProfilePage() {
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <div>
-                    <h4 className="text-sm font-medium text-gray-900">
+                    <h4 className="text-sm font-medium text-white">
                       Value Propositions
                     </h4>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-neutral-400">
                       Your core selling points: headline, detail, and proof
                     </p>
                   </div>
                   <button
                     onClick={addValueProp}
-                    className="flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-800 hover:bg-emerald-100 transition"
+                    className="flex items-center gap-1 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5 text-xs font-medium text-emerald-400 hover:bg-emerald-500/100/15 transition"
                   >
                     <Plus className="h-3 w-3" /> Add Prop
                   </button>
                 </div>
 
                 {profile.valueProps.length === 0 && (
-                  <div className="rounded-lg border-2 border-dashed border-gray-200 p-6 text-center">
-                    <Target className="mx-auto h-8 w-8 text-gray-300" />
-                    <p className="mt-2 text-sm text-gray-500">
+                  <div className="rounded-lg border-2 border-dashed border-[#262626] p-6 text-center">
+                    <Target className="mx-auto h-8 w-8 text-neutral-500" />
+                    <p className="mt-2 text-sm text-neutral-400">
                       No value props yet. What are the top reasons customers
                       buy from you?
                     </p>
@@ -1184,15 +1184,15 @@ export default function ProfilePage() {
                   {profile.valueProps.map((prop, i) => (
                     <div
                       key={i}
-                      className="rounded-lg border bg-gray-50 p-4 space-y-3"
+                      className="rounded-lg border bg-[#0a0a0a] p-4 space-y-3"
                     >
                       <div className="flex items-start justify-between">
-                        <span className="text-xs font-semibold text-gray-400 uppercase">
+                        <span className="text-xs font-semibold text-neutral-500 uppercase">
                           Value Prop {i + 1}
                         </span>
                         <button
                           onClick={() => removeValueProp(i)}
-                          className="text-gray-400 hover:text-red-500 transition"
+                          className="text-neutral-500 hover:text-red-500 transition"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -1204,7 +1204,7 @@ export default function ProfilePage() {
                           updateValueProp(i, "headline", e.target.value)
                         }
                         placeholder="Headline (e.g., '60% faster time-to-detection')"
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+                        className="w-full rounded-lg border border-[#333333] bg-[#0a0a0a] px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                       />
                       <VoiceTextarea
                         value={prop.description}
@@ -1219,7 +1219,7 @@ export default function ProfilePage() {
                           updateValueProp(i, "proofPoint", e.target.value)
                         }
                         placeholder="Proof point (customer quote, stat, case study reference)"
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+                        className="w-full rounded-lg border border-[#333333] bg-[#0a0a0a] px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                       />
                     </div>
                   ))}
@@ -1236,13 +1236,13 @@ export default function ProfilePage() {
           >
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-neutral-200 mb-1">
                   Lifecycle Stage
                 </label>
                 <select
                   value={profile.lifecycleStage}
                   onChange={(e) => updateField("lifecycleStage", e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+                  className="w-full rounded-lg border border-[#333333] bg-[#0a0a0a] px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                 >
                   <option value="">Select...</option>
                   <option value="interviewing">Interviewing</option>
@@ -1310,20 +1310,20 @@ export default function ProfilePage() {
             description="Who are your best-fit buyers?"
           >
             <div className="space-y-4">
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-neutral-400">
                 Define your ideal customer profiles. These are used in prospect prep, outreach, and practice mode to generate realistic buyer personas.
               </p>
               {(profile.icpDefinitions || []).map((icp: ICPDefinition, i: number) => (
-                <div key={i} className="rounded-lg border border-gray-200 bg-gray-50/50 p-4 space-y-3">
+                <div key={i} className="rounded-lg border border-[#262626] bg-[#0a0a0a]/50 p-4 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-700">ICP #{i + 1}</span>
+                    <span className="text-sm font-medium text-neutral-200">ICP #{i + 1}</span>
                     <button
                       onClick={() => {
                         const updated = [...(profile.icpDefinitions || [])];
                         updated.splice(i, 1);
                         updateField("icpDefinitions", updated);
                       }}
-                      className="text-gray-400 hover:text-red-500 transition"
+                      className="text-neutral-500 hover:text-red-500 transition"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -1373,7 +1373,7 @@ export default function ProfilePage() {
               ))}
               <button
                 onClick={() => updateField("icpDefinitions", [...(profile.icpDefinitions || []), { ...EMPTY_ICP }])}
-                className="flex items-center gap-1.5 text-sm font-medium text-emerald-700 hover:text-emerald-800 transition"
+                className="flex items-center gap-1.5 text-sm font-medium text-emerald-400 hover:text-emerald-400 transition"
               >
                 <Plus className="h-4 w-4" /> Add ICP
               </button>
@@ -1387,20 +1387,20 @@ export default function ProfilePage() {
             description="Customer wins that power your outreach and interviews"
           >
             <div className="space-y-4">
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-neutral-400">
                 Add your strongest customer stories. These get woven into outreach sequences, interview talk tracks, and practice mode scenarios.
               </p>
               {(profile.caseStudies || []).map((cs: CaseStudy, i: number) => (
-                <div key={i} className="rounded-lg border border-gray-200 bg-gray-50/50 p-4 space-y-3">
+                <div key={i} className="rounded-lg border border-[#262626] bg-[#0a0a0a]/50 p-4 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-700">Case Study #{i + 1}</span>
+                    <span className="text-sm font-medium text-neutral-200">Case Study #{i + 1}</span>
                     <button
                       onClick={() => {
                         const updated = [...(profile.caseStudies || [])];
                         updated.splice(i, 1);
                         updateField("caseStudies", updated);
                       }}
-                      className="text-gray-400 hover:text-red-500 transition"
+                      className="text-neutral-500 hover:text-red-500 transition"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -1474,7 +1474,7 @@ export default function ProfilePage() {
               ))}
               <button
                 onClick={() => updateField("caseStudies", [...(profile.caseStudies || []), { ...EMPTY_CASE_STUDY }])}
-                className="flex items-center gap-1.5 text-sm font-medium text-emerald-700 hover:text-emerald-800 transition"
+                className="flex items-center gap-1.5 text-sm font-medium text-emerald-400 hover:text-emerald-400 transition"
               >
                 <Plus className="h-4 w-4" /> Add Case Study
               </button>
@@ -1514,14 +1514,14 @@ export default function ProfilePage() {
         </div>
 
         {/* Knowledge Base link */}
-        <div className="mt-6 rounded-xl border border-emerald-100 bg-emerald-50/50 p-4 flex items-center justify-between">
+        <div className="mt-6 rounded-xl border border-emerald-100 bg-emerald-500/10/50 p-4 flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-emerald-900">Want even better results?</p>
-            <p className="text-xs text-emerald-800 mt-0.5">Add product docs, competitive intel, and deal stories to your Knowledge Base.</p>
+            <p className="text-sm font-medium text-emerald-300">Want even better results?</p>
+            <p className="text-xs text-emerald-400 mt-0.5">Add product docs, competitive intel, and deal stories to your Knowledge Base.</p>
           </div>
           <a
             href="/knowledge-base"
-            className="shrink-0 flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-white px-4 py-2 text-sm font-medium text-emerald-800 hover:bg-emerald-50 transition"
+            className="shrink-0 flex items-center gap-1.5 rounded-lg border border-emerald-500/20 bg-[#141414] px-4 py-2 text-sm font-medium text-emerald-400 hover:bg-emerald-500/100/10 transition"
           >
             <BookOpen className="h-4 w-4" />
             Knowledge Base
@@ -1529,8 +1529,8 @@ export default function ProfilePage() {
         </div>
 
         {/* Bottom save bar */}
-        <div className="mt-8 flex items-center justify-between rounded-xl border bg-white p-4 shadow-sm">
-          <p className="text-sm text-gray-500">
+        <div className="mt-8 flex items-center justify-between rounded-xl border bg-[#141414] p-4 shadow-sm shadow-black/20">
+          <p className="text-sm text-neutral-400">
             {profile.onboardingCompleted
               ? "Profile saved. Changes take effect on your next run."
               : "Complete your profile to get the most out of Sales Blitz."}
@@ -1538,7 +1538,7 @@ export default function ProfilePage() {
           <button
             onClick={saveProfile}
             disabled={saving}
-            className="flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-700 disabled:opacity-50"
+            className="flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-600 disabled:opacity-50"
           >
             {saving ? (
               <Loader2 className="h-4 w-4 animate-spin" />

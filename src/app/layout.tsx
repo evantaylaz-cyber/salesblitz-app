@@ -32,7 +32,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className="min-h-screen bg-gray-50 antialiased">{children}</body>
+        <body className="min-h-screen bg-[#0a0a0a] text-gray-100 antialiased">{children}</body>
       </html>
     </ClerkProvider>
   );

@@ -85,49 +85,49 @@ export default function SubscribePage() {
   if (!isLoaded) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-emerald-700" />
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-400" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <AppNav currentPage="/subscribe" />
 
       <main className="mx-auto max-w-7xl px-6 py-10">
         {/* Headline */}
         <div className="text-center mb-10">
-          <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">
+          <h1 className="text-3xl font-bold text-white sm:text-4xl">
             Name your target. Get armed for whatever&apos;s next.
           </h1>
-          <p className="mt-3 text-lg text-gray-500 max-w-2xl mx-auto">
+          <p className="mt-3 text-lg text-neutral-400 max-w-2xl mx-auto">
             Deep research, competitive intel, talk-track playbooks, outreach sequences & live AI practice. One blitz, not five tools. Cancel anytime.
           </p>
         </div>
 
         {/* Billing Toggle */}
         <div className="mb-10 flex items-center justify-center gap-3">
-          <span className={`text-sm font-medium ${!annual ? "text-gray-900" : "text-gray-400"}`}>
+          <span className={`text-sm font-medium ${!annual ? "text-white" : "text-neutral-500"}`}>
             Monthly
           </span>
           <button
             onClick={() => setAnnual(!annual)}
             className={`relative h-7 w-12 rounded-full transition ${
-              annual ? "bg-emerald-600" : "bg-gray-300"
+              annual ? "bg-emerald-600" : "bg-neutral-600"
             }`}
           >
             <span
-              className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow transition ${
+              className={`absolute top-0.5 h-6 w-6 rounded-full bg-[#141414] shadow transition ${
                 annual ? "left-5.5 translate-x-0" : "left-0.5"
               }`}
               style={{ left: annual ? "22px" : "2px" }}
             />
           </button>
-          <span className={`text-sm font-medium ${annual ? "text-gray-900" : "text-gray-400"}`}>
+          <span className={`text-sm font-medium ${annual ? "text-white" : "text-neutral-500"}`}>
             Annual
           </span>
           {annual && (
-            <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700">
+            <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs font-semibold text-emerald-400">
               Save ~20%
             </span>
           )}
@@ -143,10 +143,10 @@ export default function SubscribePage() {
             return (
               <div
                 key={tier.name}
-                className={`relative rounded-2xl border-2 bg-white p-6 shadow-sm ${
+                className={`relative rounded-2xl border-2 bg-[#141414] p-6 shadow-sm shadow-black/20 ${
                   tier.highlight
                     ? "border-emerald-500 ring-1 ring-emerald-500"
-                    : "border-gray-200"
+                    : "border-[#262626]"
                 }`}
               >
                 {tier.highlight && (
@@ -154,17 +154,17 @@ export default function SubscribePage() {
                     Most Popular
                   </div>
                 )}
-                <h3 className="text-lg font-bold text-gray-900">{tier.name}</h3>
+                <h3 className="text-lg font-bold text-white">{tier.name}</h3>
                 <div className="mt-3">
-                  <span className="text-4xl font-bold text-gray-900">${price}</span>
-                  <span className="text-gray-500">/mo</span>
+                  <span className="text-4xl font-bold text-white">${price}</span>
+                  <span className="text-neutral-400">/mo</span>
                   {annual && (
-                    <span className="ml-2 text-sm text-gray-400 line-through">
+                    <span className="ml-2 text-sm text-neutral-500 line-through">
                       ${tier.monthlyPrice}/mo
                     </span>
                   )}
                 </div>
-                <p className="mt-2 text-sm text-gray-500">
+                <p className="mt-2 text-sm text-neutral-400">
                   {tier.runs} blitzes/month · ${tier.overage}/extra blitz
                 </p>
 
@@ -173,8 +173,8 @@ export default function SubscribePage() {
                   disabled={isLoading}
                   className={`mt-5 w-full rounded-lg px-4 py-3 text-sm font-semibold transition flex items-center justify-center gap-2 ${
                     tier.highlight
-                      ? "bg-emerald-600 text-white hover:bg-emerald-700"
-                      : "bg-gray-900 text-white hover:bg-gray-800"
+                      ? "bg-emerald-500 text-black hover:bg-emerald-400 hover:shadow-[0_0_20px_rgba(16,185,129,0.3)]"
+                      : "bg-[#1a1a1a] text-white hover:bg-[#262626]"
                   } disabled:opacity-50`}
                 >
                   {isLoading ? (
@@ -188,19 +188,19 @@ export default function SubscribePage() {
 
                 <div className="mt-5 space-y-2">
                   {tier.tools.map((t) => (
-                    <div key={t} className="flex items-center text-sm text-gray-700">
+                    <div key={t} className="flex items-center text-sm text-neutral-200">
                       <Check className="mr-2 h-4 w-4 text-emerald-500 shrink-0" />
                       {t}
                     </div>
                   ))}
                   {tier.lockedTools.map((t) => (
-                    <div key={t} className="flex items-center text-sm text-gray-400">
+                    <div key={t} className="flex items-center text-sm text-neutral-500">
                       <span className="mr-2 h-4 w-4 shrink-0 text-center">🔒</span>
                       {t}
                     </div>
                   ))}
                   {tier.extras?.map((e) => (
-                    <div key={e} className="flex items-center text-sm text-emerald-700 font-medium">
+                    <div key={e} className="flex items-center text-sm text-emerald-400 font-medium">
                       <Star className="mr-2 h-4 w-4 text-amber-500 shrink-0" />
                       {e}
                     </div>
@@ -212,17 +212,17 @@ export default function SubscribePage() {
         </div>
 
         {/* Interview Sprint */}
-        <div className="mt-12 rounded-2xl border-2 border-orange-200 bg-gradient-to-r from-orange-50 to-amber-50 p-8">
+        <div className="mt-12 rounded-2xl border-2 border-orange-500/20 bg-gradient-to-r from-orange-500/10 to-amber-500/10 p-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div>
-              <h3 className="text-xl font-bold text-gray-900">Interview Sprint</h3>
-              <p className="mt-1 text-gray-600">
+              <h3 className="text-xl font-bold text-white">Interview Sprint</h3>
+              <p className="mt-1 text-neutral-300">
                 3 Interview Prep + 3 Interview Outreach runs. No subscription required.
               </p>
-              <p className="mt-1 text-sm text-gray-500">One-time payment · 90-day expiration</p>
+              <p className="mt-1 text-sm text-neutral-400">One-time payment · 90-day expiration</p>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-3xl font-bold text-gray-900">$149</span>
+              <span className="text-3xl font-bold text-white">$149</span>
               <button
                 onClick={() => handleCheckout("interview_sprint")}
                 disabled={loading === "interview_sprint"}
@@ -240,28 +240,28 @@ export default function SubscribePage() {
 
         {/* Run Packs */}
         <div id="packs" className="mt-12">
-          <h2 className="mb-6 text-xl font-bold text-gray-900">Blitz Packs</h2>
-          <p className="mb-6 text-gray-500">
+          <h2 className="mb-6 text-xl font-bold text-white">Blitz Packs</h2>
+          <p className="mb-6 text-neutral-400">
             Need more blitzes? Add packs to any plan. Valid for 90 days from purchase.
           </p>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             {PACKS.map((pack) => {
               const isLoading = loading === pack.key;
               return (
-                <div key={pack.key} className="rounded-xl border bg-white p-6 shadow-sm">
-                  <h3 className="font-semibold text-gray-900">{pack.name}</h3>
-                  <p className="mt-1 text-2xl font-bold text-gray-900">
+                <div key={pack.key} className="rounded-xl border bg-[#141414] p-6 shadow-sm shadow-black/20">
+                  <h3 className="font-semibold text-white">{pack.name}</h3>
+                  <p className="mt-1 text-2xl font-bold text-white">
                     ${pack.price}
-                    <span className="text-sm font-normal text-gray-400">
+                    <span className="text-sm font-normal text-neutral-500">
                       {" "}
                       · ${pack.perRun}/blitz
                     </span>
                   </p>
-                  <p className="mt-1 text-sm text-gray-500">{pack.runs} blitzes · 90-day expiration</p>
+                  <p className="mt-1 text-sm text-neutral-400">{pack.runs} blitzes · 90-day expiration</p>
                   <button
                     onClick={() => handleCheckout(pack.key)}
                     disabled={isLoading}
-                    className="mt-4 w-full rounded-lg border-2 border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:opacity-50 flex items-center justify-center gap-2"
+                    className="mt-4 w-full rounded-lg border-2 border-[#262626] bg-[#141414] px-4 py-2.5 text-sm font-medium text-neutral-200 transition hover:bg-[#0a0a0a] disabled:opacity-50 flex items-center justify-center gap-2"
                   >
                     {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Buy Pack"}
                   </button>

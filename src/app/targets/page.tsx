@@ -61,17 +61,17 @@ interface TargetData {
 }
 
 const INTEL_COLORS: Record<string, { bg: string; text: string; label: string }> = {
-  none: { bg: "bg-gray-100", text: "text-gray-400", label: "No Intel" },
-  light: { bg: "bg-amber-50", text: "text-amber-600", label: "Light" },
-  moderate: { bg: "bg-blue-50", text: "text-blue-600", label: "Growing" },
-  deep: { bg: "bg-emerald-50", text: "text-emerald-600", label: "Deep" },
+  none: { bg: "bg-[#1a1a1a]", text: "text-neutral-500", label: "No Intel" },
+  light: { bg: "bg-amber-500/10", text: "text-amber-400", label: "Light" },
+  moderate: { bg: "bg-blue-500/10", text: "text-blue-400", label: "Growing" },
+  deep: { bg: "bg-emerald-500/10", text: "text-emerald-400", label: "Deep" },
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  active: "text-emerald-600",
-  paused: "text-amber-600",
-  closed: "text-gray-400",
-  won: "text-emerald-600",
+  active: "text-emerald-400",
+  paused: "text-amber-400",
+  closed: "text-neutral-500",
+  won: "text-emerald-400",
   lost: "text-red-500",
 };
 
@@ -119,17 +119,17 @@ export default function TargetsPage() {
   const deepTargets = targets.filter((t) => t.intelDepth === "deep" || t.intelDepth === "moderate").length;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <AppNav />
       <div className="max-w-6xl mx-auto px-6 py-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-              <Target className="h-6 w-6 text-emerald-600" />
+            <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+              <Target className="h-6 w-6 text-emerald-400" />
               Territory Intelligence
             </h1>
-            <p className="text-gray-500 mt-1">
+            <p className="text-neutral-400 mt-1">
               Every blitz, debrief, and practice session compounds here.
             </p>
           </div>
@@ -137,33 +137,33 @@ export default function TargetsPage() {
 
         {/* Stats Row */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-          <div className="rounded-lg border bg-white p-4 shadow-sm">
+          <div className="rounded-lg border bg-[#141414] p-4 shadow-sm shadow-black/20">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-gray-500">Active Targets</span>
+              <span className="text-xs font-medium text-neutral-400">Active Targets</span>
               <Target className="h-3.5 w-3.5 text-emerald-500" />
             </div>
-            <p className="mt-1 text-2xl font-bold text-gray-900">{targets.length}</p>
+            <p className="mt-1 text-2xl font-bold text-white">{targets.length}</p>
           </div>
-          <div className="rounded-lg border bg-white p-4 shadow-sm">
+          <div className="rounded-lg border bg-[#141414] p-4 shadow-sm shadow-black/20">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-gray-500">Total Blitzes</span>
+              <span className="text-xs font-medium text-neutral-400">Total Blitzes</span>
               <Zap className="h-3.5 w-3.5 text-emerald-500" />
             </div>
-            <p className="mt-1 text-2xl font-bold text-gray-900">{totalBlitzes}</p>
+            <p className="mt-1 text-2xl font-bold text-white">{totalBlitzes}</p>
           </div>
-          <div className="rounded-lg border bg-white p-4 shadow-sm">
+          <div className="rounded-lg border bg-[#141414] p-4 shadow-sm shadow-black/20">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-gray-500">Practice Sessions</span>
+              <span className="text-xs font-medium text-neutral-400">Practice Sessions</span>
               <BarChart3 className="h-3.5 w-3.5 text-emerald-500" />
             </div>
-            <p className="mt-1 text-2xl font-bold text-gray-900">{totalPractice}</p>
+            <p className="mt-1 text-2xl font-bold text-white">{totalPractice}</p>
           </div>
-          <div className="rounded-lg border bg-white p-4 shadow-sm">
+          <div className="rounded-lg border bg-[#141414] p-4 shadow-sm shadow-black/20">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-gray-500">Deep Intel Targets</span>
+              <span className="text-xs font-medium text-neutral-400">Deep Intel Targets</span>
               <Brain className="h-3.5 w-3.5 text-emerald-500" />
             </div>
-            <p className="mt-1 text-2xl font-bold text-emerald-600">{deepTargets}</p>
+            <p className="mt-1 text-2xl font-bold text-emerald-400">{deepTargets}</p>
           </div>
         </div>
 
@@ -175,8 +175,8 @@ export default function TargetsPage() {
               onClick={() => setFilter(f)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 filter === f
-                  ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                  : "bg-white text-gray-500 border border-gray-200 hover:border-gray-300"
+                  ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                  : "bg-[#141414] text-neutral-400 border border-[#262626] hover:border-[#333333]"
               }`}
             >
               {f === "all" ? "All" : f === "prospect" ? "Prospects" : "Interviews"}
@@ -190,22 +190,22 @@ export default function TargetsPage() {
         {/* Loading State */}
         {loading && (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+            <Loader2 className="h-6 w-6 animate-spin text-neutral-500" />
           </div>
         )}
 
         {/* Empty State */}
         {!loading && targets.length === 0 && (
           <div className="text-center py-20">
-            <Target className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-            <h2 className="text-lg font-medium text-gray-600 mb-2">No targets yet</h2>
-            <p className="text-gray-400 mb-6 max-w-md mx-auto">
+            <Target className="h-12 w-12 text-neutral-500 mx-auto mb-4" />
+            <h2 className="text-lg font-medium text-neutral-300 mb-2">No targets yet</h2>
+            <p className="text-neutral-500 mb-6 max-w-md mx-auto">
               Targets are created automatically when you run a blitz or start a practice session.
               Each target accumulates intelligence across rounds.
             </p>
             <Link
               href="/request"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-medium transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-600 text-white rounded-lg text-sm font-medium transition-colors"
             >
               <Zap className="h-4 w-4" />
               Run Your First Blitz
@@ -218,32 +218,32 @@ export default function TargetsPage() {
           <div className="space-y-3">
             {filtered.map((target) => {
               const intel = INTEL_COLORS[target.intelDepth];
-              const statusColor = STATUS_COLORS[target.status] || "text-gray-400";
+              const statusColor = STATUS_COLORS[target.status] || "text-neutral-500";
               const TypeIcon = target.type === "interview" ? GraduationCap : Briefcase;
 
               return (
                 <div
                   key={target.id}
                   onClick={() => router.push(`/targets/${target.id}`)}
-                  className="cursor-pointer rounded-xl border bg-white p-5 shadow-sm hover:shadow-md hover:border-gray-300 transition-all"
+                  className="cursor-pointer rounded-xl border bg-[#141414] p-5 shadow-sm shadow-black/20 hover:shadow-md hover:border-[#333333] transition-all"
                 >
                   {/* Top Row: Company + Intel Badge */}
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-gray-100 rounded-lg">
-                        <Building2 className="h-5 w-5 text-gray-500" />
+                      <div className="p-2 bg-[#1a1a1a] rounded-lg">
+                        <Building2 className="h-5 w-5 text-neutral-400" />
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <h3 className="text-lg font-semibold text-gray-900">{target.companyName}</h3>
-                          <TypeIcon className="h-4 w-4 text-gray-400" />
+                          <h3 className="text-lg font-semibold text-white">{target.companyName}</h3>
+                          <TypeIcon className="h-4 w-4 text-neutral-500" />
                           <span className={`text-xs capitalize ${statusColor}`}>{target.status}</span>
                         </div>
                         {target.contactName && (
-                          <div className="flex items-center gap-1.5 text-sm text-gray-500">
+                          <div className="flex items-center gap-1.5 text-sm text-neutral-400">
                             <User className="h-3.5 w-3.5" />
                             {target.contactName}
-                            {target.contactTitle && <span className="text-gray-400">, {target.contactTitle}</span>}
+                            {target.contactTitle && <span className="text-neutral-500">, {target.contactTitle}</span>}
                           </div>
                         )}
                       </div>
@@ -263,19 +263,19 @@ export default function TargetsPage() {
 
                   {/* Activity Counts */}
                   <div className="flex gap-4 mb-3 text-sm">
-                    <div className="flex items-center gap-1.5 text-gray-400">
+                    <div className="flex items-center gap-1.5 text-neutral-500">
                       <Zap className="h-3.5 w-3.5" />
                       <span>{target.counts.blitzes} blitz{target.counts.blitzes !== 1 ? "es" : ""}</span>
                     </div>
-                    <div className="flex items-center gap-1.5 text-gray-400">
+                    <div className="flex items-center gap-1.5 text-neutral-500">
                       <MessageSquare className="h-3.5 w-3.5" />
                       <span>{target.counts.debriefs} debrief{target.counts.debriefs !== 1 ? "s" : ""}</span>
                     </div>
-                    <div className="flex items-center gap-1.5 text-gray-400">
+                    <div className="flex items-center gap-1.5 text-neutral-500">
                       <BarChart3 className="h-3.5 w-3.5" />
                       <span>{target.counts.practices} practice</span>
                     </div>
-                    <div className="flex items-center gap-1.5 text-gray-300 ml-auto">
+                    <div className="flex items-center gap-1.5 text-neutral-500 ml-auto">
                       <Clock className="h-3.5 w-3.5" />
                       <span>{timeAgo(target.updatedAt)}</span>
                     </div>
@@ -283,7 +283,7 @@ export default function TargetsPage() {
 
                   {/* Intel Preview */}
                   {target.intelPreview && (
-                    <div className="bg-gray-50 rounded-lg p-3 mb-3 text-xs text-gray-500 font-mono leading-relaxed border border-gray-100">
+                    <div className="bg-[#0a0a0a] rounded-lg p-3 mb-3 text-xs text-neutral-400 font-mono leading-relaxed border border-[#1a1a1a]">
                       {target.intelPreview}
                       {target.intelPreview.length >= 200 && "..."}
                     </div>
@@ -296,11 +296,11 @@ export default function TargetsPage() {
                         <Link
                           key={blitz.id}
                           href={`/requests/${blitz.id}`}
-                          className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 hover:bg-gray-200 rounded-md text-xs text-gray-500 hover:text-gray-700 transition-colors"
+                          className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-[#1a1a1a] hover:bg-[#262626] rounded-md text-xs text-neutral-400 hover:text-neutral-200 transition-colors"
                         >
                           <Zap className="h-3 w-3 text-emerald-500" />
                           {TOOL_LABELS[blitz.toolName] || blitz.toolName}
-                          <span className="text-gray-300">{timeAgo(blitz.createdAt)}</span>
+                          <span className="text-neutral-500">{timeAgo(blitz.createdAt)}</span>
                           <ArrowUpRight className="h-3 w-3" />
                         </Link>
                       ))}

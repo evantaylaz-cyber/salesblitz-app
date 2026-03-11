@@ -815,41 +815,41 @@ export default function PracticeSessionPage() {
 
   if (!isLoaded) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-900">
+      <div className="flex min-h-screen items-center justify-center bg-[#0a0a0a]">
         <Loader2 className="h-8 w-8 animate-spin text-white" />
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-gray-900 text-white">
+    <div className="flex min-h-screen flex-col bg-[#0a0a0a] text-white">
       {/* Top Bar */}
-      <div className="flex items-center justify-between border-b border-gray-800 px-6 py-3">
+      <div className="flex items-center justify-between border-b border-[#1a1a1a] px-6 py-3">
         <div className="flex items-center gap-3">
-          <button onClick={() => router.push("/practice")} className="text-gray-400 hover:text-white transition">
+          <button onClick={() => router.push("/practice")} className="text-neutral-500 hover:text-white transition">
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div className="flex items-center gap-2">
             <div className={`h-2 w-2 rounded-full ${avatarReady ? "bg-emerald-400" : "bg-amber-400 animate-pulse"}`} />
-            <span className="text-sm text-gray-300">
+            <span className="text-sm text-neutral-400">
               {avatarReady ? "Live" : "Connecting..."}
             </span>
           </div>
           {persona && (
-            <div className="hidden sm:flex items-center gap-2 ml-2 pl-3 border-l border-gray-700">
-              <span className="text-sm font-medium text-gray-200">{persona.name}</span>
-              <span className="text-xs text-gray-500">{persona.title}, {persona.company}</span>
+            <div className="hidden sm:flex items-center gap-2 ml-2 pl-3 border-l border-[#262626]">
+              <span className="text-sm font-medium text-neutral-200">{persona.name}</span>
+              <span className="text-xs text-neutral-400">{persona.title}, {persona.company}</span>
             </div>
           )}
         </div>
         <div className="flex items-center gap-4">
           {/* STT mode indicator */}
           {isRecording && (
-            <span className="hidden sm:inline text-xs text-gray-500 tabular-nums">
+            <span className="hidden sm:inline text-xs text-neutral-400 tabular-nums">
               {sttMode === "realtime" ? "Realtime STT" : sttMode === "webspeech" ? "Web Speech" : ""}
             </span>
           )}
-          <div className="flex items-center gap-1.5 text-sm text-gray-400 tabular-nums" title="Your active time (pauses while persona speaks)">
+          <div className="flex items-center gap-1.5 text-sm text-neutral-500 tabular-nums" title="Your active time (pauses while persona speaks)">
             <Clock className="h-4 w-4" />
             {formatTime(elapsed)}
           </div>
@@ -869,33 +869,33 @@ export default function PracticeSessionPage() {
         {/* Video Panel */}
         <div className="flex flex-1 flex-col items-center justify-center p-8">
           {!textOnlyMode && (
-            <div className="relative aspect-video w-full max-w-2xl overflow-hidden rounded-2xl bg-gray-800">
+            <div className="relative aspect-video w-full max-w-2xl overflow-hidden rounded-2xl bg-[#141414]">
               {avatarLoading && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
                   <Loader2 className="h-10 w-10 animate-spin text-emerald-400" />
-                  <p className="text-sm text-gray-400">Starting avatar...</p>
+                  <p className="text-sm text-neutral-500">Starting avatar...</p>
                 </div>
               )}
               {avatarError && (
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-gray-900/80 backdrop-blur">
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-[#0a0a0a]/80 backdrop-blur">
                   <div className="flex flex-col items-center gap-3">
                     <AlertCircle className="h-8 w-8 text-red-400" />
                     <div className="text-center">
                       <p className="text-sm font-medium text-red-400">Avatar connection timed out</p>
-                      <p className="text-xs text-gray-400 mt-1">Please try again or use text-only mode</p>
+                      <p className="text-xs text-neutral-500 mt-1">Please try again or use text-only mode</p>
                     </div>
                   </div>
                   <div className="flex flex-col gap-2">
                     <button
                       onClick={retryAvatarConnection}
-                      className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 transition"
+                      className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-600 transition"
                     >
                       Retry Connection
                     </button>
                     {avatarRetryCount >= 2 && (
                       <button
                         onClick={switchToTextOnly}
-                        className="rounded-lg bg-gray-700 px-4 py-2 text-sm font-medium text-white hover:bg-gray-600 transition"
+                        className="rounded-lg bg-[#262626] px-4 py-2 text-sm font-medium text-white hover:bg-[#333333] transition"
                       >
                         Use Text-Only Mode
                       </button>
@@ -922,7 +922,7 @@ export default function PracticeSessionPage() {
                     <div className="h-3 w-1 animate-pulse rounded-full bg-emerald-400" style={{ animationDelay: "150ms" }} />
                     <div className="h-3 w-1 animate-pulse rounded-full bg-emerald-400" style={{ animationDelay: "300ms" }} />
                   </div>
-                  <span className="text-xs text-gray-300">
+                  <span className="text-xs text-neutral-400">
                     {isPanelMode && currentSpeaker ? currentSpeaker : "Speaking"}
                   </span>
                 </div>
@@ -930,9 +930,9 @@ export default function PracticeSessionPage() {
             </div>
           )}
           {textOnlyMode && (
-            <div className="w-full max-w-2xl rounded-2xl bg-gray-800 p-6 text-center">
-              <p className="text-sm text-gray-300">Running in text-only mode</p>
-              <p className="text-xs text-gray-500 mt-2">Avatar video is unavailable, but you can continue practicing with text chat</p>
+            <div className="w-full max-w-2xl rounded-2xl bg-[#141414] p-6 text-center">
+              <p className="text-sm text-neutral-400">Running in text-only mode</p>
+              <p className="text-xs text-neutral-400 mt-2">Avatar video is unavailable, but you can continue practicing with text chat</p>
             </div>
           )}
 
@@ -944,17 +944,17 @@ export default function PracticeSessionPage() {
               className={`flex h-14 w-14 items-center justify-center rounded-full transition ${
                 isRecording
                   ? "bg-red-600 hover:bg-red-700 ring-4 ring-red-600/30"
-                  : "bg-emerald-600 hover:bg-emerald-700"
+                  : "bg-emerald-600 hover:bg-emerald-600"
               } disabled:opacity-50`}
             >
               {isRecording ? <MicOff className="h-6 w-6" /> : <Mic className="h-6 w-6" />}
             </button>
-            <span className="text-sm text-gray-400">
+            <span className="text-sm text-neutral-500">
               {isRecording ? "Listening... speak naturally" : isProcessing ? "Thinking..." : "Click mic to speak"}
             </span>
             <button
               onClick={() => setShowMobileTranscript(!showMobileTranscript)}
-              className="lg:hidden flex items-center gap-1.5 rounded-lg border border-gray-700 px-3 py-2 text-sm text-gray-400 hover:text-white hover:border-gray-500 transition"
+              className="lg:hidden flex items-center gap-1.5 rounded-lg border border-[#262626] px-3 py-2 text-sm text-neutral-500 hover:text-white hover:border-[#404040] transition"
             >
               <MessageSquare className="h-4 w-4" />
               {transcript.length > 0 && (
@@ -974,22 +974,22 @@ export default function PracticeSessionPage() {
         </div>
 
         {/* Transcript Panel */}
-        <div className={`${showMobileTranscript ? "fixed inset-0 z-40 bg-gray-900" : "hidden"} lg:relative lg:block lg:w-96 border-l border-gray-800 flex flex-col`}>
-          <div className="border-b border-gray-800 px-4 py-3 flex items-center justify-between">
+        <div className={`${showMobileTranscript ? "fixed inset-0 z-40 bg-[#0a0a0a]" : "hidden"} lg:relative lg:block lg:w-96 border-l border-[#1a1a1a] flex flex-col`}>
+          <div className="border-b border-[#1a1a1a] px-4 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <MessageSquare className="h-4 w-4 text-gray-400" />
-              <span className="text-sm font-medium text-gray-300">Transcript</span>
+              <MessageSquare className="h-4 w-4 text-neutral-500" />
+              <span className="text-sm font-medium text-neutral-400">Transcript</span>
             </div>
             <button
               onClick={() => setShowMobileTranscript(false)}
-              className="lg:hidden text-sm text-gray-400 hover:text-white transition"
+              className="lg:hidden text-sm text-neutral-500 hover:text-white transition"
             >
               Close
             </button>
           </div>
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {transcript.length === 0 && (
-              <p className="text-sm text-gray-500 text-center mt-8">
+              <p className="text-sm text-neutral-400 text-center mt-8">
                 Conversation will appear here...
               </p>
             )}
@@ -1002,14 +1002,14 @@ export default function PracticeSessionPage() {
                   className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm ${
                     entry.role === "user"
                       ? "bg-emerald-600 text-white"
-                      : "bg-gray-800 text-gray-200"
+                      : "bg-[#141414] text-neutral-200"
                   }`}
                 >
                   {entry.role === "persona" && (
-                    <p className="mb-1 text-xs font-medium text-gray-400">
+                    <p className="mb-1 text-xs font-medium text-neutral-500">
                       {entry.speaker || persona?.name || "Persona"}
                       {entry.speakerTitle && isPanelMode && (
-                        <span className="ml-1 text-gray-500">&middot; {entry.speakerTitle}</span>
+                        <span className="ml-1 text-neutral-400">&middot; {entry.speakerTitle}</span>
                       )}
                     </p>
                   )}

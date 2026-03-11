@@ -113,7 +113,7 @@ export default function AccumulatedIntelDisplay({
 
   return (
     <div className="mb-6">
-      <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+      <h2 className="text-sm font-semibold text-neutral-400 uppercase tracking-wider mb-3 flex items-center gap-2">
         <Brain className="h-4 w-4 text-emerald-500" />
         Accumulated Intelligence
       </h2>
@@ -121,15 +121,15 @@ export default function AccumulatedIntelDisplay({
         {entries.map((entry, idx) => (
           <div
             key={`${entry.date}-${idx}`}
-            className="rounded-xl border bg-white p-5 shadow-sm hover:shadow-md transition-shadow"
+            className="rounded-xl border bg-[#141414] p-5 shadow-sm shadow-black/20 hover:shadow-md transition-shadow"
           >
             {/* Header with date & type */}
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <time className="text-sm font-semibold text-gray-900">
+                <time className="text-sm font-semibold text-white">
                   {entry.date}
                 </time>
-                <span className="text-xs px-2 py-1 rounded-full bg-emerald-50 text-emerald-600 font-medium">
+                <span className="text-xs px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-400 font-medium">
                   {entry.type === "debrief"
                     ? "Debrief"
                     : entry.type === "practice"
@@ -140,16 +140,16 @@ export default function AccumulatedIntelDisplay({
               {entry.score && (
                 <div className="flex items-center gap-1.5">
                   <div className="text-right">
-                    <div className="text-sm font-bold text-gray-900">
+                    <div className="text-sm font-bold text-white">
                       {entry.score}/5
                     </div>
                     <div
                       className={`text-xs font-medium ${
                         entry.outcome === "passed"
-                          ? "text-emerald-600"
+                          ? "text-emerald-400"
                           : entry.outcome === "needs_work"
-                          ? "text-amber-600"
-                          : "text-gray-500"
+                          ? "text-amber-400"
+                          : "text-neutral-400"
                       }`}
                     >
                       {entry.outcome}
@@ -161,10 +161,10 @@ export default function AccumulatedIntelDisplay({
                 <span
                   className={`text-xs px-2 py-1 rounded-full font-medium ${
                     entry.outcome.toLowerCase().includes("strong")
-                      ? "bg-emerald-50 text-emerald-600"
+                      ? "bg-emerald-500/10 text-emerald-400"
                       : entry.outcome.toLowerCase().includes("developing")
-                      ? "bg-blue-50 text-blue-600"
-                      : "bg-gray-100 text-gray-600"
+                      ? "bg-blue-500/10 text-blue-400"
+                      : "bg-[#1a1a1a] text-neutral-300"
                   }`}
                 >
                   {entry.outcome}
@@ -176,10 +176,10 @@ export default function AccumulatedIntelDisplay({
             <div className="space-y-3">
               {entry.keyTakeaways && (
                 <div>
-                  <h4 className="text-xs font-semibold text-gray-600 mb-1">
+                  <h4 className="text-xs font-semibold text-neutral-300 mb-1">
                     Summary
                   </h4>
-                  <p className="text-sm text-gray-700 leading-relaxed">
+                  <p className="text-sm text-neutral-200 leading-relaxed">
                     {entry.keyTakeaways}
                   </p>
                 </div>
@@ -187,10 +187,10 @@ export default function AccumulatedIntelDisplay({
 
               {entry.summary && (
                 <div>
-                  <h4 className="text-xs font-semibold text-gray-600 mb-1">
+                  <h4 className="text-xs font-semibold text-neutral-300 mb-1">
                     Summary
                   </h4>
-                  <p className="text-sm text-gray-700 leading-relaxed">
+                  <p className="text-sm text-neutral-200 leading-relaxed">
                     {entry.summary}
                   </p>
                 </div>
@@ -199,21 +199,21 @@ export default function AccumulatedIntelDisplay({
               {(entry.strength || entry.keyMiss) && (
                 <div className="grid grid-cols-2 gap-3">
                   {entry.strength && (
-                    <div className="bg-emerald-50 rounded-lg p-3">
-                      <h4 className="text-xs font-semibold text-emerald-700 mb-1">
+                    <div className="bg-emerald-500/10 rounded-lg p-3">
+                      <h4 className="text-xs font-semibold text-emerald-400 mb-1">
                         Strength
                       </h4>
-                      <p className="text-xs text-emerald-600 leading-snug">
+                      <p className="text-xs text-emerald-400 leading-snug">
                         {entry.strength}
                       </p>
                     </div>
                   )}
                   {entry.keyMiss && (
-                    <div className="bg-amber-50 rounded-lg p-3">
-                      <h4 className="text-xs font-semibold text-amber-700 mb-1">
+                    <div className="bg-amber-500/10 rounded-lg p-3">
+                      <h4 className="text-xs font-semibold text-amber-400 mb-1">
                         Area to Improve
                       </h4>
-                      <p className="text-xs text-amber-600 leading-snug">
+                      <p className="text-xs text-amber-400 leading-snug">
                         {entry.keyMiss}
                       </p>
                     </div>
@@ -223,10 +223,10 @@ export default function AccumulatedIntelDisplay({
 
               {entry.nextSteps && (
                 <div>
-                  <h4 className="text-xs font-semibold text-gray-600 mb-1.5">
+                  <h4 className="text-xs font-semibold text-neutral-300 mb-1.5">
                     Next Steps
                   </h4>
-                  <p className="text-sm text-gray-700 leading-relaxed">
+                  <p className="text-sm text-neutral-200 leading-relaxed">
                     {entry.nextSteps}
                   </p>
                 </div>

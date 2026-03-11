@@ -8,6 +8,7 @@ import { initializeSteps, getExpectedAssets } from "@/lib/job-steps";
 import { normalizeAssets } from "@/lib/normalize-assets";
 import { triggerWorker } from "@/lib/trigger-worker";
 import { aiLimiter, readLimiter, rateLimitResponse } from "@/lib/rate-limit";
+import { auditBlitzSubmitted } from "@/lib/audit-log";
 
 // Infer engagement type from tool + meeting context when user doesn't specify
 function inferEngagementType(toolName: string, meetingType?: string): string {
@@ -259,6 +260,10 @@ export async function POST(req: NextRequest) {
       customerEmail: clerkUser.emailAddresses?.[0]?.emailAddress || null,
       customerName: `${clerkUser.firstName || ""} ${clerkUser.lastName || ""}`.trim() || null,
     }).catch((err) => console.error("Order notification failed:", err));
+
+    // Fire-and-forget audit log (non-blocking)
+    auditBlitzSubmitted(user.id, clerkUser.id, request.id, { toolName, targetCompany, targetName }, req)
+      .catch((err) => console.error("Audit log failed:", err));
 
     // Trigger the execution engine with retry (MUST await — unawaited fetch dies on Vercel serverless)
     const workerResult = await triggerWorker({ requestId: request.id });

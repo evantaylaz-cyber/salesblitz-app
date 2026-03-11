@@ -56,8 +56,8 @@ const TOOL_NAMES: Record<string, string> = {
 
 const STATUS_ACTIONS: Record<string, { next: string; label: string; icon: React.ElementType; color: string }> = {
   submitted: { next: "in_progress", label: "Start Working", icon: Play, color: "bg-amber-600 hover:bg-amber-700" },
-  in_progress: { next: "ready", label: "Mark Ready", icon: CheckCircle2, color: "bg-emerald-600 hover:bg-emerald-700" },
-  ready: { next: "delivered", label: "Mark Delivered", icon: Send, color: "bg-emerald-600 hover:bg-emerald-700" },
+  in_progress: { next: "ready", label: "Mark Ready", icon: CheckCircle2, color: "bg-emerald-600 hover:bg-emerald-600" },
+  ready: { next: "delivered", label: "Mark Delivered", icon: Send, color: "bg-emerald-600 hover:bg-emerald-600" },
 };
 
 export default function AdminPage() {
@@ -133,7 +133,7 @@ export default function AdminPage() {
   if (!isLoaded || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-emerald-700" />
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-400" />
       </div>
     );
   }
@@ -143,22 +143,22 @@ export default function AdminPage() {
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <AlertCircle className="mx-auto h-12 w-12 text-red-400" />
-          <p className="mt-3 text-gray-600">{error}</p>
+          <p className="mt-3 text-neutral-300">{error}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="border-b bg-white">
+    <div className="min-h-screen">
+      <header className="border-b bg-[#141414]">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <div>
-            <h1 className="text-lg font-bold text-gray-900">Fulfillment Queue</h1>
-            <p className="text-sm text-gray-500">{requests.length} requests</p>
+            <h1 className="text-lg font-bold text-white">Fulfillment Queue</h1>
+            <p className="text-sm text-neutral-400">{requests.length} requests</p>
           </div>
           <div className="flex items-center gap-4">
-            <a href="/dashboard" className="text-sm text-gray-600 hover:text-gray-900">Dashboard</a>
+            <a href="/dashboard" className="text-sm text-neutral-300 hover:text-white">Dashboard</a>
             <UserButton afterSignOutUrl="/sign-in" />
           </div>
         </div>
@@ -174,7 +174,7 @@ export default function AdminPage() {
               className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
                 statusFilter === s
                   ? "bg-emerald-600 text-white"
-                  : "bg-white border border-gray-300 text-gray-600 hover:bg-gray-50"
+                  : "bg-[#141414] border border-[#333333] text-neutral-300 hover:bg-[#0a0a0a]"
               }`}
             >
               {s === "" ? "All" : s === "in_progress" ? "In Progress" : s.charAt(0).toUpperCase() + s.slice(1)}
@@ -184,8 +184,8 @@ export default function AdminPage() {
 
         {requests.length === 0 ? (
           <div className="text-center py-16">
-            <CheckCircle2 className="mx-auto h-12 w-12 text-gray-300" />
-            <p className="mt-4 text-gray-500">No requests with this status.</p>
+            <CheckCircle2 className="mx-auto h-12 w-12 text-neutral-500" />
+            <p className="mt-4 text-neutral-400">No requests with this status.</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -195,7 +195,7 @@ export default function AdminPage() {
               const isUpdating = updating === req.id;
 
               return (
-                <div key={req.id} className="rounded-xl border bg-white shadow-sm">
+                <div key={req.id} className="rounded-xl border bg-[#141414] shadow-sm shadow-black/20">
                   {/* Summary row */}
                   <button
                     onClick={() => {
@@ -204,25 +204,25 @@ export default function AdminPage() {
                       setDeliveryUrl(req.deliveryUrl || "");
                       setDeliveryNotes(req.deliveryNotes || "");
                     }}
-                    className="w-full px-5 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition rounded-xl"
+                    className="w-full px-5 py-4 flex items-center justify-between text-left hover:bg-[#0a0a0a] transition rounded-xl"
                   >
                     <div className="flex items-center gap-4 flex-1 min-w-0">
                       {req.priority && <Zap className="h-4 w-4 text-amber-500 shrink-0" />}
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="font-semibold text-gray-900 text-sm">
+                          <span className="font-semibold text-white text-sm">
                             {TOOL_NAMES[req.toolName]}
                           </span>
-                          <span className="text-gray-400 text-sm">·</span>
-                          <span className="text-sm text-gray-600 truncate">
+                          <span className="text-neutral-500 text-sm">·</span>
+                          <span className="text-sm text-neutral-300 truncate">
                             {req.targetName} @ {req.targetCompany}
                           </span>
                         </div>
                         <div className="flex items-center gap-2 mt-0.5">
-                          <span className="text-xs text-gray-400">
+                          <span className="text-xs text-neutral-500">
                             {req.user.email} · {req.user.currentTier || "no plan"}
                           </span>
-                          <span className="text-xs text-gray-400">
+                          <span className="text-xs text-neutral-500">
                             · {new Date(req.createdAt).toLocaleDateString()}
                           </span>
                         </div>
@@ -232,20 +232,20 @@ export default function AdminPage() {
                       <span
                         className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
                           req.status === "submitted"
-                            ? "bg-blue-50 text-blue-700"
+                            ? "bg-blue-500/10 text-blue-400"
                             : req.status === "in_progress"
-                            ? "bg-amber-50 text-amber-700"
+                            ? "bg-amber-500/10 text-amber-400"
                             : req.status === "ready" || req.status === "delivered"
-                            ? "bg-emerald-50 text-emerald-700"
-                            : "bg-red-50 text-red-700"
+                            ? "bg-emerald-500/10 text-emerald-400"
+                            : "bg-red-500/10 text-red-400"
                         }`}
                       >
                         {req.status === "in_progress" ? "In Progress" : req.status.charAt(0).toUpperCase() + req.status.slice(1)}
                       </span>
                       {isExpanded ? (
-                        <ChevronUp className="h-4 w-4 text-gray-400" />
+                        <ChevronUp className="h-4 w-4 text-neutral-500" />
                       ) : (
-                        <ChevronDown className="h-4 w-4 text-gray-400" />
+                        <ChevronDown className="h-4 w-4 text-neutral-500" />
                       )}
                     </div>
                   </button>
@@ -256,17 +256,17 @@ export default function AdminPage() {
                       {/* Customer inputs */}
                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                         <div>
-                          <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                          <h4 className="text-xs font-semibold text-neutral-400 uppercase tracking-wide mb-2">
                             Target Details
                           </h4>
-                          <div className="rounded-lg bg-gray-50 p-3 space-y-1.5 text-sm">
+                          <div className="rounded-lg bg-[#0a0a0a] p-3 space-y-1.5 text-sm">
                             <p><strong>Name:</strong> {req.targetName}</p>
                             <p><strong>Company:</strong> {req.targetCompany}</p>
                             {req.targetRole && <p><strong>Role:</strong> {req.targetRole}</p>}
                             {req.linkedinUrl && (
                               <p>
                                 <strong>LinkedIn:</strong>{" "}
-                                <a href={req.linkedinUrl} target="_blank" rel="noopener noreferrer" className="text-emerald-700 hover:underline inline-flex items-center gap-1">
+                                <a href={req.linkedinUrl} target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:underline inline-flex items-center gap-1">
                                   Profile <ExternalLink className="h-3 w-3" />
                                 </a>
                               </p>
@@ -277,17 +277,17 @@ export default function AdminPage() {
                         {req.linkedinText && (
                           <div>
                             <div className="flex items-center justify-between mb-2">
-                              <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                              <h4 className="text-xs font-semibold text-neutral-400 uppercase tracking-wide">
                                 LinkedIn Text
                               </h4>
                               <button
                                 onClick={() => copyToClipboard(req.linkedinText!)}
-                                className="inline-flex items-center gap-1 text-xs text-emerald-700 hover:text-emerald-900"
+                                className="inline-flex items-center gap-1 text-xs text-emerald-400 hover:text-emerald-300"
                               >
                                 <Copy className="h-3 w-3" /> Copy
                               </button>
                             </div>
-                            <div className="rounded-lg bg-gray-50 p-3 text-sm text-gray-700 max-h-40 overflow-y-auto whitespace-pre-wrap">
+                            <div className="rounded-lg bg-[#0a0a0a] p-3 text-sm text-neutral-200 max-h-40 overflow-y-auto whitespace-pre-wrap">
                               {req.linkedinText}
                             </div>
                           </div>
@@ -297,17 +297,17 @@ export default function AdminPage() {
                       {req.jobDescription && (
                         <div>
                           <div className="flex items-center justify-between mb-2">
-                            <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                            <h4 className="text-xs font-semibold text-neutral-400 uppercase tracking-wide">
                               Job Description / Context
                             </h4>
                             <button
                               onClick={() => copyToClipboard(req.jobDescription!)}
-                              className="inline-flex items-center gap-1 text-xs text-emerald-700 hover:text-emerald-900"
+                              className="inline-flex items-center gap-1 text-xs text-emerald-400 hover:text-emerald-300"
                             >
                               <Copy className="h-3 w-3" /> Copy
                             </button>
                           </div>
-                          <div className="rounded-lg bg-gray-50 p-3 text-sm text-gray-700 max-h-48 overflow-y-auto whitespace-pre-wrap">
+                          <div className="rounded-lg bg-[#0a0a0a] p-3 text-sm text-neutral-200 max-h-48 overflow-y-auto whitespace-pre-wrap">
                             {req.jobDescription}
                           </div>
                         </div>
@@ -315,10 +315,10 @@ export default function AdminPage() {
 
                       {req.additionalNotes && (
                         <div>
-                          <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                          <h4 className="text-xs font-semibold text-neutral-400 uppercase tracking-wide mb-2">
                             Additional Notes from Customer
                           </h4>
-                          <div className="rounded-lg bg-gray-50 p-3 text-sm text-gray-700 whitespace-pre-wrap">
+                          <div className="rounded-lg bg-[#0a0a0a] p-3 text-sm text-neutral-200 whitespace-pre-wrap">
                             {req.additionalNotes}
                           </div>
                         </div>
@@ -327,7 +327,7 @@ export default function AdminPage() {
                       {/* Admin controls */}
                       <div className="border-t pt-4 space-y-3">
                         <div>
-                          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                          <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wide">
                             Delivery URL (Google Drive link)
                           </label>
                           <input
@@ -335,11 +335,11 @@ export default function AdminPage() {
                             value={deliveryUrl}
                             onChange={(e) => setDeliveryUrl(e.target.value)}
                             placeholder="https://drive.google.com/drive/folders/..."
-                            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                            className="mt-1 w-full rounded-lg border border-[#333333] bg-[#0a0a0a] px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                           />
                         </div>
                         <div>
-                          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                          <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wide">
                             Delivery Notes (visible to customer)
                           </label>
                           <textarea
@@ -347,11 +347,11 @@ export default function AdminPage() {
                             onChange={(e) => setDeliveryNotes(e.target.value)}
                             rows={2}
                             placeholder="e.g., Your Interview Prep package is ready. Includes POV deck, prep sheet, and outreach sequence."
-                            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 resize-y"
+                            className="mt-1 w-full rounded-lg border border-[#333333] bg-[#0a0a0a] px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 resize-y"
                           />
                         </div>
                         <div>
-                          <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                          <label className="text-xs font-semibold text-neutral-400 uppercase tracking-wide">
                             Admin Notes (internal only)
                           </label>
                           <textarea
@@ -359,7 +359,7 @@ export default function AdminPage() {
                             onChange={(e) => setAdminNotes(e.target.value)}
                             rows={2}
                             placeholder="Internal notes..."
-                            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 resize-y"
+                            className="mt-1 w-full rounded-lg border border-[#333333] bg-[#0a0a0a] px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 resize-y"
                           />
                         </div>
 
@@ -382,7 +382,7 @@ export default function AdminPage() {
                             <button
                               onClick={() => updateStatus(req.id, "failed")}
                               disabled={isUpdating}
-                              className="inline-flex items-center gap-2 rounded-lg border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 transition disabled:opacity-50"
+                              className="inline-flex items-center gap-2 rounded-lg border border-red-300 bg-[#141414] px-4 py-2 text-sm font-medium text-red-400 hover:bg-red-500/10 transition disabled:opacity-50"
                             >
                               <AlertCircle className="h-4 w-4" />
                               Mark Failed

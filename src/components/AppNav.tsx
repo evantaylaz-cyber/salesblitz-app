@@ -61,24 +61,24 @@ export default function AppNav({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b bg-white/95 backdrop-blur-sm">
+    <header className="sticky top-0 z-50 border-b border-[#1a1a1a] bg-[#0a0a0a]/95 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3">
         {/* Logo */}
         <div className="flex items-center gap-3">
           <a href="/dashboard" className="flex items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/logo-64.png" alt="Sales Blitz" className="h-7 w-7" />
-            <span className="text-base font-bold tracking-tight text-gray-900">
+            <span className="text-base font-bold tracking-tight text-white">
               Sales Blitz
             </span>
           </a>
           {tierBadge && (
-            <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800">
+            <span className="rounded-full bg-emerald-500/10 border border-emerald-500/20 px-3 py-1 text-xs font-semibold text-emerald-400">
               {tierBadge}
             </span>
           )}
           {hasPriority && (
-            <span className="rounded-full bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-700">
+            <span className="rounded-full bg-amber-500/10 border border-amber-500/20 px-2 py-1 text-xs font-semibold text-amber-400">
               Priority
             </span>
           )}
@@ -94,13 +94,13 @@ export default function AppNav({
                 href={item.href}
                 className={`relative text-sm border-b-2 pb-0.5 transition-colors ${
                   isActive
-                    ? "border-emerald-600 text-emerald-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700"
+                    ? "border-emerald-500 text-emerald-400"
+                    : "border-transparent text-neutral-400 hover:text-white"
                 }`}
               >
                 {item.label}
                 {item.hasBadge && pendingRequests > 0 && (
-                  <span className="absolute -top-1.5 -right-3 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-600 text-[10px] font-bold text-white">
+                  <span className="absolute -top-1.5 -right-3 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-[10px] font-bold text-black">
                     {pendingRequests}
                   </span>
                 )}
@@ -110,7 +110,7 @@ export default function AppNav({
           {hasSubscription && onManageBilling && (
             <button
               onClick={onManageBilling}
-              className="text-sm text-gray-600 hover:text-gray-900"
+              className="text-sm text-neutral-400 hover:text-white transition-colors"
             >
               Billing
             </button>
@@ -118,7 +118,7 @@ export default function AppNav({
           {!isMaxTier && (
             <a
               href="/subscribe"
-              className="text-sm font-medium text-emerald-700 hover:text-emerald-900"
+              className="rounded-full bg-emerald-500 px-4 py-1.5 text-sm font-semibold text-black hover:bg-emerald-400 transition-all hover:shadow-[0_0_16px_rgba(16,185,129,0.3)]"
             >
               {hasSubscription ? "Upgrade" : "Subscribe"}
             </a>
@@ -128,10 +128,10 @@ export default function AppNav({
 
         {/* Mobile nav */}
         <div className="flex lg:hidden items-center gap-4">
-          <a href="/requests" className="relative text-sm text-gray-600 hover:text-gray-900">
+          <a href="/requests" className="relative text-sm text-neutral-400 hover:text-white">
             Requests
             {pendingRequests > 0 && (
-              <span className="absolute -top-1.5 -right-3 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-600 text-[10px] font-bold text-white">
+              <span className="absolute -top-1.5 -right-3 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-[10px] font-bold text-black">
                 {pendingRequests}
               </span>
             )}
@@ -139,7 +139,7 @@ export default function AppNav({
           <UserButton afterSignOutUrl="/sign-in" />
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+            className="rounded-lg p-1.5 text-neutral-400 hover:bg-[#1a1a1a] hover:text-white"
           >
             {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -148,7 +148,7 @@ export default function AppNav({
 
       {/* Mobile dropdown */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-t bg-white px-6 py-3 space-y-1">
+        <div className="lg:hidden border-t border-[#1a1a1a] bg-[#0a0a0a] px-6 py-3 space-y-1">
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
             const isActive = item.href === currentPage;
@@ -158,14 +158,14 @@ export default function AppNav({
                 href={item.href}
                 className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
                   isActive
-                    ? "bg-emerald-50 text-emerald-600"
-                    : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                    ? "bg-emerald-500/10 text-emerald-400"
+                    : "text-neutral-300 hover:bg-[#141414] hover:text-white"
                 }`}
               >
-                <Icon className={`h-4 w-4 ${isActive ? "text-emerald-600" : "text-gray-400"}`} />
+                <Icon className={`h-4 w-4 ${isActive ? "text-emerald-400" : "text-neutral-500"}`} />
                 {item.label}
                 {item.hasBadge && pendingRequests > 0 && (
-                  <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-600 text-[10px] font-bold text-white">
+                  <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-500 text-[10px] font-bold text-black">
                     {pendingRequests}
                   </span>
                 )}
@@ -178,7 +178,7 @@ export default function AppNav({
                 onManageBilling();
                 setMobileMenuOpen(false);
               }}
-              className="block w-full text-left rounded-lg px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
+              className="block w-full text-left rounded-lg px-3 py-2.5 text-sm text-neutral-300 hover:bg-[#141414]"
             >
               Billing
             </button>
@@ -186,7 +186,7 @@ export default function AppNav({
           {!isMaxTier && (
             <a
               href="/subscribe"
-              className="block rounded-lg px-3 py-2.5 text-sm font-medium text-emerald-700 hover:bg-emerald-50"
+              className="block rounded-lg px-3 py-2.5 text-sm font-semibold text-emerald-400 hover:bg-emerald-500/10"
             >
               {hasSubscription ? "Upgrade" : "Subscribe"}
             </a>

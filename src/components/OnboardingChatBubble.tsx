@@ -125,7 +125,7 @@ export default function OnboardingChatBubble({
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full bg-emerald-600 px-5 py-3 text-white shadow-lg hover:bg-emerald-700 transition-all hover:shadow-xl group"
+        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full bg-emerald-600 px-5 py-3 text-white shadow-lg hover:bg-emerald-600 transition-all hover:shadow-xl group"
       >
         {profileDone ? (
           <>
@@ -137,7 +137,7 @@ export default function OnboardingChatBubble({
             <Sparkles className="h-5 w-5" />
             <span className="text-sm font-medium">{depth === 0 ? "Set Up Profile" : "Continue Setup"}</span>
             {depth > 0 && (
-              <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-white/20 text-xs">
+              <span className="ml-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#141414]/20 text-xs">
                 {depth}/4
               </span>
             )}
@@ -150,22 +150,22 @@ export default function OnboardingChatBubble({
   // Minimized bar at bottom
   if (isMinimized) {
     return (
-      <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-2xl bg-white border border-gray-200 shadow-xl px-4 py-3 cursor-pointer hover:shadow-2xl transition-all"
+      <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-2xl bg-[#141414] border border-[#262626] shadow-xl px-4 py-3 cursor-pointer hover:shadow-2xl transition-all"
         onClick={() => setIsMinimized(false)}
       >
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100">
-          <Bot className="h-4 w-4 text-emerald-700" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500/15">
+          <Bot className="h-4 w-4 text-emerald-400" />
         </div>
         <div className="flex-1">
-          <p className="text-sm font-medium text-gray-900">Sales Blitz Setup</p>
-          <p className="text-xs text-gray-500">
+          <p className="text-sm font-medium text-white">Sales Blitz Setup</p>
+          <p className="text-xs text-neutral-400">
             {profileDone ? "Complete" : `${depth}/4 layers`}
           </p>
         </div>
-        {isLoading && <Loader2 className="h-4 w-4 animate-spin text-emerald-600" />}
+        {isLoading && <Loader2 className="h-4 w-4 animate-spin text-emerald-400" />}
         <button
           onClick={(e) => { e.stopPropagation(); setIsOpen(false); }}
-          className="text-gray-400 hover:text-gray-600"
+          className="text-neutral-500 hover:text-neutral-300"
         >
           <X className="h-4 w-4" />
         </button>
@@ -175,18 +175,18 @@ export default function OnboardingChatBubble({
 
   // Full chat panel
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col w-[420px] h-[600px] max-h-[80vh] rounded-2xl bg-white border border-gray-200 shadow-2xl overflow-hidden">
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col w-[420px] h-[600px] max-h-[80vh] rounded-2xl bg-[#141414] border border-[#262626] shadow-2xl overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-emerald-50 to-white">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-[#1a1a1a] bg-gradient-to-r from-emerald-50 to-[#141414]">
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100">
-            <Bot className="h-4 w-4 text-emerald-700" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500/15">
+            <Bot className="h-4 w-4 text-emerald-400" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-gray-900">
+            <h3 className="text-sm font-semibold text-white">
               {profileDone ? "AI Assistant" : "Profile Setup"}
             </h3>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-neutral-400">
               {profileDone ? "Ask anything about your runs or profile" : `Layer ${depth}/4`}
             </p>
           </div>
@@ -199,7 +199,7 @@ export default function OnboardingChatBubble({
                 <div
                   key={layer.depth}
                   className={`h-2 w-2 rounded-full transition-colors ${
-                    depth >= layer.depth ? "bg-green-500" : "bg-gray-200"
+                    depth >= layer.depth ? "bg-green-500/100" : "bg-[#262626]"
                   }`}
                   title={layer.label}
                 />
@@ -208,14 +208,14 @@ export default function OnboardingChatBubble({
           )}
           <button
             onClick={() => setIsMinimized(true)}
-            className="p-1 text-gray-400 hover:text-gray-600 rounded-md hover:bg-gray-100"
+            className="p-1 text-neutral-500 hover:text-neutral-300 rounded-md hover:bg-[#1a1a1a]"
             title="Minimize"
           >
             <ChevronDown className="h-4 w-4" />
           </button>
           <button
             onClick={() => setIsOpen(false)}
-            className="p-1 text-gray-400 hover:text-gray-600 rounded-md hover:bg-gray-100"
+            className="p-1 text-neutral-500 hover:text-neutral-300 rounded-md hover:bg-[#1a1a1a]"
             title="Close"
           >
             <X className="h-4 w-4" />
@@ -232,25 +232,25 @@ export default function OnboardingChatBubble({
         {messages.length === 0 && (
           <>
             <div className="flex gap-2.5">
-              <div className="w-7 h-7 rounded-full bg-gray-900 flex items-center justify-center flex-shrink-0">
+              <div className="w-7 h-7 rounded-full bg-[#141414] flex items-center justify-center flex-shrink-0">
                 <Bot className="w-3.5 h-3.5 text-white" />
               </div>
-              <div className="bg-gray-50 border border-gray-100 rounded-2xl rounded-tl-md px-3.5 py-2.5 max-w-[300px]">
+              <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-2xl rounded-tl-md px-3.5 py-2.5 max-w-[300px]">
                 {profileDone ? (
                   <>
-                    <p className="text-sm text-gray-800 leading-relaxed">
+                    <p className="text-sm text-neutral-100 leading-relaxed">
                       Hey! Need to update your profile, add deal stories, or tweak your selling style?
                     </p>
-                    <p className="text-sm text-gray-800 leading-relaxed mt-1.5">
+                    <p className="text-sm text-neutral-100 leading-relaxed mt-1.5">
                       Just tell me what to change.
                     </p>
                   </>
                 ) : (
                   <>
-                    <p className="text-sm text-gray-800 leading-relaxed">
+                    <p className="text-sm text-neutral-100 leading-relaxed">
                       Let's get you set up. This takes about 10 minutes and makes everything Sales Blitz generates specific to you.
                     </p>
-                    <p className="text-sm text-gray-800 leading-relaxed mt-1.5">
+                    <p className="text-sm text-neutral-100 leading-relaxed mt-1.5">
                       First, tell me what you sell and who you sell it to.
                     </p>
                   </>
@@ -271,7 +271,7 @@ export default function OnboardingChatBubble({
                       <button
                         key={suggestion}
                         onClick={() => handleSuggestion(suggestion)}
-                        className="text-xs px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-full transition-colors border border-emerald-100"
+                        className="text-xs px-2.5 py-1 bg-emerald-500/10 hover:bg-emerald-500/100/15 text-emerald-400 rounded-full transition-colors border border-emerald-100"
                       >
                         {suggestion}
                       </button>
@@ -287,7 +287,7 @@ export default function OnboardingChatBubble({
                       <button
                         key={suggestion}
                         onClick={() => handleSuggestion(suggestion)}
-                        className="text-xs px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 rounded-full transition-colors border border-emerald-100"
+                        className="text-xs px-2.5 py-1 bg-emerald-500/10 hover:bg-emerald-500/100/15 text-emerald-400 rounded-full transition-colors border border-emerald-100"
                       >
                         {suggestion}
                       </button>
@@ -324,7 +324,7 @@ export default function OnboardingChatBubble({
               <div className={`flex gap-2.5 ${isUser ? "flex-row-reverse" : ""}`}>
                 <div
                   className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    isUser ? "bg-emerald-600" : "bg-gray-900"
+                    isUser ? "bg-emerald-600" : "bg-[#141414]"
                   }`}
                 >
                   {isUser ? (
@@ -337,7 +337,7 @@ export default function OnboardingChatBubble({
                   className={`px-3.5 py-2.5 max-w-[300px] text-sm leading-relaxed whitespace-pre-wrap ${
                     isUser
                       ? "bg-emerald-600 text-white rounded-2xl rounded-tr-md"
-                      : "bg-gray-50 border border-gray-100 text-gray-800 rounded-2xl rounded-tl-md"
+                      : "bg-[#0a0a0a] border border-[#1a1a1a] text-neutral-100 rounded-2xl rounded-tl-md"
                   }`}
                 >
                   {textContent}
@@ -349,8 +349,8 @@ export default function OnboardingChatBubble({
 
         {/* Error display */}
         {error && (
-          <div className="mx-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-xs text-red-700 font-medium">Something went wrong</p>
+          <div className="mx-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+            <p className="text-xs text-red-400 font-medium">Something went wrong</p>
             <p className="text-xs text-red-500 mt-1">{error.message}</p>
           </div>
         )}
@@ -358,14 +358,14 @@ export default function OnboardingChatBubble({
         {/* Loading */}
         {isLoading && (
           <div className="flex gap-2.5">
-            <div className="w-7 h-7 rounded-full bg-gray-900 flex items-center justify-center flex-shrink-0">
+            <div className="w-7 h-7 rounded-full bg-[#141414] flex items-center justify-center flex-shrink-0">
               <Bot className="w-3.5 h-3.5 text-white" />
             </div>
-            <div className="bg-gray-50 border border-gray-100 rounded-2xl rounded-tl-md px-3.5 py-2.5">
+            <div className="bg-[#0a0a0a] border border-[#1a1a1a] rounded-2xl rounded-tl-md px-3.5 py-2.5">
               <div className="flex gap-1">
-                <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                <div className="w-1.5 h-1.5 bg-neutral-500 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                <div className="w-1.5 h-1.5 bg-neutral-500 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                <div className="w-1.5 h-1.5 bg-neutral-500 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
               </div>
             </div>
           </div>
@@ -374,7 +374,7 @@ export default function OnboardingChatBubble({
         {/* Layer completion CTA */}
         {profileDone && (
           <div className="mx-auto text-center py-3">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-50 border border-green-200 text-green-700 text-xs font-medium">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-500/10 border border-green-200 text-green-400 text-xs font-medium">
               <CheckCircle2 className="h-3.5 w-3.5" />
               Profile fully tuned (4/4)
             </div>
@@ -383,21 +383,21 @@ export default function OnboardingChatBubble({
       </div>
 
       {/* Input */}
-      <div className="border-t border-gray-100 px-4 py-3 bg-white">
+      <div className="border-t border-[#1a1a1a] px-4 py-3 bg-[#141414]">
         {/* Voice transcript preview */}
         {isListening && interimTranscript && (
-          <div className="mb-2 px-3 py-1.5 bg-red-50 border border-red-100 rounded-lg">
-            <p className="text-xs text-red-600 font-medium flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
+          <div className="mb-2 px-3 py-1.5 bg-red-500/10 border border-red-100 rounded-lg">
+            <p className="text-xs text-red-400 font-medium flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 bg-red-500/100 rounded-full animate-pulse" />
               Listening...
             </p>
-            <p className="text-xs text-gray-600 mt-0.5 italic">{interimTranscript}</p>
+            <p className="text-xs text-neutral-300 mt-0.5 italic">{interimTranscript}</p>
           </div>
         )}
         {isListening && !interimTranscript && (
-          <div className="mb-2 px-3 py-1.5 bg-red-50 border border-red-100 rounded-lg">
-            <p className="text-xs text-red-600 font-medium flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
+          <div className="mb-2 px-3 py-1.5 bg-red-500/10 border border-red-100 rounded-lg">
+            <p className="text-xs text-red-400 font-medium flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 bg-red-500/100 rounded-full animate-pulse" />
               Listening... start speaking
             </p>
           </div>
@@ -417,7 +417,7 @@ export default function OnboardingChatBubble({
                 profileDone ? "Ask anything or update your profile." : "Type your response..."
               }
               rows={1}
-              className="w-full resize-none rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent placeholder:text-gray-400 max-h-24 overflow-y-auto"
+              className="w-full resize-none rounded-xl border border-[#262626] px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent placeholder:text-neutral-500 max-h-24 overflow-y-auto"
               style={{ height: "auto", minHeight: "40px" }}
               onInput={(e) => {
                 const target = e.target as HTMLTextAreaElement;
@@ -432,8 +432,8 @@ export default function OnboardingChatBubble({
               onClick={toggleListening}
               className={`flex items-center justify-center w-9 h-9 rounded-xl transition-colors flex-shrink-0 ${
                 isListening
-                  ? "bg-red-500 text-white hover:bg-red-600 animate-pulse"
-                  : "bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700"
+                  ? "bg-red-500/100 text-white hover:bg-red-600 animate-pulse"
+                  : "bg-[#1a1a1a] text-neutral-400 hover:bg-[#262626] hover:text-neutral-200"
               }`}
               title={isListening ? "Stop recording" : "Voice input"}
             >
@@ -447,7 +447,7 @@ export default function OnboardingChatBubble({
           <button
             type="submit"
             disabled={!input.trim() || isLoading}
-            className="flex items-center justify-center w-9 h-9 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors flex-shrink-0"
+            className="flex items-center justify-center w-9 h-9 rounded-xl bg-emerald-600 text-white hover:bg-emerald-600 disabled:bg-[#262626] disabled:text-neutral-500 disabled:cursor-not-allowed transition-colors flex-shrink-0"
           >
             <Send className="w-3.5 h-3.5" />
           </button>
@@ -456,7 +456,7 @@ export default function OnboardingChatBubble({
           <div className="flex items-center justify-center mt-2">
             <a
               href="/profile"
-              className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
+              className="text-xs text-neutral-500 hover:text-neutral-300 transition-colors"
             >
               Prefer manual setup? Edit your profile directly.
             </a>

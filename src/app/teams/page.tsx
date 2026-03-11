@@ -112,51 +112,51 @@ export default function TeamsPage() {
 
   const roleIcon = (role: string) => {
     if (role === "owner") return <Crown className="h-4 w-4 text-amber-500" />;
-    if (role === "admin") return <Shield className="h-4 w-4 text-emerald-600" />;
-    return <User className="h-4 w-4 text-gray-400" />;
+    if (role === "admin") return <Shield className="h-4 w-4 text-emerald-400" />;
+    return <User className="h-4 w-4 text-neutral-500" />;
   };
 
   if (!isLoaded || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-emerald-700" />
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-400" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <AppNav currentPage="/teams" />
 
       <main className="mx-auto max-w-4xl px-6 py-8">
         {/* Pending Invites */}
         {pendingInvites.length > 0 && (
           <div className="mb-8">
-            <h2 className="mb-3 text-sm font-medium uppercase tracking-wide text-gray-500">
+            <h2 className="mb-3 text-sm font-medium uppercase tracking-wide text-neutral-400">
               Pending Invites
             </h2>
             <div className="space-y-3">
               {pendingInvites.map((invite) => (
                 <div
                   key={invite.teamId}
-                  className="flex items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50 p-4"
+                  className="flex items-center justify-between rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4"
                 >
                   <div>
-                    <p className="font-medium text-gray-900">{invite.teamName}</p>
-                    <p className="text-sm text-gray-600">
+                    <p className="font-medium text-white">{invite.teamName}</p>
+                    <p className="text-sm text-neutral-300">
                       Invited as {invite.role}
                     </p>
                   </div>
                   <div className="flex gap-2">
                     <button
                       onClick={() => respondToInvite(invite.teamId, "accept_invite")}
-                      className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+                      className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-600"
                     >
                       Accept
                     </button>
                     <button
                       onClick={() => respondToInvite(invite.teamId, "decline_invite")}
-                      className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                      className="rounded-lg border border-[#333333] bg-[#141414] px-4 py-2 text-sm font-medium text-neutral-200 hover:bg-[#0a0a0a]"
                     >
                       Decline
                     </button>
@@ -169,10 +169,10 @@ export default function TeamsPage() {
 
         {/* Teams Header */}
         <div className="mb-6 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900">Your Teams</h1>
+          <h1 className="text-2xl font-bold text-white">Your Teams</h1>
           <button
             onClick={() => setShowCreate(true)}
-            className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+            className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-600"
           >
             <Plus className="h-4 w-4" />
             Create Team
@@ -181,16 +181,16 @@ export default function TeamsPage() {
 
         {/* Create Team Modal */}
         {showCreate && (
-          <div className="mb-6 rounded-xl border bg-white p-6 shadow-sm">
+          <div className="mb-6 rounded-xl border bg-[#141414] p-6 shadow-sm shadow-black/20">
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900">New Team</h3>
+              <h3 className="text-lg font-semibold text-white">New Team</h3>
               <button onClick={() => setShowCreate(false)}>
-                <X className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                <X className="h-5 w-5 text-neutral-500 hover:text-neutral-300" />
               </button>
             </div>
             <div className="space-y-4">
               <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">
+                <label className="mb-1 block text-sm font-medium text-neutral-200">
                   Team Name *
                 </label>
                 <input
@@ -198,11 +198,11 @@ export default function TeamsPage() {
                   value={newTeamName}
                   onChange={(e) => setNewTeamName(e.target.value)}
                   placeholder="e.g. Sales Team West"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  className="w-full rounded-lg border border-[#333333] bg-[#0a0a0a] px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">
+                <label className="mb-1 block text-sm font-medium text-neutral-200">
                   Description
                 </label>
                 <input
@@ -210,14 +210,14 @@ export default function TeamsPage() {
                   value={newTeamDesc}
                   onChange={(e) => setNewTeamDesc(e.target.value)}
                   placeholder="Optional team description"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  className="w-full rounded-lg border border-[#333333] bg-[#0a0a0a] px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                 />
               </div>
-              {error && <p className="text-sm text-red-600">{error}</p>}
+              {error && <p className="text-sm text-red-400">{error}</p>}
               <button
                 onClick={createTeam}
                 disabled={creating || !newTeamName.trim()}
-                className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
+                className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-600 disabled:opacity-50"
               >
                 {creating ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -232,15 +232,15 @@ export default function TeamsPage() {
 
         {/* Team List */}
         {teams.length === 0 && !showCreate ? (
-          <div className="rounded-xl border bg-white p-12 text-center">
-            <Building2 className="mx-auto mb-3 h-12 w-12 text-gray-300" />
-            <h3 className="mb-1 text-lg font-medium text-gray-900">No teams yet</h3>
-            <p className="mb-4 text-sm text-gray-500">
+          <div className="rounded-xl border bg-[#141414] p-12 text-center">
+            <Building2 className="mx-auto mb-3 h-12 w-12 text-neutral-500" />
+            <h3 className="mb-1 text-lg font-medium text-white">No teams yet</h3>
+            <p className="mb-4 text-sm text-neutral-400">
               Create a team to share runs, knowledge base docs, and billing with your colleagues.
             </p>
             <button
               onClick={() => setShowCreate(true)}
-              className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+              className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-600"
             >
               <Plus className="h-4 w-4" />
               Create Your First Team
@@ -252,22 +252,22 @@ export default function TeamsPage() {
               <Link
                 key={team.id}
                 href={`/teams/${team.id}`}
-                className="flex items-center justify-between rounded-xl border bg-white p-5 shadow-sm transition hover:border-emerald-200 hover:shadow-md"
+                className="flex items-center justify-between rounded-xl border bg-[#141414] p-5 shadow-sm shadow-black/20 transition hover:border-emerald-500/20 hover:shadow-md"
               >
                 <div className="flex items-center gap-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100">
-                    <Users className="h-5 w-5 text-emerald-700" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/15">
+                    <Users className="h-5 w-5 text-emerald-400" />
                   </div>
                   <div>
-                    <h3 className="font-medium text-gray-900">{team.name}</h3>
-                    <div className="flex items-center gap-3 text-sm text-gray-500">
+                    <h3 className="font-medium text-white">{team.name}</h3>
+                    <div className="flex items-center gap-3 text-sm text-neutral-400">
                       <span className="flex items-center gap-1">
                         {roleIcon(team.myRole)}
                         {team.myRole}
                       </span>
                       <span>{team.memberCount} member{team.memberCount !== 1 ? "s" : ""}</span>
                       {team.currentTier && (
-                        <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-800">
+                        <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs font-medium text-emerald-400">
                           {team.currentTier}
                         </span>
                       )}
@@ -276,11 +276,11 @@ export default function TeamsPage() {
                 </div>
                 <div className="flex items-center gap-3">
                   {team.subscriptionRunsTotal > 0 && (
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm text-neutral-400">
                       {team.subscriptionRunsRemaining}/{team.subscriptionRunsTotal} runs
                     </span>
                   )}
-                  <ChevronRight className="h-5 w-5 text-gray-400" />
+                  <ChevronRight className="h-5 w-5 text-neutral-500" />
                 </div>
               </Link>
             ))}

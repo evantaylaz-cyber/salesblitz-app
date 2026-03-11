@@ -165,25 +165,25 @@ export default function TeamDetailPage() {
 
   const roleIcon = (role: string) => {
     if (role === "owner") return <Crown className="h-4 w-4 text-amber-500" />;
-    if (role === "admin") return <Shield className="h-4 w-4 text-emerald-600" />;
-    return <User className="h-4 w-4 text-gray-400" />;
+    if (role === "admin") return <Shield className="h-4 w-4 text-emerald-400" />;
+    return <User className="h-4 w-4 text-neutral-500" />;
   };
 
   const statusBadge = (status: string) => {
     if (status === "accepted")
       return (
-        <span className="flex items-center gap-1 text-xs text-emerald-600">
+        <span className="flex items-center gap-1 text-xs text-emerald-400">
           <CheckCircle2 className="h-3 w-3" /> Active
         </span>
       );
     if (status === "pending")
       return (
-        <span className="flex items-center gap-1 text-xs text-amber-600">
+        <span className="flex items-center gap-1 text-xs text-amber-400">
           <Clock className="h-3 w-3" /> Pending
         </span>
       );
     return (
-      <span className="flex items-center gap-1 text-xs text-gray-400">
+      <span className="flex items-center gap-1 text-xs text-neutral-500">
         <XCircle className="h-3 w-3" /> {status}
       </span>
     );
@@ -192,7 +192,7 @@ export default function TeamDetailPage() {
   if (!isLoaded || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-emerald-700" />
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-400" />
       </div>
     );
   }
@@ -203,41 +203,41 @@ export default function TeamDetailPage() {
   const pendingMembers = members.filter((m) => m.inviteStatus === "pending").length;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <AppNav currentPage="/teams" />
 
       <main className="mx-auto max-w-4xl px-6 py-8">
 
         {/* Team Overview */}
         <div className="mb-8 grid gap-4 sm:grid-cols-3">
-          <div className="rounded-xl border bg-white p-5 shadow-sm">
-            <p className="text-sm text-gray-500">Plan</p>
-            <p className="mt-1 text-lg font-semibold text-gray-900">
+          <div className="rounded-xl border bg-[#141414] p-5 shadow-sm shadow-black/20">
+            <p className="text-sm text-neutral-400">Plan</p>
+            <p className="mt-1 text-lg font-semibold text-white">
               {team.currentTier ? `${team.currentTier} (${team.billingCycle})` : "No plan"}
             </p>
             {isAdmin && (
               <Link
                 href={`/subscribe?teamId=${team.id}`}
-                className="mt-2 inline-block text-sm text-emerald-700 hover:text-emerald-800"
+                className="mt-2 inline-block text-sm text-emerald-400 hover:text-emerald-400"
               >
                 {team.currentTier ? "Change plan" : "Subscribe"}
               </Link>
             )}
           </div>
-          <div className="rounded-xl border bg-white p-5 shadow-sm">
-            <p className="text-sm text-gray-500">Runs</p>
-            <p className="mt-1 text-lg font-semibold text-gray-900">
+          <div className="rounded-xl border bg-[#141414] p-5 shadow-sm shadow-black/20">
+            <p className="text-sm text-neutral-400">Runs</p>
+            <p className="mt-1 text-lg font-semibold text-white">
               {team.subscriptionRunsRemaining} / {team.subscriptionRunsTotal}
             </p>
-            <p className="mt-1 text-xs text-gray-400">remaining this cycle</p>
+            <p className="mt-1 text-xs text-neutral-500">remaining this cycle</p>
           </div>
-          <div className="rounded-xl border bg-white p-5 shadow-sm">
-            <p className="text-sm text-gray-500">Seats</p>
-            <p className="mt-1 text-lg font-semibold text-gray-900">
+          <div className="rounded-xl border bg-[#141414] p-5 shadow-sm shadow-black/20">
+            <p className="text-sm text-neutral-400">Seats</p>
+            <p className="mt-1 text-lg font-semibold text-white">
               {activeMembers} / {team.maxSeats}
             </p>
             {pendingMembers > 0 && (
-              <p className="mt-1 text-xs text-amber-600">
+              <p className="mt-1 text-xs text-amber-400">
                 +{pendingMembers} pending
               </p>
             )}
@@ -250,7 +250,7 @@ export default function TeamDetailPage() {
             {team.currentTier && (
               <button
                 onClick={openBillingPortal}
-                className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+                className="flex items-center gap-2 rounded-lg border border-[#333333] bg-[#141414] px-4 py-2 text-sm font-medium text-neutral-200 shadow-sm shadow-black/20 hover:bg-[#0a0a0a]"
               >
                 <CreditCard className="h-4 w-4" />
                 Manage Billing
@@ -258,7 +258,7 @@ export default function TeamDetailPage() {
             )}
             <Link
               href={`/analytics?teamId=${team.id}`}
-              className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+              className="flex items-center gap-2 rounded-lg border border-[#333333] bg-[#141414] px-4 py-2 text-sm font-medium text-neutral-200 shadow-sm shadow-black/20 hover:bg-[#0a0a0a]"
             >
               <Settings className="h-4 w-4" />
               Team Analytics
@@ -268,20 +268,20 @@ export default function TeamDetailPage() {
 
         {/* Invite Section (admin only) */}
         {isAdmin && (
-          <div className="mb-8 rounded-xl border bg-white p-6 shadow-sm">
-            <h3 className="mb-4 text-lg font-semibold text-gray-900">Invite Member</h3>
+          <div className="mb-8 rounded-xl border bg-[#141414] p-6 shadow-sm shadow-black/20">
+            <h3 className="mb-4 text-lg font-semibold text-white">Invite Member</h3>
             <div className="flex gap-3">
               <input
                 type="email"
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
                 placeholder="colleague@company.com"
-                className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                className="flex-1 rounded-lg border border-[#333333] bg-[#0a0a0a] px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
               />
               <select
                 value={inviteRole}
                 onChange={(e) => setInviteRole(e.target.value)}
-                className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                className="rounded-lg border border-[#333333] bg-[#0a0a0a] px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
               >
                 <option value="member">Member</option>
                 <option value="admin">Admin</option>
@@ -289,7 +289,7 @@ export default function TeamDetailPage() {
               <button
                 onClick={inviteMember}
                 disabled={inviting || !inviteEmail.trim()}
-                className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50"
+                className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-600 disabled:opacity-50"
               >
                 {inviting ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -300,21 +300,21 @@ export default function TeamDetailPage() {
               </button>
             </div>
             {inviteError && (
-              <p className="mt-2 text-sm text-red-600">{inviteError}</p>
+              <p className="mt-2 text-sm text-red-400">{inviteError}</p>
             )}
             {inviteSuccess && (
-              <p className="mt-2 text-sm text-emerald-600">{inviteSuccess}</p>
+              <p className="mt-2 text-sm text-emerald-400">{inviteSuccess}</p>
             )}
-            <p className="mt-2 text-xs text-gray-400">
+            <p className="mt-2 text-xs text-neutral-500">
               {activeMembers + pendingMembers} of {team.maxSeats} seats used
             </p>
           </div>
         )}
 
         {/* Members List */}
-        <div className="rounded-xl border bg-white shadow-sm">
+        <div className="rounded-xl border bg-[#141414] shadow-sm shadow-black/20">
           <div className="border-b px-6 py-4">
-            <h3 className="text-lg font-semibold text-gray-900">
+            <h3 className="text-lg font-semibold text-white">
               Members ({members.length})
             </h3>
           </div>
@@ -325,22 +325,22 @@ export default function TeamDetailPage() {
                 className="flex items-center justify-between px-6 py-4"
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-100">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#1a1a1a]">
                     {roleIcon(member.role)}
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">
+                    <p className="font-medium text-white">
                       {member.name || member.email}
                     </p>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs text-gray-500">{member.email}</span>
+                      <span className="text-xs text-neutral-400">{member.email}</span>
                       {statusBadge(member.inviteStatus)}
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
                   {/* Role badge */}
-                  <span className="rounded-full border px-2 py-0.5 text-xs font-medium text-gray-600">
+                  <span className="rounded-full border px-2 py-0.5 text-xs font-medium text-neutral-300">
                     {member.role}
                   </span>
 
@@ -349,7 +349,7 @@ export default function TeamDetailPage() {
                     <select
                       value={member.role}
                       onChange={(e) => changeRole(member.id, e.target.value)}
-                      className="rounded border border-gray-200 px-2 py-1 text-xs text-gray-600"
+                      className="rounded border border-[#262626] px-2 py-1 text-xs text-neutral-300"
                     >
                       <option value="member">Member</option>
                       <option value="admin">Admin</option>
@@ -360,7 +360,7 @@ export default function TeamDetailPage() {
                   {isAdmin && member.role !== "owner" && (
                     <button
                       onClick={() => removeMember(member.id)}
-                      className="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-500"
+                      className="rounded p-1 text-neutral-500 hover:bg-red-500/10 hover:text-red-500"
                       title="Remove member"
                     >
                       <Trash2 className="h-4 w-4" />

@@ -62,7 +62,7 @@ export default function BillingPage() {
   if (!isLoaded || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-emerald-700" />
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-400" />
       </div>
     );
   }
@@ -72,54 +72,54 @@ export default function BillingPage() {
     user?.subscriptionStatus === "past_due";
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <AppNav currentPage="/billing" />
 
       <main className="mx-auto max-w-4xl px-6 py-10 space-y-8">
         {/* Current Plan */}
-        <section className="rounded-xl border bg-white p-6 shadow-sm">
+        <section className="rounded-xl border bg-[#141414] p-6 shadow-sm shadow-black/20">
           <div className="flex items-center gap-2 mb-4">
-            <CreditCard className="h-5 w-5 text-emerald-700" />
-            <h2 className="text-lg font-bold text-gray-900">Current Plan</h2>
+            <CreditCard className="h-5 w-5 text-emerald-400" />
+            <h2 className="text-lg font-bold text-white">Current Plan</h2>
           </div>
 
           {hasSubscription && user?.currentTier ? (
             <div className="space-y-3">
               <div className="flex items-center gap-3">
-                <span className="rounded-full bg-emerald-100 px-3 py-1 text-sm font-semibold text-emerald-800 capitalize">
+                <span className="rounded-full bg-emerald-500/15 px-3 py-1 text-sm font-semibold text-emerald-400 capitalize">
                   {user.currentTier}
                 </span>
-                <span className="text-sm text-gray-500 capitalize">
+                <span className="text-sm text-neutral-400 capitalize">
                   {user.billingCycle} billing
                 </span>
                 {user.priorityProcessing && (
-                  <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700">
+                  <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-semibold text-amber-400">
                     Priority
                   </span>
                 )}
               </div>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-neutral-300">
                 {user.subscriptionRunsRemaining} of{" "}
                 {user.subscriptionRunsTotal} subscription runs remaining
               </p>
               {user.currentPeriodEnd && (
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-neutral-400">
                   Current period ends{" "}
                   {new Date(user.currentPeriodEnd).toLocaleDateString()}
                 </p>
               )}
               {user.subscriptionStatus === "past_due" && (
-                <p className="text-sm text-red-600 font-medium">
+                <p className="text-sm text-red-400 font-medium">
                   Payment past due. Please update your payment method.
                 </p>
               )}
             </div>
           ) : (
             <div>
-              <p className="text-gray-600">No active subscription.</p>
+              <p className="text-neutral-300">No active subscription.</p>
               <a
                 href="/subscribe"
-                className="mt-3 inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700"
+                className="mt-3 inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-600"
               >
                 <Zap className="h-4 w-4" /> Choose a Plan
               </a>
@@ -130,7 +130,7 @@ export default function BillingPage() {
             <button
               onClick={openPortal}
               disabled={portalLoading}
-              className="mt-4 inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+              className="mt-4 inline-flex items-center gap-2 rounded-lg border border-[#333333] bg-[#0a0a0a] px-4 py-2 text-sm font-medium text-neutral-200 hover:bg-[#0a0a0a] disabled:opacity-50"
             >
               {portalLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -142,10 +142,10 @@ export default function BillingPage() {
         </section>
 
         {/* Run Packs */}
-        <section className="rounded-xl border bg-white p-6 shadow-sm">
+        <section className="rounded-xl border bg-[#141414] p-6 shadow-sm shadow-black/20">
           <div className="flex items-center gap-2 mb-4">
-            <Package className="h-5 w-5 text-emerald-600" />
-            <h2 className="text-lg font-bold text-gray-900">Run Packs</h2>
+            <Package className="h-5 w-5 text-emerald-400" />
+            <h2 className="text-lg font-bold text-white">Run Packs</h2>
           </div>
 
           {user?.runPacks && user.runPacks.length > 0 ? (
@@ -156,14 +156,14 @@ export default function BillingPage() {
                   className="flex items-center justify-between rounded-lg border p-4"
                 >
                   <div>
-                    <p className="font-medium text-gray-900 capitalize">
+                    <p className="font-medium text-white capitalize">
                       {pack.type.replace(/_/g, " ")}
                     </p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-neutral-400">
                       {pack.runsRemaining} of {pack.runsTotal} runs remaining
                     </p>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <div className="flex items-center gap-2 text-sm text-neutral-400">
                     <Clock className="h-4 w-4" />
                     Expires {new Date(pack.expiresAt).toLocaleDateString()}
                   </div>
@@ -171,12 +171,12 @@ export default function BillingPage() {
               ))}
             </div>
           ) : (
-            <p className="text-gray-500">No active run packs.</p>
+            <p className="text-neutral-400">No active run packs.</p>
           )}
 
           <a
             href="/subscribe#packs"
-            className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-emerald-700 hover:text-emerald-800"
+            className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-emerald-400 hover:text-emerald-400"
           >
             Buy Run Packs →
           </a>

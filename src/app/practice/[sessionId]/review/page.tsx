@@ -158,21 +158,21 @@ export default function PracticeReviewPage() {
   }
 
   const outcomeColor = (outcome: string | null) => {
-    if (outcome === "strong") return "text-emerald-600 bg-emerald-50 border-emerald-200";
-    if (outcome === "developing") return "text-amber-600 bg-amber-50 border-amber-200";
-    return "text-red-600 bg-red-50 border-red-200";
+    if (outcome === "strong") return "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
+    if (outcome === "developing") return "text-amber-400 bg-amber-500/10 border-amber-500/20";
+    return "text-red-400 bg-red-500/10 border-red-500/20";
   };
 
   const scoreColor = (score: number) => {
-    if (score >= 4) return "bg-emerald-500";
-    if (score >= 3) return "bg-amber-500";
-    return "bg-red-500";
+    if (score >= 4) return "bg-emerald-500/100";
+    if (score >= 3) return "bg-amber-500/100";
+    return "bg-red-500/100";
   };
 
   if (!isLoaded || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-emerald-700" />
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-400" />
       </div>
     );
   }
@@ -180,19 +180,19 @@ export default function PracticeReviewPage() {
   if (!session) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <p className="text-gray-500">Session not found.</p>
+        <p className="text-neutral-400">Session not found.</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <AppNav currentPage="/practice" />
 
       {/* Practice Again action bar */}
-      <div className="border-b bg-white">
+      <div className="border-b bg-[#141414]">
         <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-3">
-          <h1 className="text-lg font-bold text-gray-900">Session Review</h1>
+          <h1 className="text-lg font-bold text-white">Session Review</h1>
           <button
             onClick={() => {
               const params = new URLSearchParams();
@@ -202,7 +202,7 @@ export default function PracticeReviewPage() {
               if (session?.runRequestId) params.set("runRequestId", session.runRequestId);
               router.push(`/practice?${params.toString()}`);
             }}
-            className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+            className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-600"
           >
             <RotateCcw className="h-4 w-4" />
             Practice Again
@@ -214,11 +214,11 @@ export default function PracticeReviewPage() {
         {/* Session Header */}
         <div className="flex items-start justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">{session.targetCompany}</h2>
-            <p className="mt-1 text-gray-500">
+            <h2 className="text-2xl font-bold text-white">{session.targetCompany}</h2>
+            <p className="mt-1 text-neutral-400">
               {session.personaName} &middot; {session.targetRole}
             </p>
-            <div className="mt-2 flex items-center gap-4 text-sm text-gray-400">
+            <div className="mt-2 flex items-center gap-4 text-sm text-neutral-500">
               {session.durationSeconds && (
                 <span className="flex items-center gap-1">
                   <Clock className="h-3.5 w-3.5" />
@@ -243,16 +243,16 @@ export default function PracticeReviewPage() {
           const scorecardTitle = isInterview ? "Interview Scorecard" : "Sales Scorecard";
 
           return (
-            <div className="rounded-2xl border bg-white p-6 shadow-sm">
+            <div className="rounded-2xl border bg-[#141414] p-6 shadow-sm shadow-black/20">
               <div className="flex items-center gap-3 mb-6">
-                <BarChart3 className="h-5 w-5 text-emerald-700" />
-                <h3 className="text-lg font-bold text-gray-900">{scorecardTitle}</h3>
+                <BarChart3 className="h-5 w-5 text-emerald-400" />
+                <h3 className="text-lg font-bold text-white">{scorecardTitle}</h3>
                 {session.sessionSequence > 1 && (
-                  <span className="text-xs text-gray-400 bg-gray-100 rounded-full px-2 py-0.5">
+                  <span className="text-xs text-neutral-500 bg-[#1a1a1a] rounded-full px-2 py-0.5">
                     Session #{session.sessionSequence}
                   </span>
                 )}
-                <span className="ml-auto text-3xl font-bold text-gray-900">
+                <span className="ml-auto text-3xl font-bold text-white">
                   {session.cotmScore.overall}/5
                 </span>
               </div>
@@ -260,16 +260,16 @@ export default function PracticeReviewPage() {
               <div className="space-y-3">
                 {Object.entries(session.cotmScore.scores || {}).map(([key, score]) => (
                   <div key={key} className="flex items-center gap-3">
-                    <span className="w-48 text-sm text-gray-600">
+                    <span className="w-48 text-sm text-neutral-300">
                       {scoreLabels[key] || key}
                     </span>
-                    <div className="flex-1 h-2 rounded-full bg-gray-100 overflow-hidden">
+                    <div className="flex-1 h-2 rounded-full bg-[#1a1a1a] overflow-hidden">
                       <div
                         className={`h-full rounded-full ${scoreColor(score as number)} transition-all`}
                         style={{ width: `${((score as number) / 5) * 100}%` }}
                       />
                     </div>
-                    <span className="w-8 text-right text-sm font-medium text-gray-700">
+                    <span className="w-8 text-right text-sm font-medium text-neutral-200">
                       {score as number}
                     </span>
                   </div>
@@ -283,21 +283,21 @@ export default function PracticeReviewPage() {
         {session.cotmScore && (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {session.cotmScore.top_moment && (
-              <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-5">
+              <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-5">
                 <div className="flex items-center gap-2 mb-2">
-                  <Star className="h-4 w-4 text-emerald-600" />
-                  <span className="text-sm font-semibold text-emerald-700">Top Moment</span>
+                  <Star className="h-4 w-4 text-emerald-400" />
+                  <span className="text-sm font-semibold text-emerald-400">Top Moment</span>
                 </div>
-                <p className="text-sm text-emerald-800">{session.cotmScore.top_moment}</p>
+                <p className="text-sm text-emerald-400">{session.cotmScore.top_moment}</p>
               </div>
             )}
             {session.cotmScore.biggest_miss && (
-              <div className="rounded-xl border border-amber-200 bg-amber-50 p-5">
+              <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 p-5">
                 <div className="flex items-center gap-2 mb-2">
-                  <AlertTriangle className="h-4 w-4 text-amber-600" />
-                  <span className="text-sm font-semibold text-amber-700">Biggest Miss</span>
+                  <AlertTriangle className="h-4 w-4 text-amber-400" />
+                  <span className="text-sm font-semibold text-amber-400">Biggest Miss</span>
                 </div>
-                <p className="text-sm text-amber-800">{session.cotmScore.biggest_miss}</p>
+                <p className="text-sm text-amber-400">{session.cotmScore.biggest_miss}</p>
               </div>
             )}
           </div>
@@ -305,29 +305,29 @@ export default function PracticeReviewPage() {
 
         {/* Coaching Feedback */}
         {session.feedback && (
-          <div className="rounded-2xl border bg-white p-6 shadow-sm">
-            <h3 className="text-lg font-bold text-gray-900 mb-3">Coaching Feedback</h3>
-            <div className="prose prose-sm max-w-none text-gray-700 whitespace-pre-wrap">
+          <div className="rounded-2xl border bg-[#141414] p-6 shadow-sm shadow-black/20">
+            <h3 className="text-lg font-bold text-white mb-3">Coaching Feedback</h3>
+            <div className="prose prose-sm max-w-none text-neutral-200 whitespace-pre-wrap">
               {session.feedback}
             </div>
           </div>
         )}
 
         {/* Self-Debrief Notes */}
-        <div className="rounded-2xl border bg-white p-6 shadow-sm">
+        <div className="rounded-2xl border bg-[#141414] p-6 shadow-sm shadow-black/20">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <PenLine className="h-5 w-5 text-gray-400" />
-              <h3 className="text-lg font-bold text-gray-900">Your Debrief</h3>
+              <PenLine className="h-5 w-5 text-neutral-500" />
+              <h3 className="text-lg font-bold text-white">Your Debrief</h3>
             </div>
             <div className="flex items-center gap-2">
               {notesError && (
-                <span className="flex items-center gap-1 text-xs text-red-600">
+                <span className="flex items-center gap-1 text-xs text-red-400">
                   {notesError}
                 </span>
               )}
               {notesSaved && !notesError && (
-                <span className="flex items-center gap-1 text-xs text-emerald-600">
+                <span className="flex items-center gap-1 text-xs text-emerald-400">
                   <CheckCircle2 className="h-3.5 w-3.5" />
                   Saved
                 </span>
@@ -335,14 +335,14 @@ export default function PracticeReviewPage() {
               <button
                 onClick={saveNotes}
                 disabled={notesSaving}
-                className="flex items-center gap-1.5 rounded-lg bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-200 disabled:opacity-50 transition"
+                className="flex items-center gap-1.5 rounded-lg bg-[#1a1a1a] px-3 py-1.5 text-sm font-medium text-neutral-200 hover:bg-[#262626] disabled:opacity-50 transition"
               >
                 <Save className="h-3.5 w-3.5" />
                 {notesSaving ? "Saving..." : "Save"}
               </button>
             </div>
           </div>
-          <p className="text-sm text-gray-500 mb-3">
+          <p className="text-sm text-neutral-400 mb-3">
             What landed? What felt shaky? What do you want to nail next time?
           </p>
           <textarea
@@ -354,48 +354,48 @@ export default function PracticeReviewPage() {
             placeholder="Write your reflections here. These carry forward to your next practice session for this target."
             rows={4}
             maxLength={5000}
-            className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm text-gray-800 placeholder-gray-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 resize-y"
+            className="w-full rounded-lg border border-[#333333] bg-[#141414] px-4 py-3 text-sm text-neutral-100 placeholder-neutral-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 resize-y"
           />
-          <p className="mt-1 text-xs text-gray-400 text-right">{userNotes.length}/5000</p>
+          <p className="mt-1 text-xs text-neutral-500 text-right">{userNotes.length}/5000</p>
         </div>
 
         {/* Transcript Toggle */}
-        <div className="rounded-2xl border bg-white shadow-sm overflow-hidden">
+        <div className="rounded-2xl border bg-[#141414] shadow-sm shadow-black/20 overflow-hidden">
           <button
             onClick={() => setShowTranscript(!showTranscript)}
-            className="flex w-full items-center justify-between p-6 hover:bg-gray-50 transition"
+            className="flex w-full items-center justify-between p-6 hover:bg-[#0a0a0a] transition"
           >
             <div className="flex items-center gap-2">
-              <MessageSquare className="h-5 w-5 text-gray-400" />
-              <h3 className="text-lg font-bold text-gray-900">Full Transcript</h3>
-              <span className="text-sm text-gray-400">
+              <MessageSquare className="h-5 w-5 text-neutral-500" />
+              <h3 className="text-lg font-bold text-white">Full Transcript</h3>
+              <span className="text-sm text-neutral-500">
                 ({(session.transcript || []).length} messages)
               </span>
             </div>
             <ChevronRight
-              className={`h-5 w-5 text-gray-400 transition ${showTranscript ? "rotate-90" : ""}`}
+              className={`h-5 w-5 text-neutral-500 transition ${showTranscript ? "rotate-90" : ""}`}
             />
           </button>
           {showTranscript && (
             <div className="border-t px-6 py-4 space-y-4 max-h-96 overflow-y-auto">
               {(session.transcript || []).length === 0 && (
-                <p className="text-sm text-amber-600 py-2">This session has no transcript. It may have ended before any conversation took place.</p>
+                <p className="text-sm text-amber-400 py-2">This session has no transcript. It may have ended before any conversation took place.</p>
               )}
               {(session.transcript || []).map((entry, i) => (
                 <div key={i} className={`flex ${entry.role === "user" ? "justify-end" : "justify-start"}`}>
                   <div
                     className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm ${
                       entry.role === "user"
-                        ? "bg-emerald-100 text-emerald-900"
-                        : "bg-gray-100 text-gray-800"
+                        ? "bg-emerald-500/15 text-emerald-300"
+                        : "bg-[#1a1a1a] text-neutral-100"
                     }`}
                   >
-                    <p className="mb-1 text-xs font-medium text-gray-500">
+                    <p className="mb-1 text-xs font-medium text-neutral-400">
                       {entry.role === "user" ? "You" : (
                         <>
                           {entry.speaker || session.personaName}
                           {entry.speakerTitle && session.isPanelMode && (
-                            <span className="ml-1 text-gray-400">&middot; {entry.speakerTitle}</span>
+                            <span className="ml-1 text-neutral-500">&middot; {entry.speakerTitle}</span>
                           )}
                         </>
                       )}

@@ -89,19 +89,19 @@ const STEP_ICONS: Record<string, React.ElementType> = {
 };
 
 const STATUS_STYLES: Record<string, { ring: string; bg: string; text: string; icon: string }> = {
-  submitted: { ring: "ring-blue-200", bg: "bg-blue-50", text: "text-blue-700", icon: "text-blue-400" },
-  researching: { ring: "ring-amber-200", bg: "bg-amber-50", text: "text-amber-700", icon: "text-amber-500" },
-  generating: { ring: "ring-green-200", bg: "bg-green-50", text: "text-green-700", icon: "text-green-500" },
-  ready: { ring: "ring-emerald-200", bg: "bg-emerald-50", text: "text-emerald-700", icon: "text-emerald-500" },
-  delivered: { ring: "ring-emerald-200", bg: "bg-emerald-50", text: "text-emerald-700", icon: "text-emerald-500" },
-  failed: { ring: "ring-red-200", bg: "bg-red-50", text: "text-red-700", icon: "text-red-500" },
-  awaiting_clarification: { ring: "ring-emerald-200", bg: "bg-emerald-50", text: "text-emerald-800", icon: "text-emerald-600" },
+  submitted: { ring: "ring-blue-200", bg: "bg-blue-500/10", text: "text-blue-400", icon: "text-blue-400" },
+  researching: { ring: "ring-amber-200", bg: "bg-amber-500/10", text: "text-amber-400", icon: "text-amber-500" },
+  generating: { ring: "ring-green-200", bg: "bg-green-500/10", text: "text-green-400", icon: "text-green-500" },
+  ready: { ring: "ring-emerald-200", bg: "bg-emerald-500/10", text: "text-emerald-400", icon: "text-emerald-500" },
+  delivered: { ring: "ring-emerald-200", bg: "bg-emerald-500/10", text: "text-emerald-400", icon: "text-emerald-500" },
+  failed: { ring: "ring-red-200", bg: "bg-red-500/10", text: "text-red-400", icon: "text-red-500" },
+  awaiting_clarification: { ring: "ring-emerald-200", bg: "bg-emerald-500/10", text: "text-emerald-400", icon: "text-emerald-400" },
 };
 
 const ASSET_CATEGORY_LABELS: Record<string, { label: string; description: string; color: string }> = {
-  interactive: { label: "Interactive", description: "Open in your browser. Bookmark for quick reference during or before calls.", color: "bg-emerald-100 text-emerald-800" },
-  research: { label: "Research", description: "Study material for before the call. Read thoroughly, not during the meeting.", color: "bg-blue-100 text-blue-700" },
-  deliverable: { label: "Deliverable", description: "Download, print, or share. Call docs go on-screen; cards and decks are for sending.", color: "bg-emerald-100 text-emerald-700" },
+  interactive: { label: "Interactive", description: "Open in your browser. Bookmark for quick reference during or before calls.", color: "bg-emerald-500/15 text-emerald-400" },
+  research: { label: "Research", description: "Study material for before the call. Read thoroughly, not during the meeting.", color: "bg-blue-500/15 text-blue-400" },
+  deliverable: { label: "Deliverable", description: "Download, print, or share. Call docs go on-screen; cards and decks are for sending.", color: "bg-emerald-500/15 text-emerald-400" },
 };
 
 const FORMAT_ICONS: Record<string, string> = {
@@ -259,7 +259,7 @@ export default function RequestDetailPage() {
   if (!isLoaded || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-emerald-700" />
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-400" />
       </div>
     );
   }
@@ -269,8 +269,8 @@ export default function RequestDetailPage() {
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <AlertCircle className="mx-auto h-12 w-12 text-red-400" />
-          <p className="mt-4 text-gray-600">{error || "Request not found"}</p>
-          <a href="/requests" className="mt-4 inline-block text-sm font-medium text-emerald-700 hover:text-emerald-900">
+          <p className="mt-4 text-neutral-300">{error || "Request not found"}</p>
+          <a href="/requests" className="mt-4 inline-block text-sm font-medium text-emerald-400 hover:text-emerald-300">
             ← Back to requests
           </a>
         </div>
@@ -281,23 +281,23 @@ export default function RequestDetailPage() {
   const statusStyle = STATUS_STYLES[request.status] || STATUS_STYLES.submitted;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <AppNav currentPage="/requests" />
 
       {/* Request detail bar */}
-      <div className="border-b bg-white">
+      <div className="border-b bg-[#141414]">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-3">
           <div>
-            <h1 className="text-lg font-bold text-gray-900">
+            <h1 className="text-lg font-bold text-white">
               {TOOL_NAMES[request.toolName] || request.toolName}
             </h1>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-neutral-400">
               {request.targetName} · {request.targetCompany}
               {request.targetRole ? ` · ${request.targetRole}` : ""}
             </p>
           </div>
           {request.priority && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 border border-amber-200 px-2.5 py-1 text-xs font-medium text-amber-700">
+            <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 text-xs font-medium text-amber-400">
               <Zap className="h-3 w-3" /> Priority
             </span>
           )}
@@ -321,18 +321,18 @@ export default function RequestDetailPage() {
               {request.progress}%
             </span>
           </div>
-          <div className="h-2 rounded-full bg-white/60 overflow-hidden">
+          <div className="h-2 rounded-full bg-[#141414]/60 overflow-hidden">
             <div
               className={`h-full rounded-full transition-all duration-700 ease-out ${
-                request.status === "failed" ? "bg-red-500" :
-                request.progress === 100 ? "bg-emerald-500" :
-                "bg-emerald-500"
+                request.status === "failed" ? "bg-red-500/100" :
+                request.progress === 100 ? "bg-emerald-500/100" :
+                "bg-emerald-500/100"
               }`}
               style={{ width: `${request.progress}%` }}
             />
           </div>
           <div className="mt-2 flex items-center justify-between">
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-neutral-400">
               {request.completedSteps} of {request.totalSteps} steps completed
               {etaInfo && isActive && (
                 <> · {formatDuration(etaInfo.totalElapsed)} elapsed</>
@@ -342,7 +342,7 @@ export default function RequestDetailPage() {
               )}
             </p>
             {isActive && etaInfo && (
-              <span className="text-xs font-medium text-emerald-600">
+              <span className="text-xs font-medium text-emerald-400">
                 {etaInfo.etaText}
               </span>
             )}
@@ -354,18 +354,18 @@ export default function RequestDetailPage() {
          request.createdAt &&
          request.completedSteps === 0 &&
          (Date.now() - new Date(request.createdAt).getTime() > 5 * 60 * 1000) && (
-          <div className="rounded-xl border border-amber-200 bg-amber-50 p-6">
+          <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 p-6">
             <div className="flex items-start gap-3">
               <Clock className="h-5 w-5 text-amber-500 mt-0.5" />
               <div className="flex-1">
-                <h3 className="font-semibold text-amber-800">Taking longer than usual</h3>
-                <p className="mt-1 text-sm text-amber-700">
+                <h3 className="font-semibold text-amber-400">Taking longer than usual</h3>
+                <p className="mt-1 text-sm text-amber-400">
                   This blitz has been in the queue for a while. Hit retry to kick it off again at no extra cost.
                 </p>
                 <button
                   onClick={retryRequest}
                   disabled={retrying}
-                  className="mt-3 inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50 transition"
+                  className="mt-3 inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-600 disabled:opacity-50 transition"
                 >
                   {retrying ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -381,17 +381,17 @@ export default function RequestDetailPage() {
 
         {/* Clarification Banner */}
         {request.status === "awaiting_clarification" && (
-          <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-6">
+          <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-6">
             <div className="flex items-start gap-4">
-              <MessageCircleQuestion className="h-6 w-6 text-emerald-700 shrink-0 mt-0.5" />
+              <MessageCircleQuestion className="h-6 w-6 text-emerald-400 shrink-0 mt-0.5" />
               <div className="flex-1">
-                <h3 className="font-semibold text-emerald-900">Quick questions to sharpen your blitz</h3>
-                <p className="mt-1 text-sm text-emerald-800">
+                <h3 className="font-semibold text-emerald-300">Quick questions to sharpen your blitz</h3>
+                <p className="mt-1 text-sm text-emerald-400">
                   A couple of details will help us nail the specifics. Takes about 2 minutes.
                 </p>
                 <a
                   href={`/request/${request.id}/clarify`}
-                  className="mt-4 inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 transition"
+                  className="mt-4 inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-600 transition"
                 >
                   <MessageCircleQuestion className="h-4 w-4" />
                   Answer Questions
@@ -402,9 +402,9 @@ export default function RequestDetailPage() {
         )}
 
         {/* Execution Steps */}
-        <div className="rounded-xl border bg-white shadow-sm">
+        <div className="rounded-xl border bg-[#141414] shadow-sm shadow-black/20">
           <div className="border-b px-6 py-4">
-            <h2 className="font-semibold text-gray-900">What&apos;s happening</h2>
+            <h2 className="font-semibold text-white">What&apos;s happening</h2>
           </div>
           <div className="divide-y">
             {request.steps.map((step, i) => {
@@ -419,7 +419,7 @@ export default function RequestDetailPage() {
                 <div
                   key={step.id}
                   className={`flex items-start gap-4 px-6 py-4 transition ${
-                    isActive ? "bg-emerald-50/50" : ""
+                    isActive ? "bg-emerald-500/10/50" : ""
                   }`}
                 >
                   {/* Step indicator */}
@@ -427,11 +427,11 @@ export default function RequestDetailPage() {
                     {isComplete ? (
                       <CheckCircle2 className="h-5 w-5 text-emerald-500" />
                     ) : isActive ? (
-                      <Loader2 className="h-5 w-5 text-emerald-600 animate-spin" />
+                      <Loader2 className="h-5 w-5 text-emerald-400 animate-spin" />
                     ) : isFailed ? (
                       <AlertCircle className="h-5 w-5 text-red-500" />
                     ) : (
-                      <div className="h-5 w-5 rounded-full border-2 border-gray-200" />
+                      <div className="h-5 w-5 rounded-full border-2 border-[#262626]" />
                     )}
                   </div>
 
@@ -439,39 +439,39 @@ export default function RequestDetailPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <StepIcon className={`h-4 w-4 ${
-                        isActive ? "text-emerald-600" :
-                        isComplete ? "text-gray-400" :
-                        "text-gray-300"
+                        isActive ? "text-emerald-400" :
+                        isComplete ? "text-neutral-500" :
+                        "text-neutral-500"
                       }`} />
                       <span className={`text-sm font-medium ${
-                        isActive ? "text-emerald-800" :
-                        isComplete ? "text-gray-700" :
-                        isFailed ? "text-red-700" :
-                        "text-gray-400"
+                        isActive ? "text-emerald-400" :
+                        isComplete ? "text-neutral-200" :
+                        isFailed ? "text-red-400" :
+                        "text-neutral-500"
                       }`}>
                         {step.label}
                       </span>
                     </div>
                     {(isActive || isComplete || isFailed) && (
-                      <p className="mt-1 text-xs text-gray-500">{step.description}</p>
+                      <p className="mt-1 text-xs text-neutral-400">{step.description}</p>
                     )}
                     {isActive && step.startedAt && (
-                      <p className="mt-1 text-xs text-emerald-600 font-medium tabular-nums">
+                      <p className="mt-1 text-xs text-emerald-400 font-medium tabular-nums">
                         Running for {formatDuration(activeStepElapsed)}
                       </p>
                     )}
                     {isFailed && step.error && (
-                      <p className="mt-1 text-xs text-red-600">{step.error}</p>
+                      <p className="mt-1 text-xs text-red-400">{step.error}</p>
                     )}
                     {isComplete && step.startedAt && step.completedAt && (
-                      <p className="mt-1 text-xs text-gray-400">
+                      <p className="mt-1 text-xs text-neutral-500">
                         {formatDuration(new Date(step.completedAt).getTime() - new Date(step.startedAt).getTime())}
                       </p>
                     )}
                   </div>
 
                   {/* Step number */}
-                  <span className="text-xs text-gray-300 font-mono mt-1">
+                  <span className="text-xs text-neutral-500 font-mono mt-1">
                     {i + 1}/{request.totalSteps}
                   </span>
                 </div>
@@ -487,9 +487,9 @@ export default function RequestDetailPage() {
 
         {/* Assets / Deliverables */}
         {request.assets.some((a: AssetData) => a.url) && (
-          <div className="rounded-xl border bg-white shadow-sm">
+          <div className="rounded-xl border bg-[#141414] shadow-sm shadow-black/20">
             <div className="border-b px-6 py-4">
-              <h2 className="font-semibold text-gray-900">Your Deliverables</h2>
+              <h2 className="font-semibold text-white">Your Deliverables</h2>
             </div>
             <div className="divide-y">
               {(["interactive", "research", "deliverable"] as const).map((category) => {
@@ -505,7 +505,7 @@ export default function RequestDetailPage() {
                       <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${catInfo.color}`}>
                         {catInfo.label}
                       </span>
-                      <p className="mt-1 text-xs text-gray-400">{catInfo.description}</p>
+                      <p className="mt-1 text-xs text-neutral-500">{catInfo.description}</p>
                     </div>
                     <div className="space-y-2">
                       {categoryAssets.map((asset: AssetData) => (
@@ -514,25 +514,25 @@ export default function RequestDetailPage() {
                           href={asset.url!}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-3 rounded-lg border border-gray-100 px-4 py-3 hover:bg-gray-50 hover:border-gray-200 transition group"
+                          className="flex items-center gap-3 rounded-lg border border-[#1a1a1a] px-4 py-3 hover:bg-[#0a0a0a] hover:border-[#262626] transition group"
                         >
                           <span className="text-lg">{FORMAT_ICONS[asset.format] || "📄"}</span>
                           <div className="flex-1 min-w-0">
-                            <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900 block truncate">
+                            <span className="text-sm font-medium text-neutral-200 group-hover:text-white block truncate">
                               {asset.label}
                             </span>
                             {asset.size && (
-                              <span className="text-xs text-gray-400">
+                              <span className="text-xs text-neutral-500">
                                 {asset.size > 1024 * 1024
                                   ? `${(asset.size / (1024 * 1024)).toFixed(1)} MB`
                                   : `${Math.round(asset.size / 1024)} KB`}
                               </span>
                             )}
                           </div>
-                          <span className="rounded bg-gray-50 border border-gray-100 px-2 py-0.5 text-xs text-gray-500">
+                          <span className="rounded bg-[#0a0a0a] border border-[#1a1a1a] px-2 py-0.5 text-xs text-neutral-400">
                             {FORMAT_LABELS[asset.format] || asset.format.toUpperCase()}
                           </span>
-                          <ExternalLink className="h-4 w-4 text-gray-300 group-hover:text-emerald-600 shrink-0" />
+                          <ExternalLink className="h-4 w-4 text-neutral-500 group-hover:text-emerald-400 shrink-0" />
                         </a>
                       ))}
                     </div>
@@ -550,24 +550,24 @@ export default function RequestDetailPage() {
 
         {/* Practice This Call CTA */}
         {(request.status === "delivered" || request.status === "ready") && (
-          <div className="rounded-xl border-2 border-emerald-200 bg-gradient-to-r from-emerald-50 to-white p-6">
+          <div className="rounded-xl border-2 border-emerald-500/20 bg-gradient-to-r from-emerald-50 to-[#141414] p-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100">
-                  <Video className="h-6 w-6 text-emerald-700" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/15">
+                  <Video className="h-6 w-6 text-emerald-400" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">
+                  <h3 className="font-semibold text-white">
                     {request.toolName.startsWith("interview") ? "Rehearse before your interview" : "Rehearse before the real thing"}
                   </h3>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-neutral-400">
                     Practice with an AI persona built from this blitz&apos;s research
                   </p>
                 </div>
               </div>
               <a
                 href={`/practice?runRequestId=${request.id}&company=${encodeURIComponent(request.targetCompany)}&meetingType=${request.toolName.startsWith("interview") ? "hiring_manager" : "discovery"}`}
-                className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700 transition"
+                className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-600 transition"
               >
                 <Video className="h-4 w-4" />
                 Start Practice
@@ -578,17 +578,17 @@ export default function RequestDetailPage() {
 
         {/* Error State */}
         {request.status === "failed" && request.errorMessage && (
-          <div className="rounded-xl border border-red-200 bg-red-50 p-6">
+          <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-6">
             <div className="flex items-start gap-3">
               <AlertCircle className="h-5 w-5 text-red-500 mt-0.5" />
               <div className="flex-1">
-                <h3 className="font-semibold text-red-800">This blitz hit a snag</h3>
-                <p className="mt-1 text-sm text-red-700">{request.errorMessage}</p>
+                <h3 className="font-semibold text-red-400">This blitz hit a snag</h3>
+                <p className="mt-1 text-sm text-red-400">{request.errorMessage}</p>
                 <div className="mt-4 flex items-center gap-3">
                   <button
                     onClick={retryRequest}
                     disabled={retrying}
-                    className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50 transition"
+                    className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-600 disabled:opacity-50 transition"
                   >
                     {retrying ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -598,7 +598,7 @@ export default function RequestDetailPage() {
                     {retrying ? "Retrying..." : "Retry (no extra cost)"}
                   </button>
                 </div>
-                <p className="mt-3 text-xs text-gray-500">
+                <p className="mt-3 text-xs text-neutral-400">
                   We&apos;ve been notified and are looking into it. If it keeps failing, reach out to support@salesblitz.ai
                 </p>
               </div>
@@ -607,7 +607,7 @@ export default function RequestDetailPage() {
         )}
 
         {/* Metadata */}
-        <div className="text-center text-xs text-gray-400 pb-8">
+        <div className="text-center text-xs text-neutral-500 pb-8">
           Request ID: {request.id} · Submitted {new Date(request.createdAt).toLocaleDateString()} at {new Date(request.createdAt).toLocaleTimeString()}
         </div>
       </main>

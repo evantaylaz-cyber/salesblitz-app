@@ -132,12 +132,12 @@ export default function OnboardingChatPage() {
   const showSuggestions = messages.length === 0;
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-[#0a0a0a]">
       {/* Sidebar: Progress Tracker */}
-      <aside className="hidden md:flex w-72 flex-col border-r border-gray-200 bg-white p-6">
+      <aside className="hidden md:flex w-72 flex-col border-r border-[#262626] bg-[#141414] p-6">
         <div className="mb-8">
-          <h2 className="text-lg font-semibold text-gray-900">Setup Progress</h2>
-          <p className="text-sm text-gray-500 mt-1">
+          <h2 className="text-lg font-semibold text-white">Setup Progress</h2>
+          <p className="text-sm text-neutral-400 mt-1">
             Your context powers every Sales Blitz output.
           </p>
         </div>
@@ -149,23 +149,23 @@ export default function OnboardingChatPage() {
               <div
                 key={phase.id}
                 className={`flex items-start gap-3 p-3 rounded-lg transition-colors ${
-                  done ? "bg-green-50" : "bg-gray-50"
+                  done ? "bg-green-500/10" : "bg-[#0a0a0a]"
                 }`}
               >
                 {done ? (
                   <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
                 ) : (
-                  <Circle className="w-5 h-5 text-gray-300 mt-0.5 flex-shrink-0" />
+                  <Circle className="w-5 h-5 text-neutral-500 mt-0.5 flex-shrink-0" />
                 )}
                 <div>
                   <p
                     className={`text-sm font-medium ${
-                      done ? "text-green-800" : "text-gray-700"
+                      done ? "text-green-400" : "text-neutral-200"
                     }`}
                   >
                     {phase.label}
                   </p>
-                  <p className="text-xs text-gray-500">{phase.description}</p>
+                  <p className="text-xs text-neutral-400">{phase.description}</p>
                 </div>
               </div>
             );
@@ -175,7 +175,7 @@ export default function OnboardingChatPage() {
         {onboardingDone && (
           <button
             onClick={() => router.push("/dashboard")}
-            className="mt-6 flex items-center justify-center gap-2 w-full px-4 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors text-sm font-medium"
+            className="mt-6 flex items-center justify-center gap-2 w-full px-4 py-3 bg-[#141414] text-white rounded-lg hover:bg-[#1a1a1a] transition-colors text-sm font-medium"
           >
             Go to Dashboard
             <ArrowRight className="w-4 h-4" />
@@ -186,18 +186,18 @@ export default function OnboardingChatPage() {
       {/* Main Chat Area */}
       <main className="flex-1 flex flex-col">
         {/* Header */}
-        <header className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white">
+        <header className="flex items-center justify-between px-6 py-4 border-b border-[#262626] bg-[#141414]">
           <div className="flex items-center gap-3">
             <button
               onClick={() => router.push("/dashboard")}
-              className="flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+              className="flex items-center justify-center w-8 h-8 rounded-lg text-neutral-500 hover:text-neutral-300 hover:bg-[#1a1a1a] transition-colors"
               title="Back to dashboard"
             >
               <ArrowLeft className="w-4 h-4" />
             </button>
             <div>
-              <h1 className="text-lg font-semibold text-gray-900">Sales Blitz Setup</h1>
-              <p className="text-sm text-gray-500">
+              <h1 className="text-lg font-semibold text-white">Sales Blitz Setup</h1>
+              <p className="text-sm text-neutral-400">
                 {onboardingDone
                   ? "Setup complete. Head to the dashboard."
                   : "Company name & URL. We'll research the rest."}
@@ -207,13 +207,13 @@ export default function OnboardingChatPage() {
 
           <div className="flex items-center gap-4">
             {/* Mobile phase counter */}
-            <div className="md:hidden text-sm text-gray-500">
+            <div className="md:hidden text-sm text-neutral-400">
               {completedPhases.size}/4 complete
             </div>
             {!onboardingDone && (
               <button
                 onClick={() => router.push("/dashboard")}
-                className="hidden md:inline-flex text-xs text-gray-400 hover:text-gray-600 transition-colors"
+                className="hidden md:inline-flex text-xs text-neutral-500 hover:text-neutral-300 transition-colors"
               >
                 Skip for now
               </button>
@@ -230,14 +230,14 @@ export default function OnboardingChatPage() {
           {messages.length === 0 && (
             <div className="max-w-2xl mx-auto">
               <div className="flex gap-3 mb-6">
-                <div className="w-8 h-8 rounded-full bg-gray-900 flex items-center justify-center flex-shrink-0">
+                <div className="w-8 h-8 rounded-full bg-[#141414] flex items-center justify-center flex-shrink-0">
                   <Bot className="w-4 h-4 text-white" />
                 </div>
-                <div className="bg-white border border-gray-200 rounded-2xl rounded-tl-md px-4 py-3 max-w-lg">
-                  <p className="text-sm text-gray-800 leading-relaxed">
+                <div className="bg-[#141414] border border-[#262626] rounded-2xl rounded-tl-md px-4 py-3 max-w-lg">
+                  <p className="text-sm text-neutral-100 leading-relaxed">
                     Let's get you set up. Two things to start: your company name and website URL. I'll research the rest so you don't have to.
                   </p>
-                  <p className="text-sm text-gray-800 leading-relaxed mt-2">
+                  <p className="text-sm text-neutral-100 leading-relaxed mt-2">
                     Takes about 3 minutes. Most of that is me doing homework, not you.
                   </p>
                 </div>
@@ -255,7 +255,7 @@ export default function OnboardingChatPage() {
                     <button
                       key={suggestion}
                       onClick={() => handleSuggestion(suggestion)}
-                      className="text-xs px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full transition-colors border border-gray-200"
+                      className="text-xs px-3 py-1.5 bg-[#1a1a1a] hover:bg-[#262626] text-neutral-200 rounded-full transition-colors border border-[#262626]"
                     >
                       {suggestion}
                     </button>
@@ -295,7 +295,7 @@ export default function OnboardingChatPage() {
                   {/* Avatar */}
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                      isUser ? "bg-emerald-600" : "bg-gray-900"
+                      isUser ? "bg-emerald-600" : "bg-[#141414]"
                     }`}
                   >
                     {isUser ? (
@@ -310,7 +310,7 @@ export default function OnboardingChatPage() {
                     className={`px-4 py-3 max-w-lg text-sm leading-relaxed whitespace-pre-wrap ${
                       isUser
                         ? "bg-emerald-600 text-white rounded-2xl rounded-tr-md"
-                        : "bg-white border border-gray-200 text-gray-800 rounded-2xl rounded-tl-md"
+                        : "bg-[#141414] border border-[#262626] text-neutral-100 rounded-2xl rounded-tl-md"
                     }`}
                   >
                     {textContent}
@@ -324,11 +324,11 @@ export default function OnboardingChatPage() {
           {isLoading && (
             <div className="max-w-2xl mx-auto">
               <div className="flex gap-3">
-                <div className="w-8 h-8 rounded-full bg-gray-900 flex items-center justify-center flex-shrink-0">
+                <div className="w-8 h-8 rounded-full bg-[#141414] flex items-center justify-center flex-shrink-0">
                   <Bot className="w-4 h-4 text-white" />
                 </div>
-                <div className="bg-white border border-gray-200 rounded-2xl rounded-tl-md px-4 py-3">
-                  <Loader2 className="w-4 h-4 text-gray-400 animate-spin" />
+                <div className="bg-[#141414] border border-[#262626] rounded-2xl rounded-tl-md px-4 py-3">
+                  <Loader2 className="w-4 h-4 text-neutral-500 animate-spin" />
                 </div>
               </div>
             </div>
@@ -336,10 +336,10 @@ export default function OnboardingChatPage() {
         </div>
 
         {/* Input Area */}
-        <div className="border-t border-gray-200 bg-white px-4 md:px-6 py-4">
+        <div className="border-t border-[#262626] bg-[#141414] px-4 md:px-6 py-4">
           {isListening && interimTranscript && (
             <div className="max-w-2xl mx-auto mb-2">
-              <p className="truncate rounded bg-gray-100 px-3 py-1.5 text-xs text-gray-500 italic">
+              <p className="truncate rounded bg-[#1a1a1a] px-3 py-1.5 text-xs text-neutral-400 italic">
                 {interimTranscript}
               </p>
             </div>
@@ -361,7 +361,7 @@ export default function OnboardingChatPage() {
                     : "Type your response..."
                 }
                 rows={1}
-                className="w-full resize-none rounded-xl border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent placeholder:text-gray-400 max-h-32 overflow-y-auto"
+                className="w-full resize-none rounded-xl border border-[#333333] bg-[#0a0a0a] px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent placeholder:text-neutral-500 max-h-32 overflow-y-auto"
                 style={{
                   height: "auto",
                   minHeight: "44px",
@@ -389,8 +389,8 @@ export default function OnboardingChatPage() {
               title="Upload resume (PDF, DOCX, TXT)"
               className={`flex items-center justify-center w-10 h-10 rounded-xl transition-colors flex-shrink-0 ${
                 uploadingFile
-                  ? "bg-emerald-100 text-emerald-600 animate-pulse"
-                  : "bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-600"
+                  ? "bg-emerald-500/15 text-emerald-400 animate-pulse"
+                  : "bg-[#1a1a1a] text-neutral-500 hover:bg-[#262626] hover:text-neutral-300"
               } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
               {uploadingFile ? <Loader2 className="w-4 h-4 animate-spin" /> : <Paperclip className="w-4 h-4" />}
@@ -402,8 +402,8 @@ export default function OnboardingChatPage() {
                 title={isListening ? "Stop listening" : "Voice input"}
                 className={`flex items-center justify-center w-10 h-10 rounded-xl transition-colors flex-shrink-0 ${
                   isListening
-                    ? "bg-red-100 text-red-600 animate-pulse"
-                    : "bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-600"
+                    ? "bg-red-500/15 text-red-400 animate-pulse"
+                    : "bg-[#1a1a1a] text-neutral-500 hover:bg-[#262626] hover:text-neutral-300"
                 }`}
               >
                 {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
@@ -412,7 +412,7 @@ export default function OnboardingChatPage() {
             <button
               type="submit"
               disabled={!input.trim() || isLoading}
-              className="flex items-center justify-center w-10 h-10 rounded-xl bg-gray-900 text-white hover:bg-gray-800 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex-shrink-0"
+              className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#141414] text-white hover:bg-[#1a1a1a] disabled:bg-neutral-700 disabled:cursor-not-allowed transition-colors flex-shrink-0"
             >
               <Send className="w-4 h-4" />
             </button>

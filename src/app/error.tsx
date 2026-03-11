@@ -15,18 +15,18 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-6">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-[#0a0a0a] px-6">
       <div className="text-center">
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
           <AlertTriangle className="h-8 w-8 text-red-600" />
         </div>
-        <h1 className="mt-6 text-2xl font-bold text-gray-900">Something went wrong</h1>
-        <p className="mt-2 text-gray-500">
+        <h1 className="mt-6 text-2xl font-bold text-white">Something went wrong</h1>
+        <p className="mt-2 text-neutral-400">
           An unexpected error occurred. Please try again or contact support if the problem
           persists.
         </p>
         {error.digest && (
-          <p className="mt-2 text-xs text-gray-400">Error ID: {error.digest}</p>
+          <p className="mt-2 text-xs text-neutral-500">Error ID: {error.digest}</p>
         )}
         <div className="mt-8 flex items-center justify-center gap-3">
           <button
@@ -38,7 +38,7 @@ export default function Error({
           </button>
           <a
             href="/dashboard"
-            className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-6 py-3 text-sm font-semibold text-gray-700 transition hover:bg-gray-50"
+            className="inline-flex items-center gap-2 rounded-lg border border-[#262626] bg-[#141414] px-6 py-3 text-sm font-semibold text-neutral-200 transition hover:bg-[#0a0a0a]"
           >
             <ArrowLeft className="h-4 w-4" />
             Dashboard

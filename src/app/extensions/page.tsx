@@ -120,9 +120,9 @@ export default function ExtensionsPage() {
         "No. Tab audio capture is completely invisible. No bot joins the call, no notification appears, and others have no way to know you're recording.",
     },
     {
-      question: "What about consent laws?",
+      question: "Should I tell the other person I'm recording?",
       answer:
-        "Check your local recording consent laws. We recommend informing all parties you're recording, regardless of what the law requires in your jurisdiction.",
+        'Always. Even when the law doesn\'t require it, transparency builds trust. Try: "This conversation is important to me so I have an AI note-taker running. It helps me stay present instead of scribbling notes." If they say no, turn it off immediately. 11 US states require all-party consent (CA, FL, IL, MA, MD, CT, MI, MT, NH, PA, WA), so if any participant is in one of those states, disclosure is legally required.',
     },
     {
       question: "How long can I record?",
@@ -151,16 +151,16 @@ export default function ExtensionsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <AppNav currentPage="/extensions" />
 
       <main className="mx-auto max-w-3xl px-6 py-8">
         {/* Header */}
         <div className="mb-10">
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">
+          <h1 className="text-4xl font-bold text-white mb-3">
             Meeting Intelligence
           </h1>
-          <p className="text-lg text-gray-600">
+          <p className="text-lg text-neutral-300">
             Record your calls, get transcripts with speaker detection, and receive AI coaching on your discovery, objection handling, and closing. All analysis feeds into your next blitz.
           </p>
         </div>
@@ -171,7 +171,7 @@ export default function ExtensionsPage() {
             href="https://chrome.google.com/webstore"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-base font-semibold text-white hover:bg-emerald-700 transition"
+            className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-base font-semibold text-white hover:bg-emerald-600 transition"
           >
             <Download className="h-5 w-5" />
             Get the extension
@@ -180,23 +180,23 @@ export default function ExtensionsPage() {
 
         {/* Setup Steps */}
         <section className="mb-12">
-          <h2 className="mb-5 text-xl font-bold text-gray-900">
+          <h2 className="mb-5 text-xl font-bold text-white">
             Step-by-step setup
           </h2>
           <div className="space-y-3">
             {steps.map((step) => (
               <div
                 key={step.number}
-                className="flex gap-4 rounded-xl border border-gray-200 bg-white p-5 hover:shadow-sm transition"
+                className="flex gap-4 rounded-xl border border-[#262626] bg-[#141414] p-5 hover:shadow-sm shadow-black/20 transition"
               >
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 font-semibold">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-400 font-semibold">
                   {step.number}
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900">
+                  <h3 className="font-semibold text-white">
                     {step.title}
                   </h3>
-                  <p className="mt-1 text-sm text-gray-600">
+                  <p className="mt-1 text-sm text-neutral-300">
                     {step.description}
                   </p>
                 </div>
@@ -207,7 +207,7 @@ export default function ExtensionsPage() {
 
         {/* What You Get */}
         <section className="mb-12">
-          <h2 className="mb-5 text-xl font-bold text-gray-900">
+          <h2 className="mb-5 text-xl font-bold text-white">
             What you get
           </h2>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -216,15 +216,15 @@ export default function ExtensionsPage() {
               return (
                 <div
                   key={idx}
-                  className="rounded-xl border border-gray-200 bg-white p-5"
+                  className="rounded-xl border border-[#262626] bg-[#141414] p-5"
                 >
-                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100">
-                    <Icon className="h-5 w-5 text-emerald-700" />
+                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/15">
+                    <Icon className="h-5 w-5 text-emerald-400" />
                   </div>
-                  <h3 className="font-semibold text-gray-900">
+                  <h3 className="font-semibold text-white">
                     {feature.title}
                   </h3>
-                  <p className="mt-2 text-sm text-gray-600">
+                  <p className="mt-2 text-sm text-neutral-300">
                     {feature.description}
                   </p>
                 </div>
@@ -235,34 +235,34 @@ export default function ExtensionsPage() {
 
         {/* Supported Platforms */}
         <section className="mb-12">
-          <h2 className="mb-5 text-xl font-bold text-gray-900">
+          <h2 className="mb-5 text-xl font-bold text-white">
             Supported platforms
           </h2>
           <div className="space-y-3">
             {platforms.map((platform, idx) => (
               <div
                 key={idx}
-                className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-5"
+                className="flex items-center justify-between rounded-xl border border-[#262626] bg-[#141414] p-5"
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100">
-                    <platform.icon className="h-5 w-5 text-gray-600" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#1a1a1a]">
+                    <platform.icon className="h-5 w-5 text-neutral-300" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">
+                    <h3 className="font-semibold text-white">
                       {platform.name}
                     </h3>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 text-sm font-medium text-emerald-700">
+                <div className="flex items-center gap-2 text-sm font-medium text-emerald-400">
                   <Check className="h-4 w-4" />
                   {platform.status}
                 </div>
               </div>
             ))}
           </div>
-          <div className="mt-4 flex items-start gap-3 rounded-lg bg-blue-50 p-4">
-            <AlertCircle className="h-5 w-5 shrink-0 text-blue-600 mt-0.5" />
+          <div className="mt-4 flex items-start gap-3 rounded-lg bg-blue-500/10 p-4">
+            <AlertCircle className="h-5 w-5 shrink-0 text-blue-400 mt-0.5" />
             <p className="text-sm text-blue-900">
               Desktop apps require the web version for tab audio capture. Open Google Meet, Zoom, or Teams in your browser instead of the native app.
             </p>
@@ -271,28 +271,28 @@ export default function ExtensionsPage() {
 
         {/* FAQ */}
         <section>
-          <h2 className="mb-5 text-xl font-bold text-gray-900">
+          <h2 className="mb-5 text-xl font-bold text-white">
             Frequently asked questions
           </h2>
           <div className="space-y-2">
             {faqs.map((faq, idx) => (
-              <div key={idx} className="border border-gray-200 rounded-xl bg-white overflow-hidden">
+              <div key={idx} className="border border-[#262626] rounded-xl bg-[#141414] overflow-hidden">
                 <button
                   onClick={() => toggleFaq(idx)}
-                  className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-gray-50 transition"
+                  className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-[#0a0a0a] transition"
                 >
-                  <h3 className="font-semibold text-gray-900">
+                  <h3 className="font-semibold text-white">
                     {faq.question}
                   </h3>
                   {expandedFaq === idx ? (
-                    <ChevronUp className="h-5 w-5 shrink-0 text-gray-400" />
+                    <ChevronUp className="h-5 w-5 shrink-0 text-neutral-500" />
                   ) : (
-                    <ChevronDown className="h-5 w-5 shrink-0 text-gray-400" />
+                    <ChevronDown className="h-5 w-5 shrink-0 text-neutral-500" />
                   )}
                 </button>
                 {expandedFaq === idx && (
-                  <div className="border-t border-gray-200 bg-gray-50 px-5 py-4">
-                    <p className="text-sm text-gray-700">{faq.answer}</p>
+                  <div className="border-t border-[#262626] bg-[#0a0a0a] px-5 py-4">
+                    <p className="text-sm text-neutral-200">{faq.answer}</p>
                   </div>
                 )}
               </div>
@@ -301,18 +301,18 @@ export default function ExtensionsPage() {
         </section>
 
         {/* Bottom CTA */}
-        <div className="mt-12 rounded-xl bg-emerald-50 border border-emerald-200 p-6 text-center">
-          <h2 className="text-lg font-bold text-gray-900 mb-2">
+        <div className="mt-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 p-6 text-center">
+          <h2 className="text-lg font-bold text-white mb-2">
             Ready to record your calls?
           </h2>
-          <p className="text-sm text-gray-700 mb-5">
+          <p className="text-sm text-neutral-200 mb-5">
             Get the extension from Chrome Web Store and start capturing meeting intelligence.
           </p>
           <a
             href="https://chrome.google.com/webstore"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-base font-semibold text-white hover:bg-emerald-700 transition"
+            className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-base font-semibold text-white hover:bg-emerald-600 transition"
           >
             <Download className="h-5 w-5" />
             Get the extension

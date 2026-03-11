@@ -61,10 +61,10 @@ export default function VoiceTextarea({
     });
 
   const baseClass =
-    "w-full rounded-lg border px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none resize-y";
+    "w-full rounded-lg border px-3.5 py-2.5 text-sm text-white placeholder-neutral-500 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none resize-y";
   const borderClass = isListening
     ? "border-red-300 ring-1 ring-red-200"
-    : "border-gray-300";
+    : "border-[#333333]";
 
   return (
     <div className="relative">
@@ -82,7 +82,7 @@ export default function VoiceTextarea({
       {/* Interim transcript preview */}
       {isListening && interimTranscript && (
         <div className="absolute left-0 right-0 -bottom-8 px-1">
-          <p className="truncate rounded bg-gray-100 px-2 py-1 text-xs text-gray-500 italic">
+          <p className="truncate rounded bg-[#1a1a1a] px-2 py-1 text-xs text-neutral-400 italic">
             {interimTranscript}
           </p>
         </div>
@@ -96,8 +96,8 @@ export default function VoiceTextarea({
           title={isListening ? "Stop listening" : "Voice input"}
           className={`absolute right-2 top-2 rounded-md p-1.5 transition ${
             isListening
-              ? "bg-red-100 text-red-600 animate-pulse"
-              : "bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-600"
+              ? "bg-red-500/15 text-red-400 animate-pulse"
+              : "bg-[#1a1a1a] text-neutral-500 hover:bg-[#262626] hover:text-neutral-300"
           }`}
         >
           {isListening ? (

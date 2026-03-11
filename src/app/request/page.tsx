@@ -227,7 +227,7 @@ export default function RequestPage() {
   if (!isLoaded) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-emerald-700" />
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-400" />
       </div>
     );
   }
@@ -237,8 +237,8 @@ export default function RequestPage() {
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <AlertCircle className="mx-auto h-12 w-12 text-red-400" />
-          <p className="mt-3 text-gray-600">Invalid tool selected.</p>
-          <a href="/dashboard" className="mt-4 inline-block text-emerald-700 hover:underline">
+          <p className="mt-3 text-neutral-300">Invalid tool selected.</p>
+          <a href="/dashboard" className="mt-4 inline-block text-emerald-400 hover:underline">
             Back to Dashboard
           </a>
         </div>
@@ -329,31 +329,31 @@ export default function RequestPage() {
 
   if (submitted) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 p-6">
+      <div className="flex min-h-screen items-center justify-center bg-[#0a0a0a] p-6">
         <div className="max-w-md w-full text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
-            <CheckCircle2 className="h-8 w-8 text-emerald-600" />
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/15">
+            <CheckCircle2 className="h-8 w-8 text-emerald-400" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Blitz Started</h1>
-          <p className="mt-3 text-gray-600">
+          <h1 className="text-2xl font-bold text-white">Blitz Started</h1>
+          <p className="mt-3 text-neutral-300">
             Your <strong>{toolInfo.name}</strong> blitz for{" "}
             <strong>{targetName}</strong> at <strong>{targetCompany}</strong> is running.
           </p>
-          <p className="mt-2 text-sm text-gray-500">
+          <p className="mt-2 text-sm text-neutral-400">
             We&apos;re researching and building your deliverables now. Track progress in real-time.
           </p>
           <div className="mt-6 flex gap-3 justify-center">
             {submittedRequestId && (
               <a
                 href={`/requests/${submittedRequestId}`}
-                className="rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-700"
+                className="rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-600"
               >
                 Track Progress
               </a>
             )}
             <a
               href="/dashboard"
-              className="rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              className="rounded-lg border border-[#333333] bg-[#141414] px-5 py-2.5 text-sm font-medium text-neutral-200 hover:bg-[#0a0a0a]"
             >
               Back to Dashboard
             </a>
@@ -364,18 +364,18 @@ export default function RequestPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="border-b bg-white">
+    <div className="min-h-screen">
+      <header className="border-b bg-[#141414]">
         <div className="mx-auto flex max-w-3xl items-center gap-4 px-6 py-4">
           <button
             onClick={() => router.push("/dashboard")}
-            className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+            className="rounded-lg p-1.5 text-neutral-500 hover:bg-[#1a1a1a] hover:text-neutral-300"
           >
             <ArrowLeft className="h-5 w-5" />
           </button>
           <div>
-            <h1 className="text-lg font-bold text-gray-900">{toolInfo.name}</h1>
-            <p className="text-sm text-gray-500">{toolInfo.subtitle}</p>
+            <h1 className="text-lg font-bold text-white">{toolInfo.name}</h1>
+            <p className="text-sm text-neutral-400">{toolInfo.subtitle}</p>
           </div>
         </div>
       </header>
@@ -383,21 +383,21 @@ export default function RequestPage() {
       <main className="mx-auto max-w-3xl px-6 py-8">
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
-            <div className="flex items-start gap-3 rounded-lg bg-red-50 border border-red-200 p-4">
+            <div className="flex items-start gap-3 rounded-lg bg-red-500/10 border border-red-500/20 p-4">
               <AlertCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
-              <p className="text-sm text-red-700">{error}</p>
+              <p className="text-sm text-red-400">{error}</p>
             </div>
           )}
 
           {/* Target Info */}
-          <div className="rounded-xl border bg-white p-6 shadow-sm">
-            <h2 className="text-base font-semibold text-gray-900 mb-4">
+          <div className="rounded-xl border bg-[#141414] p-6 shadow-sm shadow-black/20">
+            <h2 className="text-base font-semibold text-white mb-4">
               {isInterview ? "Who are you targeting?" : isProspect ? "Who is the prospect?" : "Deal details"}
             </h2>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-gray-700">
-                  <UserIcon className="h-3.5 w-3.5 text-gray-400" />
+                <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-neutral-200">
+                  <UserIcon className="h-3.5 w-3.5 text-neutral-500" />
                   {isInterview ? "Interviewer / Contact Name" : "Prospect Name"} *
                 </label>
                 <input
@@ -406,12 +406,12 @@ export default function RequestPage() {
                   value={targetName}
                   onChange={(e) => setTargetName(e.target.value)}
                   placeholder={isInterview ? "e.g., Jamie Torres" : "e.g., Alex Rivera"}
-                  className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+                  className="w-full rounded-lg border border-[#333333] bg-[#0a0a0a] px-3.5 py-2.5 text-sm text-white placeholder-neutral-500 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                 />
               </div>
               <div>
-                <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-gray-700">
-                  <Building2 className="h-3.5 w-3.5 text-gray-400" />
+                <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-neutral-200">
+                  <Building2 className="h-3.5 w-3.5 text-neutral-500" />
                   Company *
                 </label>
                 <input
@@ -420,14 +420,14 @@ export default function RequestPage() {
                   value={targetCompany}
                   onChange={(e) => setTargetCompany(e.target.value)}
                   placeholder="e.g., Stripe"
-                  className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+                  className="w-full rounded-lg border border-[#333333] bg-[#0a0a0a] px-3.5 py-2.5 text-sm text-white placeholder-neutral-500 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                 />
               </div>
             </div>
             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-gray-700">
-                  <Briefcase className="h-3.5 w-3.5 text-gray-400" />
+                <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-neutral-200">
+                  <Briefcase className="h-3.5 w-3.5 text-neutral-500" />
                   Role / Title
                 </label>
                 <input
@@ -435,12 +435,12 @@ export default function RequestPage() {
                   value={targetRole}
                   onChange={(e) => setTargetRole(e.target.value)}
                   placeholder="e.g., VP of Engineering"
-                  className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+                  className="w-full rounded-lg border border-[#333333] bg-[#0a0a0a] px-3.5 py-2.5 text-sm text-white placeholder-neutral-500 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                 />
               </div>
               <div>
-                <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-gray-700">
-                  <Globe className="h-3.5 w-3.5 text-gray-400" />
+                <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-neutral-200">
+                  <Globe className="h-3.5 w-3.5 text-neutral-500" />
                   Company Website
                 </label>
                 <input
@@ -448,17 +448,17 @@ export default function RequestPage() {
                   value={targetCompanyUrl}
                   onChange={(e) => setTargetCompanyUrl(e.target.value)}
                   placeholder="https://stripe.com"
-                  className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+                  className="w-full rounded-lg border border-[#333333] bg-[#0a0a0a] px-3.5 py-2.5 text-sm text-white placeholder-neutral-500 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                 />
-                <p className="mt-1 text-xs text-gray-400">Optional. We&apos;ll research them either way.</p>
+                <p className="mt-1 text-xs text-neutral-500">Optional. We&apos;ll research them either way.</p>
               </div>
             </div>
 
             {/* Pre-fill from prior run banner */}
             {matchingRun && !prefillApplied && (
-              <div className="mt-4 flex items-center justify-between rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3">
-                <div className="flex items-center gap-2 text-sm text-emerald-800">
-                  <Sparkles className="h-4 w-4 text-emerald-600 shrink-0" />
+              <div className="mt-4 flex items-center justify-between rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-4 py-3">
+                <div className="flex items-center gap-2 text-sm text-emerald-400">
+                  <Sparkles className="h-4 w-4 text-emerald-400 shrink-0" />
                   <span>
                     You ran <strong>{TOOL_INFO[matchingRun.toolName]?.name || matchingRun.toolName}</strong> for {matchingRun.targetCompany}
                     {matchingRun.targetName ? ` (${matchingRun.targetName})` : ""} on{" "}
@@ -468,7 +468,7 @@ export default function RequestPage() {
                 <button
                   type="button"
                   onClick={() => applyPrefill(matchingRun)}
-                  className="shrink-0 rounded-md bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-700 transition"
+                  className="shrink-0 rounded-md bg-emerald-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-emerald-600 transition"
                 >
                   Pre-fill
                 </button>
@@ -476,7 +476,7 @@ export default function RequestPage() {
             )}
 
             {prefillApplied && (
-              <p className="mt-3 text-xs text-emerald-600">
+              <p className="mt-3 text-xs text-emerald-400">
                 <CheckCircle2 className="inline h-3 w-3 mr-1" />
                 Pre-filled from prior run. Update any fields as needed.
               </p>
@@ -485,11 +485,11 @@ export default function RequestPage() {
 
           {/* Meeting Type Selector — interview_prep & prospect_prep only */}
           {(toolId === "interview_prep" || toolId === "prospect_prep") && (
-            <div className="rounded-xl border bg-white p-6 shadow-sm">
-              <h2 className="text-base font-semibold text-gray-900 mb-1">
+            <div className="rounded-xl border bg-[#141414] p-6 shadow-sm shadow-black/20">
+              <h2 className="text-base font-semibold text-white mb-1">
                 {toolId === "interview_prep" ? "Interview Type" : "Meeting Type"}
               </h2>
-              <p className="text-sm text-gray-500 mb-4">
+              <p className="text-sm text-neutral-400 mb-4">
                 {toolId === "interview_prep"
                   ? "What kind of interview are you prepping for? This determines which call prep docs we generate."
                   : "What stage is this meeting? We tailor your speaker notes, arsenal, and call flow to match."}
@@ -511,12 +511,12 @@ export default function RequestPage() {
                         onClick={() => setMeetingType(type.id)}
                         className={`rounded-lg border p-4 text-left transition ${
                           meetingType === type.id
-                            ? "border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500"
-                            : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                            ? "border-emerald-500 bg-emerald-500/10 ring-1 ring-emerald-500"
+                            : "border-[#262626] hover:border-[#333333] hover:bg-[#0a0a0a]"
                         }`}
                       >
-                        <div className="font-medium text-sm text-gray-900">{type.label}</div>
-                        <div className="mt-1 text-xs text-gray-500">{type.desc}</div>
+                        <div className="font-medium text-sm text-white">{type.label}</div>
+                        <div className="mt-1 text-xs text-neutral-400">{type.desc}</div>
                       </button>
                     ))}
                   </>
@@ -527,12 +527,12 @@ export default function RequestPage() {
                       onClick={() => setMeetingType("discovery")}
                       className={`rounded-lg border p-4 text-left transition ${
                         meetingType === "discovery"
-                          ? "border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500"
-                          : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                          ? "border-emerald-500 bg-emerald-500/10 ring-1 ring-emerald-500"
+                          : "border-[#262626] hover:border-[#333333] hover:bg-[#0a0a0a]"
                       }`}
                     >
-                      <div className="font-medium text-sm text-gray-900">Discovery</div>
-                      <div className="mt-1 text-xs text-gray-500">
+                      <div className="font-medium text-sm text-white">Discovery</div>
+                      <div className="mt-1 text-xs text-neutral-400">
                         First call. 80% listening, qualify the deal, map pain.
                       </div>
                     </button>
@@ -541,12 +541,12 @@ export default function RequestPage() {
                       onClick={() => setMeetingType("follow_up")}
                       className={`rounded-lg border p-4 text-left transition ${
                         meetingType === "follow_up"
-                          ? "border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500"
-                          : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                          ? "border-emerald-500 bg-emerald-500/10 ring-1 ring-emerald-500"
+                          : "border-[#262626] hover:border-[#333333] hover:bg-[#0a0a0a]"
                       }`}
                     >
-                      <div className="font-medium text-sm text-gray-900">Follow-Up</div>
-                      <div className="mt-1 text-xs text-gray-500">
+                      <div className="font-medium text-sm text-white">Follow-Up</div>
+                      <div className="mt-1 text-xs text-neutral-400">
                         Go deeper on pain, map stakeholders, develop champion.
                       </div>
                     </button>
@@ -555,12 +555,12 @@ export default function RequestPage() {
                       onClick={() => setMeetingType("pitch")}
                       className={`rounded-lg border p-4 text-left transition ${
                         meetingType === "pitch"
-                          ? "border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500"
-                          : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                          ? "border-emerald-500 bg-emerald-500/10 ring-1 ring-emerald-500"
+                          : "border-[#262626] hover:border-[#333333] hover:bg-[#0a0a0a]"
                       }`}
                     >
-                      <div className="font-medium text-sm text-gray-900">Pitch / Demo</div>
-                      <div className="mt-1 text-xs text-gray-500">
+                      <div className="font-medium text-sm text-white">Pitch / Demo</div>
+                      <div className="mt-1 text-xs text-neutral-400">
                         Present your solution. Value narrative, handle objections.
                       </div>
                     </button>
@@ -569,12 +569,12 @@ export default function RequestPage() {
                       onClick={() => setMeetingType("closing")}
                       className={`rounded-lg border p-4 text-left transition ${
                         meetingType === "closing"
-                          ? "border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500"
-                          : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                          ? "border-emerald-500 bg-emerald-500/10 ring-1 ring-emerald-500"
+                          : "border-[#262626] hover:border-[#333333] hover:bg-[#0a0a0a]"
                       }`}
                     >
-                      <div className="font-medium text-sm text-gray-900">Closing</div>
-                      <div className="mt-1 text-xs text-gray-500">
+                      <div className="font-medium text-sm text-white">Closing</div>
+                      <div className="mt-1 text-xs text-neutral-400">
                         Recap value, negotiate, build mutual action plan, get commitment.
                       </div>
                     </button>
@@ -585,14 +585,14 @@ export default function RequestPage() {
           )}
 
           {/* LinkedIn */}
-          <div className="rounded-xl border bg-white p-6 shadow-sm">
-            <h2 className="text-base font-semibold text-gray-900 mb-1">Target&apos;s LinkedIn</h2>
-            <p className="text-sm text-gray-500 mb-4">
+          <div className="rounded-xl border bg-[#141414] p-6 shadow-sm shadow-black/20">
+            <h2 className="text-base font-semibold text-white mb-1">Target&apos;s LinkedIn</h2>
+            <p className="text-sm text-neutral-400 mb-4">
               Copy their LinkedIn profile and paste it below. The more you include, the better your deliverables.
             </p>
             <div className="mb-4">
-              <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-gray-700">
-                <LinkIcon className="h-3.5 w-3.5 text-gray-400" />
+              <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-neutral-200">
+                <LinkIcon className="h-3.5 w-3.5 text-neutral-500" />
                 LinkedIn Profile URL
               </label>
               <input
@@ -600,12 +600,12 @@ export default function RequestPage() {
                 value={linkedinUrl}
                 onChange={(e) => setLinkedinUrl(e.target.value)}
                 placeholder="https://linkedin.com/in/..."
-                className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+                className="w-full rounded-lg border border-[#333333] bg-[#0a0a0a] px-3.5 py-2.5 text-sm text-white placeholder-neutral-500 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
               />
             </div>
             <div>
-              <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-gray-700">
-                <UserIcon className="h-3.5 w-3.5 text-gray-400" />
+              <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-neutral-200">
+                <UserIcon className="h-3.5 w-3.5 text-neutral-500" />
                 Paste LinkedIn Profile
               </label>
               <VoiceTextarea
@@ -618,36 +618,36 @@ export default function RequestPage() {
           </div>
 
           {/* Engagement Context (collapsible) */}
-          <div className="rounded-xl border bg-white p-6 shadow-sm">
+          <div className="rounded-xl border bg-[#141414] p-6 shadow-sm shadow-black/20">
             <button
               type="button"
               onClick={() => setEngagementExpanded(!engagementExpanded)}
               className="flex w-full items-center justify-between text-left"
             >
               <div>
-                <h2 className="text-base font-semibold text-gray-900">Engagement Context</h2>
-                <p className="text-sm text-gray-500">
+                <h2 className="text-base font-semibold text-white">Engagement Context</h2>
+                <p className="text-sm text-neutral-400">
                   Optional. Helps us tailor the approach and urgency.
                 </p>
               </div>
               {engagementExpanded ? (
-                <ChevronDown className="h-5 w-5 text-gray-400" />
+                <ChevronDown className="h-5 w-5 text-neutral-500" />
               ) : (
-                <ChevronRight className="h-5 w-5 text-gray-400" />
+                <ChevronRight className="h-5 w-5 text-neutral-500" />
               )}
             </button>
 
             {engagementExpanded && (
               <div className="space-y-4 mt-4 pt-4 border-t">
                 <div>
-                  <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-gray-700">
-                    <MessageSquare className="h-3.5 w-3.5 text-gray-400" />
+                  <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-neutral-200">
+                    <MessageSquare className="h-3.5 w-3.5 text-neutral-500" />
                     Engagement Type
                   </label>
                   <select
                     value={engagementType}
                     onChange={(e) => setEngagementType(e.target.value)}
-                    className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+                    className="w-full rounded-lg border border-[#333333] bg-[#0a0a0a] px-3.5 py-2.5 text-sm text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                   >
                     <option value="">Select...</option>
                     <option value="cold_outreach">Cold Outreach</option>
@@ -660,20 +660,20 @@ export default function RequestPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-gray-700">
-                    <Calendar className="h-3.5 w-3.5 text-gray-400" />
+                  <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-neutral-200">
+                    <Calendar className="h-3.5 w-3.5 text-neutral-500" />
                     Meeting / Interview Date
                   </label>
                   <input
                     type="date"
                     value={meetingDate}
                     onChange={(e) => setMeetingDate(e.target.value)}
-                    className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+                    className="w-full rounded-lg border border-[#333333] bg-[#0a0a0a] px-3.5 py-2.5 text-sm text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                   />
                 </div>
                 <div>
-                  <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-gray-700">
-                    <FileText className="h-3.5 w-3.5 text-gray-400" />
+                  <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-neutral-200">
+                    <FileText className="h-3.5 w-3.5 text-neutral-500" />
                     Prior Interactions
                   </label>
                   <VoiceTextarea
@@ -689,16 +689,16 @@ export default function RequestPage() {
 
           {/* Job Description (interview tools) */}
           {isInterview && (
-            <div className="rounded-xl border bg-white p-6 shadow-sm">
-              <h2 className="text-base font-semibold text-gray-900 mb-1">Job Description</h2>
-              <p className="text-sm text-gray-500 mb-4">
+            <div className="rounded-xl border bg-[#141414] p-6 shadow-sm shadow-black/20">
+              <h2 className="text-base font-semibold text-white mb-1">Job Description</h2>
+              <p className="text-sm text-neutral-400 mb-4">
                 Paste the JD or drop a link. We&apos;ll extract it automatically.
               </p>
 
               {/* Job posting URL with fetch button */}
               <div className="mb-4">
-                <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-gray-700">
-                  <LinkIcon className="h-3.5 w-3.5 text-gray-400" />
+                <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-neutral-200">
+                  <LinkIcon className="h-3.5 w-3.5 text-neutral-500" />
                   Job Posting URL
                 </label>
                 <div className="flex gap-2">
@@ -707,13 +707,13 @@ export default function RequestPage() {
                     value={jobPostingUrl}
                     onChange={(e) => setJobPostingUrl(e.target.value)}
                     placeholder="https://boards.greenhouse.io/stripe/jobs/..."
-                    className="flex-1 rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+                    className="flex-1 rounded-lg border border-[#333333] bg-[#0a0a0a] px-3.5 py-2.5 text-sm text-white placeholder-neutral-500 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                   />
                   <button
                     type="button"
                     onClick={fetchJobDescription}
                     disabled={!jobPostingUrl || fetchingJd}
-                    className="flex items-center gap-1.5 rounded-lg bg-emerald-50 border border-emerald-200 px-4 py-2.5 text-sm font-medium text-emerald-800 hover:bg-emerald-100 disabled:opacity-50 disabled:cursor-not-allowed transition whitespace-nowrap"
+                    className="flex items-center gap-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 px-4 py-2.5 text-sm font-medium text-emerald-400 hover:bg-emerald-500/100/15 disabled:opacity-50 disabled:cursor-not-allowed transition whitespace-nowrap"
                   >
                     {fetchingJd ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -729,8 +729,8 @@ export default function RequestPage() {
               </div>
 
               <div>
-                <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-gray-700">
-                  <FileText className="h-3.5 w-3.5 text-gray-400" />
+                <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-neutral-200">
+                  <FileText className="h-3.5 w-3.5 text-neutral-500" />
                   Full Job Description *
                 </label>
                 <VoiceTextarea
@@ -746,14 +746,14 @@ export default function RequestPage() {
 
           {/* Interview Instructions — interview tools only */}
           {isInterview && (
-            <div className="rounded-xl border bg-white p-6 shadow-sm">
-              <h2 className="text-base font-semibold text-gray-900 mb-1">Interview Instructions</h2>
-              <p className="text-sm text-gray-500 mb-4">
+            <div className="rounded-xl border bg-[#141414] p-6 shadow-sm shadow-black/20">
+              <h2 className="text-base font-semibold text-white mb-1">Interview Instructions</h2>
+              <p className="text-sm text-neutral-400 mb-4">
                 Were you given specific instructions to prepare? Paste the assignment, prompt, or prep details here. This gets injected directly into your deliverables.
               </p>
               <div>
-                <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-gray-700">
-                  <FileText className="h-3.5 w-3.5 text-gray-400" />
+                <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-neutral-200">
+                  <FileText className="h-3.5 w-3.5 text-neutral-500" />
                   Prep Instructions / Assignment
                 </label>
                 <VoiceTextarea
@@ -762,7 +762,7 @@ export default function RequestPage() {
                   rows={6}
                   placeholder={"Example:\n\n\"Prepare a 10-minute mock first call as if you're selling to a mid-market prospect. You'll present to the hiring manager and AVP. Be ready for Q&A on how you handle objections and multi-thread.\""}
                 />
-                <p className="mt-1.5 text-xs text-gray-400">
+                <p className="mt-1.5 text-xs text-neutral-500">
                   The more detail you give, the more tailored your speaker notes, arsenal, and call flow will be.
                 </p>
               </div>
@@ -771,7 +771,7 @@ export default function RequestPage() {
 
           {/* Panel Composition (interview_prep only) */}
           {toolId === "interview_prep" && (
-            <div className="rounded-xl border bg-white p-6 shadow-sm">
+            <div className="rounded-xl border bg-[#141414] p-6 shadow-sm shadow-black/20">
               <button
                 type="button"
                 onClick={() => {
@@ -783,18 +783,18 @@ export default function RequestPage() {
                 className="flex w-full items-center justify-between text-left"
               >
                 <div>
-                  <h2 className="text-base font-semibold text-gray-900 flex items-center gap-2">
-                    <Users className="h-4 w-4 text-gray-400" />
+                  <h2 className="text-base font-semibold text-white flex items-center gap-2">
+                    <Users className="h-4 w-4 text-neutral-500" />
                     Interview Panel
                   </h2>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-neutral-400">
                     Who will you be talking to? Adding panelists makes your practice sessions and prep docs way sharper.
                   </p>
                 </div>
                 {panelExpanded ? (
-                  <ChevronDown className="h-5 w-5 text-gray-400 shrink-0" />
+                  <ChevronDown className="h-5 w-5 text-neutral-500 shrink-0" />
                 ) : (
-                  <ChevronRight className="h-5 w-5 text-gray-400 shrink-0" />
+                  <ChevronRight className="h-5 w-5 text-neutral-500 shrink-0" />
                 )}
               </button>
 
@@ -802,29 +802,29 @@ export default function RequestPage() {
                 <div className="space-y-4 mt-4 pt-4 border-t">
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div>
-                      <label className="mb-1.5 text-sm font-medium text-gray-700">Round Number</label>
+                      <label className="mb-1.5 text-sm font-medium text-neutral-200">Round Number</label>
                       <input
                         type="number"
                         min={1}
                         max={10}
                         value={panelRoundNumber}
                         onChange={(e) => setPanelRoundNumber(parseInt(e.target.value) || 1)}
-                        className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+                        className="w-full rounded-lg border border-[#333333] bg-[#0a0a0a] px-3.5 py-2.5 text-sm text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                       />
-                      <p className="mt-1 text-xs text-gray-400">Which round is this? (1st, 2nd, 3rd...)</p>
+                      <p className="mt-1 text-xs text-neutral-500">Which round is this? (1st, 2nd, 3rd...)</p>
                     </div>
                   </div>
 
                   {/* Panel Members */}
                   <div className="space-y-3">
                     {panelMembers.map((member, idx) => (
-                      <div key={idx} className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                      <div key={idx} className="rounded-lg border border-[#262626] bg-[#0a0a0a] p-4">
                         <div className="flex items-center justify-between mb-3">
-                          <span className="text-sm font-medium text-gray-700">Panelist {idx + 1}</span>
+                          <span className="text-sm font-medium text-neutral-200">Panelist {idx + 1}</span>
                           <button
                             type="button"
                             onClick={() => removePanelMember(idx)}
-                            className="text-gray-400 hover:text-red-500 transition"
+                            className="text-neutral-500 hover:text-red-500 transition"
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>
@@ -835,19 +835,19 @@ export default function RequestPage() {
                             value={member.name}
                             onChange={(e) => updatePanelMember(idx, "name", e.target.value)}
                             placeholder="Name (e.g., Jamie Torres)"
-                            className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+                            className="rounded-lg border border-[#333333] bg-[#0a0a0a] px-3 py-2 text-sm text-white placeholder-neutral-500 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                           />
                           <input
                             type="text"
                             value={member.title}
                             onChange={(e) => updatePanelMember(idx, "title", e.target.value)}
                             placeholder="Title (e.g., VP Sales)"
-                            className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+                            className="rounded-lg border border-[#333333] bg-[#0a0a0a] px-3 py-2 text-sm text-white placeholder-neutral-500 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                           />
                           <select
                             value={member.roleInMeeting}
                             onChange={(e) => updatePanelMember(idx, "roleInMeeting", e.target.value)}
-                            className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+                            className="rounded-lg border border-[#333333] bg-[#0a0a0a] px-3 py-2 text-sm text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                           >
                             <option value="hiring_manager">Hiring Manager</option>
                             <option value="peer">Peer Interviewer</option>
@@ -858,7 +858,7 @@ export default function RequestPage() {
                           <select
                             value={member.personalityVibe}
                             onChange={(e) => updatePanelMember(idx, "personalityVibe", e.target.value)}
-                            className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+                            className="rounded-lg border border-[#333333] bg-[#0a0a0a] px-3 py-2 text-sm text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                           >
                             <option value="">Personality (optional)</option>
                             <option value="analytical_skeptical">Analytical / Skeptical</option>
@@ -873,7 +873,7 @@ export default function RequestPage() {
                             value={member.evaluationFocus}
                             onChange={(e) => updatePanelMember(idx, "evaluationFocus", e.target.value)}
                             placeholder="What do they evaluate? (e.g., discovery depth, business acumen, cultural fit)"
-                            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+                            className="w-full rounded-lg border border-[#333333] bg-[#0a0a0a] px-3 py-2 text-sm text-white placeholder-neutral-500 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                           />
                         </div>
                       </div>
@@ -881,7 +881,7 @@ export default function RequestPage() {
                     <button
                       type="button"
                       onClick={addPanelMember}
-                      className="flex items-center gap-1.5 rounded-lg border border-dashed border-gray-300 px-4 py-2.5 text-sm text-gray-500 hover:border-emerald-500 hover:text-emerald-700 transition w-full justify-center"
+                      className="flex items-center gap-1.5 rounded-lg border border-dashed border-[#333333] px-4 py-2.5 text-sm text-neutral-400 hover:border-emerald-500 hover:text-emerald-400 transition w-full justify-center"
                     >
                       <Plus className="h-4 w-4" />
                       Add Panelist
@@ -894,16 +894,16 @@ export default function RequestPage() {
 
           {/* Context for prospect/deal tools */}
           {(isProspect || isDeal) && (
-            <div className="rounded-xl border bg-white p-6 shadow-sm">
-              <h2 className="text-base font-semibold text-gray-900 mb-1">Account Context</h2>
-              <p className="text-sm text-gray-500 mb-4">
+            <div className="rounded-xl border bg-[#141414] p-6 shadow-sm shadow-black/20">
+              <h2 className="text-base font-semibold text-white mb-1">Account Context</h2>
+              <p className="text-sm text-neutral-400 mb-4">
                 {isDeal
                   ? "Describe the deal situation: where it stands, what you're stuck on, what you need to close."
                   : "What are you selling? Any context about this account or prospect that would help?"}
               </p>
               <div>
-                <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-gray-700">
-                  <FileText className="h-3.5 w-3.5 text-gray-400" />
+                <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-neutral-200">
+                  <FileText className="h-3.5 w-3.5 text-neutral-500" />
                   {isDeal ? "Deal Context" : "Account / Product Context"}
                 </label>
                 <VoiceTextarea
@@ -922,16 +922,16 @@ export default function RequestPage() {
 
           {/* Case Studies — all tools except interview outreach */}
           {toolId !== "interview_outreach" && (
-            <div className="rounded-xl border bg-white p-6 shadow-sm">
-              <h2 className="text-base font-semibold text-gray-900 mb-1">Customer Stories &amp; Case Studies</h2>
-              <p className="text-sm text-gray-500 mb-4">
+            <div className="rounded-xl border bg-[#141414] p-6 shadow-sm shadow-black/20">
+              <h2 className="text-base font-semibold text-white mb-1">Customer Stories &amp; Case Studies</h2>
+              <p className="text-sm text-neutral-400 mb-4">
                 {isInterview
                   ? "Paste case studies or customer wins you can reference during your interview. Strong candidates weave in proof points to demonstrate impact."
                   : "Paste any case studies, customer wins, or proof points you want referenced in your outreach and materials. The more specific the better: include metrics, customer names, and outcomes."}
               </p>
               <div>
-                <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-gray-700">
-                  <FileText className="h-3.5 w-3.5 text-gray-400" />
+                <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-neutral-200">
+                  <FileText className="h-3.5 w-3.5 text-neutral-500" />
                   Case Studies (optional)
                 </label>
                 <VoiceTextarea
@@ -940,7 +940,7 @@ export default function RequestPage() {
                   rows={6}
                   placeholder={"Example:\n\nAccenture - Reduced procurement cycle time by 40% in 6 months. $2.3M annual savings. VP of Procurement quoted: \"This transformed how we buy.\"\n\nDeloitte - 3x pipeline coverage in Q1 after deploying our platform across 12 practice areas. Expanded from pilot to enterprise in 90 days."}
                 />
-                <p className="mt-1.5 text-xs text-gray-400">
+                <p className="mt-1.5 text-xs text-neutral-500">
                   {isInterview
                     ? "These will be available for your interview prep materials and practice persona."
                     : "These will be woven into your outreach sequence, POV deck, and research brief as social proof."}
@@ -950,14 +950,14 @@ export default function RequestPage() {
           )}
 
           {/* Document Upload */}
-          <div className="rounded-xl border bg-white p-6 shadow-sm">
-            <h2 className="text-base font-semibold text-gray-900 mb-1">Upload Documents</h2>
-            <p className="text-sm text-gray-500 mb-4">
+          <div className="rounded-xl border bg-[#141414] p-6 shadow-sm shadow-black/20">
+            <h2 className="text-base font-semibold text-white mb-1">Upload Documents</h2>
+            <p className="text-sm text-neutral-400 mb-4">
               {isInterview
                 ? "Upload your resume, the assignment, case studies, or any other prep materials. PDF, DOCX, or TXT."
                 : "Upload relevant documents: proposals, case studies, prior decks, or any reference material. PDF, DOCX, or TXT."}
             </p>
-            <label className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 px-4 py-6 text-sm text-gray-500 hover:border-emerald-500 hover:text-emerald-700 transition">
+            <label className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed border-[#333333] px-4 py-6 text-sm text-neutral-400 hover:border-emerald-500 hover:text-emerald-400 transition">
               {uploading ? (
                 <>
                   <Loader2 className="h-5 w-5 animate-spin" />
@@ -984,16 +984,16 @@ export default function RequestPage() {
             {uploadedDocs.length > 0 && (
               <div className="mt-3 space-y-2">
                 {uploadedDocs.map((doc, idx) => (
-                  <div key={idx} className="flex items-center justify-between rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-2.5">
-                    <div className="flex items-center gap-2 text-sm text-emerald-800">
-                      <FileText className="h-4 w-4 text-emerald-600 shrink-0" />
+                  <div key={idx} className="flex items-center justify-between rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-4 py-2.5">
+                    <div className="flex items-center gap-2 text-sm text-emerald-400">
+                      <FileText className="h-4 w-4 text-emerald-400 shrink-0" />
                       <span className="font-medium">{doc.fileName}</span>
-                      <span className="text-emerald-600">({Math.round(doc.text.length / 1000)}K chars extracted)</span>
+                      <span className="text-emerald-400">({Math.round(doc.text.length / 1000)}K chars extracted)</span>
                     </div>
                     <button
                       type="button"
                       onClick={() => removeUploadedDoc(idx)}
-                      className="text-emerald-600 hover:text-red-500 transition"
+                      className="text-emerald-400 hover:text-red-500 transition"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -1004,10 +1004,10 @@ export default function RequestPage() {
           </div>
 
           {/* Additional Notes */}
-          <div className="rounded-xl border bg-white p-6 shadow-sm">
+          <div className="rounded-xl border bg-[#141414] p-6 shadow-sm shadow-black/20">
             <div>
-              <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-gray-700">
-                <MessageSquare className="h-3.5 w-3.5 text-gray-400" />
+              <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-neutral-200">
+                <MessageSquare className="h-3.5 w-3.5 text-neutral-500" />
                 Additional Notes (optional)
               </label>
               <VoiceTextarea
@@ -1021,13 +1021,13 @@ export default function RequestPage() {
 
           {/* Submit */}
           <div className="flex items-center justify-between">
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-neutral-500">
               This will use 1 blitz from your balance.
             </p>
             <button
               type="submit"
               disabled={submitting || !targetName || !targetCompany}
-              className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {submitting ? (
                 <>

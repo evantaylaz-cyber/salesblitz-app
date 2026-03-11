@@ -79,24 +79,24 @@ const TOOL_NAMES: Record<string, string> = {
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: React.ElementType }> = {
-  submitted: { label: "Queued", color: "text-blue-700", bg: "bg-blue-50 border-blue-200", icon: Clock },
-  researching: { label: "Researching", color: "text-amber-700", bg: "bg-amber-50 border-amber-200", icon: Loader2 },
-  generating: { label: "Generating", color: "text-green-700", bg: "bg-green-50 border-green-200", icon: Loader2 },
-  in_progress: { label: "In Progress", color: "text-amber-700", bg: "bg-amber-50 border-amber-200", icon: Loader2 },
-  ready: { label: "Ready", color: "text-emerald-700", bg: "bg-emerald-50 border-emerald-200", icon: CheckCircle2 },
-  delivered: { label: "Delivered", color: "text-emerald-700", bg: "bg-emerald-50 border-emerald-200", icon: CheckCircle2 },
-  failed: { label: "Failed", color: "text-red-700", bg: "bg-red-50 border-red-200", icon: AlertCircle },
-  awaiting_clarification: { label: "Your Input Needed", color: "text-emerald-800", bg: "bg-emerald-50 border-emerald-200", icon: MessageCircleQuestion },
+  submitted: { label: "Queued", color: "text-blue-400", bg: "bg-blue-500/10 border-blue-500/20", icon: Clock },
+  researching: { label: "Researching", color: "text-amber-400", bg: "bg-amber-500/10 border-amber-500/20", icon: Loader2 },
+  generating: { label: "Generating", color: "text-green-400", bg: "bg-green-500/10 border-green-200", icon: Loader2 },
+  in_progress: { label: "In Progress", color: "text-amber-400", bg: "bg-amber-500/10 border-amber-500/20", icon: Loader2 },
+  ready: { label: "Ready", color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20", icon: CheckCircle2 },
+  delivered: { label: "Delivered", color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20", icon: CheckCircle2 },
+  failed: { label: "Failed", color: "text-red-400", bg: "bg-red-500/10 border-red-500/20", icon: AlertCircle },
+  awaiting_clarification: { label: "Your Input Needed", color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20", icon: MessageCircleQuestion },
 };
 
 const BATCH_STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: React.ElementType }> = {
-  processing: { label: "Processing", color: "text-amber-700", bg: "bg-amber-50 border-amber-200", icon: Loader2 },
-  completed: { label: "Completed", color: "text-emerald-700", bg: "bg-emerald-50 border-emerald-200", icon: CheckCircle2 },
-  delivered: { label: "Delivered", color: "text-emerald-700", bg: "bg-emerald-50 border-emerald-200", icon: CheckCircle2 },
-  failed: { label: "Failed", color: "text-red-700", bg: "bg-red-50 border-red-200", icon: AlertCircle },
-  partial: { label: "Partial", color: "text-amber-700", bg: "bg-amber-50 border-amber-200", icon: AlertCircle },
-  submitted: { label: "Queued", color: "text-blue-700", bg: "bg-blue-50 border-blue-200", icon: Clock },
-  awaiting_clarification: { label: "Your Input Needed", color: "text-emerald-800", bg: "bg-emerald-50 border-emerald-200", icon: MessageCircleQuestion },
+  processing: { label: "Processing", color: "text-amber-400", bg: "bg-amber-500/10 border-amber-500/20", icon: Loader2 },
+  completed: { label: "Completed", color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20", icon: CheckCircle2 },
+  delivered: { label: "Delivered", color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20", icon: CheckCircle2 },
+  failed: { label: "Failed", color: "text-red-400", bg: "bg-red-500/10 border-red-500/20", icon: AlertCircle },
+  partial: { label: "Partial", color: "text-amber-400", bg: "bg-amber-500/10 border-amber-500/20", icon: AlertCircle },
+  submitted: { label: "Queued", color: "text-blue-400", bg: "bg-blue-500/10 border-blue-500/20", icon: Clock },
+  awaiting_clarification: { label: "Your Input Needed", color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20", icon: MessageCircleQuestion },
 };
 
 type StatusFilter = "all" | "active" | "completed" | "failed" | "needs_input";
@@ -157,7 +157,7 @@ export default function RequestsPage() {
   if (!isLoaded || loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-emerald-700" />
+        <Loader2 className="h-8 w-8 animate-spin text-emerald-400" />
       </div>
     );
   }
@@ -202,16 +202,16 @@ export default function RequestsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <AppNav currentPage="/requests" />
 
       {/* Requests action bar */}
-      <div className="border-b bg-white">
+      <div className="border-b bg-[#141414]">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-3">
-          <h1 className="text-lg font-bold text-gray-900">My Requests</h1>
+          <h1 className="text-lg font-bold text-white">My Requests</h1>
           <a
             href="/request/batch"
-            className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 transition"
+            className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-600 transition"
           >
             <Layers className="h-4 w-4" />
             New Blitz
@@ -234,14 +234,14 @@ export default function RequestsPage() {
                     onClick={() => setStatusFilter(f.key)}
                     className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition whitespace-nowrap ${
                       isActive
-                        ? "bg-emerald-100 text-emerald-800"
-                        : "text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                        ? "bg-emerald-500/15 text-emerald-400"
+                        : "text-neutral-400 hover:bg-[#1a1a1a] hover:text-neutral-200"
                     }`}
                   >
                     {f.label}
                     {count > 0 && (
                       <span className={`text-xs rounded-full px-1.5 py-0.5 ${
-                        isActive ? "bg-emerald-200 text-emerald-900" : "bg-gray-100 text-gray-400"
+                        isActive ? "bg-emerald-200 text-emerald-300" : "bg-[#1a1a1a] text-neutral-500"
                       }`}>
                         {count}
                       </span>
@@ -258,7 +258,7 @@ export default function RequestsPage() {
                   <select
                     value={toolFilter}
                     onChange={(e) => setToolFilter(e.target.value)}
-                    className="appearance-none rounded-lg border border-gray-200 bg-white pl-3 pr-8 py-1.5 text-sm text-gray-700 hover:border-gray-300 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 focus:outline-none"
+                    className="appearance-none rounded-lg border border-[#262626] bg-[#141414] pl-3 pr-8 py-1.5 text-sm text-neutral-200 hover:border-[#333333] focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 focus:outline-none"
                   >
                     <option value="all">All tools</option>
                     {toolNames.map((t) => (
@@ -267,7 +267,7 @@ export default function RequestsPage() {
                       </option>
                     ))}
                   </select>
-                  <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 pointer-events-none" />
+                  <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-neutral-500 pointer-events-none" />
                 </div>
               )}
 
@@ -275,12 +275,12 @@ export default function RequestsPage() {
                 <select
                   value={sortOrder}
                   onChange={(e) => setSortOrder(e.target.value as SortOrder)}
-                  className="appearance-none rounded-lg border border-gray-200 bg-white pl-3 pr-8 py-1.5 text-sm text-gray-700 hover:border-gray-300 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 focus:outline-none"
+                  className="appearance-none rounded-lg border border-[#262626] bg-[#141414] pl-3 pr-8 py-1.5 text-sm text-neutral-200 hover:border-[#333333] focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 focus:outline-none"
                 >
                   <option value="newest">Newest first</option>
                   <option value="oldest">Oldest first</option>
                 </select>
-                <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400 pointer-events-none" />
+                <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-neutral-500 pointer-events-none" />
               </div>
             </div>
           </div>
@@ -288,11 +288,11 @@ export default function RequestsPage() {
 
         {!hasContent ? (
           <div className="text-center py-16">
-            <Package className="mx-auto h-12 w-12 text-gray-300" />
-            <p className="mt-4 text-gray-500">No requests yet.</p>
+            <Package className="mx-auto h-12 w-12 text-neutral-500" />
+            <p className="mt-4 text-neutral-400">No requests yet.</p>
             <a
               href="/dashboard"
-              className="mt-4 inline-block text-sm font-medium text-emerald-700 hover:text-emerald-900"
+              className="mt-4 inline-block text-sm font-medium text-emerald-400 hover:text-emerald-300"
             >
               Start a blitz from the dashboard
             </a>
@@ -302,11 +302,11 @@ export default function RequestsPage() {
             {/* Empty filter state */}
             {isFiltered && !hasFilteredContent && (
               <div className="text-center py-12">
-                <Filter className="mx-auto h-10 w-10 text-gray-300" />
-                <p className="mt-3 text-gray-500">No requests match your filters.</p>
+                <Filter className="mx-auto h-10 w-10 text-neutral-500" />
+                <p className="mt-3 text-neutral-400">No requests match your filters.</p>
                 <button
                   onClick={() => { setStatusFilter("all"); setToolFilter("all"); }}
-                  className="mt-2 text-sm font-medium text-emerald-700 hover:text-emerald-900"
+                  className="mt-2 text-sm font-medium text-emerald-400 hover:text-emerald-300"
                 >
                   Clear filters
                 </button>
@@ -317,9 +317,9 @@ export default function RequestsPage() {
             {filteredBatches.length > 0 && (
               <section>
                 <div className="flex items-center gap-2 mb-4">
-                  <Layers className="h-5 w-5 text-emerald-700" />
-                  <h2 className="text-base font-semibold text-gray-900">Batch Jobs</h2>
-                  <span className="text-xs text-gray-400 ml-1">({filteredBatches.length})</span>
+                  <Layers className="h-5 w-5 text-emerald-400" />
+                  <h2 className="text-base font-semibold text-white">Batch Jobs</h2>
+                  <span className="text-xs text-neutral-500 ml-1">({filteredBatches.length})</span>
                 </div>
                 <div className="space-y-3">
                   {filteredBatches.map((batch) => {
@@ -339,12 +339,12 @@ export default function RequestsPage() {
                       <a
                         key={batch.id}
                         href={`/batch/${batch.id}`}
-                        className="block rounded-xl border bg-white p-5 shadow-sm hover:shadow-md hover:border-emerald-200 transition cursor-pointer"
+                        className="block rounded-xl border bg-[#141414] p-5 shadow-sm shadow-black/20 hover:shadow-md hover:border-emerald-500/20 transition cursor-pointer"
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className="flex items-center gap-3">
-                              <h3 className="font-semibold text-gray-900">
+                              <h3 className="font-semibold text-white">
                                 {TOOL_NAMES[batch.toolName] || batch.toolName}
                               </h3>
                               <span
@@ -353,7 +353,7 @@ export default function RequestsPage() {
                                 <StatusIcon className={`h-3 w-3 ${isActive ? "animate-spin" : ""}`} />
                                 {statusInfo.label}
                               </span>
-                              <span className="inline-flex items-center gap-1 rounded-full bg-gray-50 border border-gray-200 px-2 py-0.5 text-xs font-medium text-gray-600">
+                              <span className="inline-flex items-center gap-1 rounded-full bg-[#0a0a0a] border border-[#262626] px-2 py-0.5 text-xs font-medium text-neutral-300">
                                 <Users className="h-3 w-3" />
                                 {totalAccounts} accounts
                               </span>
@@ -362,20 +362,20 @@ export default function RequestsPage() {
                             {/* Batch progress bar */}
                             <div className="mt-3">
                               <div className="flex items-center gap-2 mb-1.5">
-                                <span className="text-xs text-gray-500">
+                                <span className="text-xs text-neutral-400">
                                   {completedAccounts} of {totalAccounts} completed
                                   {failedAccounts > 0 && (
                                     <span className="text-red-500 ml-1">({failedAccounts} failed)</span>
                                   )}
                                   {awaitingAccounts > 0 && (
-                                    <span className="text-emerald-600 ml-1">({awaitingAccounts} awaiting input)</span>
+                                    <span className="text-emerald-400 ml-1">({awaitingAccounts} awaiting input)</span>
                                   )}
                                 </span>
-                                <span className="text-xs text-gray-400 ml-auto">
+                                <span className="text-xs text-neutral-500 ml-auto">
                                   {Math.round(progress)}%
                                 </span>
                               </div>
-                              <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden">
+                              <div className="h-1.5 rounded-full bg-[#1a1a1a] overflow-hidden">
                                 <div
                                   className={`h-full rounded-full transition-all duration-500 ${
                                     batch.status === "failed"
@@ -385,15 +385,15 @@ export default function RequestsPage() {
                                       : batch.status === "awaiting_clarification"
                                       ? "bg-emerald-400"
                                       : progress === 100
-                                      ? "bg-emerald-500"
-                                      : "bg-emerald-500"
+                                      ? "bg-emerald-500/100"
+                                      : "bg-emerald-500/100"
                                   }`}
                                   style={{ width: `${Math.max(progress, batch.status === "awaiting_clarification" ? 10 : 0)}%` }}
                                 />
                               </div>
                             </div>
 
-                            <p className="mt-2 text-xs text-gray-400">
+                            <p className="mt-2 text-xs text-neutral-500">
                               Submitted {new Date(batch.createdAt).toLocaleDateString()} at{" "}
                               {new Date(batch.createdAt).toLocaleTimeString()}
                             </p>
@@ -405,7 +405,7 @@ export default function RequestsPage() {
                                 Review
                               </span>
                             ) : (
-                              <span className="inline-flex items-center gap-1.5 text-sm text-gray-400">
+                              <span className="inline-flex items-center gap-1.5 text-sm text-neutral-500">
                                 <ArrowRight className="h-4 w-4" />
                               </span>
                             )}
@@ -423,9 +423,9 @@ export default function RequestsPage() {
               <section>
                 {filteredBatches.length > 0 && (
                   <div className="flex items-center gap-2 mb-4">
-                    <Package className="h-5 w-5 text-emerald-700" />
-                    <h2 className="text-base font-semibold text-gray-900">Individual Requests</h2>
-                    <span className="text-xs text-gray-400 ml-1">({filteredRequests.length})</span>
+                    <Package className="h-5 w-5 text-emerald-400" />
+                    <h2 className="text-base font-semibold text-white">Individual Requests</h2>
+                    <span className="text-xs text-neutral-500 ml-1">({filteredRequests.length})</span>
                   </div>
                 )}
                 <div className="space-y-4">
@@ -444,12 +444,12 @@ export default function RequestsPage() {
                       <a
                         key={req.id}
                         href={`/requests/${req.id}`}
-                        className="block rounded-xl border bg-white p-5 shadow-sm hover:shadow-md hover:border-emerald-200 transition cursor-pointer"
+                        className="block rounded-xl border bg-[#141414] p-5 shadow-sm shadow-black/20 hover:shadow-md hover:border-emerald-500/20 transition cursor-pointer"
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className="flex items-center gap-3">
-                              <h3 className="font-semibold text-gray-900">
+                              <h3 className="font-semibold text-white">
                                 {TOOL_NAMES[req.toolName] || req.toolName}
                               </h3>
                               <span
@@ -459,13 +459,13 @@ export default function RequestsPage() {
                                 {statusInfo.label}
                               </span>
                               {req.priority && (
-                                <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 border border-amber-200 px-2 py-0.5 text-xs font-medium text-amber-700">
+                                <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 text-xs font-medium text-amber-400">
                                   <Zap className="h-3 w-3" />
                                   Priority
                                 </span>
                               )}
                             </div>
-                            <p className="mt-1 text-sm text-gray-600">
+                            <p className="mt-1 text-sm text-neutral-300">
                               {req.targetName} · {req.targetCompany}
                               {req.targetRole ? ` · ${req.targetRole}` : ""}
                             </p>
@@ -473,29 +473,29 @@ export default function RequestsPage() {
                               <div className="mt-3">
                                 <div className="flex items-center gap-2 mb-1.5">
                                   {activeStep && (
-                                    <p className="text-xs text-emerald-700 font-medium">
+                                    <p className="text-xs text-emerald-400 font-medium">
                                       {activeStep.label}
                                     </p>
                                   )}
-                                  <span className="text-xs text-gray-400 ml-auto">
+                                  <span className="text-xs text-neutral-500 ml-auto">
                                     {completedSteps}/{totalSteps} steps
                                   </span>
                                 </div>
-                                <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden">
+                                <div className="h-1.5 rounded-full bg-[#1a1a1a] overflow-hidden">
                                   <div
                                     className={`h-full rounded-full transition-all duration-500 ${
                                       req.status === "failed"
                                         ? "bg-red-400"
                                         : progress === 100
-                                        ? "bg-emerald-500"
-                                        : "bg-emerald-500"
+                                        ? "bg-emerald-500/100"
+                                        : "bg-emerald-500/100"
                                     }`}
                                     style={{ width: `${progress}%` }}
                                   />
                                 </div>
                               </div>
                             )}
-                            <p className="mt-2 text-xs text-gray-400">
+                            <p className="mt-2 text-xs text-neutral-500">
                               Submitted {new Date(req.createdAt).toLocaleDateString()} at{" "}
                               {new Date(req.createdAt).toLocaleTimeString()}
                               {req.completedAt && (
@@ -510,7 +510,7 @@ export default function RequestsPage() {
                                   e.preventDefault();
                                   window.location.href = `/request/${req.id}/clarify`;
                                 }}
-                                className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white cursor-pointer hover:bg-emerald-700 transition"
+                                className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white cursor-pointer hover:bg-emerald-600 transition"
                               >
                                 <MessageCircleQuestion className="h-4 w-4" />
                                 Answer

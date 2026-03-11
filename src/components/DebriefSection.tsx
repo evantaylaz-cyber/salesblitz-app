@@ -27,22 +27,22 @@ const OUTCOME_OPTIONS = [
     value: "positive",
     label: "Went well",
     icon: ThumbsUp,
-    color: "bg-green-50 border-green-200 text-green-700 hover:bg-green-100",
-    activeColor: "bg-green-100 border-green-400 text-green-800 ring-2 ring-green-300",
+    color: "bg-green-500/10 border-green-200 text-green-400 hover:bg-green-100",
+    activeColor: "bg-green-100 border-green-400 text-green-400 ring-2 ring-green-300",
   },
   {
     value: "neutral",
     label: "Mixed",
     icon: Minus,
-    color: "bg-yellow-50 border-yellow-200 text-yellow-700 hover:bg-yellow-100",
+    color: "bg-yellow-500/10 border-yellow-200 text-yellow-700 hover:bg-yellow-100",
     activeColor: "bg-yellow-100 border-yellow-400 text-yellow-800 ring-2 ring-yellow-300",
   },
   {
     value: "negative",
     label: "Didn't land",
     icon: ThumbsDown,
-    color: "bg-red-50 border-red-200 text-red-700 hover:bg-red-100",
-    activeColor: "bg-red-100 border-red-400 text-red-800 ring-2 ring-red-300",
+    color: "bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/15",
+    activeColor: "bg-red-500/15 border-red-400 text-red-400 ring-2 ring-red-300",
   },
 ];
 
@@ -129,33 +129,33 @@ export default function DebriefSection({ requestId }: { requestId: string }) {
       case "neutral":
         return "text-yellow-600";
       case "negative":
-        return "text-red-600";
+        return "text-red-400";
       default:
-        return "text-gray-500";
+        return "text-neutral-400";
     }
   };
 
   if (loading) return null; // Don't flash anything while loading
 
   return (
-    <div className="rounded-xl border bg-white shadow-sm">
+    <div className="rounded-xl border bg-[#141414] shadow-sm shadow-black/20">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition"
+        className="w-full flex items-center justify-between px-6 py-4 hover:bg-[#0a0a0a] transition"
       >
         <div className="flex items-center gap-3">
-          <MessageSquare className="h-5 w-5 text-emerald-600" />
-          <h2 className="font-semibold text-gray-900">Post-Run Debrief</h2>
+          <MessageSquare className="h-5 w-5 text-emerald-400" />
+          <h2 className="font-semibold text-white">Post-Run Debrief</h2>
           {debriefs.length > 0 && (
-            <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">
+            <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-400">
               {debriefs.length}
             </span>
           )}
         </div>
         {expanded ? (
-          <ChevronUp className="h-5 w-5 text-gray-400" />
+          <ChevronUp className="h-5 w-5 text-neutral-500" />
         ) : (
-          <ChevronDown className="h-5 w-5 text-gray-400" />
+          <ChevronDown className="h-5 w-5 text-neutral-500" />
         )}
       </button>
 
@@ -167,12 +167,12 @@ export default function DebriefSection({ requestId }: { requestId: string }) {
               {debriefs.map((d) => (
                 <div
                   key={d.id}
-                  className="rounded-lg border border-gray-100 bg-gray-50 p-4 space-y-2"
+                  className="rounded-lg border border-[#1a1a1a] bg-[#0a0a0a] p-4 space-y-2"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Clock className="h-3.5 w-3.5 text-gray-400" />
-                      <span className="text-xs text-gray-500">
+                      <Clock className="h-3.5 w-3.5 text-neutral-500" />
+                      <span className="text-xs text-neutral-400">
                         {new Date(d.createdAt).toLocaleDateString("en-US", {
                           month: "short",
                           day: "numeric",
@@ -192,15 +192,15 @@ export default function DebriefSection({ requestId }: { requestId: string }) {
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                  <p className="text-sm text-neutral-200 whitespace-pre-wrap">
                     {d.content}
                   </p>
                   {d.nextSteps && (
-                    <div className="pt-2 border-t border-gray-200">
-                      <p className="text-xs font-medium text-gray-500 mb-1">
+                    <div className="pt-2 border-t border-[#262626]">
+                      <p className="text-xs font-medium text-neutral-400 mb-1">
                         Next Steps
                       </p>
-                      <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                      <p className="text-sm text-neutral-200 whitespace-pre-wrap">
                         {d.nextSteps}
                       </p>
                     </div>
@@ -213,15 +213,15 @@ export default function DebriefSection({ requestId }: { requestId: string }) {
           {/* New debrief form */}
           <div className="space-y-4">
             {debriefs.length > 0 && (
-              <div className="border-t border-gray-200 pt-4">
-                <p className="text-sm font-medium text-gray-700">
+              <div className="border-t border-[#262626] pt-4">
+                <p className="text-sm font-medium text-neutral-200">
                   Add another debrief
                 </p>
               </div>
             )}
 
             {debriefs.length === 0 && (
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-neutral-400">
                 How did it go? Your notes here feed into future runs targeting
                 this company, so the next prep package picks up where you left
                 off.
@@ -230,7 +230,7 @@ export default function DebriefSection({ requestId }: { requestId: string }) {
 
             {/* Outcome selector */}
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-2">
+              <label className="block text-xs font-medium text-neutral-400 mb-2">
                 How did it go?
               </label>
               <div className="flex gap-2">
@@ -257,7 +257,7 @@ export default function DebriefSection({ requestId }: { requestId: string }) {
 
             {/* Content */}
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1.5">
+              <label className="block text-xs font-medium text-neutral-400 mb-1.5">
                 What happened? What landed, what didn&apos;t, key intel, objections?
               </label>
               <VoiceTextarea
@@ -270,7 +270,7 @@ export default function DebriefSection({ requestId }: { requestId: string }) {
 
             {/* Next steps */}
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1.5">
+              <label className="block text-xs font-medium text-neutral-400 mb-1.5">
                 Next steps (optional)
               </label>
               <VoiceTextarea
@@ -283,7 +283,7 @@ export default function DebriefSection({ requestId }: { requestId: string }) {
 
             {/* Error / Success */}
             {error && (
-              <p className="text-sm text-red-600">{error}</p>
+              <p className="text-sm text-red-400">{error}</p>
             )}
             {success && (
               <p className="text-sm text-green-600">
@@ -295,7 +295,7 @@ export default function DebriefSection({ requestId }: { requestId: string }) {
             <button
               onClick={handleSubmit}
               disabled={submitting || !content.trim()}
-              className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+              className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed transition"
             >
               {submitting ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
