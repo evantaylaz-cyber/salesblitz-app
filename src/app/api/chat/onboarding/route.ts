@@ -15,6 +15,7 @@ import { getOrCreateUser } from "@/lib/user";
 import prisma from "@/lib/db";
 import { buildOnboardingPromptWithContext } from "@/lib/onboarding-prompt";
 import { createOnboardingTools } from "@/lib/onboarding-tools";
+import { standardLimiter, rateLimitResponse } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
   try {
@@ -23,6 +24,10 @@ export async function POST(req: Request) {
     if (!dbUser) {
       return new Response("Unauthorized", { status: 401 });
     }
+
+    // Rate limit: standard tier (chat messages)
+    const rlResult = standardLimiter.check(dbUser.id);
+    if (!rlResult.allowed) return rateLimitResponse(rlResult);
 
     // Load existing profile for context injection
     const existingProfile = await prisma.userProfile.findUnique({

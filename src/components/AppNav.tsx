@@ -15,6 +15,7 @@ import {
   BarChart3,
   Users,
   Target,
+  Plug,
   type LucideIcon,
 } from "lucide-react";
 
@@ -39,6 +40,7 @@ const NAV_ITEMS: Array<{ href: string; label: string; icon: LucideIcon; hasBadge
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/requests", label: "Requests", icon: Inbox, hasBadge: true },
   { href: "/practice", label: "Practice", icon: Video },
+  { href: "/extensions", label: "Extensions", icon: Plug },
   { href: "/profile", label: "Profile", icon: UserCircle },
   { href: "/knowledge-base", label: "Knowledge Base", icon: BookOpen },
   { href: "/playbooks", label: "Playbooks", icon: FileText },
@@ -84,20 +86,27 @@ export default function AppNav({
 
         {/* Desktop nav */}
         <div className="hidden lg:flex items-center gap-x-8">
-          {NAV_ITEMS.filter((item) => item.href !== currentPage).map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              className="relative text-sm text-gray-600 hover:text-gray-900"
-            >
-              {item.label}
-              {item.hasBadge && pendingRequests > 0 && (
-                <span className="absolute -top-1.5 -right-3 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-600 text-[10px] font-bold text-white">
-                  {pendingRequests}
-                </span>
-              )}
-            </a>
-          ))}
+          {NAV_ITEMS.map((item) => {
+            const isActive = item.href === currentPage;
+            return (
+              <a
+                key={item.href}
+                href={item.href}
+                className={`relative text-sm border-b-2 pb-0.5 transition-colors ${
+                  isActive
+                    ? "border-emerald-600 text-emerald-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                {item.label}
+                {item.hasBadge && pendingRequests > 0 && (
+                  <span className="absolute -top-1.5 -right-3 flex h-4 w-4 items-center justify-center rounded-full bg-emerald-600 text-[10px] font-bold text-white">
+                    {pendingRequests}
+                  </span>
+                )}
+              </a>
+            );
+          })}
           {hasSubscription && onManageBilling && (
             <button
               onClick={onManageBilling}
@@ -140,15 +149,20 @@ export default function AppNav({
       {/* Mobile dropdown */}
       {mobileMenuOpen && (
         <div className="lg:hidden border-t bg-white px-6 py-3 space-y-1">
-          {NAV_ITEMS.filter((item) => item.href !== currentPage).map((item) => {
+          {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
+            const isActive = item.href === currentPage;
             return (
               <a
                 key={item.href}
                 href={item.href}
-                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50"
+                className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors ${
+                  isActive
+                    ? "bg-emerald-50 text-emerald-600"
+                    : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                }`}
               >
-                <Icon className="h-4 w-4 text-gray-400" />
+                <Icon className={`h-4 w-4 ${isActive ? "text-emerald-600" : "text-gray-400"}`} />
                 {item.label}
                 {item.hasBadge && pendingRequests > 0 && (
                   <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-600 text-[10px] font-bold text-white">

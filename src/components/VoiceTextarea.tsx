@@ -13,6 +13,7 @@ interface VoiceTextareaProps {
   className?: string;
   /** If true, voice replaces instead of appending */
   replaceMode?: boolean;
+  onBlur?: () => void;
 }
 
 /**
@@ -28,6 +29,7 @@ export default function VoiceTextarea({
   required,
   className = "",
   replaceMode = false,
+  onBlur,
 }: VoiceTextareaProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const valueRef = useRef(value);
@@ -70,6 +72,7 @@ export default function VoiceTextarea({
         ref={textareaRef}
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        onBlur={onBlur}
         rows={rows}
         placeholder={placeholder}
         required={required}

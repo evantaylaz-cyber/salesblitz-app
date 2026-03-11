@@ -3,6 +3,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import prisma from "@/lib/db";
 import { canStartPracticeSession, cleanupStaleSessions } from "@/lib/practice";
 import Anthropic from "@anthropic-ai/sdk";
+import { aiLimiter, rateLimitResponse } from "@/lib/rate-limit";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -23,6 +24,10 @@ export async function POST(req: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
+
+    // Rate limit: AI tier (practice start generates persona via Claude)
+    const rlResult = aiLimiter.check(user.id);
+    if (!rlResult.allowed) return rateLimitResponse(rlResult);
 
     // Clean up stale sessions before checking cap (non-blocking)
     cleanupStaleSessions().catch((err) => console.error("Stale session cleanup error:", err));

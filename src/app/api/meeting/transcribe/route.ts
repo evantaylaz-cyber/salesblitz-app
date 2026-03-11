@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import prisma from "@/lib/db";
 import { analyzeMeetingTranscript } from "@/lib/meeting-analysis";
+import { aiLimiter, rateLimitResponse } from "@/lib/rate-limit";
 
 // POST — transcribe audio via OpenAI Whisper API
 // Accepts: multipart form data with audio file + optional metadata
@@ -18,6 +19,10 @@ export async function POST(req: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
+
+    // Rate limit: AI tier (Whisper transcription is expensive)
+    const rlResult = aiLimiter.check(user.id);
+    if (!rlResult.allowed) return rateLimitResponse(rlResult);
 
     const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
     if (!OPENAI_API_KEY) {

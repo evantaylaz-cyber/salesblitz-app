@@ -3,6 +3,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import prisma from "@/lib/db";
 import { buildPersonaSystemPrompt, buildPanelSystemPrompt, extractPanelSpeaker, cleanForTTS } from "@/lib/practice";
 import Anthropic from "@anthropic-ai/sdk";
+import { standardLimiter, rateLimitResponse } from "@/lib/rate-limit";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -22,6 +23,10 @@ export async function POST(req: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
+
+    // Rate limit: standard tier (chat messages during practice)
+    const rlResult = standardLimiter.check(user.id);
+    if (!rlResult.allowed) return rateLimitResponse(rlResult);
 
     const body = await req.json();
     const { sessionId, userMessage } = body;

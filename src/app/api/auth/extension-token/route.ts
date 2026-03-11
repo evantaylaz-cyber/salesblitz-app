@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
+import { authLimiter, rateLimitResponse } from "@/lib/rate-limit";
 
 /**
  * GET /api/auth/extension-token
@@ -20,6 +21,10 @@ export async function GET() {
         { status: 401 }
       );
     }
+
+    // Rate limit: auth tier
+    const rlResult = authLimiter.check(userId);
+    if (!rlResult.allowed) return rateLimitResponse(rlResult);
 
     // Get a fresh session token
     const token = await getToken();

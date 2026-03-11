@@ -58,12 +58,16 @@ export default function PracticeSessionPage() {
   const [isPanelMode, setIsPanelMode] = useState(false);
   const [showMobileTranscript, setShowMobileTranscript] = useState(false);
   const [sttMode, setSttMode] = useState<"realtime" | "webspeech" | "none">("none");
+  const [avatarRetryCount, setAvatarRetryCount] = useState(0);
+  const [avatarError, setAvatarError] = useState<string | null>(null);
+  const [textOnlyMode, setTextOnlyMode] = useState(false);
 
   // Refs - Avatar & video
   const videoRef = useRef<HTMLVideoElement>(null);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sessionRef = useRef<any>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const avatarTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const transcriptEndRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const chromaKeyFrameRef = useRef<number | null>(null);
@@ -534,6 +538,13 @@ export default function PracticeSessionPage() {
 
   async function initSession() {
     try {
+      // Clear any previous timeout
+      if (avatarTimeoutRef.current) {
+        clearTimeout(avatarTimeoutRef.current);
+        avatarTimeoutRef.current = null;
+      }
+
+      setAvatarError(null);
       const personaGender = searchParams.get("gender") || "male";
       const FEMALE_AVATAR = "b4fc2d60-3b82-4694-b243-93e9d2bb0242";
       const MALE_AVATAR = "bb1f6ebc-b388-4a39-9e2b-8df618e0377c";
@@ -552,7 +563,7 @@ export default function PracticeSessionPage() {
       if (!tokenData.sessionToken) {
         const detail = tokenData.detail || tokenData.error || "No token returned";
         console.error("Token endpoint response:", tokenData);
-        setError(`Failed to get avatar session token: ${detail}`);
+        setAvatarError(`Failed to get avatar session token: ${detail}`);
         setAvatarLoading(false);
         return;
       }
@@ -568,10 +579,27 @@ export default function PracticeSessionPage() {
 
       sessionRef.current = session;
 
+      // Set 30-second timeout for avatar connection
+      const timeoutPromise = new Promise<boolean>((_, reject) => {
+        avatarTimeoutRef.current = setTimeout(() => {
+          reject(new Error("Avatar connection timed out after 30 seconds"));
+        }, 30000);
+      });
+
+      // Race between session connection and timeout
+      let connectionEstablished = false;
+
       session.on(SessionEvent.SESSION_STATE_CHANGED, (state: string) => {
         if (state === "CONNECTED") {
+          connectionEstablished = true;
+          if (avatarTimeoutRef.current) {
+            clearTimeout(avatarTimeoutRef.current);
+            avatarTimeoutRef.current = null;
+          }
+
           setAvatarReady(true);
           setAvatarLoading(false);
+          setAvatarError(null);
 
           if (videoRef.current) {
             session.attach(videoRef.current);
@@ -589,6 +617,12 @@ export default function PracticeSessionPage() {
       });
 
       session.on(SessionEvent.SESSION_STREAM_READY, () => {
+        connectionEstablished = true;
+        if (avatarTimeoutRef.current) {
+          clearTimeout(avatarTimeoutRef.current);
+          avatarTimeoutRef.current = null;
+        }
+
         if (videoRef.current) {
           session.attach(videoRef.current);
           videoRef.current.onplaying = () => startChromaKey();
@@ -596,13 +630,10 @@ export default function PracticeSessionPage() {
       });
 
       // Avatar speaking events
-      // With Realtime API: we DON'T abort STT. Echo cancellation handles feedback.
-      // We just set the flag so transcriptions during avatar speech are dropped.
       session.on(AgentEventsEnum.AVATAR_SPEAK_STARTED, () => {
         setIsSpeaking(true);
         isSpeakingRef.current = true;
 
-        // Web Speech fallback: still need to pause recognition
         if (sttMode === "webspeech" && recognitionRef.current) {
           try { recognitionRef.current.abort(); } catch { /* ok */ }
         }
@@ -612,15 +643,18 @@ export default function PracticeSessionPage() {
         setIsSpeaking(false);
         isSpeakingRef.current = false;
 
-        // Web Speech fallback: resume recognition
         if (sttMode === "webspeech" && micActiveRef.current && !recognitionRef.current) {
           resumeWebSpeechListening();
         }
-        // Realtime API: no action needed. WebSocket stays connected,
-        // echo cancellation keeps audio clean, VAD handles next turn.
       });
 
-      await session.start();
+      try {
+        await Promise.race([session.start(), timeoutPromise]);
+      } catch (timeoutErr) {
+        if (!connectionEstablished) {
+          throw timeoutErr;
+        }
+      }
 
       // Send opening line
       const openingRes = await fetch("/api/practice/message", {
@@ -657,8 +691,74 @@ export default function PracticeSessionPage() {
       }
     } catch (err) {
       console.error("Init error:", err);
-      setError("Failed to initialize avatar session. Check console for details.");
+      const errorMsg = err instanceof Error ? err.message : "Failed to initialize avatar session";
+      setAvatarError(errorMsg);
       setAvatarLoading(false);
+
+      // Check if we should offer text-only mode
+      if (avatarRetryCount >= 2) {
+        setTextOnlyMode(true);
+      }
+    }
+  }
+
+  function retryAvatarConnection() {
+    setAvatarRetryCount((prev) => prev + 1);
+    initSession();
+  }
+
+  function switchToTextOnly() {
+    setTextOnlyMode(true);
+    setAvatarLoading(false);
+    setAvatarError(null);
+
+    // Start session in text-only mode
+    initiateTextOnlySession();
+  }
+
+  async function initiateTextOnlySession() {
+    try {
+      setIsProcessing(true);
+
+      const openingRes = await fetch("/api/practice/message", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sessionId,
+          userMessage: "[Session started. Please introduce yourself and open the meeting.]",
+        }),
+      });
+
+      const openingData = await openingRes.json();
+      if (openingData.response) {
+        const entry: TranscriptEntry = {
+          role: "persona",
+          text: openingData.response,
+          timestamp: new Date().toISOString(),
+        };
+
+        if (openingData.speaker) {
+          entry.speaker = openingData.speaker;
+          entry.speakerTitle = openingData.speakerTitle;
+          setCurrentSpeaker(openingData.speaker);
+          setIsPanelMode(true);
+        }
+
+        setTranscript([entry]);
+
+        if (openingData.persona) {
+          setPersona(openingData.persona);
+        }
+      }
+
+      timerRef.current = setInterval(() => {
+        setElapsed((prev) => prev + 1);
+      }, 1000);
+    } catch (err) {
+      console.error("Text-only session error:", err);
+      setError("Failed to start text-only session");
+    } finally {
+      setIsProcessing(false);
     }
   }
 
@@ -685,6 +785,11 @@ export default function PracticeSessionPage() {
   }
 
   async function cleanup() {
+    if (avatarTimeoutRef.current) {
+      clearTimeout(avatarTimeoutRef.current);
+      avatarTimeoutRef.current = null;
+    }
+
     stopChromaKey();
     stopRealtimeSTT();
     stopWebSpeechRecognition();
@@ -763,44 +868,79 @@ export default function PracticeSessionPage() {
       <div className="flex flex-1 overflow-hidden">
         {/* Video Panel */}
         <div className="flex flex-1 flex-col items-center justify-center p-8">
-          <div className="relative aspect-video w-full max-w-2xl overflow-hidden rounded-2xl bg-gray-800">
-            {avatarLoading && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-                <Loader2 className="h-10 w-10 animate-spin text-emerald-400" />
-                <p className="text-sm text-gray-400">Starting avatar...</p>
-              </div>
-            )}
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              muted
-              className="absolute opacity-0 pointer-events-none"
-              style={{ width: 1, height: 1 }}
-            />
-            <canvas
-              ref={canvasRef}
-              className={`h-full w-full object-cover ${avatarLoading ? "opacity-0" : "opacity-100"} transition-opacity duration-500`}
-            />
-            {isSpeaking && (
-              <div className="absolute bottom-4 left-4 flex items-center gap-2 rounded-full bg-black/60 px-3 py-1">
-                <div className="flex gap-0.5">
-                  <div className="h-3 w-1 animate-pulse rounded-full bg-emerald-400" style={{ animationDelay: "0ms" }} />
-                  <div className="h-3 w-1 animate-pulse rounded-full bg-emerald-400" style={{ animationDelay: "150ms" }} />
-                  <div className="h-3 w-1 animate-pulse rounded-full bg-emerald-400" style={{ animationDelay: "300ms" }} />
+          {!textOnlyMode && (
+            <div className="relative aspect-video w-full max-w-2xl overflow-hidden rounded-2xl bg-gray-800">
+              {avatarLoading && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+                  <Loader2 className="h-10 w-10 animate-spin text-emerald-400" />
+                  <p className="text-sm text-gray-400">Starting avatar...</p>
                 </div>
-                <span className="text-xs text-gray-300">
-                  {isPanelMode && currentSpeaker ? currentSpeaker : "Speaking"}
-                </span>
-              </div>
-            )}
-          </div>
+              )}
+              {avatarError && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-gray-900/80 backdrop-blur">
+                  <div className="flex flex-col items-center gap-3">
+                    <AlertCircle className="h-8 w-8 text-red-400" />
+                    <div className="text-center">
+                      <p className="text-sm font-medium text-red-400">Avatar connection timed out</p>
+                      <p className="text-xs text-gray-400 mt-1">Please try again or use text-only mode</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <button
+                      onClick={retryAvatarConnection}
+                      className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 transition"
+                    >
+                      Retry Connection
+                    </button>
+                    {avatarRetryCount >= 2 && (
+                      <button
+                        onClick={switchToTextOnly}
+                        className="rounded-lg bg-gray-700 px-4 py-2 text-sm font-medium text-white hover:bg-gray-600 transition"
+                      >
+                        Use Text-Only Mode
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                className="absolute opacity-0 pointer-events-none"
+                style={{ width: 1, height: 1 }}
+              />
+              <canvas
+                ref={canvasRef}
+                className={`h-full w-full object-cover ${avatarLoading ? "opacity-0" : "opacity-100"} transition-opacity duration-500`}
+              />
+              {isSpeaking && (
+                <div className="absolute bottom-4 left-4 flex items-center gap-2 rounded-full bg-black/60 px-3 py-1">
+                  <div className="flex gap-0.5">
+                    <div className="h-3 w-1 animate-pulse rounded-full bg-emerald-400" style={{ animationDelay: "0ms" }} />
+                    <div className="h-3 w-1 animate-pulse rounded-full bg-emerald-400" style={{ animationDelay: "150ms" }} />
+                    <div className="h-3 w-1 animate-pulse rounded-full bg-emerald-400" style={{ animationDelay: "300ms" }} />
+                  </div>
+                  <span className="text-xs text-gray-300">
+                    {isPanelMode && currentSpeaker ? currentSpeaker : "Speaking"}
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+          {textOnlyMode && (
+            <div className="w-full max-w-2xl rounded-2xl bg-gray-800 p-6 text-center">
+              <p className="text-sm text-gray-300">Running in text-only mode</p>
+              <p className="text-xs text-gray-500 mt-2">Avatar video is unavailable, but you can continue practicing with text chat</p>
+            </div>
+          )}
 
           {/* Mic Controls */}
           <div className="mt-6 flex items-center gap-4">
             <button
               onClick={isRecording ? stopListening : startListening}
-              disabled={!avatarReady || isProcessing}
+              disabled={(!avatarReady && !textOnlyMode) || isProcessing}
               className={`flex h-14 w-14 items-center justify-center rounded-full transition ${
                 isRecording
                   ? "bg-red-600 hover:bg-red-700 ring-4 ring-red-600/30"

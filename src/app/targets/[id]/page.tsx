@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import AppNav from "@/components/AppNav";
 import MeetingRecordings from "@/components/MeetingRecordings";
+import AccumulatedIntelDisplay from "@/components/AccumulatedIntelDisplay";
 import Link from "next/link";
 
 interface TargetDetail {
@@ -303,17 +304,7 @@ export default function TargetDetailPage() {
 
         {/* Accumulated Intel */}
         {target.accumulatedIntel && (
-          <div className="mb-6">
-            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
-              <Brain className="h-4 w-4 text-emerald-500" />
-              Accumulated Intelligence
-            </h2>
-            <div className="rounded-xl border bg-white p-5 shadow-sm">
-              <pre className="text-sm text-gray-600 font-mono whitespace-pre-wrap leading-relaxed">
-                {target.accumulatedIntel}
-              </pre>
-            </div>
-          </div>
+          <AccumulatedIntelDisplay intel={target.accumulatedIntel} />
         )}
 
         {/* Notes */}

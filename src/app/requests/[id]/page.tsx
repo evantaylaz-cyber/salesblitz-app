@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import AppNav from "@/components/AppNav";
 import DebriefSection from "@/components/DebriefSection";
+import AssetGuide from "@/components/AssetGuide";
 
 interface StepData {
   id: string;
@@ -98,9 +99,9 @@ const STATUS_STYLES: Record<string, { ring: string; bg: string; text: string; ic
 };
 
 const ASSET_CATEGORY_LABELS: Record<string, { label: string; description: string; color: string }> = {
-  interactive: { label: "Interactive", description: "Open in your browser. Bookmark these for live calls.", color: "bg-emerald-100 text-emerald-800" },
-  research: { label: "Research", description: "Background intel that powered your deliverables.", color: "bg-blue-100 text-blue-700" },
-  deliverable: { label: "Deliverable", description: "Ready to download, print, or share.", color: "bg-emerald-100 text-emerald-700" },
+  interactive: { label: "Interactive", description: "Open in your browser. Bookmark for quick reference during or before calls.", color: "bg-emerald-100 text-emerald-800" },
+  research: { label: "Research", description: "Study material for before the call. Read thoroughly, not during the meeting.", color: "bg-blue-100 text-blue-700" },
+  deliverable: { label: "Deliverable", description: "Download, print, or share. Call docs go on-screen; cards and decks are for sending.", color: "bg-emerald-100 text-emerald-700" },
 };
 
 const FORMAT_ICONS: Record<string, string> = {
@@ -478,6 +479,11 @@ export default function RequestDetailPage() {
             })}
           </div>
         </div>
+
+        {/* Asset Usage Guide — shows when blitz is delivered */}
+        {(request.status === "delivered" || request.status === "ready") && (
+          <AssetGuide toolName={request.toolName} />
+        )}
 
         {/* Assets / Deliverables */}
         {request.assets.some((a: AssetData) => a.url) && (

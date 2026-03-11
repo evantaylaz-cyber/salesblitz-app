@@ -7,6 +7,7 @@ import { sendOrderNotification } from "@/lib/email";
 import { initializeSteps, getExpectedAssets } from "@/lib/job-steps";
 import { normalizeAssets } from "@/lib/normalize-assets";
 import { triggerWorker } from "@/lib/trigger-worker";
+import { aiLimiter, readLimiter, rateLimitResponse } from "@/lib/rate-limit";
 
 // Infer engagement type from tool + meeting context when user doesn't specify
 function inferEngagementType(toolName: string, meetingType?: string): string {
@@ -33,6 +34,10 @@ export async function GET() {
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
+
+    // Rate limit: read tier
+    const rlResult = readLimiter.check(user.id);
+    if (!rlResult.allowed) return rateLimitResponse(rlResult);
 
     // Get user's team memberships for team-scoped queries
     const teamMemberships = await prisma.teamMember.findMany({
@@ -129,6 +134,10 @@ export async function POST(req: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
+
+    // Rate limit: AI tier (blitz submissions are expensive)
+    const rlResult = aiLimiter.check(user.id);
+    if (!rlResult.allowed) return rateLimitResponse(rlResult);
 
     // If teamId provided, verify user is an active member
     if (teamId) {

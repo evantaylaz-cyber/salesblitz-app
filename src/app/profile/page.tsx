@@ -231,26 +231,39 @@ function TextInput({
   onChange,
   placeholder,
   hint,
+  required = false,
+  error = "",
+  onBlur,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   placeholder?: string;
   hint?: string;
+  required?: boolean;
+  error?: string;
+  onBlur?: () => void;
 }) {
   return (
     <div>
       <label className="block text-sm font-medium text-gray-700 mb-1">
         {label}
+        {required && <span className="text-red-500 ml-1">*</span>}
       </label>
       <input
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        onBlur={onBlur}
         placeholder={placeholder}
-        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition"
+        className={`w-full rounded-lg border px-3 py-2 text-sm focus:ring-1 outline-none transition ${
+          error
+            ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+            : "border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
+        }`}
       />
-      {hint && <p className="mt-1 text-xs text-gray-400">{hint}</p>}
+      {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
+      {hint && !error && <p className="mt-1 text-xs text-gray-400">{hint}</p>}
     </div>
   );
 }
@@ -262,6 +275,9 @@ function TextArea({
   placeholder,
   hint,
   rows = 3,
+  required = false,
+  error = "",
+  onBlur,
 }: {
   label: string;
   value: string;
@@ -269,21 +285,33 @@ function TextArea({
   placeholder?: string;
   hint?: string;
   rows?: number;
+  required?: boolean;
+  error?: string;
+  onBlur?: () => void;
 }) {
   return (
     <div>
       <label className="block text-sm font-medium text-gray-700 mb-1">
         {label}
+        {required && <span className="text-red-500 ml-1">*</span>}
       </label>
-      <VoiceTextarea
-        value={value}
-        onChange={onChange}
-        placeholder={placeholder}
-        rows={rows}
-      />
-      {hint && <p className="mt-1 text-xs text-gray-400">{hint}</p>}
+      <div className={error ? "rounded-lg border border-red-500" : ""}>
+        <VoiceTextarea
+          value={value}
+          onChange={onChange}
+          onBlur={onBlur}
+          placeholder={placeholder}
+          rows={rows}
+        />
+      </div>
+      {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
+      {hint && !error && <p className="mt-1 text-xs text-gray-400">{hint}</p>}
     </div>
   );
+}
+
+interface ValidationErrors {
+  [key: string]: string;
 }
 
 export default function ProfilePage() {
@@ -293,6 +321,8 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
+  const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
 
   // URL fetch states
   const [fetchingCompany, setFetchingCompany] = useState(false);
@@ -303,6 +333,62 @@ export default function ProfilePage() {
   const [resumeParseResult, setResumeParseResult] = useState<string | null>(null);
   const [uploadingResume, setUploadingResume] = useState(false);
   const resumeFileRef = useRef<HTMLInputElement>(null);
+
+  function validateField(fieldName: string, value: unknown): string {
+    if (typeof value !== "string") return "";
+
+    const trimmed = value.trim();
+
+    if (fieldName === "companyName") {
+      if (!trimmed) return "Company name is required";
+      if (trimmed.length < 2) return "Company name must be at least 2 characters";
+    }
+
+    if (fieldName === "companyProduct") {
+      if (!trimmed) return "Product or service is required";
+      if (trimmed.length < 10) return "Please provide a more detailed description (at least 10 characters)";
+    }
+
+    return "";
+  }
+
+  function validateAllRequired(): ValidationErrors {
+    const errors: ValidationErrors = {};
+
+    if (!profile.companyName.trim()) {
+      errors.companyName = "Company name is required";
+    } else if (profile.companyName.trim().length < 2) {
+      errors.companyName = "Company name must be at least 2 characters";
+    }
+
+    if (!profile.companyProduct.trim()) {
+      errors.companyProduct = "Product or service is required";
+    } else if (profile.companyProduct.trim().length < 10) {
+      errors.companyProduct = "Please provide a more detailed description";
+    }
+
+    return errors;
+  }
+
+  function isFormValid(): boolean {
+    return !profile.companyName.trim() || !profile.companyProduct.trim();
+  }
+
+  function handleFieldBlur(fieldName: string) {
+    setTouchedFields((prev) => new Set([...prev, fieldName]));
+    const value = profile[fieldName as keyof ProfileData];
+    const fieldError = validateField(fieldName, value);
+
+    if (fieldError) {
+      setValidationErrors((prev) => ({ ...prev, [fieldName]: fieldError }));
+    } else {
+      setValidationErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[fieldName];
+        return newErrors;
+      });
+    }
+  }
 
   useEffect(() => {
     if (isLoaded && clerkUser) {
@@ -497,6 +583,15 @@ export default function ProfilePage() {
   }
 
   const saveProfile = useCallback(async () => {
+    // Validate required fields
+    const errors = validateAllRequired();
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      setTouchedFields(new Set(Object.keys(errors)));
+      setError(null);
+      return;
+    }
+
     setSaving(true);
     setSaved(false);
     setError(null);
@@ -512,10 +607,12 @@ export default function ProfilePage() {
       if (res.ok) {
         setSaved(true);
         setProfile((prev) => ({ ...prev, onboardingCompleted: true }));
+        setValidationErrors({});
+        setTouchedFields(new Set());
         setTimeout(() => setSaved(false), 3000);
       } else {
         const data = await res.json();
-        setError(data.error || "Failed to save");
+        setError(data.error || "Failed to save profile. Please try again.");
       }
     } catch {
       setError("Network error. Please try again.");
@@ -634,8 +731,8 @@ export default function ProfilePage() {
             </a>
             <button
               onClick={saveProfile}
-              disabled={saving}
-              className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-700 disabled:opacity-50"
+              disabled={saving || isFormValid()}
+              className="flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {saving ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -670,6 +767,13 @@ export default function ProfilePage() {
         {error && (
           <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
             {error}
+          </div>
+        )}
+
+        {saved && (
+          <div className="mb-6 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-700 flex items-start gap-3">
+            <Check className="h-5 w-5 mt-0.5 shrink-0" />
+            <span>Profile saved successfully!</span>
           </div>
         )}
 
@@ -722,7 +826,10 @@ export default function ProfilePage() {
                   label="Company Name"
                   value={profile.companyName}
                   onChange={(v) => updateField("companyName", v)}
+                  onBlur={() => handleFieldBlur("companyName")}
                   placeholder="Acme Corp"
+                  required
+                  error={touchedFields.has("companyName") ? validationErrors.companyName : ""}
                 />
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -744,8 +851,11 @@ export default function ProfilePage() {
                 label="Product / Service"
                 value={profile.companyProduct}
                 onChange={(v) => updateField("companyProduct", v)}
+                onBlur={() => handleFieldBlur("companyProduct")}
                 placeholder="What does your company sell? Be specific."
                 hint="e.g., 'Sentinel: an EDR platform for mid-market enterprises'"
+                required
+                error={touchedFields.has("companyProduct") ? validationErrors.companyProduct : ""}
               />
               <TextArea
                 label="Company Description"
