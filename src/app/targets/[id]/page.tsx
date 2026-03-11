@@ -26,6 +26,7 @@ import {
   Trophy,
 } from "lucide-react";
 import AppNav from "@/components/AppNav";
+import MeetingRecordings from "@/components/MeetingRecordings";
 import Link from "next/link";
 
 interface TargetDetail {
@@ -509,6 +510,11 @@ export default function TargetDetailPage() {
               ))}
             </div>
           )}
+        </div>
+
+        {/* Meeting Recordings */}
+        <div className="mt-6">
+          <MeetingRecordings targetId={target.id} limit={10} />
         </div>
       </div>
     </div>

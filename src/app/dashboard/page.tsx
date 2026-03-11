@@ -20,6 +20,7 @@ import {
   Play,
 } from "lucide-react";
 import AppNav from "@/components/AppNav";
+import MeetingRecordings from "@/components/MeetingRecordings";
 import dynamic from "next/dynamic";
 
 const OnboardingChatBubble = dynamic(
@@ -611,6 +612,11 @@ export default function DashboardPage() {
             </div>
           </div>
         )}
+
+        {/* Meeting Recordings */}
+        <div className="mt-8">
+          <MeetingRecordings limit={5} />
+        </div>
 
         {/* Consulting CTA */}
         <div className="mt-8 rounded-lg border border-gray-800 bg-gray-900 p-5 md:p-6">

@@ -31,6 +31,7 @@ model User {
   knowledgeDocs           KnowledgeDocument[]
   debriefs                RunDebrief[]
   practiceSessions        PracticeSession[]
+  meetingRecordings       MeetingRecording[]
   targets                 Target[]
   userProfile             UserProfile?
 
@@ -199,13 +200,16 @@ model RunRequest {
   adminNotes      String?  @db.Text // Internal notes (not visible to customer)
 
   // Post-run debrief
-  debriefs        RunDebrief[]
+  debriefs          RunDebrief[]
+
+  // Meeting recordings linked to this blitz
+  meetingRecordings MeetingRecording[]
 
   // Interview panel (1:1 for interview_prep runs with multi-interviewer context)
-  interviewPanel  InterviewPanel?
+  interviewPanel    InterviewPanel?
 
   // Practice sessions spawned from this blitz
-  practiceSessions PracticeSession[]
+  practiceSessions  PracticeSession[]
 
   // Timestamps
   createdAt       DateTime @default(now())
@@ -372,8 +376,9 @@ model Target {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  runRequests      RunRequest[]
-  practiceSessions PracticeSession[]
+  runRequests       RunRequest[]
+  practiceSessions  PracticeSession[]
+  meetingRecordings MeetingRecording[]
 
   @@unique([userId, companyName, contactName])
   @@index([userId])
@@ -409,6 +414,55 @@ model InterviewPanelMember {
   order           Int     @default(0) // display/switching order
 
   @@index([panelId])
+}
+
+// Meeting recording — captures real call transcripts from Chrome extension or manual upload.
+// Feeds into Target.accumulatedIntel for cross-run learning. Connects to RunRequest/Target for context.
+model MeetingRecording {
+  id              String     @id @default(uuid())
+  userId          String
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Target linkage (optional — user may not have a blitz for this meeting)
+  targetId        String?
+  target          Target?    @relation(fields: [targetId], references: [id])
+  runRequestId    String?
+  runRequest      RunRequest? @relation(fields: [runRequestId], references: [id])
+
+  // Meeting metadata
+  meetingType     String?    // discovery | demo | negotiation | interview | follow_up | internal | other
+  meetingTitle    String?    // "Round 2 with Acme" or auto-detected from calendar
+  attendees       Json?      // [{name, title, company, role}] — parsed from transcript or calendar
+  meetingDate     DateTime?  // When the meeting happened (may differ from recording date)
+  platform        String?    // google_meet | zoom | teams | phone | other
+
+  // Audio & transcript
+  audioUrl        String?    // Supabase storage URL (if audio was captured)
+  audioDuration   Int?       // Seconds
+  transcript      Json?      // [{speaker?, text, startTime?, endTime?}]
+  rawTranscript   String?    @db.Text // Plain text version for search / embedding
+  transcriptSource String?   // extension_tab_capture | extension_mic | manual_upload | api
+
+  // AI-generated analysis
+  analysis        Json?      // Structured debrief from Claude
+  // {summary, keyMoments: [{timestamp, what, why}], objections: [{objection, response, effectiveness}],
+  //  commitments: [{who, what, deadline?}], dealQualification: {gaps: [], strengths: []},
+  //  coachingNotes: [{dimension, observation, suggestion}], nextSteps: []}
+  outcome         String?    // strong | developing | needs_work | unknown
+  overallScore    Float?     // 0-5 composite score
+
+  // Embedding for semantic search
+  transcriptEmbedding Unsupported("vector(768)")?
+
+  // Status
+  status          String     @default("processing") // processing | transcribing | analyzing | completed | failed
+  errorMessage    String?    @db.Text
+
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  @@index([userId])
+  @@index([targetId])
 }
 
 // Post-run debrief — captures user feedback after a meeting/interview.
