@@ -214,7 +214,7 @@ export default function ClarifyPage() {
   const allAnswered = answeredCount === questions.length;
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#0a0a0a]">
       {/* Header */}
       <header className="border-b bg-[#141414]">
         <div className="mx-auto flex max-w-3xl items-center gap-4 px-6 py-4">

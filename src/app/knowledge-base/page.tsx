@@ -217,7 +217,7 @@ export default function KnowledgeBasePage() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#0a0a0a]">
       <AppNav currentPage="/knowledge-base" />
 
       <div className="border-b bg-[#141414]">

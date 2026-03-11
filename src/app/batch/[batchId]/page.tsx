@@ -132,7 +132,7 @@ export default function BatchProgressPage() {
 
   if (error || !batchJob) {
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-[#0a0a0a]">
         <AppNav currentPage="/requests" />
         <main className="mx-auto max-w-3xl px-6 py-8">
           <div className="flex items-start gap-3 rounded-lg border border-red-500/20 bg-red-500/10 p-4">
@@ -149,7 +149,7 @@ export default function BatchProgressPage() {
   const isProcessing = !isComplete && !isAwaiting;
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#0a0a0a]">
       <AppNav currentPage="/requests" />
 
       <main className="mx-auto max-w-3xl px-6 py-8 space-y-8">

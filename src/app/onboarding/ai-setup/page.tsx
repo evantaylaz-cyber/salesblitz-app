@@ -235,7 +235,7 @@ export default function AISetupPage() {
   const currentStepIndex = steps.findIndex((s) => s.id === step);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#0a0a0a]">
       {/* Header */}
       <header className="border-b bg-[#141414]">
         <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-4">

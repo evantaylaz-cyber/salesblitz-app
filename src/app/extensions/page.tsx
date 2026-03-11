@@ -151,7 +151,7 @@ export default function ExtensionsPage() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#0a0a0a]">
       <AppNav currentPage="/extensions" />
 
       <main className="mx-auto max-w-3xl px-6 py-8">

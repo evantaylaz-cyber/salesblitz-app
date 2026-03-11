@@ -109,7 +109,7 @@ export default function AnalyticsPage() {
   const successRate = data.totalRuns > 0 ? Math.round((completedCount / data.totalRuns) * 100) : 0;
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#0a0a0a]">
       <AppNav currentPage="/analytics" />
 
       <main className="mx-auto max-w-7xl px-6 py-8">

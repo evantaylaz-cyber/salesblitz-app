@@ -119,7 +119,7 @@ export default function TargetsPage() {
   const deepTargets = targets.filter((t) => t.intelDepth === "deep" || t.intelDepth === "moderate").length;
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#0a0a0a]">
       <AppNav />
       <div className="max-w-6xl mx-auto px-6 py-6">
         {/* Header */}

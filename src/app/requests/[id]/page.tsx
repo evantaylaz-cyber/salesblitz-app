@@ -281,7 +281,7 @@ export default function RequestDetailPage() {
   const statusStyle = STATUS_STYLES[request.status] || STATUS_STYLES.submitted;
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#0a0a0a]">
       <AppNav currentPage="/requests" />
 
       {/* Request detail bar */}

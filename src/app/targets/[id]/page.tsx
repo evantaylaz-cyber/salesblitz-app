@@ -175,7 +175,7 @@ export default function TargetDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-[#0a0a0a]">
         <AppNav />
         <div className="flex items-center justify-center py-20">
           <Loader2 className="h-6 w-6 animate-spin text-neutral-500" />
@@ -186,7 +186,7 @@ export default function TargetDetailPage() {
 
   if (!target) {
     return (
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-[#0a0a0a]">
         <AppNav />
         <div className="max-w-4xl mx-auto px-6 py-8">
           <p className="text-neutral-400">Target not found.</p>
@@ -202,7 +202,7 @@ export default function TargetDetailPage() {
   const TypeIcon = target.type === "interview" ? GraduationCap : Briefcase;
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#0a0a0a]">
       <AppNav />
       <div className="max-w-4xl mx-auto px-6 py-6">
         {/* Back link */}

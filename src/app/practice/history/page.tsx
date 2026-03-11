@@ -72,7 +72,7 @@ export default function PracticeHistoryPage() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#0a0a0a]">
       <AppNav currentPage="/practice" />
 
       <main className="mx-auto max-w-5xl px-6 py-10">

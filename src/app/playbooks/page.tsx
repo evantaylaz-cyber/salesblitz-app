@@ -101,7 +101,7 @@ export default function PlaybooksPage() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#0a0a0a]">
       <AppNav currentPage="/playbooks" />
 
       <div className="max-w-6xl mx-auto px-4 py-8">

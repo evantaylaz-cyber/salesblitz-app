@@ -72,7 +72,7 @@ export default function BillingPage() {
     user?.subscriptionStatus === "past_due";
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#0a0a0a]">
       <AppNav currentPage="/billing" />
 
       <main className="mx-auto max-w-4xl px-6 py-10 space-y-8">

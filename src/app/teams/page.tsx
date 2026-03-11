@@ -125,7 +125,7 @@ export default function TeamsPage() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#0a0a0a]">
       <AppNav currentPage="/teams" />
 
       <main className="mx-auto max-w-4xl px-6 py-8">

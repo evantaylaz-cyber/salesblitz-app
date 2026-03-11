@@ -364,7 +364,7 @@ export default function RequestPage() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#0a0a0a]">
       <header className="border-b bg-[#141414]">
         <div className="mx-auto flex max-w-3xl items-center gap-4 px-6 py-4">
           <button
