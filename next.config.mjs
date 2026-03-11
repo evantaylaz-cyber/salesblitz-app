@@ -1,8 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // pdfjs-dist needs to stay as external in serverless functions
-  // (avoids bundling issues with its ESM worker files)
-  serverExternalPackages: ["pdfjs-dist"],
   async headers() {
     return [
       {

@@ -30,6 +30,7 @@
     "stripe": "^14.0.0",
     "svix": "^1.15.0",
     "tailwind-merge": "^2.2.0",
+    "unpdf": "^1.4.0",
     "zod": "^3.22.0"
   },
   "devDependencies": {

@@ -1,30 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
+import { extractText, getDocumentProxy } from "unpdf";
 import mammoth from "mammoth";
-
-// Use pdfjs-dist directly instead of pdf-parse v2, which depends on
-// @napi-rs/canvas (native binary that fails in Vercel serverless).
-async function extractPdfText(buffer: Buffer): Promise<string> {
-  // Dynamic import for ESM module
-  const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs");
-  const uint8 = new Uint8Array(buffer);
-  const doc = await pdfjsLib.getDocument({ data: uint8 }).promise;
-  const pages: string[] = [];
-  for (let i = 1; i <= doc.numPages; i++) {
-    const page = await doc.getPage(i);
-    const content = await page.getTextContent();
-    const pageText = content.items
-      .map((item: any) => item.str)
-      .join(" ");
-    pages.push(pageText);
-  }
-  return pages.join("\n");
-}
 
 // POST /api/profile/upload-resume
 // Accepts a file upload (PDF or DOCX), extracts text, returns it.
 // The caller then sends the extracted text to /api/profile/parse-resume
 // for AI extraction. This keeps the upload route fast and the AI route reusable.
+//
+// Uses unpdf for PDF parsing (zero native deps, works on Vercel serverless).
+// Previous pdf-parse v2 failed on Vercel due to @napi-rs/canvas native binary.
 export async function POST(req: NextRequest) {
   try {
     const clerkUser = await currentUser();
@@ -71,7 +56,9 @@ export async function POST(req: NextRequest) {
     let extractedText = "";
 
     if (ext === "pdf" || file.type === "application/pdf") {
-      extractedText = await extractPdfText(buffer);
+      const pdf = await getDocumentProxy(new Uint8Array(buffer));
+      const { text } = await extractText(pdf, { mergePages: true });
+      extractedText = text;
     } else if (
       ext === "docx" ||
       file.type ===
