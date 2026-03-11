@@ -312,9 +312,9 @@ export default function OnboardingChatBubble({
                 ) : (
                   <>
                     {[
-                      "I sell enterprise SaaS",
-                      "Tech sales, mostly F500",
-                      "Between roles, prepping for interviews",
+                      "I'm actively selling",
+                      "I'm prepping for interviews",
+                      "Both",
                     ].map((suggestion) => (
                       <button
                         key={suggestion}
