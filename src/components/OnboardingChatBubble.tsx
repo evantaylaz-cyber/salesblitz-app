@@ -449,7 +449,7 @@ export default function OnboardingChatBubble({
                 profileDone ? "Ask anything or update your profile." : "Type your response..."
               }
               rows={1}
-              className="w-full resize-none rounded-xl border border-[#262626] px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent placeholder:text-neutral-500 max-h-24 overflow-y-auto"
+              className="w-full resize-none rounded-xl border border-[#262626] bg-white text-neutral-900 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent placeholder:text-neutral-500 max-h-24 overflow-y-auto"
               style={{ height: "auto", minHeight: "40px" }}
               onInput={(e) => {
                 const target = e.target as HTMLTextAreaElement;
