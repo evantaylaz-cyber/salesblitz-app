@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import prisma from "@/lib/db";
+import { Prisma } from "@prisma/client";
 import { initializeSteps, getExpectedAssets } from "@/lib/job-steps";
 import { ToolName } from "@/lib/tools";
 import { triggerWorker } from "@/lib/trigger-worker";
@@ -60,7 +61,7 @@ export async function POST(
         steps: JSON.parse(JSON.stringify(steps)),
         assets: JSON.parse(JSON.stringify(expectedAssets.map(a => ({ ...a, url: null, size: null })))),
         currentStep: null,
-        researchData: null,
+        researchData: Prisma.DbNull,
       },
     });
 
