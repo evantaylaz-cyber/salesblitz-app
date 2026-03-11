@@ -34,6 +34,7 @@ model User {
   meetingRecordings       MeetingRecording[]
   targets                 Target[]
   userProfile             UserProfile?
+  apiKeys                 ApiKey[]
 
   // Team relationships
   ownedTeams              Team[]       @relation("TeamOwner")
@@ -198,6 +199,16 @@ model RunRequest {
   deliveryUrl     String?  // Google Drive folder URL or download link
   deliveryNotes   String?  @db.Text // Notes about what was delivered
   adminNotes      String?  @db.Text // Internal notes (not visible to customer)
+
+  // Live research insights (streamed to frontend during blitz execution)
+  liveInsights    Json     @default("[]") // Array of { step, insight, timestamp }
+
+  // Quality scoring (Haiku-based eval of output against methodology gates)
+  qualityScore    Json?    // { dimensions: {...}, overall_score, top_strength, top_weakness, ai_slop_detected }
+
+  // Webhook callback (n8n / CRM integration — POST results when blitz completes)
+  callbackUrl     String?  // URL to POST delivery payload to on completion
+  callbackStatus  String?  // pending | sent | failed
 
   // Post-run debrief
   debriefs          RunDebrief[]
@@ -481,4 +492,24 @@ model RunDebrief {
 
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
+}
+
+// ─── API Keys (webhook / n8n / CRM integration auth) ──────────────────────
+model ApiKey {
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label           String   @default("default") // User-facing label (e.g., "n8n", "HubSpot", "Salesforce")
+  keyHash         String   @unique // SHA-256 hash of the actual key (never store plaintext)
+  keyPrefix       String   // First 8 chars of key for display (e.g., "sb_live_a1b2...")
+  teamId          String?  // Optional: scope key to a specific team's run pool
+  scopes          Json     @default("[\"blitz:create\", \"blitz:read\"]") // Allowed operations
+  rateLimit       Int      @default(10) // Max requests per hour
+  lastUsedAt      DateTime?
+  expiresAt       DateTime? // Optional expiry
+  revoked         Boolean  @default(false)
+  createdAt       DateTime @default(now())
+
+  @@index([userId])
+  @@index([keyHash])
 }

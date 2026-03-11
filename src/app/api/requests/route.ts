@@ -104,9 +104,9 @@ export async function POST(req: NextRequest) {
       panel,
     } = body;
 
-    if (!toolName || !targetName || !targetCompany) {
+    if (!toolName || !targetCompany) {
       return NextResponse.json(
-        { error: "toolName, targetName, and targetCompany are required" },
+        { error: "toolName and targetCompany are required" },
         { status: 400 }
       );
     }
@@ -200,7 +200,7 @@ export async function POST(req: NextRequest) {
         teamId: teamId || null,
         toolName,
         targetId: target.id,
-        targetName,
+        targetName: targetName || "",
         targetCompany,
         targetRole: targetRole || null,
         jobDescription: jobDescription || null,

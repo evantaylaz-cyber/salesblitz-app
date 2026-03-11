@@ -47,12 +47,40 @@ const TOOL_INFO: Record<string, { name: string; category: "interview" | "prospec
   // practice_mode is NOT a blitz tool — it routes directly to /practice
 };
 
+// Mode-based tool routing: resolves user intent to the right backend tool
+const MODE_QUESTIONS: Record<string, { label: string; subtitle: string; options: Array<{ label: string; description: string; toolName: string }> }> = {
+  meeting: {
+    label: "Prep for a meeting",
+    subtitle: "What's the situation?",
+    options: [
+      { label: "I have a meeting scheduled", description: "Research, talk tracks & a game plan for your call", toolName: "prospect_prep" },
+      { label: "I need to get the meeting first", description: "Cold outreach sequences that earn the first reply", toolName: "prospect_outreach" },
+      { label: "I need to audit an active deal", description: "Qualify the deal and surface gaps you're missing", toolName: "deal_audit" },
+      { label: "I need to arm my champion", description: "Internal selling kits so they sell when you're not in the room", toolName: "champion_builder" },
+    ],
+  },
+  interview: {
+    label: "Prep for an interview",
+    subtitle: "What's the situation?",
+    options: [
+      { label: "I have an interview scheduled", description: "Deep intel, playbook & prep sheets per interviewer", toolName: "interview_prep" },
+      { label: "I need to land the interview first", description: "Outreach to get the referral or the meeting", toolName: "interview_outreach" },
+    ],
+  },
+};
+
 export default function RequestPage() {
   const { user: clerkUser, isLoaded } = useUser();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const toolId = searchParams.get("tool") || "";
+
+  // Support both ?tool=xxx (direct) and ?mode=meeting/interview (simplified)
+  const mode = searchParams.get("mode") || "";
+  const [resolvedToolId, setResolvedToolId] = useState(searchParams.get("tool") || "");
+  const toolId = resolvedToolId;
   const toolInfo = TOOL_INFO[toolId];
+  const modeConfig = MODE_QUESTIONS[mode];
+
   const prefillTargetId = searchParams.get("target") || "";
   const prefillCompany = searchParams.get("company") || "";
   const prefillContact = searchParams.get("contact") || "";
@@ -232,6 +260,33 @@ export default function RequestPage() {
     );
   }
 
+  // Mode selection screen: user picks intent, we resolve to the right tool
+  if (!toolInfo && modeConfig) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0a]">
+        <div className="mx-auto max-w-xl px-6 py-16">
+          <a href="/dashboard" className="mb-8 inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-300 transition">
+            <ArrowLeft className="h-4 w-4" /> Back
+          </a>
+          <h1 className="text-2xl font-bold text-white mb-2">{modeConfig.label}</h1>
+          <p className="text-gray-400 mb-8">{modeConfig.subtitle}</p>
+          <div className="space-y-3">
+            {modeConfig.options.map((opt) => (
+              <button
+                key={opt.toolName}
+                onClick={() => setResolvedToolId(opt.toolName)}
+                className="w-full flex flex-col items-start rounded-xl border border-[#262626] bg-[#141414] p-5 text-left transition hover:border-emerald-500/30 hover:bg-[#1a1a1a] group"
+              >
+                <span className="text-sm font-semibold text-white group-hover:text-emerald-400 transition">{opt.label}</span>
+                <span className="mt-1 text-xs text-gray-500">{opt.description}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!toolInfo) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -398,14 +453,13 @@ export default function RequestPage() {
               <div>
                 <label className="mb-1.5 flex items-center gap-1.5 text-sm font-medium text-neutral-200">
                   <UserIcon className="h-3.5 w-3.5 text-neutral-500" />
-                  {isInterview ? "Interviewer / Contact Name" : "Prospect Name"} *
+                  {isInterview ? "Interviewer / Contact Name" : "Prospect Name"} <span className="text-neutral-500 text-xs font-normal">(optional)</span>
                 </label>
                 <input
                   type="text"
-                  required
                   value={targetName}
                   onChange={(e) => setTargetName(e.target.value)}
-                  placeholder={isInterview ? "e.g., Jamie Torres" : "e.g., Alex Rivera"}
+                  placeholder={isInterview ? "e.g., Jamie Torres (or leave blank)" : "e.g., Alex Rivera (or leave blank)"}
                   className="w-full rounded-lg border border-[#333333] bg-[#0a0a0a] px-3.5 py-2.5 text-sm text-white placeholder-neutral-500 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                 />
               </div>
@@ -1026,7 +1080,7 @@ export default function RequestPage() {
             </p>
             <button
               type="submit"
-              disabled={submitting || !targetName || !targetCompany}
+              disabled={submitting || !targetCompany}
               className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {submitting ? (

@@ -500,15 +500,14 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* Tools Grid */}
-        <h2 className="mb-4 text-sm font-semibold text-gray-500 uppercase tracking-wider">Blitz Tools</h2>
-        <div className={`relative grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3 mb-10 ${onboardingDepth === 0 ? "pointer-events-none" : ""}`}>
-          {/* Profile gate overlay for depth 0 */}
+        {/* Quick Start — 2 primary modes */}
+        <h2 className="mb-4 text-sm font-semibold text-gray-500 uppercase tracking-wider">Start a Blitz</h2>
+        <div className={`relative grid grid-cols-1 gap-4 md:grid-cols-2 mb-10 ${onboardingDepth === 0 ? "pointer-events-none" : ""}`}>
           {onboardingDepth === 0 && profileChecked && (
             <div className="absolute inset-0 z-20 flex items-center justify-center rounded-xl bg-[#0a0a0a]/70 backdrop-blur-[2px]">
               <div className="text-center">
                 <Lock className="h-6 w-6 text-gray-500 mx-auto mb-2" />
-                <p className="text-sm font-medium text-gray-400">Complete your profile to unlock tools</p>
+                <p className="text-sm font-medium text-gray-400">Complete your profile to unlock blitzes</p>
                 <button
                   onClick={() => setChatOpen(true)}
                   className="pointer-events-auto mt-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-500 px-4 py-1.5 text-xs font-semibold text-black hover:bg-emerald-400 transition"
@@ -518,6 +517,61 @@ export default function DashboardPage() {
               </div>
             </div>
           )}
+
+          {/* Prep for a Meeting */}
+          <button
+            onClick={() => { window.location.href = "/request?mode=meeting"; }}
+            disabled={totalAvailableRuns() === 0}
+            className="group relative flex flex-col rounded-2xl border-2 border-emerald-500/20 bg-gradient-to-br from-emerald-500/10 via-[#141414] to-[#141414] p-6 text-left transition hover:border-emerald-500/40 hover:shadow-[0_0_32px_rgba(16,185,129,0.12)] disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/15 border border-emerald-500/25">
+                <Users className="h-5 w-5 text-emerald-400" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-white">Prep for a meeting</h3>
+                <p className="text-xs text-gray-500">Discovery, pitch, follow-up, or closing</p>
+              </div>
+            </div>
+            <p className="text-sm text-gray-400 leading-relaxed">
+              Research the account, build talk tracks, and get a methodology-structured game plan. Outreach sequences included if you need to get the meeting first.
+            </p>
+            <div className="mt-4 flex items-center gap-1.5 text-xs font-semibold text-emerald-400 group-hover:text-emerald-300 transition">
+              <Zap className="h-3.5 w-3.5" /> Start Blitz
+            </div>
+          </button>
+
+          {/* Prep for an Interview */}
+          <button
+            onClick={() => { window.location.href = "/request?mode=interview"; }}
+            disabled={totalAvailableRuns() === 0}
+            className="group relative flex flex-col rounded-2xl border-2 border-emerald-500/20 bg-gradient-to-br from-emerald-500/10 via-[#141414] to-[#141414] p-6 text-left transition hover:border-emerald-500/40 hover:shadow-[0_0_32px_rgba(16,185,129,0.12)] disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/15 border border-emerald-500/25">
+                <Briefcase className="h-5 w-5 text-emerald-400" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-white">Prep for an interview</h3>
+                <p className="text-xs text-gray-500">Any round, any stage, any interviewer</p>
+              </div>
+            </div>
+            <p className="text-sm text-gray-400 leading-relaxed">
+              Deep company intel, competitive playbook, prep sheets per panelist, and talk tracks. Need to land the interview first? We build that outreach too.
+            </p>
+            <div className="mt-4 flex items-center gap-1.5 text-xs font-semibold text-emerald-400 group-hover:text-emerald-300 transition">
+              <Zap className="h-3.5 w-3.5" /> Start Blitz
+            </div>
+          </button>
+        </div>
+
+        {/* Advanced Tools */}
+        <details className="mb-10 group">
+          <summary className="mb-4 flex cursor-pointer items-center gap-2 text-sm font-semibold text-gray-500 uppercase tracking-wider hover:text-gray-400 transition list-none">
+            <ChevronRight className="h-4 w-4 transition-transform group-open:rotate-90" />
+            All Tools
+          </summary>
+        <div className={`relative grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3 ${onboardingDepth === 0 ? "pointer-events-none" : ""}`}>
           {TOOLS.map((tool) => {
             const accessible = !tool.comingSoon && (canAccess(tool.minimumTier) || hasSprintAccess(tool.id));
 
@@ -591,6 +645,7 @@ export default function DashboardPage() {
             );
           })}
         </div>
+        </details>
 
         {/* Recent Blitzes */}
         {recentRequests.length > 0 && (

@@ -24,6 +24,7 @@ import {
 import AppNav from "@/components/AppNav";
 import DebriefSection from "@/components/DebriefSection";
 import AssetGuide from "@/components/AssetGuide";
+import WorkflowGuide from "@/components/WorkflowGuide";
 
 interface StepData {
   id: string;
@@ -44,6 +45,12 @@ interface AssetData {
   category: "research" | "deliverable" | "interactive";
 }
 
+interface LiveInsight {
+  step: string;
+  insight: string;
+  timestamp: string;
+}
+
 interface RequestDetail {
   id: string;
   toolName: string;
@@ -55,6 +62,7 @@ interface RequestDetail {
   currentStep: string | null;
   steps: StepData[];
   assets: AssetData[];
+  liveInsights: LiveInsight[];
   progress: number;
   completedSteps: number;
   totalSteps: number;
@@ -247,6 +255,7 @@ export default function RequestDetailPage() {
           totalSteps: data.totalSteps ?? prev.totalSteps,
           steps: (data.steps as StepData[]) || prev.steps,
           assets: (data.assets as AssetData[]) || prev.assets,
+          liveInsights: (data.liveInsights as LiveInsight[]) || prev.liveInsights,
         };
       });
     }, []),
@@ -480,9 +489,44 @@ export default function RequestDetailPage() {
           </div>
         </div>
 
+        {/* Live Research Insights — shows during active blitzes */}
+        {request.liveInsights && request.liveInsights.length > 0 && (
+          <div className="rounded-xl border bg-[#141414] shadow-sm shadow-black/20 overflow-hidden">
+            <div className="border-b px-6 py-4 flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-emerald-400" />
+              <h2 className="font-semibold text-white">Research findings</h2>
+              {isActive && (
+                <span className="ml-auto text-xs text-emerald-400 font-medium animate-pulse">Live</span>
+              )}
+            </div>
+            <div className="px-6 py-4 space-y-3">
+              {request.liveInsights.map((insight, i) => {
+                const stepLabel =
+                  insight.step === "competitive_research" ? "Competitive" :
+                  insight.step === "market_intel" ? "Market Intel" :
+                  insight.step === "company_deep_dive" ? "Company" :
+                  insight.step;
+                return (
+                  <div key={i} className="flex items-start gap-3">
+                    <span className="mt-0.5 inline-flex items-center rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-400 shrink-0">
+                      {stepLabel}
+                    </span>
+                    <p className="text-sm text-neutral-300 leading-relaxed">{insight.insight}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Asset Usage Guide — shows when blitz is delivered */}
         {(request.status === "delivered" || request.status === "ready") && (
           <AssetGuide toolName={request.toolName} />
+        )}
+
+        {/* Workflow Guide — step-by-step game plan after blitz completes */}
+        {(request.status === "delivered" || request.status === "ready") && (
+          <WorkflowGuide toolName={request.toolName} targetCompany={request.targetCompany} requestId={request.id} />
         )}
 
         {/* Assets / Deliverables */}

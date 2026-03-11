@@ -26,6 +26,11 @@ export interface StepUpdate {
     format: string;
     url: string | null;
   }>;
+  liveInsights?: Array<{
+    step: string;
+    insight: string;
+    timestamp: string;
+  }>;
 }
 
 interface UseStepStreamOptions {
@@ -134,6 +139,7 @@ export function useStepStream({
                     totalSteps: req.totalSteps,
                     currentStep: req.currentStep,
                     assets: req.assets,
+                    liveInsights: req.liveInsights,
                   });
 
                   // Check if terminal
