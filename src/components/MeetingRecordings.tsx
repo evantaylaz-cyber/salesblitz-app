@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 
 interface Recording {
@@ -87,30 +87,46 @@ export default function MeetingRecordings({
     fetchRecordings();
   }, [targetId, limit]);
 
-  // Poll for in-progress recordings
-  useEffect(() => {
-    const hasInProgress = recordings.some(
-      (r) => r.status === "transcribing" || r.status === "analyzing"
-    );
-    if (!hasInProgress) return;
+  // Poll for in-progress recordings (use ref to avoid circular dep)
+  const recordingsRef = React.useRef(recordings);
+  recordingsRef.current = recordings;
 
-    const interval = setInterval(async () => {
+  useEffect(() => {
+    let active = true;
+    let timeout: ReturnType<typeof setTimeout>;
+
+    async function poll() {
+      const hasInProgress = recordingsRef.current.some(
+        (r) => r.status === "transcribing" || r.status === "analyzing"
+      );
+      if (!hasInProgress || !active) return;
+
       try {
         const params = new URLSearchParams({ limit: String(limit) });
         if (targetId) params.set("targetId", targetId);
 
         const res = await fetch(`/api/meeting/upload?${params.toString()}`);
-        if (res.ok) {
+        if (res.ok && active) {
           const data = await res.json();
           setRecordings(data.recordings || []);
         }
       } catch {
         // Silent fail on poll
       }
-    }, 5000);
 
-    return () => clearInterval(interval);
-  }, [recordings, targetId, limit]);
+      if (active) {
+        timeout = setTimeout(poll, 5000);
+      }
+    }
+
+    // Start polling after initial load
+    timeout = setTimeout(poll, 5000);
+
+    return () => {
+      active = false;
+      clearTimeout(timeout);
+    };
+  }, [targetId, limit]);
 
   if (loading) {
     return (

@@ -106,6 +106,19 @@ export async function PATCH(
       }
     }
 
+    // Validate runRequestId ownership if provided
+    if (updateData.runRequestId) {
+      const run = await prisma.runRequest.findFirst({
+        where: { id: updateData.runRequestId, userId: user.id },
+      });
+      if (!run) {
+        return NextResponse.json(
+          { error: "Run request not found" },
+          { status: 404 }
+        );
+      }
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updated = await (prisma as any).meetingRecording.update({
       where: { id: params.id },

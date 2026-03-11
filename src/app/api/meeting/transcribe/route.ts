@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import prisma from "@/lib/db";
+import { analyzeMeetingTranscript } from "@/lib/meeting-analysis";
 
 // POST — transcribe audio via OpenAI Whisper API
 // Accepts: multipart form data with audio file + optional metadata
@@ -85,6 +86,24 @@ export async function POST(req: NextRequest) {
     // Create a new recording if none provided
     let activeRecordingId: string = recordingId || "";
     if (!activeRecordingId) {
+      // Validate ownership of linked entities
+      if (targetId) {
+        const target = await prisma.target.findFirst({
+          where: { id: targetId, userId: user.id },
+        });
+        if (!target) {
+          return NextResponse.json({ error: "Target not found" }, { status: 404 });
+        }
+      }
+      if (runRequestId) {
+        const run = await prisma.runRequest.findFirst({
+          where: { id: runRequestId, userId: user.id },
+        });
+        if (!run) {
+          return NextResponse.json({ error: "Run request not found" }, { status: 404 });
+        }
+      }
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const recording = await (prisma as any).meetingRecording.create({
         data: {
@@ -140,9 +159,23 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const whisperData = await whisperResponse.json();
-    const transcript = whisperData.text || "";
-    const duration = whisperData.duration
+    let whisperData;
+    try {
+      whisperData = await whisperResponse.json();
+    } catch {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (prisma as any).meetingRecording.update({
+        where: { id: activeRecordingId },
+        data: { status: "failed", errorMessage: "Failed to parse Whisper response" },
+      });
+      return NextResponse.json({ error: "Failed to parse transcription response" }, { status: 502 });
+    }
+
+    const transcript = typeof whisperData.text === "string" ? whisperData.text : "";
+    if (!transcript) {
+      console.warn("[TRANSCRIBE] Whisper returned empty transcript");
+    }
+    const duration = typeof whisperData.duration === "number"
       ? Math.round(whisperData.duration)
       : null;
 
@@ -167,8 +200,8 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Fire-and-forget analysis
-    analyzeFromTranscript(activeRecordingId, transcript, user.id).catch(
+    // Fire-and-forget analysis (uses shared pipeline)
+    analyzeMeetingTranscript(activeRecordingId, transcript, user.id).catch(
       (err) => {
         console.error(
           "[TRANSCRIBE] Post-transcription analysis failed:",
@@ -194,161 +227,5 @@ export async function POST(req: NextRequest) {
       { error: "Internal server error" },
       { status: 500 }
     );
-  }
-}
-
-// Reuse the same analysis pipeline from upload route
-async function analyzeFromTranscript(
-  recordingId: string,
-  transcript: string,
-  userId: string
-) {
-  const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
-  if (!ANTHROPIC_API_KEY) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (prisma as any).meetingRecording.update({
-      where: { id: recordingId },
-      data: { status: "failed", errorMessage: "No API key configured" },
-    });
-    return;
-  }
-
-  try {
-    const truncated = transcript.slice(0, 50000);
-
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 4096,
-        messages: [
-          {
-            role: "user",
-            content: `You are analyzing a real sales or interview meeting transcript. Extract structured intelligence.
-
-TRANSCRIPT:
-${truncated}
-
-Respond with ONLY valid JSON (no markdown, no code fences):
-{
-  "summary": "2-3 sentence summary of what happened in this meeting",
-  "meetingType": "discovery | demo | negotiation | interview | follow_up | internal | other",
-  "attendees": [{"name": "...", "title": "...", "company": "...", "role": "buyer | seller | interviewer | candidate | other"}],
-  "keyMoments": [{"timestamp": "early | mid | late", "what": "...", "why": "why this matters for the deal/opportunity"}],
-  "objections": [{"objection": "...", "response": "how it was handled", "effectiveness": "strong | adequate | weak | unaddressed"}],
-  "commitments": [{"who": "...", "what": "...", "deadline": "..."}],
-  "dealQualification": {
-    "gaps": ["qualification gaps identified"],
-    "strengths": ["areas where deal/opportunity is strong"],
-    "riskLevel": "low | medium | high"
-  },
-  "coachingNotes": [{"dimension": "discovery | value_messaging | objection_handling | closing | rapport | qualification", "observation": "...", "suggestion": "..."}],
-  "nextSteps": ["concrete next steps"],
-  "outcome": "strong | developing | needs_work | unknown",
-  "overallScore": 3.5
-}
-
-Score 0-5 where 5 = masterclass execution, 3 = competent, 1 = significant gaps.
-Focus on actionable intelligence, not generic observations.
-If the transcript is too short or unclear, still extract what you can and set outcome to "unknown".`,
-          },
-        ],
-      }),
-    });
-
-    if (!response.ok) {
-      const errText = await response.text();
-      throw new Error(
-        `Claude API error: ${response.status} ${errText.slice(0, 200)}`
-      );
-    }
-
-    const data = await response.json();
-    const text = data.content?.[0]?.text || "";
-
-    let analysis;
-    try {
-      const jsonStr = text
-        .replace(/^```json?\n?/m, "")
-        .replace(/\n?```$/m, "")
-        .trim();
-      analysis = JSON.parse(jsonStr);
-    } catch {
-      throw new Error(`Failed to parse analysis JSON: ${text.slice(0, 200)}`);
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (prisma as any).meetingRecording.update({
-      where: { id: recordingId },
-      data: {
-        analysis,
-        outcome: analysis.outcome || "unknown",
-        overallScore:
-          typeof analysis.overallScore === "number"
-            ? analysis.overallScore
-            : null,
-        meetingType: analysis.meetingType || null,
-        attendees: analysis.attendees || null,
-        status: "completed",
-      },
-    });
-
-    // Accumulate intel into Target if linked
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const recording = await (prisma as any).meetingRecording.findUnique({
-      where: { id: recordingId },
-      select: { targetId: true },
-    });
-
-    if (recording?.targetId) {
-      try {
-        const target = await prisma.target.findUnique({
-          where: { id: recording.targetId },
-          select: { accumulatedIntel: true },
-        });
-
-        const intelLines = [
-          `[Real Call ${new Date().toISOString().slice(0, 10)}]`,
-          analysis.outcome
-            ? `Outcome: ${analysis.outcome} (${analysis.overallScore}/5)`
-            : "",
-          analysis.summary ? `Summary: ${analysis.summary}` : "",
-          analysis.objections?.length
-            ? `Objections: ${analysis.objections.map((o: { objection: string }) => o.objection).join("; ")}`
-            : "",
-          analysis.nextSteps?.length
-            ? `Next: ${analysis.nextSteps.join("; ")}`
-            : "",
-        ]
-          .filter(Boolean)
-          .join(" | ");
-
-        const existing = target?.accumulatedIntel || "";
-        const combined = `${intelLines}\n${existing}`.slice(0, 5000);
-
-        await prisma.target.update({
-          where: { id: recording.targetId },
-          data: { accumulatedIntel: combined },
-        });
-      } catch (err) {
-        console.warn("[TRANSCRIBE] Intel accumulation failed (non-fatal):", err);
-      }
-    }
-  } catch (error) {
-    console.error("[TRANSCRIBE] Analysis pipeline failed:", error);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (prisma as any).meetingRecording.update({
-      where: { id: recordingId },
-      data: {
-        status: "failed",
-        errorMessage:
-          error instanceof Error ? error.message : "Analysis failed",
-      },
-    });
   }
 }
