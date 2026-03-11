@@ -60,6 +60,7 @@ export default function PracticeSessionPage() {
   const [sttMode, setSttMode] = useState<"realtime" | "webspeech" | "none">("none");
   const [avatarRetryCount, setAvatarRetryCount] = useState(0);
   const [avatarError, setAvatarError] = useState<string | null>(null);
+  const [avatarProgress, setAvatarProgress] = useState<string>("Initializing...");
   const [textOnlyMode, setTextOnlyMode] = useState(false);
 
   // Refs - Avatar & video
@@ -536,7 +537,7 @@ export default function PracticeSessionPage() {
     transcriptEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [transcript]);
 
-  async function initSession() {
+  async function initSession(isAutoRetry = false) {
     try {
       // Clear any previous timeout
       if (avatarTimeoutRef.current) {
@@ -545,6 +546,8 @@ export default function PracticeSessionPage() {
       }
 
       setAvatarError(null);
+      setAvatarLoading(true);
+      setAvatarProgress("Getting avatar token...");
       const personaGender = searchParams.get("gender") || "male";
       const FEMALE_AVATAR = "b4fc2d60-3b82-4694-b243-93e9d2bb0242";
       const MALE_AVATAR = "bb1f6ebc-b388-4a39-9e2b-8df618e0377c";
@@ -563,10 +566,10 @@ export default function PracticeSessionPage() {
       if (!tokenData.sessionToken) {
         const detail = tokenData.detail || tokenData.error || "No token returned";
         console.error("Token endpoint response:", tokenData);
-        setAvatarError(`Failed to get avatar session token: ${detail}`);
-        setAvatarLoading(false);
-        return;
+        throw new Error(`Token error: ${detail}`);
       }
+
+      setAvatarProgress("Loading avatar SDK...");
 
       // Dynamic import of LiveAvatar SDK
       const { LiveAvatarSession, SessionEvent, AgentEventsEnum } = await import(
@@ -579,11 +582,13 @@ export default function PracticeSessionPage() {
 
       sessionRef.current = session;
 
-      // Set 30-second timeout for avatar connection
+      setAvatarProgress("Connecting to avatar...");
+
+      // Set 20-second timeout for avatar connection (was 30, tighter for auto-retry)
       const timeoutPromise = new Promise<boolean>((_, reject) => {
         avatarTimeoutRef.current = setTimeout(() => {
-          reject(new Error("Avatar connection timed out after 30 seconds"));
-        }, 30000);
+          reject(new Error("Avatar connection timed out"));
+        }, 20000);
       });
 
       // Race between session connection and timeout
@@ -656,6 +661,8 @@ export default function PracticeSessionPage() {
         }
       }
 
+      setAvatarProgress("Starting conversation...");
+
       // Send opening line
       const openingRes = await fetch("/api/practice/message", {
         method: "POST",
@@ -692,19 +699,30 @@ export default function PracticeSessionPage() {
     } catch (err) {
       console.error("Init error:", err);
       const errorMsg = err instanceof Error ? err.message : "Failed to initialize avatar session";
+
+      // Auto-retry once before showing error to user
+      if (!isAutoRetry && avatarRetryCount === 0) {
+        console.log("[PRACTICE] Auto-retrying avatar init...");
+        setAvatarProgress("Retrying connection...");
+        setAvatarRetryCount(1);
+        // Clean up failed session before retry
+        try { if (sessionRef.current) await sessionRef.current.stop(); } catch { /* ok */ }
+        sessionRef.current = null;
+        // Short delay before retry
+        await new Promise((r) => setTimeout(r, 2000));
+        return initSession(true);
+      }
+
       setAvatarError(errorMsg);
       setAvatarLoading(false);
-
-      // Check if we should offer text-only mode
-      if (avatarRetryCount >= 2) {
-        setTextOnlyMode(true);
-      }
     }
   }
 
   function retryAvatarConnection() {
     setAvatarRetryCount((prev) => prev + 1);
-    initSession();
+    setAvatarLoading(true);
+    setAvatarError(null);
+    initSession(false);
   }
 
   function switchToTextOnly() {
@@ -873,7 +891,7 @@ export default function PracticeSessionPage() {
               {avatarLoading && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
                   <Loader2 className="h-10 w-10 animate-spin text-emerald-400" />
-                  <p className="text-sm text-neutral-500">Starting avatar...</p>
+                  <p className="text-sm text-neutral-500">{avatarProgress}</p>
                 </div>
               )}
               {avatarError && (
@@ -881,25 +899,23 @@ export default function PracticeSessionPage() {
                   <div className="flex flex-col items-center gap-3">
                     <AlertCircle className="h-8 w-8 text-red-400" />
                     <div className="text-center">
-                      <p className="text-sm font-medium text-red-400">Avatar connection timed out</p>
-                      <p className="text-xs text-neutral-500 mt-1">Please try again or use text-only mode</p>
+                      <p className="text-sm font-medium text-red-400">Avatar connection failed</p>
+                      <p className="text-xs text-neutral-500 mt-1 max-w-xs">{avatarError}</p>
                     </div>
                   </div>
                   <div className="flex flex-col gap-2">
                     <button
                       onClick={retryAvatarConnection}
-                      className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-600 transition"
+                      className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 transition"
                     >
                       Retry Connection
                     </button>
-                    {avatarRetryCount >= 2 && (
-                      <button
-                        onClick={switchToTextOnly}
-                        className="rounded-lg bg-[#262626] px-4 py-2 text-sm font-medium text-white hover:bg-[#333333] transition"
-                      >
-                        Use Text-Only Mode
-                      </button>
-                    )}
+                    <button
+                      onClick={switchToTextOnly}
+                      className="rounded-lg bg-[#262626] px-4 py-2 text-sm font-medium text-white hover:bg-[#333333] transition"
+                    >
+                      Continue in Text Mode
+                    </button>
                   </div>
                 </div>
               )}
