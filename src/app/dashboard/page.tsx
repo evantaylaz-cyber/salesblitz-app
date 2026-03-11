@@ -85,15 +85,15 @@ const TOOLS: Tool[] = [
   {
     id: "interview_outreach",
     name: "Interview Outreach",
-    hook: "Land the interview.",
-    description: "Research package, outreach sequence & resume tailored to the role. One blitz, not five tabs.",
+    hook: "Land the interview. Skip the job board.",
+    description: "Cold outreach sequences that get referrals, not silence. Research the company, find the right contact, then reach out like you already belong.",
     minimumTier: "launch",
   },
   {
     id: "interview_prep",
     name: "Interview Prep",
-    hook: "Walk in armed.",
-    description: "Playbooks, competitive intel & prep docs for every interviewer on the panel. Methodology-encoded.",
+    hook: "Know more than they expect.",
+    description: "Deep research on the company, the role & every interviewer. Playbooks, competitive intel & cheat sheets per panelist.",
     minimumTier: "pro",
   },
   {
@@ -106,8 +106,8 @@ const TOOLS: Tool[] = [
   {
     id: "prospect_outreach",
     name: "Prospect Outreach",
-    hook: "Get the meeting.",
-    description: "Multi-channel sequences tied to account research. Surgical outreach that earns replies.",
+    hook: "Get the meeting. Cold.",
+    description: "Research-backed sequences that earn replies from people who don't know you yet. Every touchpoint references their pain, not your pitch.",
     minimumTier: "launch",
   },
   {

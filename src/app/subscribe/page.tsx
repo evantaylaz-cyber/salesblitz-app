@@ -101,7 +101,7 @@ export default function SubscribePage() {
             Name your target. Get armed for whatever&apos;s next.
           </h1>
           <p className="mt-3 text-lg text-neutral-400 max-w-2xl mx-auto">
-            Deep research, competitive intel, talk-track playbooks, outreach sequences & live AI practice. One blitz, not five tools. Cancel anytime.
+            Deep research, cold outreach sequences, competitive intel, playbooks & live AI practice. Whether you're prospecting or interviewing, one blitz replaces five tools. Cancel anytime.
           </p>
         </div>
 

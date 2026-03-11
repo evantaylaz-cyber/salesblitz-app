@@ -21,18 +21,18 @@ export default function SignUpPage() {
             <span className="text-emerald-400">Close.</span>
           </h1>
           <p className="mt-4 text-base text-neutral-400 leading-relaxed">
-            Drop in a company name. Get a research brief, competitive playbook,
-            call prep docs, and POV deck in minutes. Then practice your pitch or
-            interview against an AI buyer who pushes back.
+            Drop in a company name. Get deep research, cold outreach sequences,
+            competitive playbooks and a POV deck in minutes. Then practice your
+            pitch or interview against an AI persona who pushes back.
           </p>
 
           <div className="mt-10 space-y-4">
             {[
               "Deep research on any account, prospect, or interviewer in minutes",
-              "POV decks, call playbooks & outreach sequences for every meeting type",
+              "Cold outreach sequences that earn replies, whether prospecting or job hunting",
+              "POV decks, call playbooks & competitive intel for every meeting type",
               "AI practice mode with scored roleplay for calls, interviews & panels",
-              "Interview prep with company-specific research & mock scenarios",
-              "Deal audits, champion-building kits & stakeholder mapping",
+              "Interview prep with per-interviewer research, cheat sheets & mock scenarios",
             ].map((item) => (
               <div key={item} className="flex items-start gap-3">
                 <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-400 mt-0.5" />
