@@ -9,6 +9,8 @@
  * to guide onboarding AND provide lifecycle coaching.
  */
 
+export const maxDuration = 120; // research_company tool does 9 HTTP fetches + nested AI call
+
 import { streamText } from "ai";
 import { anthropic } from "@ai-sdk/anthropic";
 import { getOrCreateUser } from "@/lib/user";

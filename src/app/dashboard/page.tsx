@@ -19,6 +19,7 @@ import {
   AlertCircle,
   Play,
   ArrowRight,
+  Briefcase,
 } from "lucide-react";
 import AppNav from "@/components/AppNav";
 import MeetingRecordings from "@/components/MeetingRecordings";

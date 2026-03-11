@@ -21,6 +21,8 @@
 
 ### What's left (from original audit)
 
+**P0: ALL FIXED.** Latest round (Mar 11): response.content null/empty guards added to callClaude(), callClaudeWithWebSearch(), callClaudeWithPTC(). Prevents crashes on empty API responses.
+
 **P1: ALL FIXED.**
 - Document upload now wired into request form (Mar 10 session 2). File size validation added (5MB cap).
 

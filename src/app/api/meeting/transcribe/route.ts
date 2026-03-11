@@ -1,3 +1,5 @@
+export const maxDuration = 120; // audio transcription + AI analysis
+
 import { NextRequest, NextResponse } from "next/server";
 import { currentUser } from "@clerk/nextjs/server";
 import prisma from "@/lib/db";
