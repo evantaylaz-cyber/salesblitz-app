@@ -32,7 +32,7 @@ export default function SignUpPage() {
               "Cold outreach sequences that earn replies, whether prospecting or job hunting",
               "POV decks, call playbooks & competitive intel for every meeting type",
               "AI practice mode with scored roleplay for calls, interviews & panels",
-              "Interview prep with per-interviewer research, cheat sheets & mock scenarios",
+              "Interview prep with per-interviewer research, prep sheets & mock scenarios",
             ].map((item) => (
               <div key={item} className="flex items-start gap-3">
                 <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-400 mt-0.5" />

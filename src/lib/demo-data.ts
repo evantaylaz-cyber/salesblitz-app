@@ -75,7 +75,7 @@ const DEMO_TOOLS: Record<string, DemoRun> = {
       {
         id: "market_intel",
         label: "Market Intelligence",
-        description: "Analyzing data lakehouse market trends, TAM, buyer personas, procurement patterns",
+        description: "Analyzing data lakehouse market trends, TAM, buyer personas, buying patterns",
         status: "completed",
         startedAt: "2026-03-04T10:04:45Z",
         completedAt: "2026-03-04T10:06:30Z",
@@ -196,7 +196,7 @@ const DEMO_TOOLS: Record<string, DemoRun> = {
       {
         id: "generating_assets",
         label: "Generating Assets",
-        description: "Building cheat sheet, interview brief, 30/60/90, discovery plan",
+        description: "Building prep sheet, interview brief, 30/60/90, discovery plan",
         status: "completed",
         startedAt: "2026-03-04T11:06:00Z",
         completedAt: "2026-03-04T11:10:00Z",
@@ -236,8 +236,8 @@ const DEMO_TOOLS: Record<string, DemoRun> = {
         category: "deliverable",
       },
       {
-        id: "cheat_sheet",
-        label: "Interview Cheat Sheet",
+        id: "interview_prep_sheet",
+        label: "Interview Prep Sheet",
         format: "pdf",
         url: null,
         size: 150000,

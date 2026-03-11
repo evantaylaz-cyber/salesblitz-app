@@ -27,7 +27,7 @@ export default function ProductMockup() {
                 </span>
               </div>
               <p className="mt-0.5 text-[11px] text-neutral-400">
-                Jamie Torres, VP Procurement &bull; 4 min ago
+                Jamie Torres, VP Revenue Operations &bull; 4 min ago
               </p>
             </div>
           </div>

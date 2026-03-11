@@ -93,7 +93,7 @@ const TOOLS: Tool[] = [
     id: "interview_prep",
     name: "Interview Prep",
     hook: "Know more than they expect.",
-    description: "Deep research on the company, the role & every interviewer. Playbooks, competitive intel & cheat sheets per panelist.",
+    description: "Deep research on the company, the role & every interviewer. Playbooks, competitive intel & prep sheets per panelist.",
     minimumTier: "pro",
   },
   {
