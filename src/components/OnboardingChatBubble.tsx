@@ -15,6 +15,7 @@ import {
   ChevronDown,
   Mic,
   MicOff,
+  Paperclip,
 } from "lucide-react";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
 
@@ -43,8 +44,10 @@ export default function OnboardingChatBubble({
   const [isMinimized, setIsMinimized] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const resumeFileRef = useRef<HTMLInputElement>(null);
   const [depth, setDepth] = useState(currentDepth);
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [uploadingFile, setUploadingFile] = useState(false);
 
   const { messages, input, handleInputChange, handleSubmit, isLoading, setInput, append, error } =
     useChat({
@@ -115,6 +118,35 @@ export default function OnboardingChatBubble({
     setHasInteracted(true);
     append({ role: "user", content: text });
   };
+
+  async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingFile(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/profile/upload-resume", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setHasInteracted(true);
+        append({
+          role: "user",
+          content: `Here's my resume (uploaded from ${data.fileName}):\n\n${data.text}`,
+        });
+      } else {
+        setInput(`I tried uploading my resume but got an error: ${data.error || "processing failed"}. Let me paste it instead.`);
+      }
+    } catch {
+      setInput("I tried uploading my resume but the upload failed. Let me paste it instead.");
+    } finally {
+      setUploadingFile(false);
+      if (resumeFileRef.current) resumeFileRef.current.value = "";
+    }
+  }
 
   const showSuggestions = messages.length === 0;
 
@@ -248,10 +280,10 @@ export default function OnboardingChatBubble({
                 ) : (
                   <>
                     <p className="text-sm text-neutral-100 leading-relaxed">
-                      Let's get you set up. This takes about 10 minutes and makes everything Sales Blitz generates specific to you.
+                      Let's get you set up. Takes about 3 minutes, and I do the heavy lifting.
                     </p>
                     <p className="text-sm text-neutral-100 leading-relaxed mt-1.5">
-                      First, tell me what you sell and who you sell it to.
+                      Are you actively selling, prepping for interviews, or both?
                     </p>
                   </>
                 )}
@@ -426,6 +458,22 @@ export default function OnboardingChatBubble({
               }}
             />
           </div>
+          <input
+            type="file"
+            ref={resumeFileRef}
+            accept=".pdf,.docx,.txt"
+            className="hidden"
+            onChange={handleFileUpload}
+          />
+          <button
+            type="button"
+            onClick={() => resumeFileRef.current?.click()}
+            disabled={uploadingFile || isLoading}
+            className="flex items-center justify-center w-9 h-9 rounded-xl bg-[#1a1a1a] text-neutral-400 hover:bg-[#262626] hover:text-neutral-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex-shrink-0"
+            title="Upload resume (PDF, DOCX, TXT)"
+          >
+            {uploadingFile ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Paperclip className="w-3.5 h-3.5" />}
+          </button>
           {voiceSupported && (
             <button
               type="button"
