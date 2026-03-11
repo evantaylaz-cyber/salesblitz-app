@@ -718,7 +718,55 @@ CRITICAL: Extract REAL customer names and REAL metrics from the website content.
                 where: { userId },
                 data: { caseStudies: validCaseStudies },
               });
+
+              // Also create KnowledgeDocuments for each case study (enables embedding + semantic search)
+              for (const cs of validCaseStudies) {
+                const docContent = `Case Study: ${cs.customerName} (${cs.industry})\nChallenge: ${cs.challenge}\nSolution: ${cs.solution}\nResult: ${cs.result}\n${cs.summary}`;
+                try {
+                  await prisma.knowledgeDocument.create({
+                    data: {
+                      userId,
+                      title: `Case Study: ${cs.customerName}`,
+                      content: docContent,
+                      category: "case_studies",
+                      },
+                  });
+                } catch {
+                  // Duplicate or other non-fatal error, skip
+                }
+              }
             }
+          }
+
+          // Save company research summary as a KnowledgeDocument for semantic search
+          const researchDoc = [
+            `Company Research: ${company_name}`,
+            research.company_product ? `Product: ${research.company_product}` : "",
+            research.company_description ? `Description: ${research.company_description}` : "",
+            research.company_target_market ? `Target Market: ${research.company_target_market}` : "",
+            research.company_competitors ? `Competitors: ${research.company_competitors}` : "",
+            research.company_differentiators ? `Differentiators: ${research.company_differentiators}` : "",
+            research.value_proposition ? `Value Proposition: ${research.value_proposition}` : "",
+            research.gtm_strategy ? `GTM Strategy: ${research.gtm_strategy}` : "",
+            research.messaging_themes ? `Messaging Themes: ${research.messaging_themes}` : "",
+            research.key_customers ? `Key Customers: ${research.key_customers}` : "",
+          ].filter(Boolean).join("\n");
+
+          try {
+            // Delete any prior research doc for this company, then create fresh
+            await prisma.knowledgeDocument.deleteMany({
+              where: { userId, title: `Company Research: ${company_name}` },
+            });
+            await prisma.knowledgeDocument.create({
+              data: {
+                userId,
+                title: `Company Research: ${company_name}`,
+                content: researchDoc,
+                category: "custom",
+              },
+            });
+          } catch {
+            // Non-fatal
           }
 
           // Save ICP definitions if found

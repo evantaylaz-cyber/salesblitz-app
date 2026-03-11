@@ -56,6 +56,8 @@ export async function POST(req: NextRequest) {
     let linkedMeetingType: string | null = null;
     let linkedTargetName: string | null = null;
     let linkedTargetRole: string | null = null;
+    let linkedJobDescription = "";
+    let linkedInterviewInstructions = "";
     let panelData: Array<{ name: string; title: string | null; roleInMeeting: string; personalityVibe: string | null; evaluationFocus: string | null }> | null = null;
     if (runRequestId) {
       const runRequest = await prisma.runRequest.findUnique({
@@ -68,6 +70,8 @@ export async function POST(req: NextRequest) {
           targetRole: true,
           targetId: true,
           meetingType: true,
+          jobDescription: true,
+          interviewInstructions: true,
           interviewPanel: {
             include: { members: { orderBy: { order: "asc" } } },
           },
@@ -79,6 +83,8 @@ export async function POST(req: NextRequest) {
         linkedMeetingType = runRequest.meetingType;
         linkedTargetName = runRequest.targetName;
         linkedTargetRole = runRequest.targetRole;
+        linkedJobDescription = runRequest.jobDescription || "";
+        linkedInterviewInstructions = runRequest.interviewInstructions || "";
         if (runRequest.researchData) {
           researchContext = typeof runRequest.researchData === "string"
             ? runRequest.researchData
@@ -126,17 +132,77 @@ export async function POST(req: NextRequest) {
         status: "completed",
       },
       orderBy: { createdAt: "desc" },
-      select: { id: true, sessionSequence: true, feedback: true, cotmScore: true },
+      select: { id: true, sessionSequence: true, feedback: true, cotmScore: true, userNotes: true },
     });
 
-    // Load accumulated intel from Target (full learning history across all sessions)
+    // Load accumulated intel + round info from Target (full learning history across all sessions)
     let accumulatedIntel = "";
+    let targetRoundCount = 0;
+    let targetCurrentRound = 1;
     if (linkedTargetId) {
       const target = await prisma.target.findUnique({
         where: { id: linkedTargetId },
-        select: { accumulatedIntel: true },
+        select: { accumulatedIntel: true, roundCount: true, currentRound: true },
       });
       accumulatedIntel = target?.accumulatedIntel || "";
+      targetRoundCount = target?.roundCount ?? 0;
+      targetCurrentRound = target?.currentRound ?? 1;
+    }
+
+    // Load meeting recordings for this target (real call intel to inform persona behavior)
+    let meetingRecordingsContext = "";
+    if (linkedTargetId) {
+      const recordings = await prisma.meetingRecording.findMany({
+        where: { targetId: linkedTargetId, status: "completed" },
+        orderBy: { createdAt: "desc" },
+        take: 3,
+        select: {
+          meetingType: true,
+          outcome: true,
+          overallScore: true,
+          analysis: true,
+          createdAt: true,
+        },
+      });
+      if (recordings.length > 0) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const recSummaries = recordings.map((rec: any) => {
+          const analysis = rec.analysis as Record<string, unknown> | null;
+          const objections = (analysis?.objections as Array<{ objection?: string }>) || [];
+          const coachingNotes = (analysis?.coachingNotes as Array<{ dimension?: string; observation?: string }>) || [];
+          const dq = analysis?.dealQualification as { gaps?: string[]; strengths?: string[] } | undefined;
+          return [
+            `Meeting: ${rec.meetingType || "unknown"} (${rec.createdAt?.toISOString?.()?.slice(0, 10) || "unknown date"})`,
+            rec.outcome ? `Outcome: ${rec.outcome}` : null,
+            rec.overallScore != null ? `Score: ${rec.overallScore}/100` : null,
+            objections.length > 0 ? `Objections raised: ${objections.slice(0, 5).map(o => o.objection).filter(Boolean).join("; ")}` : null,
+            dq?.gaps && dq.gaps.length > 0 ? `Qualification gaps: ${dq.gaps.slice(0, 3).join("; ")}` : null,
+            dq?.strengths && dq.strengths.length > 0 ? `Strengths: ${dq.strengths.slice(0, 3).join("; ")}` : null,
+            coachingNotes.length > 0 ? `Coaching: ${coachingNotes.slice(0, 3).map(n => `${n.dimension}: ${n.observation}`).join("; ")}` : null,
+          ].filter(Boolean).join("\n");
+        });
+        meetingRecordingsContext = `REAL MEETING RECORDINGS (${recordings.length} prior calls with this company):\n${recSummaries.join("\n---\n")}\n`;
+      }
+    }
+
+    // Load knowledge documents for the user's company context (case studies, research docs)
+    let knowledgeDocsContext = "";
+    try {
+      const knowledgeDocs = await prisma.knowledgeDocument.findMany({
+        where: { userId: user.id },
+        orderBy: { createdAt: "desc" },
+        take: 5,
+        select: { title: true, content: true, category: true },
+      });
+      if (knowledgeDocs.length > 0) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const docSummaries = knowledgeDocs.map((d: any) =>
+          `[${d.category}] ${d.title}: ${(d.content || "").slice(0, 500)}`
+        );
+        knowledgeDocsContext = `KNOWLEDGE BASE (${knowledgeDocs.length} documents):\n${docSummaries.join("\n")}\n`;
+      }
+    } catch {
+      // Non-fatal
     }
 
     // Load user profile for seller context (use ALL available fields including resume-derived data)
@@ -176,6 +242,9 @@ export async function POST(req: NextRequest) {
     }
     if (previousSession?.feedback) {
       priorSessionContext += `\nMOST RECENT SESSION FEEDBACK (session #${previousSession.sessionSequence}):\n${previousSession.feedback.slice(0, 1000)}\n`;
+    }
+    if (previousSession?.userNotes) {
+      priorSessionContext += `\nUSER'S OWN NOTES FROM LAST SESSION:\n${previousSession.userNotes.slice(0, 500)}\nUse these notes to understand what the candidate/rep wants to work on. Probe these areas.\n`;
     }
     // Fetch cross-session coaching intelligence from worker (non-blocking, with timeout)
     try {
@@ -254,14 +323,25 @@ export async function POST(req: NextRequest) {
       ? `IMPORTANT: The prospect's name is ${linkedTargetName}${linkedTargetRole ? ` and their title is ${linkedTargetRole}` : ""}. Build the persona around this REAL person. Use any research data about them to inform personality, communication style, and priorities. Do NOT invent a different name.`
       : "";
 
+    // Build round context string
+    const roundContext = targetRoundCount > 0
+      ? `ROUND CONTEXT: This is Round ${targetCurrentRound} of ${targetRoundCount} total interactions with ${targetCompany}. ${targetCurrentRound > 1 ? "This is NOT a first meeting. The candidate/rep has prior experience with this company. Adjust your expectations accordingly; skip basic introductions and go deeper." : "This is the first interaction."}`
+      : "";
+
     const personaPrompt = isInterview
       ? `Generate a realistic interviewer persona for a practice interview at ${targetCompany}. The user is the CANDIDATE being interviewed.
 ${nameGuidance}
 
 ${trimmedResearch ? `RESEARCH DATA ON THE COMPANY:\n${trimmedResearch}` : "No prior research available. Generate a plausible persona based on the company name."}
 
+${linkedJobDescription ? `JOB DESCRIPTION:\n${linkedJobDescription.slice(0, 3000)}` : ""}
+${linkedInterviewInstructions ? `INTERVIEW INSTRUCTIONS/ASSIGNMENT:\n${linkedInterviewInstructions.slice(0, 2000)}\nIMPORTANT: Evaluate the candidate against these specific instructions. Ask questions that test whether they completed or understood the assignment.` : ""}
+
 ${sellerContext ? `CANDIDATE CONTEXT:\n${sellerContext}` : ""}
+${knowledgeDocsContext}
+${meetingRecordingsContext}
 ${priorSessionContext}
+${roundContext}
 MEETING TYPE: ${effectiveMeetingType}
 
 Generate a JSON object with this EXACT structure (no markdown, no code blocks, just the JSON):
@@ -290,7 +370,10 @@ ${nameGuidanceSales}
 ${trimmedResearch ? `RESEARCH DATA ON THE COMPANY:\n${trimmedResearch}` : "No prior research available. Generate a plausible persona based on the company name."}
 
 ${sellerContext ? `SELLER CONTEXT:\n${sellerContext}` : ""}
+${knowledgeDocsContext}
+${meetingRecordingsContext}
 ${priorSessionContext}
+${roundContext}
 MEETING TYPE: ${effectiveMeetingType}
 
 Generate a JSON object with this EXACT structure (no markdown, no code blocks, just the JSON):

@@ -87,8 +87,31 @@ export async function POST(req: NextRequest) {
         ].filter(Boolean).join("\n")
       : undefined;
 
+    // Load research context from linked RunRequest (enables fact-checking in scoring)
+    let researchContext: string | undefined;
+    if (session.runRequestId) {
+      try {
+        const linkedRun = await prisma.runRequest.findUnique({
+          where: { id: session.runRequestId },
+          select: { researchData: true, jobDescription: true },
+        });
+        if (linkedRun?.researchData) {
+          const raw = typeof linkedRun.researchData === "string"
+            ? linkedRun.researchData
+            : JSON.stringify(linkedRun.researchData);
+          // Cap at 8K for scoring (don't need full 30K, just key facts)
+          researchContext = raw.slice(0, 8000);
+          if (linkedRun.jobDescription) {
+            researchContext += `\n\nJOB DESCRIPTION:\n${linkedRun.jobDescription.slice(0, 2000)}`;
+          }
+        }
+      } catch {
+        // Non-fatal
+      }
+    }
+
     // Score the conversation (uses interview or sales rubric based on meetingType)
-    const scoringPrompt = buildScoringPrompt(transcript, persona, meetingType, session.isPanelMode, sellerContext);
+    const scoringPrompt = buildScoringPrompt(transcript, persona, meetingType, session.isPanelMode, sellerContext, researchContext);
 
     const scoringResponse = await anthropic.messages.create({
       model: "claude-sonnet-4-20250514",
@@ -155,7 +178,22 @@ export async function POST(req: NextRequest) {
           select: { accumulatedIntel: true },
         });
 
-        const newIntel = `[Session ${session.sessionSequence || 1} - ${new Date().toISOString().split("T")[0]}] Score: ${scoring.overall}/5 (${scoring.outcome}). ${scoring.biggest_miss ? `Key miss: ${scoring.biggest_miss.slice(0, 200)}` : ""} ${scoring.top_moment ? `Strength: ${scoring.top_moment.slice(0, 200)}` : ""}`;
+        // Build richer intel entry with dimension scores for pattern recognition
+        const weakDims = scoring.scores ? Object.entries(scoring.scores)
+          .filter(([, v]) => typeof v === "number" && (v as number) <= 2)
+          .map(([k]) => k.replace(/_/g, " "))
+          .slice(0, 3) : [];
+        const strongDims = scoring.scores ? Object.entries(scoring.scores)
+          .filter(([, v]) => typeof v === "number" && (v as number) >= 4)
+          .map(([k]) => k.replace(/_/g, " "))
+          .slice(0, 3) : [];
+        const newIntel = [
+          `[Session ${session.sessionSequence || 1} - ${new Date().toISOString().split("T")[0]}] Score: ${scoring.overall}/5 (${scoring.outcome}).`,
+          weakDims.length > 0 ? `Weak areas: ${weakDims.join(", ")}.` : "",
+          strongDims.length > 0 ? `Strong areas: ${strongDims.join(", ")}.` : "",
+          scoring.biggest_miss ? `Key miss: ${scoring.biggest_miss.slice(0, 300)}` : "",
+          scoring.top_moment ? `Strength: ${scoring.top_moment.slice(0, 300)}` : "",
+        ].filter(Boolean).join(" ");
 
         const existingIntel = target?.accumulatedIntel || "";
         // Keep accumulated intel under 5K chars

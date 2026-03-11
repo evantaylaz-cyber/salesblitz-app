@@ -271,6 +271,7 @@ export function buildScoringPrompt(
   meetingType?: string,
   isPanelMode?: boolean,
   sellerContext?: string,
+  researchContext?: string,
 ): string {
   const isInterview = meetingType === "interview" || ["phone_screen", "hiring_manager", "mock_pitch", "panel", "final", "executive"].includes(meetingType || "");
 
@@ -288,6 +289,7 @@ export function buildScoringPrompt(
 THE SCENARIO:
 The candidate was practicing ${isPanelMode ? "a panel interview" : "an interview"} at ${persona.company} with ${persona.name}, ${persona.title}.
 ${sellerContext ? `\nCANDIDATE BACKGROUND (use this to evaluate role fit, story relevance, and whether they leveraged their experience effectively):\n${sellerContext}\n` : ""}
+${researchContext ? `\nCOMPANY RESEARCH (use this to fact-check the candidate's claims about the company. Did they cite accurate data? Did they demonstrate real knowledge or just surface-level talking points?):\n${researchContext}\n` : ""}
 TRANSCRIPT:
 ${formattedTranscript}
 
@@ -328,6 +330,7 @@ Return a JSON object with this exact structure:
 THE SCENARIO:
 The rep was practicing a sales call with ${persona.name}, ${persona.title} at ${persona.company}.
 ${sellerContext ? `\nSELLER BACKGROUND (use this to evaluate whether they leveraged their strengths, used relevant stories, and positioned their experience effectively):\n${sellerContext}\n` : ""}
+${researchContext ? `\nACCOUNT RESEARCH (use this to evaluate whether the rep demonstrated real account knowledge. Did they reference specific company facts, competitive pressures, or market dynamics? Did they personalize or stay generic?):\n${researchContext}\n` : ""}
 TRANSCRIPT:
 ${formattedTranscript}
 

@@ -73,6 +73,7 @@ interface SessionData {
   sessionSequence: number;
   targetId: string | null;
   runRequestId: string | null;
+  focusAreas: string[] | null;
   userNotes: string | null;
   createdAt: string;
 }
@@ -164,9 +165,17 @@ export default function PracticeReviewPage() {
   };
 
   const scoreColor = (score: number) => {
-    if (score >= 4) return "bg-emerald-500/100";
-    if (score >= 3) return "bg-amber-500/100";
-    return "bg-red-500/100";
+    if (score >= 4) return "bg-emerald-500";
+    if (score >= 3) return "bg-amber-500";
+    return "bg-red-500";
+  };
+
+  const scoreLabel = (score: number) => {
+    if (score >= 4.5) return "Excellent";
+    if (score >= 4) return "Strong";
+    if (score >= 3) return "Good";
+    if (score >= 2) return "Developing";
+    return "Needs Work";
   };
 
   if (!isLoaded || loading) {
@@ -252,9 +261,10 @@ export default function PracticeReviewPage() {
                     Session #{session.sessionSequence}
                   </span>
                 )}
-                <span className="ml-auto text-3xl font-bold text-white">
-                  {session.cotmScore.overall}/5
-                </span>
+                <div className="ml-auto text-right">
+                  <span className="text-3xl font-bold text-white">{session.cotmScore.overall}/5</span>
+                  <span className="block text-xs text-neutral-400 mt-0.5">{scoreLabel(session.cotmScore.overall)}</span>
+                </div>
               </div>
 
               <div className="space-y-3">
@@ -303,12 +313,32 @@ export default function PracticeReviewPage() {
           </div>
         )}
 
+        {/* Focus Areas (what the AI was testing based on prior sessions) */}
+        {session.focusAreas && session.focusAreas.length > 0 && session.focusAreas[0] && (
+          <div className="rounded-xl border border-[#262626] bg-[#141414] px-5 py-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Target className="h-4 w-4 text-violet-400" />
+              <span className="text-sm font-semibold text-violet-400">Focus Areas This Session</span>
+              {session.sessionSequence > 1 && (
+                <span className="text-xs text-neutral-500">Based on prior coaching</span>
+              )}
+            </div>
+            <p className="text-sm text-neutral-300 leading-relaxed">
+              {session.focusAreas[0].length > 500 ? session.focusAreas[0].slice(0, 500) + "..." : session.focusAreas[0]}
+            </p>
+          </div>
+        )}
+
         {/* Coaching Feedback */}
         {session.feedback && (
           <div className="rounded-2xl border bg-[#141414] p-6 shadow-sm shadow-black/20">
-            <h3 className="text-lg font-bold text-white mb-3">Coaching Feedback</h3>
-            <div className="prose prose-sm max-w-none text-neutral-200 whitespace-pre-wrap">
-              {session.feedback}
+            <h3 className="text-lg font-bold text-white mb-4">Coaching Feedback</h3>
+            <div className="space-y-3">
+              {session.feedback.split("\n\n").filter(Boolean).map((paragraph, i) => (
+                <p key={i} className="text-sm text-neutral-200 leading-relaxed">
+                  {paragraph.trim()}
+                </p>
+              ))}
             </div>
           </div>
         )}

@@ -7,7 +7,8 @@ export type ToolName =
   | "prospect_prep"
   | "deal_audit"
   | "champion_builder"
-  | "practice_mode";
+  | "practice_mode"
+  | "territory_blitz";
 
 export interface ToolDefinition {
   id: ToolName;
@@ -116,6 +117,21 @@ export const TOOLS: ToolDefinition[] = [
     ],
     minimumTier: "pro",
     overageRate: 12,
+  },
+  {
+    id: "territory_blitz",
+    name: "Territory Blitz",
+    description: "Upload a target list, get parallel research & outreach for every account. Territory prep in hours, not weeks.",
+    deliverables: [
+      "Per-account Research Briefs (PDF)",
+      "Per-account POV Decks (PDF, 5 slides)",
+      "Per-account Outreach Sequences (7 touches)",
+      "Comparative Territory Scorecard (PDF)",
+      "Per-account Handwritten Reference Cards (Gemini)",
+      "Per-account Interactive Competitive Playbooks",
+    ],
+    minimumTier: "closer",
+    overageRate: 15,
   },
 ];
 

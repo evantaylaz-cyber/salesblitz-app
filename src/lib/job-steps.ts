@@ -96,6 +96,12 @@ const STEP_TEMPLATES: Record<ToolName, Omit<JobStep, "status" | "startedAt" | "c
     { id: "live_session", label: "Live practice session", description: "Real-time roleplay conversation with your AI persona." },
     { id: "generating_scorecard", label: "Scoring your session", description: "Analyzing your conversation against our value selling framework and generating actionable feedback." },
   ],
+  territory_blitz: [
+    { id: "parsing_targets", label: "Parsing target list", description: "Reading and validating your uploaded target accounts." },
+    { id: "batch_research", label: "Researching accounts", description: "Running deep research across all target accounts in parallel." },
+    { id: "generating_outputs", label: "Generating deliverables", description: "Building research briefs, outreach sequences, and prep materials per account." },
+    { id: "compiling_territory", label: "Compiling territory package", description: "Assembling the full territory map with prioritization and account summaries." },
+  ],
 };
 
 /**
@@ -185,6 +191,10 @@ export function getExpectedAssets(toolName: ToolName): Omit<Asset, "url" | "size
     practice_mode: [
       { id: "session_transcript", label: "Session Transcript", format: "pdf", category: "research" },
       { id: "messaging_scorecard", label: "Sales Scorecard", format: "pdf", category: "deliverable" },
+    ],
+    territory_blitz: [
+      { id: "territory_report", label: "Territory Report", format: "pdf", category: "research" },
+      { id: "account_briefs", label: "Account Briefs", format: "pdf", category: "deliverable" },
     ],
   };
 

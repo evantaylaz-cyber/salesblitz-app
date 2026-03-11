@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import AppNav from "@/components/AppNav";
 import MeetingRecordings from "@/components/MeetingRecordings";
+import WinLossIntelligence from "@/components/WinLossIntelligence";
 import dynamic from "next/dynamic";
 
 const OnboardingChatBubble = dynamic(
@@ -79,6 +80,8 @@ const TOOL_NAMES: Record<string, string> = {
   deal_audit: "Deal Audit",
   champion_builder: "Champion Builder",
   practice_mode: "AI Practice Mode",
+  territory_blitz: "Territory Blitz",
+  win_loss_analyst: "Win/Loss Analyst",
 };
 
 const TOOLS: Tool[] = [
@@ -137,15 +140,13 @@ const TOOLS: Tool[] = [
     hook: "Map your entire territory.",
     description: "Upload a target list, get research & outreach for every account in one blitz. Territory prep in hours, not weeks.",
     minimumTier: "closer",
-    comingSoon: true,
   },
   {
     id: "win_loss_analyst",
     name: "Win/Loss Analyst",
     hook: "Learn from every deal.",
-    description: "Pattern analysis across closed deals. Methodology gaps, coaching recs & themes you keep missing.",
+    description: "Pattern analysis across closed deals. Methodology gaps, coaching recs & themes you keep missing. See the intelligence section below.",
     minimumTier: "closer",
-    comingSoon: true,
   },
 ];
 
@@ -158,6 +159,7 @@ export default function DashboardPage() {
   const [chatOpen, setChatOpen] = useState(false);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
   const [onboardingDepth, setOnboardingDepth] = useState(0);
+  const [profileChecked, setProfileChecked] = useState(false);
 
   useEffect(() => {
     if (isLoaded && clerkUser) {
@@ -173,9 +175,15 @@ export default function DashboardPage() {
       if (res.ok) {
         const data = await res.json();
         if (data.profile?.onboardingCompleted) setOnboardingComplete(true);
-        if (data.profile?.onboardingDepth !== undefined) setOnboardingDepth(data.profile.onboardingDepth);
+        const depth = data.profile?.onboardingDepth ?? 0;
+        setOnboardingDepth(depth);
+        // Auto-open onboarding chat for brand new users (depth 0)
+        if (depth === 0 && !data.profile?.onboardingCompleted) {
+          setChatOpen(true);
+        }
       }
     } catch {}
+    setProfileChecked(true);
   }
 
   async function fetchRequests() {
@@ -219,6 +227,12 @@ export default function DashboardPage() {
   function handleRunTool(toolId: string) {
     if (toolId === "practice_mode") {
       window.location.href = `/practice`;
+    } else if (toolId === "territory_blitz") {
+      window.location.href = `/batch`;
+    } else if (toolId === "win_loss_analyst") {
+      // Scroll to the Win/Loss Intelligence section on this page
+      const el = document.getElementById("win-loss-section");
+      if (el) el.scrollIntoView({ behavior: "smooth" });
     } else {
       window.location.href = `/request?tool=${toolId}`;
     }
@@ -381,8 +395,41 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* AI Profile Setup Banner */}
-        {onboardingDepth < 4 && (
+        {/* AI Profile Setup — Full welcome for depth 0, progressive banner for 1-3 */}
+        {onboardingDepth === 0 && profileChecked && (
+          <div className="mb-10 rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 via-[#141414] to-[#141414] p-8">
+            <div className="max-w-2xl">
+              <div className="flex items-center gap-2 mb-3">
+                <Sparkles className="h-5 w-5 text-emerald-400" />
+                <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">3 minutes to personalized AI</span>
+              </div>
+              <h2 className="text-2xl font-extrabold text-white tracking-tight mb-2">
+                Tell us your company. We do the rest.
+              </h2>
+              <p className="text-gray-400 leading-relaxed mb-6">
+                Drop your company name and we auto-research your product, competitors, ICP, and case studies. Upload a resume and we extract your deal stories. Every blitz, practice session, and asset gets built from YOUR context, not templates.
+              </p>
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => setChatOpen(true)}
+                  className="flex items-center gap-2 rounded-full bg-emerald-500 px-6 py-3 text-sm font-bold text-black hover:bg-emerald-400 transition hover:shadow-[0_0_24px_rgba(16,185,129,0.35)]"
+                >
+                  <Sparkles className="h-4 w-4" />
+                  Start Setup
+                </button>
+                <a href="/profile" className="text-sm text-gray-500 hover:text-gray-300 transition">
+                  or fill in manually
+                </a>
+              </div>
+              <div className="flex items-center gap-6 mt-6 text-xs text-gray-500">
+                <span className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-emerald-500/60" /> Auto-researches your company</span>
+                <span className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-emerald-500/60" /> Extracts deal stories from resume</span>
+                <span className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5 text-emerald-500/60" /> Prescribes methodology</span>
+              </div>
+            </div>
+          </div>
+        )}
+        {onboardingDepth > 0 && onboardingDepth < 4 && (
           <div className="mb-8 rounded-xl border border-emerald-500/20 bg-gradient-to-r from-emerald-500/10 to-[#141414] p-5">
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div className="flex items-center gap-4">
@@ -391,30 +438,26 @@ export default function DashboardPage() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-white">
-                    {onboardingDepth === 0 && "Complete your profile"}
                     {onboardingDepth === 1 && "Deepen your profile"}
                     {onboardingDepth === 2 && "Add territory & career context"}
                     {onboardingDepth === 3 && "Dial in your writing voice"}
                   </h3>
                   <p className="text-sm text-gray-400">
-                    {onboardingDepth === 0 && "Personalize your AI so every blitz matches your selling style. Takes ~3 min."}
                     {onboardingDepth === 1 && "Add deal stories & methodology to sharpen your output. Takes ~5 min."}
                     {onboardingDepth === 2 && "Add ICP definitions, territory focus, and career context. Takes ~5 min."}
                     {onboardingDepth === 3 && "Final layer: writing style, banned phrases, signature patterns."}
                   </p>
-                  {onboardingDepth > 0 && (
-                    <div className="flex items-center gap-1.5 mt-2">
-                      {[1, 2, 3, 4].map((level) => (
-                        <div
-                          key={level}
-                          className={`h-1.5 w-10 rounded-full ${
-                            level <= onboardingDepth ? "bg-emerald-500" : "bg-[#262626]"
-                          }`}
-                        />
-                      ))}
-                      <span className="text-xs text-gray-500 ml-1">{onboardingDepth}/4</span>
-                    </div>
-                  )}
+                  <div className="flex items-center gap-1.5 mt-2">
+                    {[1, 2, 3, 4].map((level) => (
+                      <div
+                        key={level}
+                        className={`h-1.5 w-10 rounded-full ${
+                          level <= onboardingDepth ? "bg-emerald-500" : "bg-[#262626]"
+                        }`}
+                      />
+                    ))}
+                    <span className="text-xs text-gray-500 ml-1">{onboardingDepth}/4</span>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -426,7 +469,7 @@ export default function DashboardPage() {
                   className="flex items-center gap-2 rounded-full bg-emerald-500 px-5 py-2 text-sm font-semibold text-black hover:bg-emerald-400 transition hover:shadow-[0_0_20px_rgba(16,185,129,0.3)] whitespace-nowrap"
                 >
                   <Sparkles className="h-4 w-4" />
-                  {onboardingDepth === 0 ? "Start" : "Continue"}
+                  Continue
                 </button>
               </div>
             </div>
@@ -459,7 +502,22 @@ export default function DashboardPage() {
 
         {/* Tools Grid */}
         <h2 className="mb-4 text-sm font-semibold text-gray-500 uppercase tracking-wider">Blitz Tools</h2>
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3 mb-10">
+        <div className={`relative grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3 mb-10 ${onboardingDepth === 0 ? "pointer-events-none" : ""}`}>
+          {/* Profile gate overlay for depth 0 */}
+          {onboardingDepth === 0 && profileChecked && (
+            <div className="absolute inset-0 z-20 flex items-center justify-center rounded-xl bg-[#0a0a0a]/70 backdrop-blur-[2px]">
+              <div className="text-center">
+                <Lock className="h-6 w-6 text-gray-500 mx-auto mb-2" />
+                <p className="text-sm font-medium text-gray-400">Complete your profile to unlock tools</p>
+                <button
+                  onClick={() => setChatOpen(true)}
+                  className="pointer-events-auto mt-3 inline-flex items-center gap-1.5 rounded-full bg-emerald-500 px-4 py-1.5 text-xs font-semibold text-black hover:bg-emerald-400 transition"
+                >
+                  <Sparkles className="h-3 w-3" /> Setup Profile
+                </button>
+              </div>
+            </div>
+          )}
           {TOOLS.map((tool) => {
             const accessible = !tool.comingSoon && (canAccess(tool.minimumTier) || hasSprintAccess(tool.id));
 
@@ -623,6 +681,11 @@ export default function DashboardPage() {
         {/* Meeting Recordings */}
         <div className="mb-10">
           <MeetingRecordings limit={5} />
+        </div>
+
+        {/* Win/Loss Intelligence */}
+        <div id="win-loss-section" className="mb-10">
+          <WinLossIntelligence />
         </div>
 
         {/* Consulting CTA */}

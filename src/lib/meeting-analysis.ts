@@ -181,6 +181,9 @@ export async function analyzeMeetingTranscript(
     if (recording?.targetId) {
       await accumulateIntel(recording.targetId, analysis);
     }
+
+    // Embed the transcript for cross-account semantic search
+    await embedTranscript(recordingId, rawTranscript, analysis);
   } catch (error) {
     console.error("[MEETING] Analysis pipeline failed:", error);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -277,5 +280,87 @@ async function accumulateIntel(
     });
   } catch (err) {
     console.warn("[MEETING] Intel accumulation failed (non-fatal):", err);
+  }
+}
+
+// ─── Transcript Embedding ──────────────────────────────────────────────────
+
+const GEMINI_EMBED_MODEL = "text-embedding-004";
+const GEMINI_EMBED_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_EMBED_MODEL}:embedContent`;
+
+/**
+ * Embed the meeting transcript + analysis summary for cross-account semantic search.
+ * Uses Gemini text-embedding-004 (768 dims) to match the existing embedding infrastructure.
+ * Stores the vector in MeetingRecording.transcriptEmbedding via raw SQL (Prisma doesn't support vector).
+ */
+async function embedTranscript(
+  recordingId: string,
+  rawTranscript: string,
+  analysis: MeetingAnalysis
+): Promise<void> {
+  const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
+  if (!GOOGLE_API_KEY) {
+    console.warn("[MEETING] No GOOGLE_API_KEY, skipping transcript embedding");
+    return;
+  }
+
+  try {
+    // Build embedding text: analysis summary + key signals + truncated transcript
+    // This gives semantic search the best of both worlds: structured intel + raw context
+    const embeddingText = [
+      analysis.summary || "",
+      analysis.meetingType ? `Meeting type: ${analysis.meetingType}` : "",
+      analysis.objections?.length
+        ? `Objections: ${analysis.objections.map((o) => o.objection).join("; ")}`
+        : "",
+      analysis.dealQualification?.gaps?.length
+        ? `Gaps: ${analysis.dealQualification.gaps.join("; ")}`
+        : "",
+      analysis.dealQualification?.strengths?.length
+        ? `Strengths: ${analysis.dealQualification.strengths.join("; ")}`
+        : "",
+      analysis.nextSteps?.length
+        ? `Next steps: ${analysis.nextSteps.join("; ")}`
+        : "",
+      // Include truncated transcript for richer semantic matching
+      rawTranscript.slice(0, 2000),
+    ]
+      .filter(Boolean)
+      .join("\n");
+
+    const response = await fetch(`${GEMINI_EMBED_URL}?key=${GOOGLE_API_KEY}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        content: { parts: [{ text: embeddingText.slice(0, 4000) }] },
+        taskType: "RETRIEVAL_DOCUMENT",
+      }),
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      console.warn(`[MEETING] Embedding API error: ${response.status} ${errText.slice(0, 200)}`);
+      return;
+    }
+
+    const data = await response.json();
+    const values = data?.embedding?.values;
+    if (!values || !Array.isArray(values)) {
+      console.warn("[MEETING] Embedding API returned no values");
+      return;
+    }
+
+    // Store via raw SQL (Prisma doesn't support pgvector type)
+    const vectorStr = `[${values.join(",")}]`;
+    await prisma.$executeRawUnsafe(
+      `UPDATE "MeetingRecording" SET "transcriptEmbedding" = $1::vector WHERE id = $2`,
+      vectorStr,
+      recordingId
+    );
+
+    console.log(`[MEETING] Embedded transcript for recording ${recordingId} (${values.length} dims)`);
+  } catch (err) {
+    // Non-fatal: embedding failure shouldn't block the analysis pipeline
+    console.warn("[MEETING] Transcript embedding failed (non-fatal):", err);
   }
 }

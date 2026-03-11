@@ -550,7 +550,7 @@ export default function RequestDetailPage() {
 
         {/* Practice This Call CTA */}
         {(request.status === "delivered" || request.status === "ready") && (
-          <div className="rounded-xl border-2 border-emerald-500/20 bg-gradient-to-r from-emerald-50 to-[#141414] p-6">
+          <div className="rounded-xl border-2 border-emerald-500/20 bg-gradient-to-r from-emerald-500/10 to-[#141414] p-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/15">
@@ -566,7 +566,7 @@ export default function RequestDetailPage() {
                 </div>
               </div>
               <a
-                href={`/practice?runRequestId=${request.id}&company=${encodeURIComponent(request.targetCompany)}&meetingType=${request.toolName.startsWith("interview") ? "hiring_manager" : "discovery"}`}
+                href={`/practice?autostart=true&runRequestId=${request.id}&company=${encodeURIComponent(request.targetCompany)}&meetingType=${request.toolName.startsWith("interview") ? "hiring_manager" : "discovery"}`}
                 className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-600 transition"
               >
                 <Video className="h-4 w-4" />
