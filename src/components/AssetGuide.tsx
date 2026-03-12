@@ -490,8 +490,10 @@ export default function AssetGuide({ toolName, meetingType }: AssetGuideProps) {
                 </p>
               </div>
             </div>
-            <p className="text-xs text-green-600 mt-3 italic">
-              Requires Google Workspace with Gemini or Google AI Pro/Ultra.
+            <p className="text-xs text-green-400/60 mt-3">
+              <span className="font-semibold text-green-400/80">Requires Google One AI Premium ($20/mo).</span>{" "}
+              Same subscription that powers NotebookLM Studio. Unlocks Gemini across Slides, Docs, and Gmail.
+              Best $20 a sales rep can spend.
             </p>
           </div>
 

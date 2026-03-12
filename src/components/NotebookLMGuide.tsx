@@ -594,6 +594,18 @@ export default function NotebookLMGuide({
 
       {expanded && (
         <div className="border-t border-[#1a1a1a] px-6 py-5 space-y-5">
+          {/* Google AI subscription callout */}
+          <div className="rounded-lg border border-amber-500/15 bg-amber-500/5 px-4 py-3">
+            <p className="text-xs text-neutral-300">
+              <span className="font-semibold text-amber-400">Requires Google One AI Premium ($20/mo).</span>{" "}
+              Studio features like podcasts, videos, slide decks, and quizzes need the premium tier.
+              Basic NotebookLM (upload sources, ask questions) is free.
+              The $20 plan also unlocks Gemini across Google Slides, Docs, and Gmail, making it
+              the highest-ROI subscription in any sales rep&apos;s toolkit. Between NotebookLM Studio and Google Slides AI,
+              you get a research lab and design studio for the price of lunch.
+            </p>
+          </div>
+
           {/* Step 1: Upload blitz assets */}
           <div>
             <div className="flex items-center gap-2 mb-2">

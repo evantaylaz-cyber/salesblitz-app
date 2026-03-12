@@ -20,6 +20,7 @@ import {
   MessageCircleQuestion,
   RefreshCw,
   Video,
+  ChevronDown,
 } from "lucide-react";
 import AppNav from "@/components/AppNav";
 import DebriefSection from "@/components/DebriefSection";
@@ -199,6 +200,7 @@ export default function RequestDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [retrying, setRetrying] = useState(false);
+  const [stepsExpanded, setStepsExpanded] = useState(false);
 
   const fetchRequest = useCallback(async () => {
     try {
@@ -251,6 +253,14 @@ export default function RequestDetailPage() {
   // Overall elapsed + ETA
   const etaInfo = request ? computeETA(request.steps, request.startedAt) : null;
 
+  // Auto-expand steps for active runs, collapse for completed
+  useEffect(() => {
+    if (request) {
+      const isRunning = ["submitted", "researching", "generating", "awaiting_clarification"].includes(request.status);
+      setStepsExpanded(isRunning);
+    }
+  }, [request?.status]);
+
   useStepStream({
     requestId: requestId,
     enabled: isActive,
@@ -299,6 +309,8 @@ export default function RequestDetailPage() {
   }
 
   const statusStyle = STATUS_STYLES[request.status] || STATUS_STYLES.submitted;
+  const isCompleted = request.status === "delivered" || request.status === "ready";
+  const displayProgress = isCompleted ? 100 : request.progress;
 
   return (
     <div className="min-h-screen bg-[#0a0a0a]">
@@ -338,22 +350,20 @@ export default function RequestDetailPage() {
                "In the queue"}
             </span>
             <span className={`text-sm font-medium ${statusStyle.text}`}>
-              {request.progress}%
+              {displayProgress}%
             </span>
           </div>
           <div className="h-2 rounded-full bg-[#141414]/60 overflow-hidden">
             <div
               className={`h-full rounded-full transition-all duration-700 ease-out ${
-                request.status === "failed" ? "bg-red-500/100" :
-                request.progress === 100 ? "bg-emerald-500/100" :
-                "bg-emerald-500/100"
+                request.status === "failed" ? "bg-red-500/100" : "bg-emerald-500/100"
               }`}
-              style={{ width: `${request.progress}%` }}
+              style={{ width: `${displayProgress}%` }}
             />
           </div>
           <div className="mt-2 flex items-center justify-between">
             <p className="text-xs text-neutral-400">
-              {request.completedSteps} of {request.totalSteps} steps completed
+              {isCompleted ? request.totalSteps : request.completedSteps} of {request.totalSteps} steps completed
               {etaInfo && isActive && (
                 <> · {formatDuration(etaInfo.totalElapsed)} elapsed</>
               )}
@@ -423,10 +433,16 @@ export default function RequestDetailPage() {
 
         {/* Execution Steps */}
         <div className="rounded-xl border bg-[#141414] shadow-sm shadow-black/20">
-          <div className="border-b px-6 py-4">
-            <h2 className="font-semibold text-white">What&apos;s happening</h2>
-          </div>
-          <div className="divide-y">
+          <button
+            onClick={() => setStepsExpanded(!stepsExpanded)}
+            className="w-full flex items-center justify-between px-6 py-4 border-b hover:bg-[#1a1a1a]/50 transition"
+          >
+            <h2 className="font-semibold text-white">
+              {isCompleted ? "What happened" : "What\u2019s happening"}
+            </h2>
+            <ChevronDown className={`h-4 w-4 text-neutral-400 transition-transform duration-200 ${stepsExpanded ? "rotate-180" : ""}`} />
+          </button>
+          {stepsExpanded && <div className="divide-y">
             {request.steps.map((step, i) => {
               const StepIcon = STEP_ICONS[step.id] || FileText;
               // If the overall run is delivered/completed, all steps should show as complete
@@ -497,7 +513,7 @@ export default function RequestDetailPage() {
                 </div>
               );
             })}
-          </div>
+          </div>}
         </div>
 
         {/* Live Research Insights — shows during active blitzes */}
