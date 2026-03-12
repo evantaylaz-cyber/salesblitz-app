@@ -94,8 +94,6 @@ const STEP_ICONS: Record<string, React.ElementType> = {
   generating_outreach: MessageCircleQuestion,
   generating_pov_deck: Sparkles,
   generating_assets: Sparkles,
-  building_competitive_playbook: Zap,
-  generating_gamma_deck: Sparkles,
   generating_outreach_sequence: MessageCircleQuestion,
   formatting: Package,
   delivery: Download,
