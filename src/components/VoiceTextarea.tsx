@@ -61,7 +61,7 @@ export default function VoiceTextarea({
     });
 
   const baseClass =
-    "w-full rounded-lg border px-3.5 py-2.5 text-sm text-white placeholder-neutral-500 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none resize-y";
+    "w-full rounded-lg border bg-[#0a0a0a] px-3.5 py-2.5 text-sm text-white placeholder-neutral-500 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none resize-y";
   const borderClass = isListening
     ? "border-red-300 ring-1 ring-red-200"
     : "border-[#333333]";

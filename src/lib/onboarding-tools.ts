@@ -386,7 +386,7 @@ export function createOnboardingTools(userId: string) {
         summary: z.string().describe("1-2 sentence summary for quick reference"),
       }),
       execute: async (caseStudy) => {
-        console.log(`[ONBOARDING_TOOL] save_case_study CALLED | userId=${userId} | company=${caseStudy.company_name} | title=${(caseStudy.title || "").slice(0, 50)}`);
+        console.log(`[ONBOARDING_TOOL] save_case_study CALLED | userId=${userId} | customer=${caseStudy.customer_name} | summary=${(caseStudy.summary || "").slice(0, 50)}`);
         try {
           // Save to profile's caseStudies JSON array
           const profile = await prisma.userProfile.findUnique({
