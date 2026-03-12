@@ -65,6 +65,7 @@ export function createOnboardingTools(userId: string) {
         }),
       }),
       execute: async ({ section, data }) => {
+        console.log(`[ONBOARDING_TOOL] save_profile_section CALLED | userId=${userId} | section=${section} | keys=${Object.keys(data).filter(k => (data as any)[k] != null).join(",")}`);
         try {
           const updateData: any = {};
 
@@ -155,6 +156,7 @@ export function createOnboardingTools(userId: string) {
         summary: z.string().optional().describe("One-line ICP summary"),
       }),
       execute: async (icp) => {
+        console.log(`[ONBOARDING_TOOL] save_icp_profile CALLED | userId=${userId}`);
         try {
           const profile = await prisma.userProfile.findUnique({
             where: { userId },
@@ -227,6 +229,7 @@ export function createOnboardingTools(userId: string) {
         use_when: z.array(z.string()).optional().describe("Situations where this story applies"),
       }),
       execute: async (story) => {
+        console.log(`[ONBOARDING_TOOL] save_deal_story CALLED | userId=${userId} | company=${story.company} | summary=${(story.summary || "").slice(0, 50)}`);
         try {
           const profile = await prisma.userProfile.findUnique({
             where: { userId },
@@ -383,6 +386,7 @@ export function createOnboardingTools(userId: string) {
         summary: z.string().describe("1-2 sentence summary for quick reference"),
       }),
       execute: async (caseStudy) => {
+        console.log(`[ONBOARDING_TOOL] save_case_study CALLED | userId=${userId} | company=${caseStudy.company_name} | title=${(caseStudy.title || "").slice(0, 50)}`);
         try {
           // Save to profile's caseStudies JSON array
           const profile = await prisma.userProfile.findUnique({
@@ -487,6 +491,8 @@ export function createOnboardingTools(userId: string) {
         notes: z.string().optional().describe("Key takeaways, what landed, what didn't"),
       }),
       execute: async (entry) => {
+        console.log(`[ONBOARDING_TOOL] save_interview_entry CALLED | userId=${userId} | company=${entry.company}`);
+
         try {
           const profile = await prisma.userProfile.findUnique({
             where: { userId },
@@ -516,6 +522,7 @@ export function createOnboardingTools(userId: string) {
         depth: z.number().min(1).max(4).describe("New onboarding depth level"),
       }),
       execute: async ({ depth }) => {
+        console.log(`[ONBOARDING_TOOL] advance_onboarding_depth CALLED | userId=${userId} | depth=${depth}`);
         try {
           await prisma.userProfile.update({
             where: { userId },
@@ -541,6 +548,8 @@ export function createOnboardingTools(userId: string) {
         linkedin_url: z.string().optional().describe("User's LinkedIn profile URL"),
       }),
       execute: async ({ company_name, company_url, linkedin_url }) => {
+        console.log(`[ONBOARDING_TOOL] research_company CALLED | userId=${userId} | company=${company_name} | url=${company_url || "none"}`);
+
         try {
           // ── Step 1: Fetch real website content from multiple pages ──
           let websiteContent = "";
@@ -693,11 +702,18 @@ CRITICAL: Extract REAL customer names and REAL metrics from the website content.
             }
           }
 
-          await prisma.userProfile.upsert({
-            where: { userId },
-            create: { userId, ...updateData },
-            update: updateData,
-          });
+          console.log(`[ONBOARDING_TOOL] research_company DB WRITE: updateData keys=${Object.keys(updateData).join(",")}, companyName=${updateData.companyName}`);
+          try {
+            await prisma.userProfile.upsert({
+              where: { userId },
+              create: { userId, ...updateData },
+              update: updateData,
+            });
+            console.log(`[ONBOARDING_TOOL] research_company DB WRITE SUCCESS`);
+          } catch (dbErr: any) {
+            console.error(`[ONBOARDING_TOOL] research_company DB WRITE FAILED: ${dbErr.message}`);
+            // Don't rethrow — continue to return research data even if DB write fails
+          }
 
           // Save case studies if found (only real ones from the website)
           if (research.case_studies && Array.isArray(research.case_studies) && research.case_studies.length > 0) {
@@ -826,6 +842,8 @@ CRITICAL: Extract REAL customer names and REAL metrics from the website content.
         resume_text: z.string().describe("The full text of the user's resume"),
       }),
       execute: async ({ resume_text }) => {
+        console.log(`[ONBOARDING_TOOL] parse_resume CALLED | userId=${userId} | textLength=${resume_text.length}`);
+
         try {
           // Store raw resume text
           await prisma.userProfile.upsert({
@@ -958,6 +976,7 @@ Extract ONLY what's actually in the resume. Don't invent or embellish.`;
         "Mark onboarding as complete. Call this when Layer 1 essentials are captured and the user is ready to run their first blitz.",
       parameters: z.object({}),
       execute: async () => {
+        console.log(`[ONBOARDING_TOOL] mark_onboarding_complete CALLED | userId=${userId}`);
         try {
           await prisma.userProfile.update({
             where: { userId },

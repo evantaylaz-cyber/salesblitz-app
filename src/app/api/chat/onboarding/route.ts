@@ -149,6 +149,8 @@ export async function POST(req: Request) {
     // Parse request body
     const { messages } = await req.json();
 
+    console.log(`[ONBOARDING CHAT] userId=${dbUser.id} | msgCount=${messages.length} | lastRole=${messages[messages.length - 1]?.role} | profileExists=${!!existingProfile} | companyName=${existingProfile?.companyName || "null"}`);
+
     // Stream response with prompt caching enabled
     // The system prompt is ~2K tokens and identical across calls for the same user.
     // Anthropic caches matching prefixes at 90% discount on input tokens.
@@ -160,6 +162,19 @@ export async function POST(req: Request) {
       messages,
       tools,
       maxSteps: 8, // Allow multiple tool calls per response (6 tool types + follow-ups)
+      onStepFinish: ({ toolCalls, toolResults }) => {
+        if (toolCalls && toolCalls.length > 0) {
+          for (const tc of toolCalls) {
+            console.log(`[ONBOARDING CHAT] TOOL_CALL: ${tc.toolName} | args=${JSON.stringify(tc.args).slice(0, 200)}`);
+          }
+        }
+        if (toolResults && toolResults.length > 0) {
+          for (const tr of toolResults) {
+            const resultStr = typeof tr.result === "string" ? tr.result : JSON.stringify(tr.result);
+            console.log(`[ONBOARDING CHAT] TOOL_RESULT: ${tr.toolName} | success=${resultStr.includes("success") || resultStr.includes("saved")} | result=${resultStr.slice(0, 300)}`);
+          }
+        }
+      },
     });
 
     return result.toDataStreamResponse();
