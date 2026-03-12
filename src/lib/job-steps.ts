@@ -18,89 +18,76 @@ export interface JobStep {
 export interface Asset {
   id: string;
   label: string;
-  format: "pdf" | "pptx" | "url" | "html" | "png";
+  format: "pdf" | "pptx" | "url" | "html" | "png" | "md";
   url?: string;          // Download URL or deployed app URL
   size?: number;         // File size in bytes
-  category: "research" | "deliverable" | "interactive";
+  category: "research" | "deliverable" | "interactive" | "context" | "notes" | "outreach";
 }
 
 // Step templates per tool — these get cloned when a new RunRequest is created
+// Research steps stay the same (that's where the value lives).
+// Asset generation steps updated per Deliverable Philosophy Spec v1.0.
 const STEP_TEMPLATES: Record<ToolName, Omit<JobStep, "status" | "startedAt" | "completedAt">[]> = {
   interview_prep: [
     { id: "competitive_research", label: "Researching competitive landscape", description: "Identifying competitors, positioning, pricing models, and market gaps for the target company." },
     { id: "market_intel", label: "Analyzing market intelligence", description: "Industry trends, emerging threats, capital flows, and what the smartest players are doing differently." },
     { id: "company_deep_dive", label: "Deep diving target company", description: "Financials, strategic priorities, org structure, recent news, and pain points." },
-    { id: "generating_brief", label: "Building Research Brief", description: "Compiling qualification mapping, story bank, call sheet, 30/60/90 plan, and competitive positioning into a single research brief." },
-    { id: "generating_pov_deck", label: "Generating POV Deck", description: "Building your 5-slide business case deck." },
-    { id: "generating_handwritten", label: "Creating handwritten cards", description: "Generating handwritten notebook card with Side A and Side B reference." },
-    { id: "generating_call_docs", label: "Generating call prep docs", description: "Building call playbook and arsenal tailored to your interview type." },
-    { id: "building_competitive_playbook", label: "Building competitive playbook", description: "Creating interactive competitive playbook with value-based positioning cards and talk tracks." },
-    { id: "generating_gamma_deck", label: "Generating presentation deck", description: "Creating a polished Gamma presentation with a value-driven narrative arc." },
-    { id: "delivery", label: "Delivering to your inbox", description: "Sending your complete prep package via email." },
+    { id: "generating_context_file", label: "Building Context File", description: "Compiling company deep dive, role analysis, interviewer profiles, competitive positioning, and story bank into your context file." },
+    { id: "generating_notes", label: "Building On-Screen Notes", description: "Creating dynamic prep notes tailored to your interview format, camera setting, and interviewer lineup." },
+    { id: "generating_pov_deck", label: "Generating POV Deck", description: "Building your 5-slide narrative deck, ready for Google Slides Beautify." },
+    { id: "delivery", label: "Delivering your prep", description: "Assembling your complete prep package." },
   ],
   prospect_prep: [
     { id: "competitive_research", label: "Researching prospect's competitive landscape", description: "Identifying your prospect's competitors, their positioning, and where they're under pressure." },
     { id: "market_intel", label: "Analyzing prospect's industry", description: "Market trends, threats, and opportunities affecting your prospect's business." },
     { id: "company_deep_dive", label: "Deep diving target account", description: "Account financials, org chart, decision-makers, tech stack, and recent moves." },
-    { id: "generating_brief", label: "Building Research Brief", description: "Compiling account deep dive, discovery call plan, talk tracks, competitive positioning, and story selection into a single research brief." },
-    { id: "generating_pov_deck", label: "Generating POV Deck", description: "Building your 5-slide business case deck." },
-    { id: "generating_handwritten", label: "Creating handwritten cards", description: "Generating handwritten notebook card with Side A and Side B reference." },
-    { id: "generating_call_docs", label: "Generating call prep docs", description: "Building call playbook and arsenal tailored to your meeting stage." },
-    { id: "building_competitive_playbook", label: "Building competitive playbook", description: "Creating interactive competitive playbook with value-based positioning cards and talk tracks." },
-    { id: "building_stakeholder_map", label: "Building stakeholder map", description: "Creating interactive stakeholder map with deal qualification roles and action items." },
-    { id: "generating_gamma_deck", label: "Generating presentation deck", description: "Creating a polished Gamma presentation with a value-driven narrative arc." },
-    { id: "delivery", label: "Delivering to your inbox", description: "Sending your complete prep package via email." },
+    { id: "generating_context_file", label: "Building Context File", description: "Compiling account deep dive, discovery plan, competitive positioning, stakeholder map, and pain hypotheses." },
+    { id: "generating_notes", label: "Building On-Screen Notes", description: "Creating dynamic prep notes tailored to your meeting type. Stay present, ask deeper questions." },
+    { id: "generating_pov_deck", label: "Generating POV Deck", description: "Building your 5-slide business case deck, ready for Google Slides Beautify." },
+    { id: "delivery", label: "Delivering your prep", description: "Assembling your complete prep package." },
   ],
   deal_audit: [
     { id: "competitive_research", label: "Mapping competitive alternatives", description: "Analyzing every alternative being evaluated in this deal, including do-nothing." },
     { id: "market_intel", label: "Assessing market urgency signals", description: "Market forces affecting the prospect's urgency and compelling event strength." },
     { id: "company_deep_dive", label: "Deep diving deal context", description: "Prospect's financial health, budget cycles, stakeholder dynamics, and decision process." },
-    { id: "generating_brief", label: "Building Deal Audit Report", description: "Compiling qualification scorecard, risk assessment, strategy brief, discovery questions, and deal health summary into a single audit report." },
-    { id: "generating_handwritten", label: "Creating handwritten cards", description: "Generating handwritten notebook card with deal health scorecard." },
-    { id: "building_stakeholder_map", label: "Building stakeholder map", description: "Creating interactive stakeholder map with deal qualification roles and action items." },
-    { id: "delivery", label: "Delivering to your inbox", description: "Sending your complete audit package via email." },
+    { id: "generating_context_file", label: "Building Deal Audit", description: "Compiling qualification scorecard, gap analysis, risk assessment, and recommended actions." },
+    { id: "generating_notes", label: "Building On-Screen Notes", description: "Creating talking points for deal reviews and champion coaching sessions." },
+    { id: "delivery", label: "Delivering your audit", description: "Assembling your complete audit package." },
   ],
   interview_outreach: [
     { id: "competitive_research", label: "Researching target company landscape", description: "Quick competitive context for the target company to inform outreach personalization." },
-    { id: "company_deep_dive", label: "Deep diving target company", description: "Company news, growth signals, hiring patterns, and personalization hooks." },
-    { id: "generating_brief", label: "Building Research Brief", description: "Compiling company intel, role analysis, positioning brief, story mapping, and outreach sequence into a single research brief." },
-    { id: "generating_resume", label: "Building ATS Resume", description: "Generating an ATS-optimized resume tailored to the target role and company." },
-    { id: "generating_pov_deck", label: "Generating POV Deck", description: "Building your 5-slide business case deck." },
-    { id: "generating_handwritten", label: "Creating handwritten cards", description: "Generating handwritten notebook card with Side A and Side B reference." },
-    { id: "building_competitive_playbook", label: "Building competitive playbook", description: "Creating interactive competitive playbook with value-based positioning cards and talk tracks." },
-    { id: "generating_gamma_deck", label: "Generating presentation deck", description: "Creating a polished Gamma presentation with a value-driven narrative arc." },
-    { id: "delivery", label: "Delivering to your inbox", description: "Sending your complete outreach package via email." },
+    { id: "company_deep_dive", label: "Deep diving target company", description: "Company news, growth signals, hiring patterns, mutual connections, and personalization hooks." },
+    { id: "generating_context_file", label: "Building Context File", description: "Compiling company intel, role analysis, interviewer profiles, and market context." },
+    { id: "generating_outreach", label: "Building Outreach Sequences", description: "Crafting mutual connection emails, LinkedIn messages, and follow-up cadence. Short, casual, easy yes." },
+    { id: "generating_pov_deck", label: "Generating POV Deck", description: "Building your 5-slide why-you deck, ready for Google Slides Beautify." },
+    { id: "delivery", label: "Delivering your outreach package", description: "Assembling your complete outreach package." },
   ],
   prospect_outreach: [
     { id: "competitive_research", label: "Researching prospect's competitive pressures", description: "Quick competitive analysis to identify pain-point hooks for outreach personalization." },
-    { id: "company_deep_dive", label: "Deep diving target account", description: "Recent news, hiring signals, tech stack, trigger events for personalization." },
-    { id: "generating_brief", label: "Building Research Brief", description: "Compiling account intel, prospect profile, pain mapping, story selection, and outreach sequence into a single research brief." },
-    { id: "generating_pov_deck", label: "Generating POV Deck", description: "Building your 5-slide business case deck." },
-    { id: "generating_handwritten", label: "Creating handwritten cards", description: "Generating handwritten notebook card with Side A and Side B reference." },
-    { id: "building_competitive_playbook", label: "Building competitive playbook", description: "Creating interactive competitive playbook with value-based positioning cards and talk tracks." },
-    { id: "generating_gamma_deck", label: "Generating presentation deck", description: "Creating a polished Gamma presentation with a value-driven narrative arc." },
-    { id: "delivery", label: "Delivering to your inbox", description: "Sending your complete outreach package via email." },
+    { id: "company_deep_dive", label: "Deep diving target account", description: "Recent news, hiring signals, tech stack, trigger events, and mutual connections." },
+    { id: "generating_context_file", label: "Building Context File", description: "Compiling account intel, pain mapping, competitive landscape, and stakeholder map." },
+    { id: "generating_outreach", label: "Building Outreach Sequences", description: "Crafting value-driven email sequence, LinkedIn touches, and call talking points. Copy-paste ready." },
+    { id: "generating_pov_deck", label: "Generating POV Deck", description: "Building your 5-slide business case deck, ready for Google Slides Beautify." },
+    { id: "delivery", label: "Delivering your outreach package", description: "Assembling your complete outreach package." },
   ],
   champion_builder: [
     { id: "competitive_research", label: "Analyzing competitive positioning", description: "How the champion needs to position you vs. alternatives internally." },
     { id: "company_deep_dive", label: "Mapping internal dynamics", description: "Org politics, decision process, stakeholder influence, and internal objections." },
-    { id: "generating_brief", label: "Building Champion Strategy Brief", description: "Compiling champion profile, stakeholder map, development plan, internal selling kit, and coaching notes into a single strategy brief." },
-    { id: "generating_handwritten", label: "Creating handwritten cards", description: "Generating handwritten notebook card with champion coaching reference." },
-    { id: "building_competitive_playbook", label: "Building competitive playbook", description: "Creating interactive competitive playbook with value-based positioning cards and talk tracks." },
-    { id: "building_stakeholder_map", label: "Building stakeholder map", description: "Creating interactive stakeholder map with deal qualification roles and action items." },
-    { id: "delivery", label: "Delivering to your inbox", description: "Sending your complete champion toolkit via email." },
+    { id: "generating_context_file", label: "Building Champion Strategy", description: "Compiling champion profile, stakeholder map, development plan, internal selling kit, and coaching notes." },
+    { id: "generating_notes", label: "Building Coaching Notes", description: "Creating champion coaching notes with key messages tailored to each stakeholder they need to influence." },
+    { id: "delivery", label: "Delivering your champion toolkit", description: "Assembling your complete champion toolkit." },
   ],
   practice_mode: [
     { id: "generating_persona", label: "Building AI persona", description: "Generating a realistic persona from your research and meeting context." },
-    { id: "initializing_avatar", label: "Initializing video avatar", description: "Starting the HeyGen Streaming Avatar session with your persona." },
+    { id: "initializing_avatar", label: "Initializing video avatar", description: "Starting the LiveAvatar session with your persona." },
     { id: "live_session", label: "Live practice session", description: "Real-time roleplay conversation with your AI persona." },
     { id: "generating_scorecard", label: "Scoring your session", description: "Analyzing your conversation against our value selling framework and generating actionable feedback." },
   ],
   territory_blitz: [
     { id: "parsing_targets", label: "Parsing target list", description: "Reading and validating your uploaded target accounts." },
     { id: "batch_research", label: "Researching accounts", description: "Running deep research across all target accounts in parallel." },
-    { id: "generating_outputs", label: "Generating deliverables", description: "Building research briefs, outreach sequences, and prep materials per account." },
-    { id: "compiling_territory", label: "Compiling territory package", description: "Assembling the full territory map with prioritization and account summaries." },
+    { id: "generating_outputs", label: "Generating deliverables", description: "Building context files, outreach sequences, and POV decks per account." },
+    { id: "compiling_territory", label: "Compiling territory scorecard", description: "Ranking accounts by priority, opportunity size, and engagement readiness." },
   ],
 };
 
@@ -130,71 +117,46 @@ export function getStepCount(toolName: ToolName): number {
  * Used by the execution engine to know what to generate.
  */
 export function getExpectedAssets(toolName: ToolName): Omit<Asset, "url" | "size">[] {
+  // Asset templates updated per Deliverable Philosophy Spec v1.0
+  // Categories: context (NotebookLM-ready), notes (on-screen), outreach (standalone), deliverable (POV deck)
   const ASSET_TEMPLATES: Record<ToolName, Omit<Asset, "url" | "size">[]> = {
     interview_prep: [
-      { id: "research_brief", label: "Research Brief", format: "pdf", category: "research" },
-      { id: "pov_deck", label: "POV Deck (5 slides)", format: "pdf", category: "deliverable" },
-      { id: "notebook_card", label: "Handwritten Notebook Card", format: "png", category: "deliverable" },
-      { id: "call_prep_sheet", label: "Call Prep Sheet", format: "pdf", category: "deliverable" },
-      { id: "callDoc_callPlaybook", label: "Call Playbook", format: "pdf", category: "deliverable" },
-      { id: "callDoc_arsenal", label: "Arsenal", format: "pdf", category: "deliverable" },
-      { id: "callDoc_liveScenario", label: "Live Scenario (mock pitch)", format: "pdf", category: "deliverable" },
-      { id: "callDoc_qaDoc", label: "Q&A Doc (mock pitch)", format: "pdf", category: "deliverable" },
-      { id: "competitive_playbook", label: "Competitive Playbook", format: "html", category: "interactive" },
-      { id: "gamma_deck", label: "Presentation Deck (Gamma)", format: "url", category: "deliverable" },
-      { id: "assignment_framework", label: "Assignment Framework", format: "pdf", category: "deliverable" },
+      { id: "context_file", label: "Context File", format: "md", category: "context" },
+      { id: "onscreen_notes", label: "On-Screen Notes", format: "md", category: "notes" },
+      { id: "pov_deck", label: "POV Deck (5 slides)", format: "pptx", category: "deliverable" },
     ],
     prospect_prep: [
-      { id: "research_brief", label: "Research Brief", format: "pdf", category: "research" },
-      { id: "pov_deck", label: "POV Deck (5 slides)", format: "pdf", category: "deliverable" },
-      { id: "notebook_card", label: "Handwritten Notebook Card", format: "png", category: "deliverable" },
-      { id: "call_prep_sheet", label: "Call Prep Sheet", format: "pdf", category: "deliverable" },
-      { id: "callDoc_callPlaybook", label: "Call Playbook", format: "pdf", category: "deliverable" },
-      { id: "callDoc_arsenal", label: "Arsenal", format: "pdf", category: "deliverable" },
-      { id: "competitive_playbook", label: "Competitive Playbook", format: "html", category: "interactive" },
-      { id: "stakeholder_map", label: "Stakeholder Map", format: "html", category: "interactive" },
-      { id: "gamma_deck", label: "Presentation Deck (Gamma)", format: "url", category: "deliverable" },
+      { id: "context_file", label: "Context File", format: "md", category: "context" },
+      { id: "onscreen_notes", label: "On-Screen Notes", format: "md", category: "notes" },
+      { id: "pov_deck", label: "POV Deck (5 slides)", format: "pptx", category: "deliverable" },
     ],
     deal_audit: [
-      { id: "research_brief", label: "Deal Audit Report", format: "pdf", category: "research" },
-      { id: "notebook_card", label: "Handwritten Notebook Card", format: "png", category: "deliverable" },
-      { id: "call_prep_sheet", label: "Call Prep Sheet", format: "pdf", category: "deliverable" },
-      { id: "stakeholder_map", label: "Stakeholder Map", format: "html", category: "interactive" },
+      { id: "context_file", label: "Deal Audit", format: "md", category: "context" },
+      { id: "onscreen_notes", label: "On-Screen Notes", format: "md", category: "notes" },
     ],
     interview_outreach: [
-      { id: "research_brief", label: "Research Brief", format: "pdf", category: "research" },
-      { id: "ats_resume", label: "ATS-Optimized Resume", format: "pdf", category: "deliverable" },
-      { id: "pov_deck", label: "POV Deck (5 slides)", format: "pdf", category: "deliverable" },
-      { id: "notebook_card", label: "Handwritten Notebook Card", format: "png", category: "deliverable" },
-      { id: "call_prep_sheet", label: "Call Prep Sheet", format: "pdf", category: "deliverable" },
-      { id: "outreach_sequence", label: "Outreach Sequence", format: "html", category: "interactive" },
-      { id: "competitive_playbook", label: "Competitive Playbook", format: "html", category: "interactive" },
-      { id: "gamma_deck", label: "Presentation Deck (Gamma)", format: "url", category: "deliverable" },
-      { id: "assignment_framework", label: "Assignment Framework", format: "pdf", category: "deliverable" },
+      { id: "context_file", label: "Context File", format: "md", category: "context" },
+      { id: "outreach_sequences", label: "Outreach Sequences", format: "md", category: "outreach" },
+      { id: "pov_deck", label: "POV Deck (5 slides)", format: "pptx", category: "deliverable" },
     ],
     prospect_outreach: [
-      { id: "research_brief", label: "Research Brief", format: "pdf", category: "research" },
-      { id: "pov_deck", label: "POV Deck (5 slides)", format: "pdf", category: "deliverable" },
-      { id: "notebook_card", label: "Handwritten Notebook Card", format: "png", category: "deliverable" },
-      { id: "call_prep_sheet", label: "Call Prep Sheet", format: "pdf", category: "deliverable" },
-      { id: "outreach_sequence", label: "Outreach Sequence", format: "html", category: "interactive" },
-      { id: "competitive_playbook", label: "Competitive Playbook", format: "html", category: "interactive" },
-      { id: "gamma_deck", label: "Presentation Deck (Gamma)", format: "url", category: "deliverable" },
+      { id: "context_file", label: "Context File", format: "md", category: "context" },
+      { id: "outreach_sequences", label: "Outreach Sequences", format: "md", category: "outreach" },
+      { id: "pov_deck", label: "POV Deck (5 slides)", format: "pptx", category: "deliverable" },
     ],
     champion_builder: [
-      { id: "research_brief", label: "Champion Strategy Brief", format: "pdf", category: "research" },
-      { id: "notebook_card", label: "Handwritten Notebook Card", format: "png", category: "deliverable" },
-      { id: "call_prep_sheet", label: "Call Prep Sheet", format: "pdf", category: "deliverable" },
-      { id: "competitive_playbook", label: "Competitive Playbook", format: "html", category: "interactive" },
-      { id: "stakeholder_map", label: "Stakeholder Map", format: "html", category: "interactive" },
+      { id: "context_file", label: "Champion Strategy", format: "md", category: "context" },
+      { id: "onscreen_notes", label: "Coaching Notes", format: "md", category: "notes" },
     ],
     practice_mode: [
       { id: "session_transcript", label: "Session Transcript", format: "pdf", category: "research" },
       { id: "messaging_scorecard", label: "Sales Scorecard", format: "pdf", category: "deliverable" },
     ],
     territory_blitz: [
-      { id: "territory_report", label: "Territory Report", format: "pdf", category: "research" },
-      { id: "account_briefs", label: "Account Briefs", format: "pdf", category: "deliverable" },
+      { id: "territory_scorecard", label: "Territory Scorecard", format: "md", category: "context" },
+      { id: "account_context_files", label: "Account Context Files", format: "md", category: "context" },
+      { id: "account_outreach", label: "Account Outreach Sequences", format: "md", category: "outreach" },
+      { id: "account_pov_decks", label: "Account POV Decks", format: "pptx", category: "deliverable" },
     ],
   };
 

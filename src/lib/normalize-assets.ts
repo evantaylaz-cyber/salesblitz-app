@@ -10,15 +10,25 @@ import { ToolName } from "./tools";
 
 // Worker camelCase key → template snake_case asset ID
 const WORKER_KEY_TO_ASSET_ID: Record<string, string> = {
-  briefPdf: "research_brief",
-  povDeck: "pov_deck",
-  povDeckPptx: "pov_deck_pptx",
+  // ── New deliverable philosophy (v1.0) ──
+  contextFile: "context_file",
+  onscreenNotes: "onscreen_notes",
+  outreachSequences: "outreach_sequences",
+  povDeckPptx: "pov_deck",
+  territoryScorecard: "territory_scorecard",
+  accountContextFiles: "account_context_files",
+  accountOutreach: "account_outreach",
+  accountPovDecks: "account_pov_decks",
+
+  // ── Legacy keys — backward compat for existing completed blitzes ──
+  briefPdf: "context_file",          // old PDF brief → maps to context file
+  povDeck: "pov_deck",               // old PDF POV deck
   notebookCard: "notebook_card",
   competitivePlaybook: "competitive_playbook",
   gammaDeck: "gamma_deck",
   callPrepSheet: "call_prep_sheet",
   atsResume: "ats_resume",
-  outreachSequence: "outreach_sequence",
+  outreachSequence: "outreach_sequences",
   outreachSequenceJson: "outreach_sequence_json",
   stakeholderMap: "stakeholder_map",
   assignmentFramework: "assignment_framework",
@@ -26,12 +36,11 @@ const WORKER_KEY_TO_ASSET_ID: Record<string, string> = {
   callSheet1Img: "call_sheet_1",
   callSheet2ImgA: "call_sheet_2a",
   callSheet2ImgB: "call_sheet_2b",
-  // Legacy keys — backward compat
   clientPovCard: "notebook_card",
   dealHealthCard: "notebook_card",
   championPovCard: "notebook_card",
-  auditReport: "research_brief",   // deal_audit used to have separate key
-  strategyBrief: "research_brief", // champion_builder used to have separate key
+  auditReport: "context_file",
+  strategyBrief: "context_file",
 };
 
 // Human-readable labels for assets that aren't in the standard template

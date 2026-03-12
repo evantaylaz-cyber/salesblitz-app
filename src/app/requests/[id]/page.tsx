@@ -43,7 +43,7 @@ interface AssetData {
   format: string;
   url: string | null;
   size: number | null;
-  category: "research" | "deliverable" | "interactive";
+  category: "research" | "deliverable" | "interactive" | "context" | "notes" | "outreach";
 }
 
 interface LiveInsight {
@@ -89,6 +89,10 @@ const STEP_ICONS: Record<string, React.ElementType> = {
   competitive_research: Search,
   market_intel: Globe,
   company_deep_dive: Search,
+  generating_context_file: FileText,
+  generating_notes: FileText,
+  generating_outreach: MessageCircleQuestion,
+  generating_pov_deck: Sparkles,
   generating_assets: Sparkles,
   building_competitive_playbook: Zap,
   generating_gamma_deck: Sparkles,
@@ -108,25 +112,33 @@ const STATUS_STYLES: Record<string, { ring: string; bg: string; text: string; ic
 };
 
 const ASSET_CATEGORY_LABELS: Record<string, { label: string; description: string; color: string }> = {
-  interactive: { label: "Interactive", description: "Open in your browser. Bookmark for quick reference during or before calls.", color: "bg-emerald-500/15 text-emerald-400" },
-  research: { label: "Research", description: "Study material for before the call. Read thoroughly, not during the meeting.", color: "bg-blue-500/15 text-blue-400" },
-  deliverable: { label: "Deliverable", description: "Download, print, or share. Call docs go on-screen; cards and decks are for sending.", color: "bg-emerald-500/15 text-emerald-400" },
+  context: { label: "Context File", description: "Your complete research. Upload to NotebookLM for deeper study.", color: "bg-blue-500/15 text-blue-400" },
+  notes: { label: "On-Screen Notes", description: "Keep on-screen during your call. Stay present, ask deeper questions.", color: "bg-amber-500/15 text-amber-400" },
+  outreach: { label: "Outreach", description: "Ready to send. Copy-paste into email or LinkedIn.", color: "bg-emerald-500/15 text-emerald-400" },
+  deliverable: { label: "Deliverable", description: "Download and customize. POV decks are ready for Google Slides Beautify.", color: "bg-purple-500/15 text-purple-400" },
+  // Legacy categories for backward compat with existing blitzes
+  interactive: { label: "Interactive", description: "Open in your browser for quick reference.", color: "bg-emerald-500/15 text-emerald-400" },
+  research: { label: "Research", description: "Study material. Read thoroughly before your meeting.", color: "bg-blue-500/15 text-blue-400" },
 };
 
 const FORMAT_ICONS: Record<string, string> = {
+  md: "📝",
   docx: "📄",
   pdf: "📋",
   pptx: "📊",
   url: "🌐",
   html: "🌐",
+  png: "🖼️",
 };
 
 const FORMAT_LABELS: Record<string, string> = {
+  md: "Markdown",
   docx: "Word Doc",
   pdf: "PDF",
   pptx: "Slides",
   url: "Web",
   html: "Interactive",
+  png: "Image",
 };
 
 function formatDuration(ms: number): string {
@@ -520,29 +532,18 @@ export default function RequestDetailPage() {
           </div>
         )}
 
-        {/* Asset Usage Guide — shows when blitz is delivered */}
-        {(request.status === "delivered" || request.status === "ready") && (
-          <AssetGuide toolName={request.toolName} />
-        )}
-
-        {/* Workflow Guide — step-by-step game plan after blitz completes */}
-        {(request.status === "delivered" || request.status === "ready") && (
-          <WorkflowGuide toolName={request.toolName} targetCompany={request.targetCompany} requestId={request.id} />
-        )}
-
-        {/* NotebookLM Study Guide — dynamic prompts for podcast, slides, flashcards, quiz */}
-        {(request.status === "delivered" || request.status === "ready") && (
-          <NotebookLMGuide toolName={request.toolName} targetCompany={request.targetCompany} targetName={request.targetName} />
-        )}
-
-        {/* Assets / Deliverables */}
-        {request.assets.some((a: AssetData) => a.url) && (
-          <div className="rounded-xl border bg-[#141414] shadow-sm shadow-black/20">
+        {/* ═══════════════════════════════════════════════════════════════
+            SECTION 1: YOUR PREP IS READY — Primary deliverables
+            ═══════════════════════════════════════════════════════════════ */}
+        {(request.status === "delivered" || request.status === "ready") && request.assets.some((a: AssetData) => a.url) && (
+          <div className="rounded-xl border border-emerald-500/20 bg-[#141414] shadow-sm shadow-black/20">
             <div className="border-b px-6 py-4">
-              <h2 className="font-semibold text-white">Your Deliverables</h2>
+              <h2 className="text-lg font-semibold text-white">Your prep is ready</h2>
+              <p className="mt-1 text-sm text-neutral-400">Download, open, and use right away.</p>
             </div>
             <div className="divide-y">
-              {(["interactive", "research", "deliverable"] as const).map((category) => {
+              {/* New categories: context → notes → outreach → deliverable. Legacy: interactive → research → deliverable */}
+              {(["context", "notes", "outreach", "deliverable", "interactive", "research"] as const).map((category) => {
                 const categoryAssets = request.assets.filter(
                   (a: AssetData) => a.category === category && a.url
                 );
@@ -593,36 +594,65 @@ export default function RequestDetailPage() {
           </div>
         )}
 
-        {/* Post-Run Debrief */}
+        {/* ═══════════════════════════════════════════════════════════════
+            SECTION 2: GO DEEPER — NotebookLM, Google Slides, Workflow
+            ═══════════════════════════════════════════════════════════════ */}
         {(request.status === "delivered" || request.status === "ready") && (
-          <DebriefSection requestId={request.id} />
+          <div className="space-y-4">
+            <div className="px-1">
+              <h2 className="text-lg font-semibold text-white">Go deeper</h2>
+              <p className="mt-1 text-sm text-neutral-400">Amplify your research with these tools.</p>
+            </div>
+
+            {/* NotebookLM Study Guide */}
+            <NotebookLMGuide toolName={request.toolName} targetCompany={request.targetCompany} targetName={request.targetName} />
+
+            {/* Asset Usage Guide */}
+            <AssetGuide toolName={request.toolName} />
+
+            {/* Workflow Guide */}
+            <WorkflowGuide toolName={request.toolName} targetCompany={request.targetCompany} requestId={request.id} />
+          </div>
         )}
 
-        {/* Practice This Call CTA */}
+        {/* ═══════════════════════════════════════════════════════════════
+            SECTION 3: KEEP BUILDING — Practice, Debrief
+            ═══════════════════════════════════════════════════════════════ */}
         {(request.status === "delivered" || request.status === "ready") && (
-          <div className="rounded-xl border-2 border-emerald-500/20 bg-gradient-to-r from-emerald-500/10 to-[#141414] p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/15">
-                  <Video className="h-6 w-6 text-emerald-400" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-white">
-                    {request.toolName.startsWith("interview") ? "Rehearse before your interview" : "Rehearse before the real thing"}
-                  </h3>
-                  <p className="text-sm text-neutral-400">
-                    Practice with an AI persona built from this blitz&apos;s research
-                  </p>
-                </div>
-              </div>
-              <a
-                href={`/practice?autostart=true&runRequestId=${request.id}&company=${encodeURIComponent(request.targetCompany)}&meetingType=${request.toolName.startsWith("interview") ? "hiring_manager" : "discovery"}`}
-                className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-600 transition"
-              >
-                <Video className="h-4 w-4" />
-                Start Practice
-              </a>
+          <div className="space-y-4">
+            <div className="px-1">
+              <h2 className="text-lg font-semibold text-white">Keep building</h2>
+              <p className="mt-1 text-sm text-neutral-400">Practice, debrief, and sharpen for next time.</p>
             </div>
+
+            {/* Practice This Call CTA */}
+            <div className="rounded-xl border-2 border-emerald-500/20 bg-gradient-to-r from-emerald-500/10 to-[#141414] p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/15">
+                    <Video className="h-6 w-6 text-emerald-400" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-white">
+                      {request.toolName.startsWith("interview") ? "Rehearse before your interview" : "Rehearse before the real thing"}
+                    </h3>
+                    <p className="text-sm text-neutral-400">
+                      Practice with an AI persona built from this blitz&apos;s research
+                    </p>
+                  </div>
+                </div>
+                <a
+                  href={`/practice?autostart=true&runRequestId=${request.id}&company=${encodeURIComponent(request.targetCompany)}&meetingType=${request.toolName.startsWith("interview") ? "hiring_manager" : "discovery"}`}
+                  className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-600 transition"
+                >
+                  <Video className="h-4 w-4" />
+                  Start Practice
+                </a>
+              </div>
+            </div>
+
+            {/* Post-Run Debrief */}
+            <DebriefSection requestId={request.id} />
           </div>
         )}
 
