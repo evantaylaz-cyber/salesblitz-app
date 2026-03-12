@@ -33,7 +33,7 @@ const STEP_TEMPLATES: Record<ToolName, Omit<JobStep, "status" | "startedAt" | "c
     { id: "market_intel", label: "Analyzing market intelligence", description: "Industry trends, emerging threats, capital flows, and what the smartest players are doing differently." },
     { id: "company_deep_dive", label: "Deep diving target company", description: "Financials, strategic priorities, org structure, recent news, and pain points." },
     { id: "generating_context_file", label: "Building Context File", description: "Compiling company deep dive, role analysis, interviewer profiles, competitive positioning, and story bank into your context file." },
-    { id: "generating_notes", label: "Building On-Screen Notes", description: "Creating dynamic prep notes tailored to your interview format, camera setting, and interviewer lineup." },
+    { id: "generating_notes", label: "Building Speaker Notes", description: "Creating dynamic prep notes tailored to your interview format, camera setting, and interviewer lineup." },
     { id: "generating_pov_deck", label: "Generating POV Deck", description: "Building your 5-slide narrative deck, ready for Google Slides Beautify." },
     { id: "delivery", label: "Delivering your prep", description: "Assembling your complete prep package." },
   ],
@@ -42,7 +42,7 @@ const STEP_TEMPLATES: Record<ToolName, Omit<JobStep, "status" | "startedAt" | "c
     { id: "market_intel", label: "Analyzing prospect's industry", description: "Market trends, threats, and opportunities affecting your prospect's business." },
     { id: "company_deep_dive", label: "Deep diving target account", description: "Account financials, org chart, decision-makers, tech stack, and recent moves." },
     { id: "generating_context_file", label: "Building Context File", description: "Compiling account deep dive, discovery plan, competitive positioning, stakeholder map, and pain hypotheses." },
-    { id: "generating_notes", label: "Building On-Screen Notes", description: "Creating dynamic prep notes tailored to your meeting type. Stay present, ask deeper questions." },
+    { id: "generating_notes", label: "Building Speaker Notes", description: "Creating dynamic prep notes tailored to your meeting type. Stay present, ask deeper questions." },
     { id: "generating_pov_deck", label: "Generating POV Deck", description: "Building your 5-slide business case deck, ready for Google Slides Beautify." },
     { id: "delivery", label: "Delivering your prep", description: "Assembling your complete prep package." },
   ],
@@ -51,7 +51,7 @@ const STEP_TEMPLATES: Record<ToolName, Omit<JobStep, "status" | "startedAt" | "c
     { id: "market_intel", label: "Assessing market urgency signals", description: "Market forces affecting the prospect's urgency and compelling event strength." },
     { id: "company_deep_dive", label: "Deep diving deal context", description: "Prospect's financial health, budget cycles, stakeholder dynamics, and decision process." },
     { id: "generating_context_file", label: "Building Deal Audit", description: "Compiling qualification scorecard, gap analysis, risk assessment, and recommended actions." },
-    { id: "generating_notes", label: "Building On-Screen Notes", description: "Creating talking points for deal reviews and champion coaching sessions." },
+    { id: "generating_notes", label: "Building Speaker Notes", description: "Creating talking points for deal reviews and champion coaching sessions." },
     { id: "delivery", label: "Delivering your audit", description: "Assembling your complete audit package." },
   ],
   interview_outreach: [
@@ -122,17 +122,17 @@ export function getExpectedAssets(toolName: ToolName): Omit<Asset, "url" | "size
   const ASSET_TEMPLATES: Record<ToolName, Omit<Asset, "url" | "size">[]> = {
     interview_prep: [
       { id: "context_file", label: "Context File", format: "md", category: "context" },
-      { id: "onscreen_notes", label: "On-Screen Notes", format: "md", category: "notes" },
+      { id: "onscreen_notes", label: "Speaker Notes", format: "md", category: "notes" },
       { id: "pov_deck", label: "POV Deck (5 slides)", format: "pptx", category: "deliverable" },
     ],
     prospect_prep: [
       { id: "context_file", label: "Context File", format: "md", category: "context" },
-      { id: "onscreen_notes", label: "On-Screen Notes", format: "md", category: "notes" },
+      { id: "onscreen_notes", label: "Speaker Notes", format: "md", category: "notes" },
       { id: "pov_deck", label: "POV Deck (5 slides)", format: "pptx", category: "deliverable" },
     ],
     deal_audit: [
       { id: "context_file", label: "Deal Audit", format: "md", category: "context" },
-      { id: "onscreen_notes", label: "On-Screen Notes", format: "md", category: "notes" },
+      { id: "onscreen_notes", label: "Speaker Notes", format: "md", category: "notes" },
     ],
     interview_outreach: [
       { id: "context_file", label: "Context File", format: "md", category: "context" },

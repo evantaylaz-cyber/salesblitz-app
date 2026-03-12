@@ -91,7 +91,7 @@ function getPrompts(
       label: "Podcast",
       icon: Headphones,
       settingsHint: "Audio Overview > pencil > Deep Dive > Short",
-      prompt: `Cover who our champion is, what they care about, and how to arm them to sell internally. Focus on the political landscape and the narrative they need to deliver.`,
+      prompt: `Cover who our champion is, what they care about, and how to equip them to sell internally. Focus on the political landscape and the narrative they need to deliver.`,
     });
   } else {
     // Outreach tools
@@ -318,7 +318,7 @@ function getAssetsToUpload(toolName: string): string[] {
   const map: Record<string, string[]> = {
     interview_prep: [
       "Context File (.md)",
-      "On-Screen Notes (.md)",
+      "Speaker Notes (.md)",
       "POV Deck (save as PDF)",
     ],
     interview_outreach: [
@@ -327,7 +327,7 @@ function getAssetsToUpload(toolName: string): string[] {
     ],
     prospect_prep: [
       "Context File (.md)",
-      "On-Screen Notes (.md)",
+      "Speaker Notes (.md)",
       "POV Deck (save as PDF)",
     ],
     prospect_outreach: [
@@ -336,11 +336,11 @@ function getAssetsToUpload(toolName: string): string[] {
     ],
     deal_audit: [
       "Context File (.md)",
-      "On-Screen Notes (.md)",
+      "Speaker Notes (.md)",
     ],
     champion_builder: [
       "Context File (.md)",
-      "On-Screen Notes (.md)",
+      "Speaker Notes (.md)",
     ],
   };
   return map[toolName] || ["Context File (.md)"];

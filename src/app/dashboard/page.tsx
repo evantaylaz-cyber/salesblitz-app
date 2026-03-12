@@ -97,7 +97,7 @@ const TOOLS: Tool[] = [
     id: "interview_prep",
     name: "Interview Prep",
     hook: "Know more than they expect.",
-    description: "Deep research on the company, the role & every interviewer. POV deck, on-screen notes & competitive intel per panelist.",
+    description: "Deep research on the company, the role & every interviewer. POV deck, speaker notes & competitive intel per panelist.",
     minimumTier: "pro",
   },
   {
@@ -131,8 +131,8 @@ const TOOLS: Tool[] = [
   {
     id: "champion_builder",
     name: "Champion Builder",
-    hook: "Arm your champion.",
-    description: "Stakeholder maps, internal selling kits & competitive ammo so your champion sells when you're not in the room.",
+    hook: "Equip your champion.",
+    description: "Stakeholder maps, internal selling kits & competitive talking points so your champion sells when you're not in the room.",
     minimumTier: "closer",
   },
   {
@@ -558,7 +558,7 @@ export default function DashboardPage() {
               </div>
             </div>
             <p className="text-sm text-gray-400 leading-relaxed">
-              Deep company intel, POV deck, on-screen notes per panelist, and talk tracks. Need to land the interview first? We build that outreach too.
+              Deep company intel, POV deck, speaker notes per panelist, and talk tracks. Need to land the interview first? We build that outreach too.
             </p>
             <div className="mt-4 flex items-center gap-1.5 text-xs font-semibold text-emerald-400 group-hover:text-emerald-300 transition">
               <Zap className="h-3.5 w-3.5" /> Start Blitz

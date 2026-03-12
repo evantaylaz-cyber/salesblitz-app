@@ -117,7 +117,7 @@ const STATUS_STYLES: Record<string, { ring: string; bg: string; text: string; ic
 
 const ASSET_CATEGORY_LABELS: Record<string, { label: string; description: string; color: string }> = {
   context: { label: "Context File", description: "Your complete research. Upload to NotebookLM for deeper study.", color: "bg-blue-500/15 text-blue-400" },
-  notes: { label: "On-Screen Notes", description: "Keep on-screen during your call. Stay present, ask deeper questions.", color: "bg-amber-500/15 text-amber-400" },
+  notes: { label: "Speaker Notes", description: "Keep on-screen during your call. Stay present, ask deeper questions.", color: "bg-amber-500/15 text-amber-400" },
   outreach: { label: "Outreach", description: "Ready to send. Copy-paste into email or LinkedIn.", color: "bg-emerald-500/15 text-emerald-400" },
   deliverable: { label: "Deliverable", description: "Download and customize. POV decks are ready for Google Slides Beautify.", color: "bg-purple-500/15 text-purple-400" },
   // Legacy categories for backward compat with existing blitzes

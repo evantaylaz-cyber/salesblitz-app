@@ -83,7 +83,7 @@ const DEMO_TOOLS: Record<string, DemoRun> = {
       {
         id: "generating_assets",
         label: "Generating Assets",
-        description: "Building context file, POV deck, on-screen notes, outreach sequence",
+        description: "Building context file, POV deck, speaker notes, outreach sequence",
         status: "completed",
         startedAt: "2026-03-04T10:06:30Z",
         completedAt: "2026-03-04T10:10:00Z",
@@ -116,7 +116,7 @@ const DEMO_TOOLS: Record<string, DemoRun> = {
       },
       {
         id: "onscreen_notes",
-        label: "On-Screen Notes",
+        label: "Speaker Notes",
         format: "md",
         url: null,
         size: 45000,
@@ -180,7 +180,7 @@ const DEMO_TOOLS: Record<string, DemoRun> = {
       {
         id: "generating_assets",
         label: "Generating Assets",
-        description: "Building context file, POV deck, on-screen notes",
+        description: "Building context file, POV deck, speaker notes",
         status: "completed",
         startedAt: "2026-03-04T11:06:00Z",
         completedAt: "2026-03-04T11:10:00Z",
@@ -213,7 +213,7 @@ const DEMO_TOOLS: Record<string, DemoRun> = {
       },
       {
         id: "onscreen_notes",
-        label: "On-Screen Notes",
+        label: "Speaker Notes",
         format: "md",
         url: null,
         size: 45000,

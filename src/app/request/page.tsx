@@ -43,7 +43,7 @@ const TOOL_INFO: Record<string, { name: string; category: "interview" | "prospec
   prospect_outreach: { name: "Prospect Outreach", category: "prospect", subtitle: "Drop the account & contact. We research them and build multi-channel sequences that earn replies." },
   prospect_prep: { name: "Prospect Prep", category: "prospect", subtitle: "Tell us who you're meeting. We deliver research, talk tracks & a methodology-structured game plan." },
   deal_audit: { name: "Deal Audit", category: "deal", subtitle: "Walk us through the deal. We qualify it and surface the gaps you're not seeing." },
-  champion_builder: { name: "Champion Builder", category: "deal", subtitle: "Tell us about your champion. We arm them to sell internally when you're not in the room." },
+  champion_builder: { name: "Champion Builder", category: "deal", subtitle: "Tell us about your champion. We equip them to sell internally when you're not in the room." },
   // practice_mode is NOT a blitz tool — it routes directly to /practice
 };
 
@@ -56,14 +56,14 @@ const MODE_QUESTIONS: Record<string, { label: string; subtitle: string; options:
       { label: "I have a meeting scheduled", description: "Research, talk tracks & a game plan for your call", toolName: "prospect_prep" },
       { label: "I need to get the meeting first", description: "Cold outreach sequences that earn the first reply", toolName: "prospect_outreach" },
       { label: "I need to audit an active deal", description: "Qualify the deal and surface gaps you're missing", toolName: "deal_audit" },
-      { label: "I need to arm my champion", description: "Internal selling kits so they sell when you're not in the room", toolName: "champion_builder" },
+      { label: "I need to equip my champion", description: "Internal selling kits so they sell when you're not in the room", toolName: "champion_builder" },
     ],
   },
   interview: {
     label: "Prep for an interview",
     subtitle: "What's the situation?",
     options: [
-      { label: "I have an interview scheduled", description: "Deep intel, POV deck & on-screen notes per interviewer", toolName: "interview_prep" },
+      { label: "I have an interview scheduled", description: "Deep intel, POV deck & speaker notes per interviewer", toolName: "interview_prep" },
       { label: "I need to land the interview first", description: "Outreach to get the referral or the meeting", toolName: "interview_outreach" },
     ],
   },
@@ -546,15 +546,15 @@ export default function RequestPage() {
               <p className="text-sm text-neutral-400 mb-4">
                 {toolId === "interview_prep"
                   ? "What kind of interview are you prepping for? This determines which call prep docs we generate."
-                  : "What stage is this meeting? We tailor your speaker notes, arsenal, and call flow to match."}
+                  : "What stage is this meeting? We tailor your speaker notes, prep package, and call flow to match."}
               </p>
               <div className={`grid gap-3 ${toolId === "interview_prep" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : "grid-cols-1 sm:grid-cols-2"}`}>
                 {toolId === "interview_prep" ? (
                   <>
                     {[
                       { id: "phone_screen", label: "Phone Screen", desc: "Recruiter or initial screen. Story bank, salary framing, role-fit talking points." },
-                      { id: "hiring_manager", label: "Hiring Manager", desc: "1:1 with the HM. Speaker notes, arsenal, call flow tailored to their priorities." },
-                      { id: "mock_pitch", label: "Mock Pitch", desc: "Live selling exercise. Speaker notes, arsenal, call flow, live scenario, Q&A doc." },
+                      { id: "hiring_manager", label: "Hiring Manager", desc: "1:1 with the HM. Speaker notes, prep package, call flow tailored to their priorities." },
+                      { id: "mock_pitch", label: "Mock Pitch", desc: "Live selling exercise. Speaker notes, prep package, call flow, live scenario, Q&A doc." },
                       { id: "panel", label: "Panel Interview", desc: "Multiple interviewers. Prep for each panelist's focus area and switching dynamics." },
                       { id: "final", label: "Final Round", desc: "Executive or cross-functional final. High-stakes prep with objection handling." },
                       { id: "executive", label: "Executive / VP+", desc: "C-suite or VP conversation. Strategic narrative, business acumen, leadership framing." },
@@ -817,7 +817,7 @@ export default function RequestPage() {
                   placeholder={"Example:\n\n\"Prepare a 10-minute mock first call as if you're selling to a mid-market prospect. You'll present to the hiring manager and AVP. Be ready for Q&A on how you handle objections and multi-thread.\""}
                 />
                 <p className="mt-1.5 text-xs text-neutral-500">
-                  The more detail you give, the more tailored your speaker notes, arsenal, and call flow will be.
+                  The more detail you give, the more tailored your speaker notes, prep package, and call flow will be.
                 </p>
               </div>
             </div>

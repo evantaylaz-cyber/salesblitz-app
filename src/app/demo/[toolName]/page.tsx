@@ -301,7 +301,7 @@ export default function DemoRunPage() {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {[
               { icon: Search, title: "Deep Research", desc: "Company intel, financial data, competitive positioning, stakeholder mapping." },
-              { icon: FileText, title: "On-Screen Notes", desc: "Phase-by-phase bullet guides for discovery, pitch, and close. Glance, don't read." },
+              { icon: FileText, title: "Speaker Notes", desc: "Phase-by-phase bullet guides for discovery, pitch, and close. Glance, don't read." },
               { icon: Mic, title: "AI Practice", desc: "Rehearse with AI personas built from your research. Scored on 8 dimensions." },
               { icon: BarChart3, title: "POV Deck", desc: "5-slide deck ready for Google Slides. Upload, polish with AI, share." },
             ].map((item, i) => (

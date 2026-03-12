@@ -40,7 +40,7 @@ function getScreenSetup(monitors: MonitorCount, mode: CallMode): SetupConfig {
   if (monitors === 1) {
     if (mode === "video") {
       return {
-        laptop: { label: "Laptop", content: "Video call (left) + On-Screen Notes (right)" },
+        laptop: { label: "Laptop", content: "Video call (left) + Speaker Notes (right)" },
         tip: "Keep your eyes on the camera. Glance down briefly for bullet reminders. Don't read.",
       };
     }
@@ -51,7 +51,7 @@ function getScreenSetup(monitors: MonitorCount, mode: CallMode): SetupConfig {
       };
     }
     return {
-      laptop: { label: "Laptop", content: "On-Screen Notes (left) + Context File (right)" },
+      laptop: { label: "Laptop", content: "Speaker Notes (left) + Context File (right)" },
       tip: "No video means you can reference freely. Use the full screen.",
     };
   }
@@ -59,20 +59,20 @@ function getScreenSetup(monitors: MonitorCount, mode: CallMode): SetupConfig {
   if (monitors === 2) {
     if (mode === "video") {
       return {
-        laptop: { label: "Laptop", content: "Video call (left) + On-Screen Notes (right)" },
+        laptop: { label: "Laptop", content: "Video call (left) + Speaker Notes (right)" },
         external1: { label: "External", content: "Context File (deep reference if needed)" },
-        tip: "On-Screen Notes are your primary glance material. External monitor is for deep-dive recovery.",
+        tip: "Speaker Notes are your primary glance material. External monitor is for deep-dive recovery.",
       };
     }
     if (mode === "presenting") {
       return {
         laptop: { label: "Laptop", content: "POV Deck (shared) + speaker notes" },
-        external1: { label: "External", content: "Video call + On-Screen Notes" },
+        external1: { label: "External", content: "Video call + Speaker Notes" },
         tip: "Your audience can see hesitation. Stay on your slides. External monitor is for between-slide glances.",
       };
     }
     return {
-      laptop: { label: "Laptop", content: "On-Screen Notes (primary reference)" },
+      laptop: { label: "Laptop", content: "Speaker Notes (primary reference)" },
       external1: { label: "External", content: "Context File (full research)" },
       tip: "Phone calls and audio-only meetings let you use everything. Spread out.",
     };
@@ -81,7 +81,7 @@ function getScreenSetup(monitors: MonitorCount, mode: CallMode): SetupConfig {
   // 3 monitors
   if (mode === "video") {
     return {
-      laptop: { label: "Laptop", content: "Video call (left) + On-Screen Notes (right)" },
+      laptop: { label: "Laptop", content: "Video call (left) + Speaker Notes (right)" },
       external1: { label: "External 1", content: "Context File (deep reference)" },
       external2: { label: "External 2", content: "POV Deck or NotebookLM materials" },
       tip: "Two external screens are insurance. Your primary reference stays on the laptop next to the camera.",
@@ -90,13 +90,13 @@ function getScreenSetup(monitors: MonitorCount, mode: CallMode): SetupConfig {
   if (mode === "presenting") {
     return {
       laptop: { label: "Laptop", content: "POV Deck + speaker notes" },
-      external1: { label: "External 1", content: "Video call + On-Screen Notes" },
+      external1: { label: "External 1", content: "Video call + Speaker Notes" },
       external2: { label: "External 2", content: "Context File (emergency reference)" },
       tip: "Speaker notes on the laptop keep you looking at the camera. Side monitors are backup.",
     };
   }
   return {
-    laptop: { label: "Laptop", content: "On-Screen Notes (primary reference)" },
+    laptop: { label: "Laptop", content: "Speaker Notes (primary reference)" },
     external1: { label: "External 1", content: "Context File (full research)" },
     external2: { label: "External 2", content: "POV Deck or NotebookLM materials" },
     tip: "No camera means you can spread everything out. Use the space.",
@@ -214,7 +214,7 @@ function getGuideContent(toolName: string): GuideSection[] {
         title: "Before the call",
         items: [
           "Read the Context File thoroughly (10 min). This is your deep research, formatted for studying and for uploading to NotebookLM.",
-          "Review the On-Screen Notes. These are your glanceable reference during the actual interview.",
+          "Review the Speaker Notes. These are your glanceable reference during the actual interview.",
           "Upload your POV Deck to Google Slides and polish it using the AI design tools below.",
           "Run a practice session to test your answers under pressure.",
           "Use the NotebookLM section for podcast, video, flashcards, quiz, and more study formats.",
@@ -225,7 +225,7 @@ function getGuideContent(toolName: string): GuideSection[] {
         title: "During the call",
         items: [
           "Stay present. Ask good questions and listen. Your prep is the work; the call is the performance.",
-          "On-Screen Notes are your primary reference. Bullet format, designed for quick glances between questions.",
+          "Speaker Notes are your primary reference. Bullet format, designed for quick glances between questions.",
           "Your documents are a safety net, not a script. Glance at bullet points if you need a reminder, but never read paragraphs.",
           "If presenting your POV Deck, speaker notes have your talking points per slide.",
         ],
@@ -248,7 +248,7 @@ function getGuideContent(toolName: string): GuideSection[] {
         title: "Before the call",
         items: [
           "Study the Context File. Know their pain points, competitive landscape, and key stakeholders.",
-          "Review the On-Screen Notes. These are your in-call reference with discovery questions and positioning.",
+          "Review the Speaker Notes. These are your in-call reference with discovery questions and positioning.",
           "Upload your POV Deck to Google Slides and polish it using the AI design tools below.",
           "Run a practice session to rehearse discovery questions and objection responses.",
         ],
@@ -258,7 +258,7 @@ function getGuideContent(toolName: string): GuideSection[] {
         title: "During the call",
         items: [
           "Stay present. Your #1 job is to listen and ask good questions. The prep is the work; the call is about connection.",
-          "On-Screen Notes guide you phase by phase. Discovery questions, listen-for signals, and recovery lines are all in there.",
+          "Speaker Notes guide you phase by phase. Discovery questions, listen-for signals, and recovery lines are all in there.",
           "Documents are your safety net, not a teleprompter. A quick glance at a bullet point is fine; reading sentences is not.",
           "If presenting your POV Deck, speaker notes have your talking points per slide.",
         ],
@@ -302,7 +302,7 @@ function getGuideContent(toolName: string): GuideSection[] {
         icon: BookOpen,
         title: "Study these",
         items: [
-          "Context File is your ammunition. Know their pain before you write a word.",
+          "Context File is your foundation. Know their situation before you write a word.",
           "The research covers competitive landscape, trigger events, and stakeholder context.",
         ],
       },
@@ -325,7 +325,7 @@ function getGuideContent(toolName: string): GuideSection[] {
         title: "Review and act on",
         items: [
           "Context File has the full deal analysis: qualification gaps, risk areas, and competitive dynamics.",
-          "On-Screen Notes distill the key actions and talking points for your next conversation.",
+          "Speaker Notes distill the key actions and talking points for your next conversation.",
         ],
       },
       {
@@ -346,14 +346,14 @@ function getGuideContent(toolName: string): GuideSection[] {
         title: "Strategy materials",
         items: [
           "Context File outlines the internal narrative your champion needs to deliver, stakeholder dynamics, and competitive positioning.",
-          "On-Screen Notes give you the coaching talking points for your next champion conversation.",
+          "Speaker Notes give you the coaching talking points for your next champion conversation.",
         ],
       },
       {
         icon: Send,
         title: "For your champion",
         items: [
-          "Share relevant sections of the Context File to arm them with internal talking points.",
+          "Share relevant sections of the Context File to equip them with internal talking points.",
           "Upload to NotebookLM to generate a champion enablement deck they can use in internal meetings.",
         ],
       },
@@ -367,7 +367,7 @@ function getGuideContent(toolName: string): GuideSection[] {
       title: "How to use your deliverables",
       items: [
         "Context File is your deep research. Study it before meetings, upload it to NotebookLM for additional formats.",
-        "On-Screen Notes are your in-meeting reference. Glanceable, not readable.",
+        "Speaker Notes are your in-meeting reference. Glanceable, not readable.",
         "Deliverables are ready to download, share, or upload to other tools.",
       ],
     },
@@ -440,7 +440,7 @@ export default function AssetGuide({ toolName, meetingType }: AssetGuideProps) {
               </div>
               <ul className="space-y-1 ml-1">
                 <li className="text-xs text-blue-400">
-                  <span className="font-semibold">If they say no:</span> Turn it off immediately. No pushback. Use your On-Screen Notes and take manual notes.
+                  <span className="font-semibold">If they say no:</span> Turn it off immediately. No pushback. Use your Speaker Notes and take manual notes.
                 </li>
                 <li className="text-xs text-blue-400">
                   <span className="font-semibold">If others have bots:</span> Their recording is separate from yours. You still need to disclose your own, and they should disclose theirs.

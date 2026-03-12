@@ -48,10 +48,10 @@ export const TOOLS: ToolDefinition[] = [
   {
     id: "interview_prep",
     name: "Interview Prep",
-    description: "Deep company research, interviewer intel, on-screen notes, POV deck. Walk in prepared.",
+    description: "Deep company research, interviewer intel, speaker notes, POV deck. Walk in prepared.",
     deliverables: [
       "Context File (.md) — company deep dive, role analysis, interviewer profiles, competitive positioning, story bank",
-      "On-Screen Notes — dynamic per scenario. Camera on: 1 page. Camera off: 1 per screen. Back-to-back: 1 per interviewer.",
+      "Speaker Notes — dynamic per scenario. Camera on: 1 page. Camera off: 1 per screen. Back-to-back: 1 per interviewer.",
       "POV Deck (.pptx, 5 slides) — your narrative for presentation rounds or leave-behind. Beautify-ready.",
     ],
     minimumTier: "pro",
@@ -60,10 +60,10 @@ export const TOOLS: ToolDefinition[] = [
   {
     id: "prospect_prep",
     name: "Prospect Prep",
-    description: "Deep account research, discovery plans, on-screen notes tailored to your meeting type.",
+    description: "Deep account research, discovery plans, speaker notes tailored to your meeting type.",
     deliverables: [
       "Context File (.md) — account deep dive, discovery plan, competitive positioning, stakeholder map, pain hypotheses",
-      "On-Screen Notes — tailored to meeting type (discovery, demo, negotiation, QBR). Stay present, ask deeper questions.",
+      "Speaker Notes — tailored to meeting type (discovery, demo, negotiation, QBR). Stay present, ask deeper questions.",
       "POV Deck (.pptx, 5 slides) — before state + gap + required capabilities + PBOs + proof. Beautify-ready.",
     ],
     minimumTier: "pro",
@@ -75,7 +75,7 @@ export const TOOLS: ToolDefinition[] = [
     description: "Qualification scorecard, risk assessment, strategic next moves. Diagnose your active deals.",
     deliverables: [
       "Context File (.md) — full deal audit: qualification scorecard, gap analysis, risk assessment, recommended actions",
-      "On-Screen Notes — key talking points for deal reviews & champion coaching sessions",
+      "Speaker Notes — key talking points for deal reviews & champion coaching sessions",
     ],
     minimumTier: "closer",
     overageRate: 10,
@@ -86,7 +86,7 @@ export const TOOLS: ToolDefinition[] = [
     description: "Champion profile, internal selling kit, stakeholder coaching. Arm your champion to sell for you.",
     deliverables: [
       "Context File (.md) — champion profile, stakeholder map, internal selling kit, objection handling, development plan",
-      "On-Screen Notes — champion coaching notes. Key messages tailored to each stakeholder they need to influence.",
+      "Speaker Notes — champion coaching notes. Key messages tailored to each stakeholder they need to influence.",
     ],
     minimumTier: "closer",
     overageRate: 10,

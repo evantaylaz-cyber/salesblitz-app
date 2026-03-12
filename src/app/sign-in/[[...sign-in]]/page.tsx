@@ -22,7 +22,7 @@ export default function SignInPage() {
           </h1>
           <p className="mt-4 text-base text-neutral-400 leading-relaxed">
             Drop in a company name. Get deep research, a POV deck, outreach
-            sequences &amp; on-screen notes in minutes. Then practice your pitch
+            sequences &amp; speaker notes in minutes. Then practice your pitch
             or interview against an AI persona who pushes back.
           </p>
 
@@ -50,7 +50,7 @@ export default function SignInPage() {
                   Battle-ready deliverables
                 </p>
                 <p className="text-sm text-neutral-500">
-                  POV decks, on-screen notes &amp; outreach sequences for every
+                  POV decks, speaker notes &amp; outreach sequences for every
                   meeting type.
                 </p>
               </div>

@@ -10,7 +10,7 @@
 
 Sales Blitz is not in the content generation or research business. Google wins that. We are in the **guided intelligence** business: showing customers HOW to best leverage these tools so their Sales Blitz experience compounds into something they'd never figure out on their own.
 
-The value chain: Sales Blitz generates context-rich assets (context file, on-screen notes, outreach sequences, POV deck) -> user uploads to NotebookLM/Google Slides -> our pre-composed prompts + settings guidance turn generic AI tools into precision sales prep machines.
+The value chain: Sales Blitz generates context-rich assets (context file, speaker notes, outreach sequences, POV deck) -> user uploads to NotebookLM/Google Slides -> our pre-composed prompts + settings guidance turn generic AI tools into precision sales prep machines.
 
 We guide. Google generates. The user gets outputs 10x better than they'd get on their own because we told them exactly what to type, what settings to pick, and what sources to add.
 

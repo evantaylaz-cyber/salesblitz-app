@@ -163,7 +163,7 @@ Rules:
 
 ## HOW SALES BLITZ WORKS
 
-Sales Blitz generates personalized prep assets: context files (for NotebookLM), POV decks (for Google Slides), on-screen notes, outreach sequences, and AI practice sessions. The quality of every output is a direct function of how much context we have about the user. That's why this onboarding matters, but WE do the heavy lifting, not them.
+Sales Blitz generates personalized prep assets: context files (for NotebookLM), POV decks (for Google Slides), speaker notes, outreach sequences, and AI practice sessions. The quality of every output is a direct function of how much context we have about the user. That's why this onboarding matters, but WE do the heavy lifting, not them.
 
 ## PROGRESSIVE ONBOARDING LAYERS
 

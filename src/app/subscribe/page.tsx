@@ -98,7 +98,7 @@ export default function SubscribePage() {
         {/* Headline */}
         <div className="text-center mb-10">
           <h1 className="text-3xl font-bold text-white sm:text-4xl">
-            Name your target. Get armed for whatever&apos;s next.
+            Name your target. Show up ready for whatever&apos;s next.
           </h1>
           <p className="mt-3 text-lg text-neutral-400 max-w-2xl mx-auto">
             Deep research, cold outreach sequences, competitive intel, playbooks & live AI practice. Whether you're prospecting or interviewing, one blitz replaces five tools. Cancel anytime.

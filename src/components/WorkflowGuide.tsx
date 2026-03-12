@@ -48,7 +48,7 @@ function getWorkflowSteps(toolName: string, targetCompany: string, requestId: st
       },
       {
         icon: FileText,
-        title: "Review On-Screen Notes",
+        title: "Review Speaker Notes",
         description: "Your glanceable in-call reference. Discovery angles, talking points, and recovery lines structured for quick scanning.",
         timeEstimate: "5 min",
       },
@@ -93,7 +93,7 @@ function getWorkflowSteps(toolName: string, targetCompany: string, requestId: st
       },
       {
         icon: FileText,
-        title: "Review On-Screen Notes",
+        title: "Review Speaker Notes",
         description: "Your in-call reference with discovery questions, listen-for signals, and positioning angles. Structured for quick glances.",
         timeEstimate: "5 min",
       },
@@ -167,7 +167,7 @@ function getWorkflowSteps(toolName: string, targetCompany: string, requestId: st
       },
       {
         icon: FileText,
-        title: "Review On-Screen Notes",
+        title: "Review Speaker Notes",
         description: "Key actions and talking points for your next conversation. Each flag has a recommended action.",
         timeEstimate: "5 min",
       },
@@ -185,12 +185,12 @@ function getWorkflowSteps(toolName: string, targetCompany: string, requestId: st
       {
         icon: BookOpen,
         title: "Read the Context File",
-        description: "Understand the org chart, decision dynamics, and how to arm your internal advocate.",
+        description: "Understand the org chart, decision dynamics, and how to equip your internal advocate.",
         timeEstimate: "10 min",
       },
       {
         icon: FileText,
-        title: "Review On-Screen Notes",
+        title: "Review Speaker Notes",
         description: "Coaching talking points for your next champion conversation. The narrative they need to deliver internally.",
         timeEstimate: "5 min",
       },
@@ -208,7 +208,7 @@ function getWorkflowSteps(toolName: string, targetCompany: string, requestId: st
     {
       icon: BookOpen,
       title: "Review your deliverables",
-      description: "Start with the Context File, then review the On-Screen Notes for your specific scenario.",
+      description: "Start with the Context File, then review the Speaker Notes for your specific scenario.",
       timeEstimate: "10 min",
     },
     {
