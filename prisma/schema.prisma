@@ -313,7 +313,7 @@ model KnowledgeDocument {
   updatedAt          DateTime  @updatedAt
 }
 
-// AI Practice Mode — real-time roleplay against HeyGen streaming avatar.
+// AI Practice Mode — real-time roleplay against LiveAvatar (by HeyGen) streaming avatar.
 // Persona generated from account research, scored against 8 messaging dimensions.
 model PracticeSession {
   id                String   @id @default(uuid())
@@ -346,9 +346,9 @@ model PracticeSession {
   sessionSequence   Int      @default(1) // 1st, 2nd, 3rd session for this target
 
   // Session data
-  heygenSessionId   String?  // HeyGen streaming session ID
-  avatarId          String?  // HeyGen avatar used
-  voiceId           String?  // HeyGen voice used
+  heygenSessionId   String?  // LiveAvatar streaming session ID (field name kept for backward compat)
+  avatarId          String?  // LiveAvatar avatar ID used
+  voiceId           String?  // OpenAI TTS voice used (e.g. "onyx", "nova")
   transcript        Json     @default("[]") // Array of { role: "user" | "persona", text, timestamp, speaker?, speakerTitle? }
   durationSeconds   Int?     // Total session length
 

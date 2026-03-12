@@ -26,20 +26,15 @@ export async function GET() {
 
     if (publicRes.status === "fulfilled" && publicRes.value.ok) {
       const publicData = await publicRes.value.json();
-      if (Array.isArray(publicData?.data)) {
-        avatars.push(...publicData.data.map((a: Record<string, unknown>) => ({ ...a, source: "public" })));
-      } else if (Array.isArray(publicData)) {
-        avatars.push(...publicData.map((a: Record<string, unknown>) => ({ ...a, source: "public" })));
-      }
+      // LiveAvatar API returns { code: 1000, data: { count, next, previous, results: [...] } }
+      const publicList = publicData?.data?.results ?? (Array.isArray(publicData?.data) ? publicData.data : Array.isArray(publicData) ? publicData : []);
+      avatars.push(...publicList.map((a: Record<string, unknown>) => ({ ...a, source: "public" })));
     }
 
     if (customRes.status === "fulfilled" && customRes.value.ok) {
       const customData = await customRes.value.json();
-      if (Array.isArray(customData?.data)) {
-        avatars.push(...customData.data.map((a: Record<string, unknown>) => ({ ...a, source: "custom" })));
-      } else if (Array.isArray(customData)) {
-        avatars.push(...customData.map((a: Record<string, unknown>) => ({ ...a, source: "custom" })));
-      }
+      const customList = customData?.data?.results ?? (Array.isArray(customData?.data) ? customData.data : Array.isArray(customData) ? customData : []);
+      avatars.push(...customList.map((a: Record<string, unknown>) => ({ ...a, source: "custom" })));
     }
 
     return NextResponse.json({

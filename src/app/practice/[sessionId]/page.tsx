@@ -578,6 +578,10 @@ export default function PracticeSessionPage() {
 
       const session = new LiveAvatarSession(tokenData.sessionToken, {
         voiceChat: false,
+        // Route SDK API calls through our server proxy to bypass CORS.
+        // api.liveavatar.com does not set Access-Control-Allow-Origin for
+        // external domains, so browser-side fetches fail with TypeError.
+        apiUrl: "/api/practice/liveavatar-proxy",
       });
 
       sessionRef.current = session;
