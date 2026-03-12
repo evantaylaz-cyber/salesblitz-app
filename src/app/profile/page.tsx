@@ -256,7 +256,7 @@ function TextInput({
         onChange={(e) => onChange(e.target.value)}
         onBlur={onBlur}
         placeholder={placeholder}
-        className={`w-full rounded-lg border px-3 py-2 text-sm focus:ring-1 outline-none transition ${
+        className={`w-full rounded-lg border bg-[#0a0a0a] text-white placeholder-neutral-500 px-3 py-2 text-sm focus:ring-1 outline-none transition ${
           error
             ? "border-red-500 focus:border-red-500 focus:ring-red-500"
             : "border-[#333333] focus:border-emerald-500 focus:ring-emerald-500"

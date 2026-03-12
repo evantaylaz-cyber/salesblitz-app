@@ -52,9 +52,11 @@ export function useStepStream({
 }: UseStepStreamOptions) {
   const eventSourceRef = useRef<EventSource | null>(null);
   const fallbackIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const stalenessTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [connected, setConnected] = useState(false);
   const retriesRef = useRef(0);
   const maxRetries = 3;
+  const STALENESS_THRESHOLD = 15000; // 15s without SSE event triggers polling
 
   // Store latest callbacks in refs for stability
   const onUpdateRef = useRef(onUpdate);
@@ -71,8 +73,56 @@ export function useStepStream({
       clearInterval(fallbackIntervalRef.current);
       fallbackIntervalRef.current = null;
     }
+    if (stalenessTimerRef.current) {
+      clearTimeout(stalenessTimerRef.current);
+      stalenessTimerRef.current = null;
+    }
     setConnected(false);
   }, []);
+
+  // Start polling alongside SSE when events go stale
+  const startStalenessPolling = useCallback(() => {
+    if (fallbackIntervalRef.current) return; // already polling
+    fallbackIntervalRef.current = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/requests/${requestId}`);
+        if (res.ok) {
+          const json = await res.json();
+          const req = json.request;
+          onUpdateRef.current?.({
+            type: "step_update",
+            status: req.status,
+            steps: req.steps,
+            progress: req.progress,
+            completedSteps: req.completedSteps,
+            totalSteps: req.totalSteps,
+            currentStep: req.currentStep,
+            assets: req.assets,
+            liveInsights: req.liveInsights,
+          });
+          if (["delivered", "ready", "failed"].includes(req.status)) {
+            onCompleteRef.current?.(req.status);
+            cleanup();
+          }
+        }
+      } catch {
+        // Ignore fetch errors during polling
+      }
+    }, 5000);
+  }, [requestId, cleanup]);
+
+  const resetStalenessTimer = useCallback(() => {
+    // Kill staleness polling since SSE is active
+    if (fallbackIntervalRef.current) {
+      clearInterval(fallbackIntervalRef.current);
+      fallbackIntervalRef.current = null;
+    }
+    // Reset the staleness timer
+    if (stalenessTimerRef.current) clearTimeout(stalenessTimerRef.current);
+    stalenessTimerRef.current = setTimeout(() => {
+      startStalenessPolling();
+    }, STALENESS_THRESHOLD);
+  }, [startStalenessPolling]);
 
   useEffect(() => {
     if (!requestId || !enabled) {
@@ -87,14 +137,13 @@ export function useStepStream({
       es.onopen = () => {
         setConnected(true);
         retriesRef.current = 0;
-        // Kill any fallback polling
-        if (fallbackIntervalRef.current) {
-          clearInterval(fallbackIntervalRef.current);
-          fallbackIntervalRef.current = null;
-        }
+        // Start staleness timer (will poll if SSE goes quiet)
+        resetStalenessTimer();
       };
 
       es.onmessage = (event) => {
+        // Reset staleness timer on every message (SSE is alive)
+        resetStalenessTimer();
         try {
           const data: StepUpdate = JSON.parse(event.data);
 
@@ -122,37 +171,8 @@ export function useStepStream({
           const delay = 1000 * Math.pow(2, retriesRef.current);
           setTimeout(connect, delay);
         } else {
-          // Fall back to polling every 3 seconds
-          if (!fallbackIntervalRef.current) {
-            fallbackIntervalRef.current = setInterval(async () => {
-              try {
-                const res = await fetch(`/api/requests/${requestId}`);
-                if (res.ok) {
-                  const json = await res.json();
-                  const req = json.request;
-                  onUpdateRef.current?.({
-                    type: "step_update",
-                    status: req.status,
-                    steps: req.steps,
-                    progress: req.progress,
-                    completedSteps: req.completedSteps,
-                    totalSteps: req.totalSteps,
-                    currentStep: req.currentStep,
-                    assets: req.assets,
-                    liveInsights: req.liveInsights,
-                  });
-
-                  // Check if terminal
-                  if (["delivered", "ready", "failed"].includes(req.status)) {
-                    onCompleteRef.current?.(req.status);
-                    cleanup();
-                  }
-                }
-              } catch {
-                // Ignore fetch errors during polling
-              }
-            }, 3000);
-          }
+          // Fall back to polling immediately
+          startStalenessPolling();
         }
       };
     };
@@ -160,7 +180,7 @@ export function useStepStream({
     connect();
 
     return cleanup;
-  }, [requestId, enabled, cleanup]);
+  }, [requestId, enabled, cleanup, resetStalenessTimer, startStalenessPolling]);
 
   return { connected };
 }
