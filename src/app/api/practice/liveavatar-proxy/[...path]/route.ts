@@ -52,6 +52,11 @@ async function proxyRequest(req: NextRequest, params: Promise<{ path: string[] }
     const res = await fetch(targetUrl, fetchOptions);
     const data = await res.json();
 
+    // Log session/start response so we can debug LiveKit connection issues
+    if (targetPath.includes("/sessions/start")) {
+      console.log(`[LIVEAVATAR-PROXY] session/start response:`, JSON.stringify(data, null, 2));
+    }
+
     return NextResponse.json(data, { status: res.status });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Proxy error";

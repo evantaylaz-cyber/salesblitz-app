@@ -63,6 +63,13 @@ export async function GET(req: NextRequest) {
     results.startDataKeys = startRaw.data ? Object.keys(startRaw.data) : null;
     results.startOk = startRes.ok && startRaw.code === 1000;
 
+    // Expose the LiveKit URL and WS URL for debugging signal connection failures
+    if (startRaw.data) {
+      results.livekitUrl = startRaw.data.livekit_url || null;
+      results.wsUrl = startRaw.data.ws_url || null;
+      results.maxSessionDuration = startRaw.data.max_session_duration || null;
+    }
+
     // Step 3: If session started, stop it immediately to not waste credits
     if (results.startOk && sessionToken) {
       try {
