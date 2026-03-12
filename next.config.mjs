@@ -44,7 +44,7 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: blob: https://*.clerk.com https://img.clerk.com https://*.gravatar.com https://*.googleusercontent.com",
-              "connect-src 'self' https://*.clerk.accounts.dev https://*.clerk.com https://api.clerk.dev https://clerk.salesblitz.ai https://api.heygen.com wss://*.heygen.com wss://*.heygen.io https://api.liveavatar.com wss://*.livekit.cloud https://*.livekit.cloud https://api.anthropic.com https://api.openai.com https://*.supabase.co https://*.stripe.com https://*.vercel-insights.com https://*.vercel-analytics.com",
+              "connect-src 'self' https://*.clerk.accounts.dev https://*.clerk.com https://api.clerk.dev https://clerk.salesblitz.ai https://api.heygen.com wss://*.heygen.com wss://*.heygen.io https://api.liveavatar.com wss://*.livekit.cloud https://*.livekit.cloud https://api.anthropic.com https://api.openai.com wss://api.openai.com https://*.supabase.co https://*.stripe.com https://*.vercel-insights.com https://*.vercel-analytics.com",
               "frame-src 'self' https://js.stripe.com https://*.clerk.accounts.dev https://challenges.cloudflare.com",
               "media-src 'self' blob:",
               "worker-src 'self' blob:",

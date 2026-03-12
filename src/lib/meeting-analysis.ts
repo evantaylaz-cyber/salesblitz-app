@@ -285,12 +285,15 @@ async function accumulateIntel(
 
 // ─── Transcript Embedding ──────────────────────────────────────────────────
 
-const GEMINI_EMBED_MODEL = "text-embedding-004";
-const GEMINI_EMBED_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_EMBED_MODEL}:embedContent`;
+const GEMINI_EMBED_PRIMARY = "gemini-embedding-2-preview";
+const GEMINI_EMBED_FALLBACK = "gemini-embedding-001";
+const EMBED_DIMENSIONS = 768; // Matryoshka scaled to match pgvector column
+const GEMINI_EMBED_BASE = "https://generativelanguage.googleapis.com/v1beta/models";
 
 /**
  * Embed the meeting transcript + analysis summary for cross-account semantic search.
- * Uses Gemini text-embedding-004 (768 dims) to match the existing embedding infrastructure.
+ * Uses gemini-embedding-2-preview (768 dims, Matryoshka scaled) matching worker infrastructure.
+ * Falls back to gemini-embedding-001 if preview model fails.
  * Stores the vector in MeetingRecording.transcriptEmbedding via raw SQL (Prisma doesn't support vector).
  */
 async function embedTranscript(
@@ -328,25 +331,43 @@ async function embedTranscript(
       .filter(Boolean)
       .join("\n");
 
-    const response = await fetch(`${GEMINI_EMBED_URL}?key=${GOOGLE_API_KEY}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        content: { parts: [{ text: embeddingText.slice(0, 4000) }] },
-        taskType: "RETRIEVAL_DOCUMENT",
-      }),
-    });
+    // Try primary model first, fall back on failure
+    let values: number[] | null = null;
+    for (const model of [GEMINI_EMBED_PRIMARY, GEMINI_EMBED_FALLBACK]) {
+      const response = await fetch(
+        `${GEMINI_EMBED_BASE}/${model}:embedContent?key=${GOOGLE_API_KEY}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            content: { parts: [{ text: embeddingText.slice(0, 4000) }] },
+            taskType: "RETRIEVAL_DOCUMENT",
+            outputDimensionality: EMBED_DIMENSIONS,
+          }),
+        }
+      );
 
-    if (!response.ok) {
-      const errText = await response.text();
-      console.warn(`[MEETING] Embedding API error: ${response.status} ${errText.slice(0, 200)}`);
-      return;
+      if (!response.ok) {
+        const errText = await response.text();
+        console.warn(`[MEETING] ${model} error: ${response.status} ${errText.slice(0, 200)}`);
+        if (model === GEMINI_EMBED_PRIMARY) continue; // try fallback
+        return; // both failed
+      }
+
+      const data = await response.json();
+      values = data?.embedding?.values;
+      if (values && Array.isArray(values)) {
+        if (model === GEMINI_EMBED_FALLBACK) {
+          console.warn(`[MEETING] Used fallback model ${GEMINI_EMBED_FALLBACK}`);
+        }
+        break;
+      }
+      console.warn(`[MEETING] ${model} returned no values`);
+      if (model === GEMINI_EMBED_PRIMARY) continue;
     }
 
-    const data = await response.json();
-    const values = data?.embedding?.values;
     if (!values || !Array.isArray(values)) {
-      console.warn("[MEETING] Embedding API returned no values");
+      console.warn("[MEETING] All embedding models returned no values");
       return;
     }
 
