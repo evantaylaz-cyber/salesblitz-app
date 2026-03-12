@@ -42,20 +42,20 @@ function getWorkflowSteps(toolName: string, targetCompany: string, requestId: st
     return [
       {
         icon: BookOpen,
-        title: "Read the Research Brief",
+        title: "Read the Context File",
         description: `Deep company intelligence on ${targetCompany}. Read cover to cover, not skim. This is your foundation for every answer.`,
         timeEstimate: "10 min",
       },
       {
         icon: FileText,
-        title: "Study the Interview Playbook",
-        description: "Question frameworks, story mapping, and positioning angles tailored to this specific role and panel.",
-        timeEstimate: "10 min",
+        title: "Review On-Screen Notes",
+        description: "Your glanceable in-call reference. Discovery angles, talking points, and recovery lines structured for quick scanning.",
+        timeEstimate: "5 min",
       },
       {
         icon: Headphones,
         title: "Study with NotebookLM",
-        description: "Expand the NotebookLM section below for ready-to-paste prompts: podcast, slide deck, flashcards, and quiz. Each one is tailored to your prep.",
+        description: "Expand the NotebookLM section below for ready-to-paste prompts: podcast, video, slide deck, reports, flashcards, quiz, and more.",
         timeEstimate: "5 min setup",
       },
       {
@@ -70,9 +70,9 @@ function getWorkflowSteps(toolName: string, targetCompany: string, requestId: st
       },
       {
         icon: Clock,
-        title: "Night before: skim the quick reference",
-        description: "One last pass on the key facts. Not a deep read; a confidence check.",
-        timeEstimate: "2 min",
+        title: "Polish your POV Deck",
+        description: "Upload to Google Slides, use the AI design tools to add visuals and polish. See the Google Slides section below.",
+        timeEstimate: "5 min",
       },
       {
         icon: Send,
@@ -87,26 +87,20 @@ function getWorkflowSteps(toolName: string, targetCompany: string, requestId: st
     return [
       {
         icon: BookOpen,
-        title: "Read the Research Brief",
+        title: "Read the Context File",
         description: `Their pain points, competitive landscape, and key stakeholders at ${targetCompany}. This is your pre-call study session.`,
         timeEstimate: "5 min",
       },
       {
         icon: FileText,
-        title: "Review the Competitive Playbook",
-        description: "Know who else is in the deal and how to position against them. Bookmark this for quick reference.",
-        timeEstimate: "3 min",
-      },
-      {
-        icon: FileText,
-        title: "Study the Call Playbook",
-        description: "Your discovery plan, structured phase by phase. Amber = questions to ask. Green = signals to listen for.",
+        title: "Review On-Screen Notes",
+        description: "Your in-call reference with discovery questions, listen-for signals, and positioning angles. Structured for quick glances.",
         timeEstimate: "5 min",
       },
       {
         icon: Headphones,
         title: "Study with NotebookLM",
-        description: "Expand the NotebookLM section below for ready-to-paste prompts: podcast, slide deck, flashcards, and quiz. Each one is tailored to your prep.",
+        description: "Expand the NotebookLM section below for ready-to-paste prompts: podcast, video, slide deck, reports, flashcards, quiz, and more.",
         timeEstimate: "5 min setup",
       },
       {
@@ -121,9 +115,9 @@ function getWorkflowSteps(toolName: string, targetCompany: string, requestId: st
       },
       {
         icon: Clock,
-        title: "Night before: skim the quick reference card",
-        description: "Key facts, names, and your opening. Two minutes, then trust your prep.",
-        timeEstimate: "2 min",
+        title: "Polish your POV Deck",
+        description: "Upload to Google Slides, use the AI design tools to add visuals. See the Google Slides section below.",
+        timeEstimate: "5 min",
       },
       {
         icon: Send,
@@ -138,14 +132,14 @@ function getWorkflowSteps(toolName: string, targetCompany: string, requestId: st
     return [
       {
         icon: BookOpen,
-        title: "Read the Research Brief",
+        title: "Read the Context File",
         description: `Understand ${targetCompany}'s pain points and priorities before you send anything.`,
         timeEstimate: "5 min",
       },
       {
         icon: FileText,
-        title: "Review the Outreach Sequence",
-        description: "7 pre-written touches across email, LinkedIn, and phone. Customize the details, keep the structure.",
+        title: "Review the Outreach Sequences",
+        description: "Multi-touch campaigns across email, LinkedIn, and phone. Customize the opening, keep the structure.",
         timeEstimate: "5 min",
       },
       {
@@ -153,12 +147,6 @@ function getWorkflowSteps(toolName: string, targetCompany: string, requestId: st
         title: "Send touch 1",
         description: "Copy-paste into your email or CRM. The first touch references their specific pain, not generic value props.",
         timeEstimate: "2 min",
-      },
-      {
-        icon: Send,
-        title: "Mail the handwritten card",
-        description: "Physical mail stands out. Send it the same day as touch 1 so it arrives mid-sequence.",
-        timeEstimate: "5 min",
       },
       {
         icon: Clock,
@@ -173,20 +161,20 @@ function getWorkflowSteps(toolName: string, targetCompany: string, requestId: st
     return [
       {
         icon: BookOpen,
-        title: "Review the Audit Report",
-        description: "Full qualification scorecard. Face the gaps honestly before your buyer does.",
+        title: "Read the Context File",
+        description: "Full deal analysis with qualification gaps, risk areas, and competitive dynamics. Face the gaps honestly.",
         timeEstimate: "10 min",
       },
       {
         icon: FileText,
-        title: "Address each risk flag",
-        description: "Each flag has a recommended action. Prioritize the ones your buyer will ask about first.",
-        timeEstimate: "15 min",
+        title: "Review On-Screen Notes",
+        description: "Key actions and talking points for your next conversation. Each flag has a recommended action.",
+        timeEstimate: "5 min",
       },
       {
         icon: Send,
         title: "Share with your manager",
-        description: "Use the audit as a deal review artifact. Walk through risks and your plan to close each gap.",
+        description: "Use the context file as a deal review artifact. Walk through risks and your plan to close each gap.",
         timeEstimate: "5 min",
       },
     ];
@@ -196,20 +184,20 @@ function getWorkflowSteps(toolName: string, targetCompany: string, requestId: st
     return [
       {
         icon: BookOpen,
-        title: "Study the Champion Strategy Brief",
+        title: "Read the Context File",
         description: "Understand the org chart, decision dynamics, and how to arm your internal advocate.",
         timeEstimate: "10 min",
       },
       {
         icon: FileText,
-        title: "Prep your champion's internal pitch",
-        description: "Review the talk tracks and competitive ammo designed for your champion to use when you're not in the room.",
-        timeEstimate: "10 min",
+        title: "Review On-Screen Notes",
+        description: "Coaching talking points for your next champion conversation. The narrative they need to deliver internally.",
+        timeEstimate: "5 min",
       },
       {
         icon: Send,
-        title: "Send the materials to your champion",
-        description: "Share the internal deck and relevant playbook sections. Handwritten card for the personal touch.",
+        title: "Send materials to your champion",
+        description: "Share relevant sections of the context file. Upload to NotebookLM to generate a champion enablement deck.",
         timeEstimate: "5 min",
       },
     ];
@@ -220,7 +208,7 @@ function getWorkflowSteps(toolName: string, targetCompany: string, requestId: st
     {
       icon: BookOpen,
       title: "Review your deliverables",
-      description: "Start with the Research Brief, then move to the specific assets for your scenario.",
+      description: "Start with the Context File, then review the On-Screen Notes for your specific scenario.",
       timeEstimate: "10 min",
     },
     {

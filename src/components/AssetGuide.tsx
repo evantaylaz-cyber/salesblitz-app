@@ -40,18 +40,18 @@ function getScreenSetup(monitors: MonitorCount, mode: CallMode): SetupConfig {
   if (monitors === 1) {
     if (mode === "video") {
       return {
-        laptop: { label: "Laptop", content: "Video call (left) + Call Playbook (right)" },
+        laptop: { label: "Laptop", content: "Video call (left) + On-Screen Notes (right)" },
         tip: "Keep your eyes on the camera. Glance down briefly for bullet reminders. Don't read.",
       };
     }
     if (mode === "presenting") {
       return {
-        laptop: { label: "Laptop", content: "Presentation + speaker notes (split view)" },
+        laptop: { label: "Laptop", content: "POV Deck + speaker notes (split view)" },
         tip: "Speaker notes are bullet format. One talking point, one data point, one transition cue per slide.",
       };
     }
     return {
-      laptop: { label: "Laptop", content: "Call Playbook (left) + Arsenal or Competitive Playbook (right)" },
+      laptop: { label: "Laptop", content: "On-Screen Notes (left) + Context File (right)" },
       tip: "No video means you can reference freely. Use the full screen.",
     };
   }
@@ -59,21 +59,21 @@ function getScreenSetup(monitors: MonitorCount, mode: CallMode): SetupConfig {
   if (monitors === 2) {
     if (mode === "video") {
       return {
-        laptop: { label: "Laptop", content: "Video call (left) + Call Playbook (right)" },
-        external1: { label: "External", content: "Arsenal (emergency recovery lines only)" },
-        tip: "Don't stare at the external screen. It's there if you get completely derailed.",
+        laptop: { label: "Laptop", content: "Video call (left) + On-Screen Notes (right)" },
+        external1: { label: "External", content: "Context File (deep reference if needed)" },
+        tip: "On-Screen Notes are your primary glance material. External monitor is for deep-dive recovery.",
       };
     }
     if (mode === "presenting") {
       return {
-        laptop: { label: "Laptop", content: "Presentation (shared) + speaker notes" },
-        external1: { label: "External", content: "Video call + Call Playbook" },
+        laptop: { label: "Laptop", content: "POV Deck (shared) + speaker notes" },
+        external1: { label: "External", content: "Video call + On-Screen Notes" },
         tip: "Your audience can see hesitation. Stay on your slides. External monitor is for between-slide glances.",
       };
     }
     return {
-      laptop: { label: "Laptop", content: "Call Playbook (primary reference)" },
-      external1: { label: "External", content: "Arsenal + Competitive Playbook side by side" },
+      laptop: { label: "Laptop", content: "On-Screen Notes (primary reference)" },
+      external1: { label: "External", content: "Context File (full research)" },
       tip: "Phone calls and audio-only meetings let you use everything. Spread out.",
     };
   }
@@ -81,24 +81,24 @@ function getScreenSetup(monitors: MonitorCount, mode: CallMode): SetupConfig {
   // 3 monitors
   if (mode === "video") {
     return {
-      laptop: { label: "Laptop", content: "Video call (left) + Call Playbook (right)" },
-      external1: { label: "External 1", content: "Arsenal (emergency only)" },
-      external2: { label: "External 2", content: "Competitive Playbook (emergency only)" },
+      laptop: { label: "Laptop", content: "Video call (left) + On-Screen Notes (right)" },
+      external1: { label: "External 1", content: "Context File (deep reference)" },
+      external2: { label: "External 2", content: "POV Deck or NotebookLM materials" },
       tip: "Two external screens are insurance. Your primary reference stays on the laptop next to the camera.",
     };
   }
   if (mode === "presenting") {
     return {
-      laptop: { label: "Laptop", content: "Presentation + speaker notes" },
-      external1: { label: "External 1", content: "Video call + Call Playbook" },
-      external2: { label: "External 2", content: "Arsenal (emergency)" },
+      laptop: { label: "Laptop", content: "POV Deck + speaker notes" },
+      external1: { label: "External 1", content: "Video call + On-Screen Notes" },
+      external2: { label: "External 2", content: "Context File (emergency reference)" },
       tip: "Speaker notes on the laptop keep you looking at the camera. Side monitors are backup.",
     };
   }
   return {
-    laptop: { label: "Laptop", content: "Call Playbook (primary reference)" },
-    external1: { label: "External 1", content: "Arsenal" },
-    external2: { label: "External 2", content: "Competitive Playbook + Stakeholder Map" },
+    laptop: { label: "Laptop", content: "On-Screen Notes (primary reference)" },
+    external1: { label: "External 1", content: "Context File (full research)" },
+    external2: { label: "External 2", content: "POV Deck or NotebookLM materials" },
     tip: "No camera means you can spread everything out. Use the space.",
   };
 }
@@ -213,10 +213,11 @@ function getGuideContent(toolName: string): GuideSection[] {
         icon: BookOpen,
         title: "Before the call",
         items: [
-          "Read the Research Brief cover to cover (10 min). This is your deep study material.",
-          "Walk through the Competitive Playbook. Bookmark it for quick reference.",
+          "Read the Context File thoroughly (10 min). This is your deep research, formatted for studying and for uploading to NotebookLM.",
+          "Review the On-Screen Notes. These are your glanceable reference during the actual interview.",
+          "Upload your POV Deck to Google Slides and polish it using the AI design tools below.",
           "Run a practice session to test your answers under pressure.",
-          "Use the NotebookLM section below for podcast, flashcards, quiz, and slide deck prompts tailored to this prep.",
+          "Use the NotebookLM section for podcast, video, flashcards, quiz, and more study formats.",
         ],
       },
       {
@@ -224,19 +225,17 @@ function getGuideContent(toolName: string): GuideSection[] {
         title: "During the call",
         items: [
           "Stay present. Ask good questions and listen. Your prep is the work; the call is the performance.",
+          "On-Screen Notes are your primary reference. Bullet format, designed for quick glances between questions.",
           "Your documents are a safety net, not a script. Glance at bullet points if you need a reminder, but never read paragraphs.",
-          "Call Playbook is your primary reference. Bullet format, designed for quick glances.",
-          "Arsenal is emergency backup. Side monitor. Only if things go completely off-script.",
-          "If presenting slides, speaker notes have your talking points per slide.",
+          "If presenting your POV Deck, speaker notes have your talking points per slide.",
         ],
       },
       {
         icon: Send,
-        title: "For sending (not on-screen)",
+        title: "For sending",
         items: [
-          "Handwritten cards are designed to mail or hand-deliver. They're a creative first impression, not a call reference.",
-          "Outreach sequence is for copy-pasting into email and LinkedIn. Not for the interview itself.",
-          "POV deck and Gamma deck are for sharing during presentations, not reading to yourself.",
+          "POV Deck can be shared as a follow-up or during a presentation portion of the interview.",
+          "Context File can be re-uploaded to NotebookLM to generate additional study materials any time.",
         ],
       },
     ];
@@ -248,10 +247,10 @@ function getGuideContent(toolName: string): GuideSection[] {
         icon: BookOpen,
         title: "Before the call",
         items: [
-          "Study the Research Brief. Know their pain points, competitive landscape, and key stakeholders.",
-          "Review the Competitive Playbook. Understand how they're solving this today and why that falls short.",
+          "Study the Context File. Know their pain points, competitive landscape, and key stakeholders.",
+          "Review the On-Screen Notes. These are your in-call reference with discovery questions and positioning.",
+          "Upload your POV Deck to Google Slides and polish it using the AI design tools below.",
           "Run a practice session to rehearse discovery questions and objection responses.",
-          "Check the Stakeholder Map to know who influences the decision.",
         ],
       },
       {
@@ -259,19 +258,17 @@ function getGuideContent(toolName: string): GuideSection[] {
         title: "During the call",
         items: [
           "Stay present. Your #1 job is to listen and ask good questions. The prep is the work; the call is about connection.",
+          "On-Screen Notes guide you phase by phase. Discovery questions, listen-for signals, and recovery lines are all in there.",
           "Documents are your safety net, not a teleprompter. A quick glance at a bullet point is fine; reading sentences is not.",
-          "Call Playbook guides you phase by phase. Discovery questions are highlighted in amber.",
-          "Listen-for signals are in green. When you hear one, that's a buying trigger.",
-          "Arsenal has word-for-word recovery lines. Side monitor. Only when things go off-script.",
+          "If presenting your POV Deck, speaker notes have your talking points per slide.",
         ],
       },
       {
         icon: Send,
-        title: "For sending (not on-screen)",
+        title: "For sending",
         items: [
-          "Handwritten cards make a memorable first impression. Send before or after the meeting.",
-          "Outreach sequence is pre-built. Copy-paste into your email or CRM.",
-          "Gamma deck is shareable via link. Great for follow-up presentations.",
+          "POV Deck is designed to be shared as a follow-up. Upload to Google Slides, polish it, then share the link.",
+          "Context File can be re-uploaded to NotebookLM any time you want to generate fresh study materials.",
         ],
       },
     ];
@@ -283,17 +280,17 @@ function getGuideContent(toolName: string): GuideSection[] {
         icon: BookOpen,
         title: "Study these",
         items: [
-          "Research Brief gives you the full picture of the company and role.",
-          "Competitive Playbook shows how to position yourself against other candidates.",
+          "Context File gives you the full picture of the company, role, and competitive landscape.",
+          "Use this research to personalize every touch in your outreach sequence.",
         ],
       },
       {
         icon: Send,
         title: "Send these",
         items: [
-          "Outreach sequence has 7 pre-written touches. Customize the details, keep the structure.",
-          "Handwritten cards are a standout move. Mail one before your outreach hits their inbox.",
-          "POV deck can be attached to an email or shared in a follow-up.",
+          "Outreach Sequences have pre-written multi-touch campaigns. Customize the details, keep the structure.",
+          "Each touch is research-grounded with specific references to the company and role.",
+          "Copy-paste into your email client or LinkedIn. Adjust timing to your cadence.",
         ],
       },
     ];
@@ -305,17 +302,17 @@ function getGuideContent(toolName: string): GuideSection[] {
         icon: BookOpen,
         title: "Study these",
         items: [
-          "Research Brief is your ammunition. Know their pain before you write a word.",
-          "Competitive Playbook shows what they're using today and why it falls short.",
+          "Context File is your ammunition. Know their pain before you write a word.",
+          "The research covers competitive landscape, trigger events, and stakeholder context.",
         ],
       },
       {
         icon: Send,
         title: "Send these",
         items: [
-          "Outreach sequence has 7 touches across email, LinkedIn, and phone. Each one is research-grounded.",
-          "Handwritten cards cut through inbox noise. Mail one to arrive the same day as your first email.",
-          "POV deck gives them something to forward internally.",
+          "Outreach Sequences have multi-touch campaigns across email, LinkedIn, and phone. Each touch is research-grounded.",
+          "Copy-paste into your email client or CRM. Personalize the opening line, keep the structure.",
+          "POV Deck gives them something to forward internally. Upload to Google Slides and polish before sharing.",
         ],
       },
     ];
@@ -327,17 +324,16 @@ function getGuideContent(toolName: string): GuideSection[] {
         icon: BookOpen,
         title: "Review and act on",
         items: [
-          "Deal Audit Report flags qualification gaps, risk areas, and recommended next moves.",
-          "Use the Competitive Playbook to prepare for competitive objections.",
-          "Stakeholder Map shows who you need to reach and their likely disposition.",
+          "Context File has the full deal analysis: qualification gaps, risk areas, and competitive dynamics.",
+          "On-Screen Notes distill the key actions and talking points for your next conversation.",
         ],
       },
       {
         icon: Send,
         title: "For internal use",
         items: [
-          "Share the Deal Audit with your manager for deal review conversations.",
-          "Handwritten cards can help re-engage stalled contacts with a personal touch.",
+          "Share the Context File with your manager for deal review conversations.",
+          "Upload to NotebookLM to generate a deal review deck or coaching podcast.",
         ],
       },
     ];
@@ -349,17 +345,16 @@ function getGuideContent(toolName: string): GuideSection[] {
         icon: BookOpen,
         title: "Strategy materials",
         items: [
-          "Champion Strategy Brief outlines the internal narrative your champion needs to deliver.",
-          "Stakeholder Map shows the political landscape and who to target next.",
-          "Competitive Playbook helps your champion counter competitive FUD internally.",
+          "Context File outlines the internal narrative your champion needs to deliver, stakeholder dynamics, and competitive positioning.",
+          "On-Screen Notes give you the coaching talking points for your next champion conversation.",
         ],
       },
       {
         icon: Send,
         title: "For your champion",
         items: [
-          "Handwritten cards can be a personal touch to strengthen the relationship.",
-          "Share relevant sections of the Competitive Playbook to arm them with talk tracks.",
+          "Share relevant sections of the Context File to arm them with internal talking points.",
+          "Upload to NotebookLM to generate a champion enablement deck they can use in internal meetings.",
         ],
       },
     ];
@@ -371,9 +366,9 @@ function getGuideContent(toolName: string): GuideSection[] {
       icon: BookOpen,
       title: "How to use your deliverables",
       items: [
-        "Research materials are for studying before your meeting. Read them thoroughly.",
-        "Interactive assets can be bookmarked for quick reference during calls.",
-        "Deliverables are ready to download, print, or share.",
+        "Context File is your deep research. Study it before meetings, upload it to NotebookLM for additional formats.",
+        "On-Screen Notes are your in-meeting reference. Glanceable, not readable.",
+        "Deliverables are ready to download, share, or upload to other tools.",
       ],
     },
   ];
@@ -445,7 +440,7 @@ export default function AssetGuide({ toolName, meetingType }: AssetGuideProps) {
               </div>
               <ul className="space-y-1 ml-1">
                 <li className="text-xs text-blue-400">
-                  <span className="font-semibold">If they say no:</span> Turn it off immediately. No pushback. Use your Call Playbook and take manual notes.
+                  <span className="font-semibold">If they say no:</span> Turn it off immediately. No pushback. Use your On-Screen Notes and take manual notes.
                 </li>
                 <li className="text-xs text-blue-400">
                   <span className="font-semibold">If others have bots:</span> Their recording is separate from yours. You still need to disclose your own, and they should disclose theirs.
@@ -457,33 +452,54 @@ export default function AssetGuide({ toolName, meetingType }: AssetGuideProps) {
             </div>
           )}
 
-          {/* Google Slides beautification guidance - shows for all tools that generate decks */}
-          <div className="mt-3 rounded-lg border border-green-100 bg-green-500/10/50 p-4">
+          {/* Google Slides AI design guidance - shows for all tools that generate decks */}
+          <div className="mt-3 rounded-lg border border-green-500/20 bg-green-500/5 p-4">
             <p className="text-xs font-semibold text-green-400 mb-2">Polish your deck in Google Slides</p>
-            <p className="text-xs text-green-400 mb-2">
-              Your PPTX is structured for Google Slides&apos; AI design tools. Upload to Google Drive, open with Slides, then use these features:
+            <p className="text-xs text-green-400/80 mb-3">
+              Your PPTX has the right content and structure. Google Slides&apos; AI tools add the visual polish. Upload to Google Drive, open with Slides, then:
             </p>
-            <ul className="space-y-1.5 ml-1">
-              <li className="text-xs text-green-400">
-                <span className="font-semibold">Beautify This Slide:</span> Click any slide, then click &quot;Beautify this slide&quot; in the toolbar. Gemini redesigns it with professional layout and colors. Click &quot;Insert as new slide&quot; to keep it.
-              </li>
-              <li className="text-xs text-green-400">
-                <span className="font-semibold">Refine Text:</span> Click any text box, then click the pencil-sparkle icon. Choose Shorten, Rephrase, or More Formal, or type a custom prompt.
-              </li>
-              <li className="text-xs text-green-400">
-                <span className="font-semibold">Add AI Visuals:</span> Insert &gt; Help me visualize. Describe what you need (e.g., &quot;competitive quadrant chart&quot; or &quot;market share breakdown&quot;).
-              </li>
-            </ul>
-            <p className="text-xs text-green-600 mt-2 italic">
-              Requires Google Workspace Business Standard/Plus/Enterprise or Google AI Pro/Ultra.
+            <div className="space-y-3">
+              <div className="rounded-md bg-[#0a0a0a] border border-green-500/10 px-3 py-2.5">
+                <p className="text-xs text-green-400 font-semibold mb-1">
+                  Step 1: Add visuals (Start here)
+                </p>
+                <p className="text-xs text-green-400/70">
+                  Click the <span className="text-green-300">wand/banana button</span> on any slide to open &quot;Help me visualize.&quot; Three tabs: Slide, Image, Infographic. Type what visual would reinforce your slide&apos;s message.
+                </p>
+                <p className="text-xs text-green-400/50 mt-1 italic">
+                  This adds visuals without replacing your content. Best first move.
+                </p>
+              </div>
+              <div className="rounded-md bg-[#0a0a0a] border border-green-500/10 px-3 py-2.5">
+                <p className="text-xs text-green-400 font-semibold mb-1">
+                  Step 2: Refine text
+                </p>
+                <p className="text-xs text-green-400/70">
+                  Click any text box, then the <span className="text-green-300">pencil-sparkle icon</span>. Choose Shorten, Rephrase, or More Formal, or type a custom prompt like &quot;Make this more direct and confident.&quot;
+                </p>
+              </div>
+              <div className="rounded-md bg-[#0a0a0a] border border-green-500/10 px-3 py-2.5">
+                <p className="text-xs text-green-400 font-semibold mb-1">
+                  Step 3: Full redesign (Advanced)
+                </p>
+                <p className="text-xs text-green-400/70">
+                  Click <span className="text-green-300">&quot;Enhance this slide&quot;</span> at the bottom of any slide. Gemini generates a complete redesign. Choose <span className="text-green-300">Insert</span> to keep your original and compare, or Replace to swap.
+                </p>
+                <p className="text-xs text-green-400/50 mt-1 italic">
+                  This replaces the entire slide. Always Insert first so you can compare.
+                </p>
+              </div>
+            </div>
+            <p className="text-xs text-green-600 mt-3 italic">
+              Requires Google Workspace with Gemini or Google AI Pro/Ultra.
             </p>
           </div>
 
-          {/* Handwritten card guidance */}
+          {/* Outreach tip */}
           {!isPrep && toolName.includes("outreach") && (
-            <div className="mt-3 rounded-lg border border-amber-100 bg-amber-500/10/50 p-3">
+            <div className="mt-3 rounded-lg border border-amber-500/20 bg-amber-500/5 p-3">
               <p className="text-xs text-amber-400">
-                <span className="font-semibold">About the handwritten cards:</span> These are designed to send, not to reference during calls. Mail or hand-deliver them as a creative first touch. If the cards didn&apos;t generate the way you wanted, you can regenerate them in Google AI Studio using the prompt in your delivery email.
+                <span className="font-semibold">Outreach sequences are copy-paste ready.</span> Each touch is research-grounded with specific references to the target company. Personalize the opening line for your voice, but the structure and data points are ready to go. Paste into your email client, CRM, or LinkedIn.
               </p>
             </div>
           )}
