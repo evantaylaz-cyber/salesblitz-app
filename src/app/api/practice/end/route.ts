@@ -133,11 +133,16 @@ export async function POST(req: NextRequest) {
       scoring = JSON.parse(jsonMatch ? jsonMatch[0] : scoringText);
     } catch {
       console.error("Failed to parse scoring:", scoringText);
+      // Distinguish between short sessions and actual parsing failures
+      const messageCount = transcript?.length || 0;
+      const isShortSession = messageCount < 6;
       scoring = {
         overall: 0,
         scores: {},
         outcome: "needs_work",
-        feedback: "Scoring failed. Review your transcript manually.",
+        feedback: isShortSession
+          ? "This session was too short to generate a meaningful score. Try having a longer conversation (at least 3-4 exchanges) so we can give you actionable coaching feedback."
+          : "We couldn't generate a score for this session. This sometimes happens with unusual conversation patterns. Try another session and focus on substantive responses to the persona's questions.",
         top_moment: "",
         biggest_miss: "",
       };

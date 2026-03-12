@@ -315,7 +315,17 @@ export default function RequestDetailPage() {
 
   const statusStyle = STATUS_STYLES[request.status] || STATUS_STYLES.submitted;
   const isCompleted = request.status === "delivered" || request.status === "ready";
-  const displayProgress = isCompleted ? 100 : request.progress;
+  // Compute progress from step data for smoother tracking:
+  // - Completed steps count fully
+  // - In-progress steps count as half (gives visible progress while researching)
+  const computedProgress = request.steps.length > 0
+    ? Math.round(
+        ((request.steps.filter(s => s.status === "completed").length +
+          request.steps.filter(s => s.status === "in_progress").length * 0.5) /
+          request.steps.length) * 100
+      )
+    : request.progress;
+  const displayProgress = isCompleted ? 100 : Math.max(computedProgress, request.progress);
 
   return (
     <div className="min-h-screen bg-[#0a0a0a]">

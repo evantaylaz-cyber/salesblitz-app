@@ -53,6 +53,7 @@ export async function POST(
     const expectedAssets = getExpectedAssets(request.toolName as ToolName);
 
     // Reset the request to submitted state
+    // startedAt + completedAt + deliveredAt all cleared so timer resets on the results page
     const updated = await prisma.runRequest.update({
       where: { id: params.id },
       data: {
@@ -61,6 +62,9 @@ export async function POST(
         steps: JSON.parse(JSON.stringify(steps)),
         assets: JSON.parse(JSON.stringify(expectedAssets.map(a => ({ ...a, url: null, size: null })))),
         currentStep: null,
+        startedAt: null,
+        completedAt: null,
+        deliveredAt: null,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         researchData: null as any,
       },

@@ -115,7 +115,7 @@ export default function AppNav({
               Billing
             </button>
           )}
-          {!isMaxTier && (
+          {isMaxTier === false && (
             <a
               href="/subscribe"
               className="rounded-full bg-emerald-500 px-4 py-1.5 text-sm font-semibold text-black hover:bg-emerald-400 transition-all hover:shadow-[0_0_16px_rgba(16,185,129,0.3)]"
@@ -183,7 +183,7 @@ export default function AppNav({
               Billing
             </button>
           )}
-          {!isMaxTier && (
+          {isMaxTier === false && (
             <a
               href="/subscribe"
               className="block rounded-lg px-3 py-2.5 text-sm font-semibold text-emerald-400 hover:bg-emerald-500/10"

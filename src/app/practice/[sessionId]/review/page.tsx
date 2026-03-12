@@ -314,20 +314,29 @@ export default function PracticeReviewPage() {
         )}
 
         {/* Focus Areas (what the AI was testing based on prior sessions) */}
-        {session.focusAreas && session.focusAreas.length > 0 && session.focusAreas[0] && (
-          <div className="rounded-xl border border-[#262626] bg-[#141414] px-5 py-4">
-            <div className="flex items-center gap-2 mb-2">
-              <Target className="h-4 w-4 text-violet-400" />
-              <span className="text-sm font-semibold text-violet-400">Focus Areas This Session</span>
-              {session.sessionSequence > 1 && (
-                <span className="text-xs text-neutral-500">Based on prior coaching</span>
-              )}
+        {(() => {
+          if (!session.focusAreas || session.focusAreas.length === 0 || !session.focusAreas[0]) return null;
+          // Filter out raw blitz reference tags like "[Blitz 2026-03-12 — prospect_outreach]"
+          const cleaned = session.focusAreas[0]
+            .replace(/\[Blitz \d{4}-\d{2}-\d{2}\s*[—–-]\s*\w+\]/g, "")
+            .trim();
+          // Only show if there's substantive content after cleaning
+          if (!cleaned || cleaned.length < 20) return null;
+          return (
+            <div className="rounded-xl border border-[#262626] bg-[#141414] px-5 py-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Target className="h-4 w-4 text-violet-400" />
+                <span className="text-sm font-semibold text-violet-400">Focus Areas This Session</span>
+                {session.sessionSequence > 1 && (
+                  <span className="text-xs text-neutral-500">Based on prior coaching</span>
+                )}
+              </div>
+              <p className="text-sm text-neutral-300 leading-relaxed">
+                {cleaned.length > 500 ? cleaned.slice(0, 500) + "..." : cleaned}
+              </p>
             </div>
-            <p className="text-sm text-neutral-300 leading-relaxed">
-              {session.focusAreas[0].length > 500 ? session.focusAreas[0].slice(0, 500) + "..." : session.focusAreas[0]}
-            </p>
-          </div>
-        )}
+          );
+        })()}
 
         {/* Coaching Feedback */}
         {session.feedback && (

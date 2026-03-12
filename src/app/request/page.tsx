@@ -391,8 +391,12 @@ export default function RequestPage() {
           </div>
           <h1 className="text-2xl font-bold text-white">Blitz Started</h1>
           <p className="mt-3 text-neutral-300">
-            Your <strong>{toolInfo.name}</strong> blitz for{" "}
-            <strong>{targetName}</strong> at <strong>{targetCompany}</strong> is running.
+            Your <strong>{toolInfo.name}</strong> blitz{" "}
+            {targetName ? (
+              <>for <strong>{targetName}</strong> at <strong>{targetCompany}</strong></>
+            ) : (
+              <>for <strong>{targetCompany}</strong></>
+            )}{" "}is running.
           </p>
           <p className="mt-2 text-sm text-neutral-400">
             We&apos;re researching and building your deliverables now. Track progress in real-time.
