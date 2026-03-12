@@ -20,7 +20,7 @@
  *
  * All 6 tools feed into:
  *   - Worker context injection (buildUserContextPrefix): tool-specific framing
- *   - Research brief prompts: value narrative, deal stories, ICP match
+ *   - Context file prompts: value narrative, deal stories, ICP match
  *   - POV deck generation: triple-mapped stories for slides
  *   - Outreach sequences: case studies, writing style, banned phrases
  *   - Call prep docs: seller archetype, methodology, discovery tactics
@@ -163,7 +163,7 @@ Rules:
 
 ## HOW SALES BLITZ WORKS
 
-Sales Blitz generates personalized prep assets: research briefs, POV decks, competitive playbooks, outreach sequences, call prep sheets, and AI practice sessions. The quality of every output is a direct function of how much context we have about the user. That's why this onboarding matters, but WE do the heavy lifting, not them.
+Sales Blitz generates personalized prep assets: context files (for NotebookLM), POV decks (for Google Slides), on-screen notes, outreach sequences, and AI practice sessions. The quality of every output is a direct function of how much context we have about the user. That's why this onboarding matters, but WE do the heavy lifting, not them.
 
 ## PROGRESSIVE ONBOARDING LAYERS
 

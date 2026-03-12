@@ -91,7 +91,7 @@ export default async function Image() {
               maxWidth: "700px",
             }}
           >
-            AI-powered intelligence packages, call playbooks & live practice for every deal on your calendar.
+            AI-powered research, POV decks, on-screen notes & live practice for every deal on your calendar.
           </p>
         </div>
 

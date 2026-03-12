@@ -108,12 +108,11 @@ export default function PlaybooksPage() {
         {/* Header */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-white">
-            Competitive Playbooks
+            Playbooks
           </h2>
           <p className="text-neutral-300 mt-1">
-            Interactive competitive positioning cards with value-based talk tracks, land
-            mines, and multi-threading plays. Built automatically from your
-            research runs.
+            Competitive positioning cards from your research runs. Includes talk
+            tracks, land mines, and multi-threading plays.
           </p>
           <div className="flex items-center gap-4 mt-4">
             <div className="flex items-center gap-2 text-sm text-neutral-400">

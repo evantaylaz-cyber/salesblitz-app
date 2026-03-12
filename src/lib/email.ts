@@ -191,7 +191,7 @@ export async function sendTeamInviteEmail(invite: InviteDetails) {
         </p>
 
         <p style="font-size:14px;color:#6b7280;line-height:1.6;margin:0 0 24px;">
-          As a team member, you'll get access to shared intel runs, knowledge base docs, and competitive playbooks. Your team's subscription covers your usage.
+          As a team member, you'll get access to shared intel runs, knowledge base docs, and blitz deliverables. Your team's subscription covers your usage.
         </p>
 
         <div style="text-align:center;margin:24px 0;">

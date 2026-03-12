@@ -21,6 +21,11 @@ import {
   RefreshCw,
   Video,
   ChevronDown,
+  FileEdit,
+  File,
+  ClipboardList,
+  Presentation,
+  Image,
 } from "lucide-react";
 import AppNav from "@/components/AppNav";
 import DebriefSection from "@/components/DebriefSection";
@@ -120,14 +125,14 @@ const ASSET_CATEGORY_LABELS: Record<string, { label: string; description: string
   research: { label: "Research", description: "Study material. Read thoroughly before your meeting.", color: "bg-blue-500/15 text-blue-400" },
 };
 
-const FORMAT_ICONS: Record<string, string> = {
-  md: "📝",
-  docx: "📄",
-  pdf: "📋",
-  pptx: "📊",
-  url: "🌐",
-  html: "🌐",
-  png: "🖼️",
+const FORMAT_ICONS: Record<string, React.ReactNode> = {
+  md: <FileEdit className="h-4 w-4" />,
+  docx: <File className="h-4 w-4" />,
+  pdf: <ClipboardList className="h-4 w-4" />,
+  pptx: <Presentation className="h-4 w-4" />,
+  url: <Globe className="h-4 w-4" />,
+  html: <Globe className="h-4 w-4" />,
+  png: <Image className="h-4 w-4" />,
 };
 
 const FORMAT_LABELS: Record<string, string> = {
@@ -581,7 +586,7 @@ export default function RequestDetailPage() {
                           rel="noopener noreferrer"
                           className="flex items-center gap-3 rounded-lg border border-[#1a1a1a] px-4 py-3 hover:bg-[#0a0a0a] hover:border-[#262626] transition group"
                         >
-                          <span className="text-lg">{FORMAT_ICONS[asset.format] || "📄"}</span>
+                          <span className="text-neutral-400">{FORMAT_ICONS[asset.format] || <File className="h-4 w-4" />}</span>
                           <div className="flex-1 min-w-0">
                             <span className="text-sm font-medium text-neutral-200 group-hover:text-white block truncate">
                               {asset.label}

@@ -5,12 +5,12 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Sales Blitz | AI-Powered Sales Prep & Practice",
   description:
-    "Research, rehearse & close. Get intelligence packages, POV decks, call playbooks & live AI practice for every deal on your calendar. Delivered in minutes.",
+    "Research, rehearse & close. Get deep research, POV decks, on-screen notes & live AI practice for every deal on your calendar. Delivered in minutes.",
   metadataBase: new URL("https://salesblitz.ai"),
   openGraph: {
     title: "Sales Blitz | Research. Rehearse. Close.",
     description:
-      "AI-powered intelligence packages, call playbooks & live practice for every deal on your calendar.",
+      "AI-powered research, POV decks, on-screen notes & live practice for every deal on your calendar.",
     url: "https://salesblitz.ai",
     siteName: "Sales Blitz",
     type: "website",
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Sales Blitz | Research. Rehearse. Close.",
     description:
-      "AI-powered intelligence packages, call playbooks & live practice for every deal on your calendar.",
+      "AI-powered research, POV decks, on-screen notes & live practice for every deal on your calendar.",
   },
 };
 

@@ -375,7 +375,7 @@ export function createOnboardingTools(userId: string) {
 
     save_case_study: tool({
       description:
-        "Save a customer case study or proof point. Used as social proof in outreach, POV decks, and research briefs.",
+        "Save a customer case study or proof point. Used as social proof in outreach, POV decks, and context files.",
       parameters: z.object({
         customer_name: z.string().describe("Customer/account name"),
         challenge: z.string().describe("What the customer was dealing with"),

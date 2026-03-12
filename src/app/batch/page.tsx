@@ -206,7 +206,7 @@ export default function BatchPage() {
           </div>
           <h1 className="text-2xl font-bold text-white">Territory Blitz Started</h1>
           <p className="mt-3 text-neutral-300">
-            Researching <strong>{validCount} accounts</strong> in parallel. Each account gets a full research brief, POV deck, competitive playbook, and outreach sequence.
+            Researching <strong>{validCount} accounts</strong> in parallel. Each account gets a context file, POV deck, on-screen notes, and outreach sequence.
           </p>
           <p className="mt-2 text-sm text-neutral-400">
             You will also receive a comparative territory scorecard once all accounts are complete.
@@ -394,8 +394,8 @@ export default function BatchPage() {
             <h2 className="text-base font-semibold text-white mb-3">What do you need for each account?</h2>
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               {[
-                { id: "prospect_outreach", label: "Outreach Package", desc: "Research brief, POV deck, cards, outreach sequence" },
-                { id: "prospect_prep", label: "Full Prep Package", desc: "Research brief, POV deck, cards, playbook, call docs" },
+                { id: "prospect_outreach", label: "Outreach Package", desc: "Context file, POV deck, outreach sequence" },
+                { id: "prospect_prep", label: "Full Prep Package", desc: "Context file, POV deck, on-screen notes, outreach sequence" },
               ].map((opt) => (
                 <button
                   key={opt.id}

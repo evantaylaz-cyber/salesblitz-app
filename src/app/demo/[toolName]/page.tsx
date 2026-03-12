@@ -301,9 +301,9 @@ export default function DemoRunPage() {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {[
               { icon: Search, title: "Deep Research", desc: "Company intel, financial data, competitive positioning, stakeholder mapping." },
-              { icon: FileText, title: "Call Playbooks", desc: "Phase-by-phase bullet guides for discovery, pitch, and close. Glance, don't read." },
+              { icon: FileText, title: "On-Screen Notes", desc: "Phase-by-phase bullet guides for discovery, pitch, and close. Glance, don't read." },
               { icon: Mic, title: "AI Practice", desc: "Rehearse with AI personas built from your research. Scored on 8 dimensions." },
-              { icon: BarChart3, title: "Competitive Intel", desc: "Interactive battlecards with positioning, talk tracks, and discovery questions." },
+              { icon: BarChart3, title: "POV Deck", desc: "5-slide deck ready for Google Slides. Upload, polish with AI, share." },
             ].map((item, i) => (
               <div key={i} className="rounded-xl border border-[#262626] bg-[#141414] p-5 hover:border-emerald-500/30 transition">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10 border border-emerald-500/20 mb-4">

@@ -21,9 +21,9 @@ export default function SignInPage() {
             <span className="text-emerald-400">Close.</span>
           </h1>
           <p className="mt-4 text-base text-neutral-400 leading-relaxed">
-            Drop in a company name. Get deep research, cold outreach sequences,
-            competitive playbooks and a POV deck in minutes. Then practice your
-            pitch or interview against an AI persona who pushes back.
+            Drop in a company name. Get deep research, a POV deck, outreach
+            sequences &amp; on-screen notes in minutes. Then practice your pitch
+            or interview against an AI persona who pushes back.
           </p>
 
           <div className="mt-10 space-y-5">
@@ -50,7 +50,7 @@ export default function SignInPage() {
                   Battle-ready deliverables
                 </p>
                 <p className="text-sm text-neutral-500">
-                  POV decks, call playbooks & outreach sequences for every
+                  POV decks, on-screen notes &amp; outreach sequences for every
                   meeting type.
                 </p>
               </div>

@@ -896,7 +896,7 @@ export default function ProfilePage() {
             <div className="space-y-4">
               <p className="text-sm text-neutral-400">
                 Paste sections from your own LinkedIn profile. This helps us
-                position you credibly in research briefs and POV decks.
+                position you credibly in context files and POV decks.
               </p>
               <TextArea
                 label="About / Summary"

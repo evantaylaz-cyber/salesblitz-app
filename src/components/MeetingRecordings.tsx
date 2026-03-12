@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { Mic, Clock, Search, AlertTriangle } from "lucide-react";
 
 interface Recording {
   id: string;
@@ -147,7 +148,7 @@ export default function MeetingRecordings({
   if (recordings.length === 0) {
     return (
       <div className="rounded-lg border border-dashed border-zinc-700 p-6 text-center">
-        <div className="mb-2 text-2xl">🎙️</div>
+        <Mic className="mx-auto mb-2 h-6 w-6 text-zinc-500" />
         <p className="text-sm text-zinc-400">
           No meeting recordings yet. Use the Sales Blitz Chrome extension to
           record meetings, or upload a transcript manually.
@@ -182,9 +183,9 @@ export default function MeetingRecordings({
                         statusColors[rec.status] || statusColors.processing
                       }`}
                     >
-                      {rec.status === "transcribing" && "⏳ "}
-                      {rec.status === "analyzing" && "🔍 "}
-                      {rec.status === "failed" && "⚠️ "}
+                      {rec.status === "transcribing" && <Clock className="mr-1 inline h-3 w-3" />}
+                      {rec.status === "analyzing" && <Search className="mr-1 inline h-3 w-3" />}
+                      {rec.status === "failed" && <AlertTriangle className="mr-1 inline h-3 w-3" />}
                       {rec.status}
                     </span>
                   )}

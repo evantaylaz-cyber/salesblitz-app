@@ -63,7 +63,7 @@ const MODE_QUESTIONS: Record<string, { label: string; subtitle: string; options:
     label: "Prep for an interview",
     subtitle: "What's the situation?",
     options: [
-      { label: "I have an interview scheduled", description: "Deep intel, playbook & prep sheets per interviewer", toolName: "interview_prep" },
+      { label: "I have an interview scheduled", description: "Deep intel, POV deck & on-screen notes per interviewer", toolName: "interview_prep" },
       { label: "I need to land the interview first", description: "Outreach to get the referral or the meeting", toolName: "interview_outreach" },
     ],
   },
@@ -997,7 +997,7 @@ export default function RequestPage() {
                 <p className="mt-1.5 text-xs text-neutral-500">
                   {isInterview
                     ? "These will be available for your interview prep materials and practice persona."
-                    : "These will be woven into your outreach sequence, POV deck, and research brief as social proof."}
+                    : "These will be woven into your outreach sequence, POV deck, and context file as social proof."}
                 </p>
               </div>
             </div>

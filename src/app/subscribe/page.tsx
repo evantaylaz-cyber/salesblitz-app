@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useUser } from "@clerk/nextjs";
-import { Check, Zap, Loader2, Star } from "lucide-react";
+import { Check, Zap, Loader2, Star, Lock } from "lucide-react";
 import AppNav from "@/components/AppNav";
 
 const TIERS = [
@@ -195,7 +195,7 @@ export default function SubscribePage() {
                   ))}
                   {tier.lockedTools.map((t) => (
                     <div key={t} className="flex items-center text-sm text-neutral-500">
-                      <span className="mr-2 h-4 w-4 shrink-0 text-center">🔒</span>
+                      <Lock className="mr-2 h-4 w-4 shrink-0 text-neutral-500" />
                       {t}
                     </div>
                   ))}
