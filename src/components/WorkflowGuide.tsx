@@ -54,13 +54,9 @@ function getWorkflowSteps(toolName: string, targetCompany: string, requestId: st
       },
       {
         icon: Headphones,
-        title: "Create an audio study guide",
-        description: "Download your Research Brief, upload it to NotebookLM, and generate an audio overview. Listen while walking or commuting.",
-        timeEstimate: "2 min setup",
-        action: {
-          label: "Open NotebookLM",
-          href: "https://notebooklm.google.com/",
-        },
+        title: "Study with NotebookLM",
+        description: "Expand the NotebookLM section below for ready-to-paste prompts: podcast, slide deck, flashcards, and quiz. Each one is tailored to your prep.",
+        timeEstimate: "5 min setup",
       },
       {
         icon: Mic,
@@ -109,13 +105,9 @@ function getWorkflowSteps(toolName: string, targetCompany: string, requestId: st
       },
       {
         icon: Headphones,
-        title: "Create an audio brief",
-        description: "Upload your Research Brief to NotebookLM for a 5-minute podcast-style overview. Listen on the commute to the meeting.",
-        timeEstimate: "2 min setup",
-        action: {
-          label: "Open NotebookLM",
-          href: "https://notebooklm.google.com/",
-        },
+        title: "Study with NotebookLM",
+        description: "Expand the NotebookLM section below for ready-to-paste prompts: podcast, slide deck, flashcards, and quiz. Each one is tailored to your prep.",
+        timeEstimate: "5 min setup",
       },
       {
         icon: Mic,

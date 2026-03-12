@@ -216,7 +216,7 @@ function getGuideContent(toolName: string): GuideSection[] {
           "Read the Research Brief cover to cover (10 min). This is your deep study material.",
           "Walk through the Competitive Playbook. Bookmark it for quick reference.",
           "Run a practice session to test your answers under pressure.",
-          "Use NotebookLM flashcards and quiz to lock in key facts.",
+          "Use the NotebookLM section below for podcast, flashcards, quiz, and slide deck prompts tailored to this prep.",
         ],
       },
       {

@@ -25,6 +25,7 @@ import AppNav from "@/components/AppNav";
 import DebriefSection from "@/components/DebriefSection";
 import AssetGuide from "@/components/AssetGuide";
 import WorkflowGuide from "@/components/WorkflowGuide";
+import NotebookLMGuide from "@/components/NotebookLMGuide";
 
 interface StepData {
   id: string;
@@ -527,6 +528,11 @@ export default function RequestDetailPage() {
         {/* Workflow Guide — step-by-step game plan after blitz completes */}
         {(request.status === "delivered" || request.status === "ready") && (
           <WorkflowGuide toolName={request.toolName} targetCompany={request.targetCompany} requestId={request.id} />
+        )}
+
+        {/* NotebookLM Study Guide — dynamic prompts for podcast, slides, flashcards, quiz */}
+        {(request.status === "delivered" || request.status === "ready") && (
+          <NotebookLMGuide toolName={request.toolName} targetCompany={request.targetCompany} targetName={request.targetName} />
         )}
 
         {/* Assets / Deliverables */}
