@@ -493,7 +493,12 @@ Make the persona feel REAL. Specific details, not generic business-speak. The ob
       cap: capCheck.cap,
     });
   } catch (err) {
-    console.error("Practice start error:", err);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    const errMsg = err instanceof Error ? err.message : String(err);
+    const errStack = err instanceof Error ? err.stack?.split("\n").slice(0, 5).join("\n") : "";
+    console.error("Practice start error:", errMsg, errStack);
+    return NextResponse.json(
+      { error: "Internal server error", detail: errMsg },
+      { status: 500 }
+    );
   }
 }
