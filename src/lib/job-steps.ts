@@ -46,6 +46,16 @@ const STEP_TEMPLATES: Record<ToolName, Omit<JobStep, "status" | "startedAt" | "c
     { id: "generating_pov_deck", label: "Generating POV Deck", description: "Building your 5-slide business case deck, ready for Google Slides Beautify." },
     { id: "delivery", label: "Delivering your prep", description: "Assembling your complete prep package." },
   ],
+  deal_playbook: [
+    { id: "competitive_research", label: "Mapping competitive alternatives", description: "Analyzing every alternative being evaluated in this deal, including do-nothing and status quo." },
+    { id: "market_intel", label: "Assessing urgency signals", description: "Market forces, trigger events, and forcing functions affecting deal velocity." },
+    { id: "company_deep_dive", label: "Deep diving deal context", description: "Prospect financials, org structure, stakeholder dynamics, decision process, and budget cycles." },
+    { id: "deal_qualification", label: "Running deal qualification", description: "Scoring all 8 qualification elements, identifying gaps, and assessing risk." },
+    { id: "champion_analysis", label: "Analyzing champion & stakeholders", description: "Champion profile, attribute assessment, stakeholder map, and multi-threading plays." },
+    { id: "generating_context_file", label: "Building Deal Playbook", description: "Combining qualification audit, champion strategy, and velocity plays into one playbook." },
+    { id: "generating_notes", label: "Building Speaker Notes", description: "Creating dynamic notes for champion coaching and manager deal review." },
+    { id: "delivery", label: "Delivering your playbook", description: "Assembling your complete deal playbook." },
+  ],
   deal_audit: [
     { id: "competitive_research", label: "Mapping competitive alternatives", description: "Analyzing every alternative being evaluated in this deal, including do-nothing." },
     { id: "market_intel", label: "Assessing market urgency signals", description: "Market forces affecting the prospect's urgency and compelling event strength." },
@@ -69,6 +79,16 @@ const STEP_TEMPLATES: Record<ToolName, Omit<JobStep, "status" | "startedAt" | "c
     { id: "generating_outreach", label: "Building Outreach Sequences", description: "Crafting value-driven email sequence, LinkedIn touches, and call talking points. Copy-paste ready." },
     { id: "generating_pov_deck", label: "Generating POV Deck", description: "Building your 5-slide business case deck, ready for Google Slides Beautify." },
     { id: "delivery", label: "Delivering your outreach package", description: "Assembling your complete outreach package." },
+  ],
+  proposal_blitz: [
+    { id: "competitive_research", label: "Analyzing competitive positioning", description: "Who you're up against in this deal, how you differentiate, and pricing positioning." },
+    { id: "company_deep_dive", label: "Deep diving buyer context", description: "Account financials, org structure, decision process, budget context, and evaluation criteria." },
+    { id: "roi_modeling", label: "Building ROI model", description: "Quantifying Before State pain, projecting savings and gains, calculating payback period." },
+    { id: "proposal_strategy", label: "Developing proposal strategy", description: "Pricing rationale, packaging recommendation, negotiation boundaries, competitive positioning." },
+    { id: "generating_context_file", label: "Building Proposal Brief", description: "Combining deal summary, buyer profile, ROI model, competitive positioning, and pricing rationale." },
+    { id: "generating_notes", label: "Building Speaker Notes", description: "Creating talk track for proposal presentation, objection handling, and negotiation prep." },
+    { id: "generating_pov_deck", label: "Generating Proposal Deck", description: "Building CFO-ready proposal deck with ROI breakdown, pricing, and implementation timeline." },
+    { id: "delivery", label: "Delivering your proposal package", description: "Assembling your complete proposal package." },
   ],
   champion_builder: [
     { id: "competitive_research", label: "Analyzing competitive positioning", description: "How the champion needs to position you vs. alternatives internally." },
@@ -130,6 +150,10 @@ export function getExpectedAssets(toolName: ToolName): Omit<Asset, "url" | "size
       { id: "onscreen_notes", label: "Speaker Notes", format: "md", category: "notes" },
       { id: "pov_deck", label: "POV Deck (5 slides)", format: "pptx", category: "deliverable" },
     ],
+    deal_playbook: [
+      { id: "context_file", label: "Deal Playbook", format: "md", category: "context" },
+      { id: "onscreen_notes", label: "Speaker Notes", format: "md", category: "notes" },
+    ],
     deal_audit: [
       { id: "context_file", label: "Deal Audit", format: "md", category: "context" },
       { id: "onscreen_notes", label: "Speaker Notes", format: "md", category: "notes" },
@@ -143,6 +167,11 @@ export function getExpectedAssets(toolName: ToolName): Omit<Asset, "url" | "size
       { id: "context_file", label: "Context File", format: "md", category: "context" },
       { id: "outreach_sequences", label: "Outreach Sequences", format: "md", category: "outreach" },
       { id: "pov_deck", label: "POV Deck (5 slides)", format: "pptx", category: "deliverable" },
+    ],
+    proposal_blitz: [
+      { id: "context_file", label: "Proposal Brief", format: "md", category: "context" },
+      { id: "onscreen_notes", label: "Speaker Notes", format: "md", category: "notes" },
+      { id: "pov_deck", label: "Proposal Deck", format: "pptx", category: "deliverable" },
     ],
     champion_builder: [
       { id: "context_file", label: "Champion Strategy", format: "md", category: "context" },

@@ -78,10 +78,13 @@ const TOOL_NAMES: Record<string, string> = {
   prospect_outreach: "Prospect Outreach",
   interview_prep: "Interview Prep",
   prospect_prep: "Prospect Prep",
-  deal_audit: "Deal Audit",
-  champion_builder: "Champion Builder",
+  deal_playbook: "Deal Playbook",
+  proposal_blitz: "Proposal Blitz",
   practice_mode: "AI Practice Mode",
   territory_blitz: "Territory Blitz",
+  // Backward compat for old runs
+  deal_audit: "Deal Audit",
+  champion_builder: "Champion Builder",
   win_loss_analyst: "Win/Loss Analyst",
 };
 
@@ -122,17 +125,17 @@ const TOOLS: Tool[] = [
     minimumTier: "pro",
   },
   {
-    id: "deal_audit",
-    name: "Deal Audit",
-    hook: "Stress-test your deal.",
-    description: "Qualification scorecard, risk flags & strategy to close the gaps. No hiding from reality.",
+    id: "deal_playbook",
+    name: "Deal Playbook",
+    hook: "Diagnose, strategize, accelerate.",
+    description: "Qualification audit, champion strategy & velocity plays in one blitz. Know where you stand, who to coach, and your next 3 moves.",
     minimumTier: "closer",
   },
   {
-    id: "champion_builder",
-    name: "Champion Builder",
-    hook: "Equip your champion.",
-    description: "Stakeholder maps, internal selling kits & competitive talking points so your champion sells when you're not in the room.",
+    id: "proposal_blitz",
+    name: "Proposal Blitz",
+    hook: "Make the CFO say yes.",
+    description: "ROI math, competitive positioning & pricing rationale packaged into a proposal deck. Built from your deal context, not templates.",
     minimumTier: "closer",
   },
   {
@@ -140,13 +143,6 @@ const TOOLS: Tool[] = [
     name: "Territory Blitz",
     hook: "Map your entire territory.",
     description: "Upload a target list, get research & outreach for every account in one blitz. Territory prep in hours, not weeks.",
-    minimumTier: "closer",
-  },
-  {
-    id: "win_loss_analyst",
-    name: "Win/Loss Analyst",
-    hook: "Learn from every deal.",
-    description: "Pattern analysis across closed deals. Methodology gaps, coaching recs & themes you keep missing. See the intelligence section below.",
     minimumTier: "closer",
   },
 ];
@@ -230,10 +226,6 @@ export default function DashboardPage() {
       window.location.href = `/practice`;
     } else if (toolId === "territory_blitz") {
       window.location.href = `/batch`;
-    } else if (toolId === "win_loss_analyst") {
-      // Scroll to the Win/Loss Intelligence section on this page
-      const el = document.getElementById("win-loss-section");
-      if (el) el.scrollIntoView({ behavior: "smooth" });
     } else {
       window.location.href = `/request?tool=${toolId}`;
     }

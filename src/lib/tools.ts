@@ -5,10 +5,13 @@ export type ToolName =
   | "prospect_outreach"
   | "interview_prep"
   | "prospect_prep"
-  | "deal_audit"
-  | "champion_builder"
+  | "deal_playbook"
+  | "proposal_blitz"
   | "practice_mode"
-  | "territory_blitz";
+  | "territory_blitz"
+  // Backward compat — old runs may reference these
+  | "deal_audit"
+  | "champion_builder";
 
 export interface ToolDefinition {
   id: ToolName;
@@ -70,23 +73,24 @@ export const TOOLS: ToolDefinition[] = [
     overageRate: 12,
   },
   {
-    id: "deal_audit",
-    name: "Deal Audit",
-    description: "Qualification scorecard, risk assessment, strategic next moves. Diagnose your active deals.",
+    id: "deal_playbook",
+    name: "Deal Playbook",
+    description: "Qualification audit, champion strategy & velocity plays in one shot. Diagnose the deal, arm your champion, know your next 3 moves.",
     deliverables: [
-      "Context File (.md) — full deal audit: qualification scorecard, gap analysis, risk assessment, recommended actions",
-      "Speaker Notes — key talking points for deal reviews & champion coaching sessions",
+      "Context File (.md) — deal qualification scorecard, champion profile, stakeholder map, velocity plays, next actions",
+      "Speaker Notes — coaching prep for your next champion call & manager deal review. Dynamic per meeting type.",
     ],
     minimumTier: "closer",
     overageRate: 10,
   },
   {
-    id: "champion_builder",
-    name: "Champion Builder",
-    description: "Champion profile, internal selling kit, stakeholder coaching. Arm your champion to sell for you.",
+    id: "proposal_blitz",
+    name: "Proposal Blitz",
+    description: "CFO-ready proposals with ROI math, competitive positioning & pricing rationale. Package the deal so the decision maker says yes.",
     deliverables: [
-      "Context File (.md) — champion profile, stakeholder map, internal selling kit, objection handling, development plan",
-      "Speaker Notes — champion coaching notes. Key messages tailored to each stakeholder they need to influence.",
+      "Context File (.md) — deal summary, buyer profile, ROI model, competitive positioning, pricing rationale",
+      "Speaker Notes — proposal presentation talk track, objection handling per stakeholder, negotiation boundaries",
+      "POV Deck (.pptx) — CFO-ready proposal: ROI breakdown, pricing, implementation timeline, risk mitigation. Google Slides-ready.",
     ],
     minimumTier: "closer",
     overageRate: 10,

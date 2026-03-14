@@ -20,6 +20,9 @@ const WORKER_KEY_TO_ASSET_ID: Record<string, string> = {
   accountOutreach: "account_outreach",
   accountPovDecks: "account_pov_decks",
 
+  // ── Deal Playbook & Proposal Blitz (same keys as standard deliverables) ──
+  // contextFile, onscreenNotes, povDeckPptx already mapped above
+
   // ── Legacy keys — backward compat for existing completed blitzes ──
   briefPdf: "context_file",          // old PDF brief → maps to context file
   povDeck: "pov_deck",               // old PDF POV deck

@@ -87,6 +87,10 @@ const TOOL_NAMES: Record<string, string> = {
   prospect_outreach: "Prospect Outreach",
   interview_prep: "Interview Prep",
   prospect_prep: "Prospect Prep",
+  deal_playbook: "Deal Playbook",
+  proposal_blitz: "Proposal Blitz",
+  territory_blitz: "Territory Blitz",
+  // Backward compat
   deal_audit: "Deal Audit",
   champion_builder: "Champion Builder",
 };
@@ -95,6 +99,10 @@ const STEP_ICONS: Record<string, React.ElementType> = {
   competitive_research: Search,
   market_intel: Globe,
   company_deep_dive: Search,
+  deal_qualification: ClipboardList,
+  champion_analysis: Search,
+  roi_modeling: Sparkles,
+  proposal_strategy: FileText,
   generating_context_file: FileText,
   generating_notes: FileText,
   generating_outreach: MessageCircleQuestion,

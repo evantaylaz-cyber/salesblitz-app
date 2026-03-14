@@ -42,6 +42,9 @@ const TOOL_INFO: Record<string, { name: string; category: "interview" | "prospec
   interview_prep: { name: "Interview Prep", category: "interview", subtitle: "Give us the details. We build your playbook, competitive intel & talk tracks for every interviewer." },
   prospect_outreach: { name: "Prospect Outreach", category: "prospect", subtitle: "Drop the account & contact. We research them and build multi-channel sequences that earn replies." },
   prospect_prep: { name: "Prospect Prep", category: "prospect", subtitle: "Tell us who you're meeting. We deliver research, talk tracks & a methodology-structured game plan." },
+  deal_playbook: { name: "Deal Playbook", category: "deal", subtitle: "Walk us through the deal. We diagnose it, build your champion strategy, and tell you your next 3 moves." },
+  proposal_blitz: { name: "Proposal Blitz", category: "deal", subtitle: "Tell us what you're proposing and who approves the budget. We build the business case with real ROI math." },
+  // Backward compat — old links with ?tool=deal_audit or ?tool=champion_builder still work
   deal_audit: { name: "Deal Audit", category: "deal", subtitle: "Walk us through the deal. We qualify it and surface the gaps you're not seeing." },
   champion_builder: { name: "Champion Builder", category: "deal", subtitle: "Tell us about your champion. We equip them to sell internally when you're not in the room." },
   // practice_mode is NOT a blitz tool — it routes directly to /practice
@@ -55,8 +58,8 @@ const MODE_QUESTIONS: Record<string, { label: string; subtitle: string; options:
     options: [
       { label: "I have a meeting scheduled", description: "Research, talk tracks & a game plan for your call", toolName: "prospect_prep" },
       { label: "I need to get the meeting first", description: "Cold outreach sequences that earn the first reply", toolName: "prospect_outreach" },
-      { label: "I need to audit an active deal", description: "Qualify the deal and surface gaps you're missing", toolName: "deal_audit" },
-      { label: "I need to equip my champion", description: "Internal selling kits so they sell when you're not in the room", toolName: "champion_builder" },
+      { label: "I need to move a deal forward", description: "Qualification audit, champion strategy & your next 3 moves", toolName: "deal_playbook" },
+      { label: "I need to build a proposal", description: "CFO-ready proposal with ROI math and pricing rationale", toolName: "proposal_blitz" },
     ],
   },
   interview: {
