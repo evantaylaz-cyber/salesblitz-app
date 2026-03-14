@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
@@ -99,6 +99,14 @@ export default function RequestPage() {
   const [submitted, setSubmitted] = useState(false);
   const [submittedRequestId, setSubmittedRequestId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const errorRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to error when it appears so user always sees it
+  useEffect(() => {
+    if (error && errorRef.current) {
+      errorRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [error]);
 
   // Form fields
   const [targetName, setTargetName] = useState("");
@@ -464,7 +472,7 @@ export default function RequestPage() {
       <main className="mx-auto max-w-3xl px-6 py-8">
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
-            <div className="flex items-start gap-3 rounded-lg bg-red-500/10 border border-red-500/20 p-4">
+            <div ref={errorRef} className="flex items-start gap-3 rounded-lg bg-red-500/10 border border-red-500/20 p-4">
               <AlertCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
               <p className="text-sm text-red-400">{error}</p>
             </div>
@@ -1100,6 +1108,12 @@ export default function RequestPage() {
           </div>
 
           {/* Submit */}
+          {error && (
+            <div className="flex items-start gap-3 rounded-lg bg-red-500/10 border border-red-500/20 p-3">
+              <AlertCircle className="h-4 w-4 text-red-500 shrink-0 mt-0.5" />
+              <p className="text-sm text-red-400">{error}</p>
+            </div>
+          )}
           <div className="flex items-center justify-between">
             <p className="text-xs text-neutral-500">
               This will use 1 blitz from your balance.

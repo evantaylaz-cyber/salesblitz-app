@@ -118,80 +118,93 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Consume N runs (one per account) — fail fast if insufficient
-    const runResults = [];
-    for (let i = 0; i < accounts.length; i++) {
-      const result = await consumeRun(user.id, toolName as ToolName);
-      if (!result.success) {
-        // Refund already-consumed runs by incrementing back
-        // Note: consumeRun already decremented, so we need to add back
-        if (i > 0) {
-          // Best-effort refund: increment subscription runs back
-          // In production, this should be a transaction. For now, log the issue.
-          console.error(
-            `[BATCH] Partial run consumption: consumed ${i} of ${accounts.length} runs for user ${user.id}. ` +
-            `Manual refund may be needed.`
-          );
-        }
-        return NextResponse.json(
-          {
-            error: `Insufficient runs. Need ${accounts.length} runs, only ${i} were available. ${result.error}`,
-          },
-          { status: 403 }
-        );
-      }
-      runResults.push(result);
-    }
-
     // Initialize per-account steps and assets
     const perAccountSteps = initializeSteps(toolName as ToolName);
     const perAccountAssets = getExpectedAssets(toolName as ToolName);
 
-    // Create BatchJob
-    const batchJob = await prisma.batchJob.create({
-      data: {
-        userId: user.id,
-        toolName,
-        batchType,
-        accounts: JSON.parse(JSON.stringify(accounts)),
-        sharedContext: sharedContext ? JSON.parse(JSON.stringify(sharedContext)) : null,
-        priority: user.priorityProcessing,
-        status: "submitted",
-        steps: JSON.parse(JSON.stringify(initializeBatchSteps(accounts.length))),
-        batchAssets: JSON.parse(JSON.stringify([])),
-      },
-    });
+    // Wrap run consumption + BatchJob + child RunRequests in a transaction
+    // so runs are never lost if any downstream creation fails (P1 bug fix Mar 14)
+    let txError: string | null = null;
 
-    // Create N child RunRequests
-    const childRequestIds: string[] = [];
-    for (let i = 0; i < accounts.length; i++) {
-      const acct = accounts[i];
-      const childRequest = await prisma.runRequest.create({
+    const txResult = await prisma.$transaction(async (tx) => {
+      // Consume N runs (one per account) — if any fails, entire transaction rolls back
+      const runResults = [];
+      for (let i = 0; i < accounts.length; i++) {
+        const result = await consumeRun(user.id, toolName as ToolName, null, tx);
+        if (!result.success) {
+          throw new Error(
+            `Insufficient runs. Need ${accounts.length} runs, only ${i} were available. ${result.error}`
+          );
+        }
+        runResults.push(result);
+      }
+
+      // Create BatchJob
+      const batchJob = await tx.batchJob.create({
         data: {
           userId: user.id,
           toolName,
-          targetName: acct.targetName,
-          targetCompany: acct.targetCompany,
-          targetRole: acct.targetRole || null,
-          jobDescription: acct.jobDescription || null,
-          linkedinUrl: acct.linkedinUrl || null,
-          linkedinText: acct.linkedinText || null,
-          additionalNotes: acct.additionalNotes || sharedContext?.additionalNotes || null,
-          targetCompanyUrl: acct.targetCompanyUrl || null,
-          engagementType: sharedContext?.engagementType || (toolName?.startsWith("interview_") ? "interview" : "cold_outreach"),
-          meetingDate: acct.meetingDate ? new Date(acct.meetingDate) : null,
-          priorInteractions: acct.priorInteractions || null,
+          batchType,
+          accounts: JSON.parse(JSON.stringify(accounts)),
+          sharedContext: sharedContext ? JSON.parse(JSON.stringify(sharedContext)) : null,
           priority: user.priorityProcessing,
           status: "submitted",
-          steps: JSON.parse(JSON.stringify(perAccountSteps)),
-          assets: JSON.parse(JSON.stringify(perAccountAssets.map(a => ({ ...a, url: null, size: null })))),
-          currentStep: null,
-          batchJobId: batchJob.id,
-          batchIndex: i,
+          steps: JSON.parse(JSON.stringify(initializeBatchSteps(accounts.length))),
+          batchAssets: JSON.parse(JSON.stringify([])),
         },
       });
-      childRequestIds.push(childRequest.id);
+
+      // Create N child RunRequests
+      const childRequestIds: string[] = [];
+      for (let i = 0; i < accounts.length; i++) {
+        const acct = accounts[i];
+        const childRequest = await tx.runRequest.create({
+          data: {
+            userId: user.id,
+            toolName,
+            targetName: acct.targetName,
+            targetCompany: acct.targetCompany,
+            targetRole: acct.targetRole || null,
+            jobDescription: acct.jobDescription || null,
+            linkedinUrl: acct.linkedinUrl || null,
+            linkedinText: acct.linkedinText || null,
+            additionalNotes: acct.additionalNotes || sharedContext?.additionalNotes || null,
+            targetCompanyUrl: acct.targetCompanyUrl || null,
+            engagementType: sharedContext?.engagementType || (toolName?.startsWith("interview_") ? "interview" : "cold_outreach"),
+            meetingDate: acct.meetingDate ? new Date(acct.meetingDate) : null,
+            priorInteractions: acct.priorInteractions || null,
+            priority: user.priorityProcessing,
+            status: "submitted",
+            steps: JSON.parse(JSON.stringify(perAccountSteps)),
+            assets: JSON.parse(JSON.stringify(perAccountAssets.map(a => ({ ...a, url: null, size: null })))),
+            currentStep: null,
+            batchJobId: batchJob.id,
+            batchIndex: i,
+          },
+        });
+        childRequestIds.push(childRequest.id);
+      }
+
+      return { runResults, batchJob, childRequestIds };
+    }, {
+      timeout: 30000, // 30s timeout for batch (N accounts = more DB ops)
+    }).catch((err) => {
+      if (err.message?.includes("Insufficient runs") || err.message?.includes("remaining") || err.message?.includes("No blitzes")) {
+        txError = err.message;
+        return null;
+      }
+      throw err;
+    });
+
+    // Handle consumeRun failure or transaction rollback
+    if (!txResult) {
+      return NextResponse.json(
+        { error: txError || "Transaction failed" },
+        { status: 403 }
+      );
     }
+
+    const { runResults, batchJob, childRequestIds } = txResult;
 
     // Trigger the worker's batch execution endpoint with retry
     const workerResult = await triggerWorkerBatch({
