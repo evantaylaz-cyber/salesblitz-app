@@ -85,7 +85,7 @@
 | 5.3 | Cost-of-doing-nothing | Slide 2 has compound cost projection, not just "things could be bad" | |
 | 5.4 | Customer-as-hero framing | Deck positions THEM as the protagonist making a strategic decision, not us pitching | |
 | 5.5 | Content density | 800-1200 total words across 6 slides. Each field 2-4 sentences. | |
-| 5.6 | Google Slides ready | PPTX opens cleanly in Google Slides. "Beautify this slide" produces good results. | |
+| 5.6 | Google Slides ready | PPTX opens cleanly in Google Slides. 2-step polish works: (1) "Enhance this slide" with Gemini prompt restructures layout, (2) banana button + "beautify this slide." adds visuals. | |
 | 5.7 | Design quality | Clean layout, readable, professional. Would you present this to a VP? | |
 | 5.8 | Anti-AI writing | Same rules as 4.10 | |
 
@@ -168,7 +168,7 @@
 |---|-------|--------------|-------|
 | 12.1 | NotebookLM instructions | Step-by-step: which PDFs to upload, which Studio features to use, copy-paste prompts for each | |
 | 12.2 | NotebookLM prompt quality | Audio/video/flashcard/quiz prompts are SPECIFIC to this blitz (company name, role, key themes) | |
-| 12.3 | Google Slides instructions | Clear guidance on Beautify, Refine Text, Add AI Visuals. Requirement note (Workspace tier). | |
+| 12.3 | Google Slides instructions | Clear 2-step guidance: (1) Enhance this slide + Gemini prompt, (2) banana button + "beautify this slide." Requirement note (Google One AI Premium $20/mo). | |
 | 12.4 | Handwritten card instructions | Mail guidance, print recommendations, regeneration prompt for Google AI Studio | |
 | 12.5 | Recording/note-taking etiquette | Disclosure script, compliance note (11 all-party consent states), graceful "turn it off" guidance | |
 | 12.6 | Screen setup recommendations | Monitor count selector, call-type-aware layout guidance (video/audio/presenting) | |

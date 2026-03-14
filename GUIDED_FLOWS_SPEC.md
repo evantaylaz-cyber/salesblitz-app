@@ -26,9 +26,8 @@ We guide. Google generates. The user gets outputs 10x better than they'd get on 
 - **Source recommendations are solid** per tool type
 
 ### AssetGuide.tsx
-- **Google Slides section references old "Beautify this slide" name** (now "Enhance this slide")
-- **Doesn't distinguish banana button (quick auto-beautify) from Gemini popout (custom prompt)**
-- **Missing "Help me visualize" guidance** (separate Gemini panel with Slide/Image/Infographic tabs)
+- **UPDATED Mar 14:** Google Slides section overhauled with 2-step hack (Enhance this slide + banana button)
+- Old 3-tool approach replaced with streamlined 2-step flow
 
 ---
 
@@ -211,28 +210,26 @@ Evan identified three distinct capabilities during exploration:
 - Low-friction, non-destructive
 - Best for: tightening bullet points or adjusting formality
 
-### Guided Flow Strategy (Prioritized)
+### Guided Flow Strategy (2-Step Hack)
 
-**Step 1: Upload & Open**
+**Updated Mar 14:** Evan discovered a streamlined 2-step process that produces better results than the old 4-step approach. This replaces ALL prior Google Slides guidance.
+
+**Step 0: Upload & Open**
 "Download your POV Deck (.pptx), upload to Google Drive, open with Google Slides."
 
-**Step 2: Add Visuals (Help Me Visualize - PRIMARY)**
-"Click the banana/wand button on any slide. This opens 'Help me visualize' with three tabs: Slide, Image, and Infographic. Type a prompt describing what visual would reinforce your slide's message."
+**Step 1: Restructure the Layout with Gemini**
+Click "Enhance this slide" at the bottom of the slide. Paste this prompt:
 
-Per-slide-type prompts for "Help me visualize":
-| Slide Type | Tab | Prompt |
-|------------|-----|--------|
-| Title / Opening | Image | "Professional hero image that conveys [company's industry] and momentum. Clean, modern, executive feel." |
-| Data / Metrics | Infographic | "Visual callout boxes highlighting the 3 key metrics on this slide. Use accent colors for emphasis." |
-| Competitive / Comparison | Slide | "Two-column comparison layout showing current state vs. recommended approach. Make the difference visually obvious." |
-| Strategy / Recommendations | Infographic | "Numbered roadmap or step-by-step visual for the recommendations on this slide. Clean, scannable." |
-| Closing / Next Steps | Image | "Professional, confident closing image. Clean background with subtle brand energy." |
+> Edit this slide to most effectively communicate the core message. Improve the design, prefer well structured visual layouts, retain the key content but make it more concise as needed.
 
-**Step 3: Enhance Full Slides (Advanced, optional)**
-"If a slide needs a complete redesign, click 'Enhance this slide' at the bottom. The pre-filled prompt works well as-is. Click 'Insert' to keep your original and compare, or 'Replace' to swap it out. Tip: always Insert first so you can compare before committing."
+Click "Insert" to keep your original and compare, or "Replace" to swap it out.
 
-**Step 4: Refine Text (Quick polish)**
-"Click any text box, then the pencil-sparkle icon. Use 'Shorten' to tighten bullet points, or type a custom prompt like 'Make this more direct and confident.'"
+**Step 2: Add Visuals with Help Me Visualize**
+Click the banana/wand button in the toolbar. Type "beautify this slide." followed by anything specific you want to highlight (e.g., "emphasize the ROI numbers" or "add a visual for the competitive landscape").
+
+**Why this works better than the old 4-step flow:** Step 1 (Enhance) restructures the layout and condenses content. Step 2 (banana button) adds visual polish on top of the improved structure. Running them in this order means visuals are applied to an already-optimized layout, not the raw PPTX output.
+
+**Requires:** Google One AI Premium ($20/mo) for Enhance and Help Me Visualize features.
 
 ---
 
@@ -270,13 +267,9 @@ Add a Step 2.5 between current Step 2 (Add more sources) and Step 3 (Generate):
 - Guidance on which source types to prioritize
 - Copy-paste Deep Research queries (already exist, just add context about selective import)
 
-### Update 3: AssetGuide.tsx (Google Slides section overhaul)
+### Update 3: AssetGuide.tsx (Google Slides section overhaul) — DONE Mar 14
 
-Replace current "Polish your deck in Google Slides" section with:
-1. Two-step approach: banana button first (quick), Gemini popout second (custom)
-2. Per-slide-type custom prompts (table above)
-3. "Help me visualize" for adding visual elements
-4. Remove old "Beautify this slide" terminology
+Replaced with 2-step hack: (1) "Enhance this slide" + Gemini prompt for layout restructure, (2) banana button + "beautify this slide." for visuals. Updated across all 7 touchpoints.
 
 ### Update 4: Settings hints accuracy
 

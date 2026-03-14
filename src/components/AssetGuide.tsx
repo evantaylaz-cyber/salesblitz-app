@@ -454,39 +454,34 @@ export default function AssetGuide({ toolName, meetingType }: AssetGuideProps) {
 
           {/* Google Slides AI design guidance - shows for all tools that generate decks */}
           <div className="mt-3 rounded-lg border border-green-500/20 bg-green-500/5 p-4">
-            <p className="text-xs font-semibold text-green-400 mb-2">Polish your deck in Google Slides</p>
+            <p className="text-xs font-semibold text-green-400 mb-2">Polish your deck in Google Slides (2 steps)</p>
             <p className="text-xs text-green-400/80 mb-3">
-              Your PPTX has the right content and structure. Google Slides&apos; AI tools add the visual polish. Upload to Google Drive, open with Slides, then:
+              Your PPTX has the right content and structure. Google Slides&apos; AI tools add the visual polish. Upload to Google Drive, open with Slides, then do these two steps on each slide:
             </p>
             <div className="space-y-3">
               <div className="rounded-md bg-[#0a0a0a] border border-green-500/10 px-3 py-2.5">
                 <p className="text-xs text-green-400 font-semibold mb-1">
-                  Step 1: Add visuals (Start here)
+                  Step 1: Restructure the layout with Gemini
                 </p>
                 <p className="text-xs text-green-400/70">
-                  Click the <span className="text-green-300">wand/banana button</span> on any slide to open &quot;Help me visualize.&quot; Three tabs: Slide, Image, Infographic. Type what visual would reinforce your slide&apos;s message.
+                  Click <span className="text-green-300">&quot;Enhance this slide&quot;</span> at the bottom of any slide. When the Gemini prompt appears, paste this:
                 </p>
-                <p className="text-xs text-green-400/50 mt-1 italic">
-                  This adds visuals without replacing your content. Best first move.
+                <p className="text-xs text-green-300 mt-1.5 bg-green-500/10 rounded px-2 py-1.5 font-mono leading-relaxed">
+                  Edit this slide to most effectively communicate the core message. Improve the design, prefer well structured visual layouts, retain the key content but make it more concise as needed.
+                </p>
+                <p className="text-xs text-green-400/50 mt-1.5 italic">
+                  This gets Gemini to restructure the layout while keeping your content. Choose Insert to compare with the original, or Replace.
                 </p>
               </div>
               <div className="rounded-md bg-[#0a0a0a] border border-green-500/10 px-3 py-2.5">
                 <p className="text-xs text-green-400 font-semibold mb-1">
-                  Step 2: Refine text
+                  Step 2: Add visuals with Help Me Visualize
                 </p>
                 <p className="text-xs text-green-400/70">
-                  Click any text box, then the <span className="text-green-300">pencil-sparkle icon</span>. Choose Shorten, Rephrase, or More Formal, or type a custom prompt like &quot;Make this more direct and confident.&quot;
-                </p>
-              </div>
-              <div className="rounded-md bg-[#0a0a0a] border border-green-500/10 px-3 py-2.5">
-                <p className="text-xs text-green-400 font-semibold mb-1">
-                  Step 3: Full redesign (Advanced)
-                </p>
-                <p className="text-xs text-green-400/70">
-                  Click <span className="text-green-300">&quot;Enhance this slide&quot;</span> at the bottom of any slide. Gemini generates a complete redesign. Choose <span className="text-green-300">Insert</span> to keep your original and compare, or Replace to swap.
+                  Click the <span className="text-green-300">wand/banana button</span> on the same slide to open &quot;Help me visualize.&quot; Type <span className="text-green-300">&quot;beautify this slide&quot;</span> followed by anything specific you want to highlight (e.g. &quot;beautify this slide. highlight the ROI numbers and make the pricing table stand out&quot;).
                 </p>
                 <p className="text-xs text-green-400/50 mt-1 italic">
-                  This replaces the entire slide. Always Insert first so you can compare.
+                  This adds visual polish on top of the restructured layout. Do Step 1 first, then Step 2.
                 </p>
               </div>
             </div>
