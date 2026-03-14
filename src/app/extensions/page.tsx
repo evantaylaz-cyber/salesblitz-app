@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Download,
   Check,
@@ -13,11 +13,60 @@ import {
   AlertCircle,
   ChevronDown,
   ChevronUp,
+  Shield,
+  Loader2,
 } from "lucide-react";
 import AppNav from "@/components/AppNav";
 
 export default function ExtensionsPage() {
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+
+  // Recording consent acknowledgment
+  const [consentAcknowledged, setConsentAcknowledged] = useState<boolean | null>(null);
+  const [consentChecks, setConsentChecks] = useState({
+    disclosure: false,
+    employerPolicy: false,
+    retention: false,
+  });
+  const [savingConsent, setSavingConsent] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/profile")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.profile?.recordingConsentAcknowledgedAt) {
+          setConsentAcknowledged(true);
+        } else {
+          setConsentAcknowledged(false);
+        }
+      })
+      .catch(() => setConsentAcknowledged(false));
+  }, []);
+
+  const allChecked =
+    consentChecks.disclosure &&
+    consentChecks.employerPolicy &&
+    consentChecks.retention;
+
+  async function acknowledgeConsent() {
+    setSavingConsent(true);
+    try {
+      const res = await fetch("/api/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          recordingConsentAcknowledgedAt: new Date().toISOString(),
+        }),
+      });
+      if (res.ok) {
+        setConsentAcknowledged(true);
+      }
+    } catch {
+      // Silent fail, they can try again
+    } finally {
+      setSavingConsent(false);
+    }
+  }
 
   const steps = [
     {
@@ -176,6 +225,97 @@ export default function ExtensionsPage() {
             Get the extension
           </a>
         </div>
+
+        {/* Recording Disclosure Acknowledgment */}
+        {consentAcknowledged === false && (
+          <section className="mb-12">
+            <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-6">
+              <div className="flex items-start gap-3 mb-4">
+                <Shield className="h-5 w-5 shrink-0 text-amber-400 mt-0.5" />
+                <div>
+                  <h3 className="font-semibold text-white">
+                    Before your first recording
+                  </h3>
+                  <p className="mt-1 text-sm text-neutral-300">
+                    Please confirm you understand your responsibilities when
+                    recording meetings.
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-3 ml-8">
+                <label className="flex items-start gap-3 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={consentChecks.disclosure}
+                    onChange={(e) =>
+                      setConsentChecks((prev) => ({
+                        ...prev,
+                        disclosure: e.target.checked,
+                      }))
+                    }
+                    className="mt-1 h-4 w-4 rounded border-neutral-600 bg-neutral-800 text-emerald-500 focus:ring-emerald-500 shrink-0"
+                  />
+                  <span className="text-sm text-neutral-200 group-hover:text-white transition">
+                    I will tell all participants that I am recording before I
+                    start. If anyone objects, I will turn it off immediately.
+                  </span>
+                </label>
+
+                <label className="flex items-start gap-3 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={consentChecks.employerPolicy}
+                    onChange={(e) =>
+                      setConsentChecks((prev) => ({
+                        ...prev,
+                        employerPolicy: e.target.checked,
+                      }))
+                    }
+                    className="mt-1 h-4 w-4 rounded border-neutral-600 bg-neutral-800 text-emerald-500 focus:ring-emerald-500 shrink-0"
+                  />
+                  <span className="text-sm text-neutral-200 group-hover:text-white transition">
+                    I understand that my employer&apos;s recording and data
+                    handling policies apply, and I will follow them.
+                  </span>
+                </label>
+
+                <label className="flex items-start gap-3 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    checked={consentChecks.retention}
+                    onChange={(e) =>
+                      setConsentChecks((prev) => ({
+                        ...prev,
+                        retention: e.target.checked,
+                      }))
+                    }
+                    className="mt-1 h-4 w-4 rounded border-neutral-600 bg-neutral-800 text-emerald-500 focus:ring-emerald-500 shrink-0"
+                  />
+                  <span className="text-sm text-neutral-200 group-hover:text-white transition">
+                    I understand that transcripts are automatically deleted after
+                    90 days. Coaching scores and skill assessments are retained.
+                  </span>
+                </label>
+              </div>
+
+              <div className="mt-5 ml-8">
+                <button
+                  onClick={acknowledgeConsent}
+                  disabled={!allChecked || savingConsent}
+                  className="flex items-center gap-2 rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  {savingConsent ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Check className="h-4 w-4" />
+                  )}
+                  {savingConsent ? "Saving..." : "I understand, let me record"}
+                </button>
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* Setup Steps */}
         <section className="mb-12">

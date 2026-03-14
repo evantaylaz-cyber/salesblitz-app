@@ -290,6 +290,10 @@ model UserProfile {
   preferredTone         String?  @default("professional") @map("preferred_tone")
   onboardingCompleted   Boolean  @default(false) @map("onboarding_completed") // Kept for backward compat
 
+  // Data retention & recording consent
+  transcriptRetentionDays        Int       @default(90) @map("transcript_retention_days")  // 30 | 60 | 90 | 180 | 0 (manual only)
+  recordingConsentAcknowledgedAt DateTime? @map("recording_consent_acknowledged_at")       // When user first acknowledged recording disclosure responsibilities
+
   createdAt             DateTime @default(now()) @map("created_at")
   updatedAt             DateTime @default(now()) @updatedAt @map("updated_at")
 
@@ -464,6 +468,9 @@ model MeetingRecording {
 
   // Embedding for semantic search
   transcriptEmbedding Unsupported("vector(768)")?
+
+  // Data retention
+  transcriptExpiresAt DateTime? // Auto-set by DB trigger (createdAt + user's retention_days, default 90)
 
   // Status
   status          String     @default("processing") // processing | transcribing | analyzing | completed | failed

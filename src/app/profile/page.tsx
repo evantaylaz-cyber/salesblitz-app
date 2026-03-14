@@ -24,6 +24,7 @@ import {
   Users,
   FileText,
   Upload,
+  Shield,
 } from "lucide-react";
 import AppNav from "@/components/AppNav";
 import VoiceTextarea from "@/components/VoiceTextarea";
@@ -95,6 +96,9 @@ interface ProfileData {
   signaturePatterns: string[];
   // Depth tracking
   onboardingDepth: number;
+  // Data retention & recording consent
+  transcriptRetentionDays: number;
+  recordingConsentAcknowledgedAt: string | null;
 }
 
 const EMPTY_DEAL_STORY: DealStory = {
@@ -160,6 +164,8 @@ const DEFAULT_PROFILE: ProfileData = {
   bannedPhrases: [],
   signaturePatterns: [],
   onboardingDepth: 0,
+  transcriptRetentionDays: 90,
+  recordingConsentAcknowledgedAt: null,
 };
 
 function CollapsibleSection({
@@ -333,6 +339,9 @@ export default function ProfilePage() {
   const [resumeParseResult, setResumeParseResult] = useState<string | null>(null);
   const [uploadingResume, setUploadingResume] = useState(false);
   const resumeFileRef = useRef<HTMLInputElement>(null);
+  // Data retention states
+  const [purging, setPurging] = useState(false);
+  const [purgeResult, setPurgeResult] = useState<string | null>(null);
 
   function validateField(fieldName: string, value: unknown): string {
     if (typeof value !== "string") return "";
@@ -620,6 +629,29 @@ export default function ProfilePage() {
       setSaving(false);
     }
   }, [profile]);
+
+  async function purgeAllTranscripts() {
+    if (!confirm("This will permanently delete all meeting transcripts. Coaching scores and analysis summaries will be preserved. Continue?")) return;
+    setPurging(true);
+    setPurgeResult(null);
+    try {
+      const res = await fetch("/api/account/purge-recordings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ all: true }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setPurgeResult(`Done. Purged transcript data from ${data.purged} recording(s).`);
+      } else {
+        setPurgeResult(data.error || "Purge failed.");
+      }
+    } catch {
+      setPurgeResult("Network error.");
+    } finally {
+      setPurging(false);
+    }
+  }
 
   function updateField(field: keyof ProfileData, value: unknown) {
     setProfile((prev) => ({ ...prev, [field]: value }));
@@ -1509,6 +1541,77 @@ export default function ProfilePage() {
                 placeholder="Phrases or patterns you like using"
                 hint="Comma-separated"
               />
+            </div>
+          </CollapsibleSection>
+
+          {/* SECTION 8: Data & Privacy */}
+          <CollapsibleSection
+            title="Data & Privacy"
+            icon={Shield}
+            description="Transcript retention and recording data"
+          >
+            <div className="space-y-5">
+              <div>
+                <label className="block text-sm font-medium text-neutral-300 mb-1.5">
+                  Transcript Retention Period
+                </label>
+                <select
+                  value={profile.transcriptRetentionDays}
+                  onChange={(e) =>
+                    updateField(
+                      "transcriptRetentionDays",
+                      parseInt(e.target.value)
+                    )
+                  }
+                  className="w-full rounded-lg border border-neutral-700 bg-[#1a1a1a] px-3 py-2.5 text-sm text-neutral-200 focus:border-emerald-500 focus:outline-none"
+                >
+                  <option value={30}>30 days</option>
+                  <option value={60}>60 days</option>
+                  <option value={90}>90 days (default)</option>
+                  <option value={180}>180 days</option>
+                </select>
+                <p className="mt-1.5 text-xs text-neutral-500">
+                  Meeting transcripts are automatically deleted after this
+                  period. Coaching scores, analysis summaries, and skill
+                  assessments are kept as part of your professional development
+                  record.
+                </p>
+              </div>
+
+              <div className="rounded-lg border border-neutral-700/50 bg-neutral-800/30 p-4">
+                <h4 className="text-sm font-medium text-neutral-300 mb-1">
+                  Purge All Transcripts
+                </h4>
+                <p className="text-xs text-neutral-500 mb-3">
+                  Permanently delete all meeting transcripts and raw audio
+                  references. Coaching analysis, scores, and outcome assessments
+                  will be preserved.
+                </p>
+                <button
+                  onClick={purgeAllTranscripts}
+                  disabled={purging}
+                  className="flex items-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm font-medium text-red-400 transition hover:bg-red-500/20 disabled:opacity-50"
+                >
+                  {purging ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Trash2 className="h-4 w-4" />
+                  )}
+                  {purging ? "Purging..." : "Purge All Transcripts"}
+                </button>
+                {purgeResult && (
+                  <p className="mt-2 text-xs text-neutral-400">{purgeResult}</p>
+                )}
+              </div>
+
+              {profile.recordingConsentAcknowledgedAt && (
+                <p className="text-xs text-neutral-500">
+                  Recording disclosure acknowledged{" "}
+                  {new Date(
+                    profile.recordingConsentAcknowledgedAt
+                  ).toLocaleDateString()}
+                </p>
+              )}
             </div>
           </CollapsibleSection>
         </div>

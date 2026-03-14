@@ -142,6 +142,9 @@ export async function PUT(req: NextRequest) {
       "onboardingDepth",
       "preferredTone",
       "onboardingCompleted",
+      // Data retention & recording consent
+      "transcriptRetentionDays",
+      "recordingConsentAcknowledgedAt",
     ];
 
     const updateData: Record<string, unknown> = {};
