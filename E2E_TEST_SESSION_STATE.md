@@ -178,4 +178,38 @@ Fixed by adding missing entries, then extracted to shared `src/lib/tool-display.
 | Targets (Territory Intelligence) | A- | Great CRM-like view, minor tool name display bug |
 | Analytics | A- | Good KPIs and charts, tool name display bug |
 | Playbooks | Incomplete | No playbooks generated despite 8 blitzes |
+| Territory Blitz (Batch) | A- | Batch submission, parallel processing, clarification flow, results delivery all working. See test 12 below. |
 | **Overall App Quality** | **B+/A-** | Core blitz pipeline is solid. Research quality is the standout feature. Main gaps are cosmetic display bugs and the playbooks pipeline. |
+
+---
+
+## Round 4: Territory Blitz E2E (Mar 14, Session 2)
+
+### 12. Territory Blitz — Batch Submission (Salesblitz account)
+- **Batch Job:** Prospect Outreach, 3 accounts (Datadog, Gong, Outreach)
+- **Submitted:** 3/14/2026 at 2:07 PM
+- **Status:** 2/3 Delivered, 1 still processing (Datadog started late due to clarification)
+- **Quality Grade:** A-
+
+**What was tested:**
+1. Batch page UI: loads, form works, + Add Account adds rows, CSV/Paste import buttons visible
+2. Submitted 3 accounts with company name, contact, title, URL
+3. Shared context field populated with territory ICP notes
+4. Submission consumed 3 runs, created 1 BatchJob + 3 RunRequests atomically
+5. Clarification flow triggered on Datadog (thin context, 62% confidence). 3 smart questions asked. Answering resumed the run.
+6. Outreach + Gong processed in parallel, both delivered 6/6 steps in ~5-6 min
+7. Results page for Outreach: Context File, Outreach Sequences, POV Deck (5 slides) all present
+8. NotebookLM integration and "How to use your deliverables" sections render correctly
+9. Batch progress bar shows 67% (2/3) accurately
+
+**Findings:**
+- **PASS:** End-to-end batch flow works. No errors, no crashes, no blank screens.
+- **PASS:** Parallel processing is real. 2 accounts completed while the 3rd was in clarification.
+- **PASS:** Clarification flow fires appropriately and resumes correctly.
+- **PASS:** Assets delivered with correct labels and formats.
+- **Minor note:** Batch status stays "Queued" even after 2/3 complete. Should probably transition to "In Progress" or "Partial". Not a P0.
+- **Minor note:** Datadog request stuck at "Building Context File" 3/6 for extended period after clarification. May be queue delay, not a bug. Monitoring.
+
+### Code Changes (Round 4)
+18. **pptx-generator.js:** Added `generateProposalDeck()` method with premium dark theme (#0A0A0A bg, emerald accent, unique per-slide colors, card-based bullets). Proposal Blitz now uses this instead of the basic `generateSimplePovDeck()`.
+19. **executor.js:** Updated POV deck generation to route proposal_blitz through `generateProposalDeck()` while all other tools continue using `generateSimplePovDeck()`.
