@@ -808,3 +808,65 @@ Both remaining items require live testing with HeyGen credits (currently exhaust
 - `src/app/request/page.tsx` — Pre-fill from prior runs (banner, state, apply function)
 - `src/components/AppNav.tsx` — Icons on mobile nav items
 - `PRODUCT_QUALITY_AUDIT.md` — Full session documentation
+
+---
+
+## Data Retention & Recording Defense — Engineering Specs (Mar 14, 2026)
+
+### Context
+Identified legal/business exposure: privacy policy claimed "recordings belong to you, not your employer" and transcripts were retained indefinitely. This positions Sales Blitz as helping reps extract company data when they leave. Rewrote privacy policy, terms of service, and extension FAQ copy. Three engineering features needed to back up the new copy.
+
+### Feature 1: Transcript Auto-Deletion (TTL)
+
+**Priority:** P1 — privacy policy now promises 90-day default retention. Must ship before any enterprise prospect reviews our legal docs.
+
+**What:** Meeting transcripts auto-delete after a configurable retention period (default: 90 days from creation). Coaching analysis (scores, skill assessments, improvement areas) persists separately and is NOT subject to TTL.
+
+**Implementation:**
+- Add `transcript_expires_at` column to the meeting/recording table (timestamp, default = created_at + 90 days)
+- Supabase cron job (pg_cron) runs daily: `DELETE FROM recordings WHERE transcript_expires_at < NOW() AND transcript IS NOT NULL`
+- The cron should NULL out `transcript` and `raw_text` fields but preserve the row and its coaching columns (scores, analysis summary, key moments)
+- Account settings page: retention period dropdown (30 / 60 / 90 / 180 days / manual only)
+- Extension page: small note under recording controls showing current retention setting
+
+**Edge cases:**
+- If user deletes manually before TTL, no issue (already gone)
+- If user wants to keep a specific transcript longer, they can export it before TTL hits
+- Coaching scores reference transcript excerpts in some fields — sanitize these to remove verbatim quotes, keep only the assessment
+
+### Feature 2: Data Purge Endpoint
+
+**Priority:** P2 — needed for enterprise readiness but not blocking current users.
+
+**What:** API endpoint + account settings UI to purge all recording data associated with a specific company or time period.
+
+**Implementation:**
+- `POST /api/account/purge-recordings` with body: `{ company?: string, before?: ISO date, all?: boolean }`
+- Deletes all matching transcript rows (preserves coaching scores with transcript references nulled)
+- Requires re-authentication (Clerk step-up) before execution
+- Sends confirmation email after purge
+- Admin-side: `POST /api/admin/purge-request` for processing third-party employer requests (manual review flow via evan@salesblitz.ai)
+
+### Feature 3: First-Recording Disclosure Acknowledgment
+
+**Priority:** P2 — good practice, not legally required since we already put responsibility on the user in ToS.
+
+**What:** One-time acknowledgment flow before the user's first recording via the extension.
+
+**Implementation:**
+- Extension popup: before first recording, show a modal with three checkboxes:
+  1. "I will disclose to all participants that I'm recording this meeting"
+  2. "I understand my employer's recording policies apply"
+  3. "I understand transcripts are automatically deleted after [90] days"
+- All three must be checked before Record button activates for the first time
+- Store acknowledgment timestamp in user profile (`recording_consent_acknowledged_at`)
+- Don't show again after first acknowledgment
+
+### Copy Changes Shipped (Mar 14)
+
+| File | What Changed |
+|------|-------------|
+| `salesblitz-site/privacy.html` | Rewrote Section 5 (data ownership), Section 7 (retention), Section 1 (recording bullets). Removed "your data belongs to you, not your employer" language. Added 90-day transcript TTL, coaching-vs-transcript distinction, employer purge request process. |
+| `salesblitz-site/terms.html` | Added Section 7a (Recording Responsibilities). Explicit user liability for consent, employer policy compliance. Clarified coaching analysis vs verbatim content retention. |
+| `salesblitz-app/src/app/extensions/page.tsx` | Updated "Where does my data go?" FAQ with TTL info. Added new FAQ: "What if my employer has a no-recording policy?" |
+| `salesblitz-site/index.html` | Fixed mobile nav Solutions dropdown centering (separate bug). |

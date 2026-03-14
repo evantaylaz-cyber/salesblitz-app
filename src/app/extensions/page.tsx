@@ -126,7 +126,12 @@ export default function ExtensionsPage() {
     {
       question: "Where does my data go?",
       answer:
-        "Transcripts and analysis are stored in your Sales Blitz account. Only you can access them. We never share your recordings with anyone.",
+        "Raw audio is deleted from our servers within 24 hours of transcription. Transcripts are kept for 90 days, then automatically deleted. Coaching scores and skill assessments stay in your account as part of your professional development record. We never share your recordings with anyone.",
+    },
+    {
+      question: "What if my employer has a no-recording policy?",
+      answer:
+        "Always follow your employer's policies. If your company restricts meeting recordings, don't use the extension for those meetings. Sales Blitz is a professional development tool, not a workaround for company policies. The prep and practice tools work great without recordings.",
     },
     {
       question: "What if the recording fails?",
