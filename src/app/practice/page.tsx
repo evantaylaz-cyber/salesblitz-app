@@ -31,6 +31,10 @@ const TOOL_LABELS: Record<string, string> = {
   prospect_outreach: "Prospect Outreach",
   interview_prep: "Interview Prep",
   prospect_prep: "Prospect Prep",
+  deal_playbook: "Deal Playbook",
+  proposal_blitz: "Proposal Blitz",
+  territory_blitz: "Territory Blitz",
+  // Backward compat for pre-Mar 13 runs
   deal_audit: "Deal Audit",
   champion_builder: "Champion Builder",
 };
@@ -41,13 +45,18 @@ const SCENARIO_LABELS: Record<string, string> = {
   interview_prep: "Interview Practice",
   prospect_outreach: "Discovery Call",
   prospect_prep: "Discovery Call",
+  deal_playbook: "Deal Strategy Call",
+  proposal_blitz: "Proposal Presentation",
+  territory_blitz: "Territory Planning",
+  // Backward compat
   deal_audit: "Deal Review Call",
   champion_builder: "Champion Call",
 };
 
 function inferMeetingType(toolName: string): string {
   if (toolName.startsWith("interview_")) return "interview";
-  if (toolName === "deal_audit") return "follow_up";
+  if (toolName === "deal_audit" || toolName === "deal_playbook") return "follow_up";
+  if (toolName === "proposal_blitz") return "presentation";
   return "discovery";
 }
 

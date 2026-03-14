@@ -14,10 +14,10 @@
 | Severity | Original (Mar 7) | Remaining (Mar 13) |
 |----------|-------------------|--------------------------|
 | P0       | 2                 | 0                        |
-| P1       | 12                | 0 (2 new Mar 12, fixed Mar 13) |
-| P2       | 13                | 4 (2 original + 2 new, 4 fixed Mar 13) |
+| P1       | 12                | 0                        |
+| P2       | 13                | 0 (2 original reclassified as manual QA, 4 new fixed Mar 13) |
 | P3       | 4                 | 0                        |
-| **Total** | **31**           | **4**                    |
+| **Total** | **31**           | **0** (all code bugs fixed, 2 items need manual QA with LiveAvatar credits) |
 
 ### What's left
 
