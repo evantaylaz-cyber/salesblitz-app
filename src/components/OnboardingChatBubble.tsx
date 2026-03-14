@@ -289,7 +289,7 @@ export default function OnboardingChatBubble({
                       Let's get you set up. Takes about 3 minutes, and I do the heavy lifting.
                     </p>
                     <p className="text-sm text-neutral-100 leading-relaxed mt-1.5">
-                      Are you actively selling, prepping for interviews, or both?
+                      Are you actively selling, exploring new opportunities, or both?
                     </p>
                   </>
                 )}
@@ -319,7 +319,7 @@ export default function OnboardingChatBubble({
                   <>
                     {[
                       "I'm actively selling",
-                      "I'm prepping for interviews",
+                      "I'm exploring new opportunities",
                       "Both",
                     ].map((suggestion) => (
                       <button

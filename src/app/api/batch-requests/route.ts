@@ -179,7 +179,7 @@ export async function POST(req: NextRequest) {
           additionalNotes: acct.additionalNotes || sharedContext?.additionalNotes || null,
           targetCompanyUrl: acct.targetCompanyUrl || null,
           engagementType: sharedContext?.engagementType || (toolName?.startsWith("interview_") ? "interview" : "cold_outreach"),
-          meetingDate: acct.meetingDate || null,
+          meetingDate: acct.meetingDate ? new Date(acct.meetingDate) : null,
           priorInteractions: acct.priorInteractions || null,
           priority: user.priorityProcessing,
           status: "submitted",

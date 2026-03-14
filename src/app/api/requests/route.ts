@@ -210,7 +210,7 @@ export async function POST(req: NextRequest) {
         targetCompanyUrl: targetCompanyUrl || null,
         meetingType: meetingType || null,
         engagementType: engagementType || inferEngagementType(toolName, meetingType),
-        meetingDate: meetingDate || null,
+        meetingDate: meetingDate ? new Date(meetingDate) : null,
         priorInteractions: priorInteractions || null,
         caseStudies: caseStudies || null,
         interviewInstructions: interviewInstructions || null,
