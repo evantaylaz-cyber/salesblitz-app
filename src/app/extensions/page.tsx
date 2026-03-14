@@ -39,24 +39,18 @@ export default function ExtensionsPage() {
     },
     {
       number: 4,
-      title: "Join a meeting",
+      title: "Join a meeting and disclose",
       description:
-        "Start any call on Google Meet, Zoom web, or Microsoft Teams web.",
+        'Start any call on Google Meet, Zoom web, or Teams web. Let participants know you have a note-taker running: "I have an AI note-taker so I can stay focused on our conversation instead of scribbling notes. Cool?"',
     },
     {
       number: 5,
-      title: "Click Record This Tab",
+      title: "Click Record",
       description:
-        "When ready, click the Record button in the extension. Audio captures from your browser tab only.",
+        "Hit the Record button in the extension. Audio captures from your browser tab only. No bot joins the call.",
     },
     {
       number: 6,
-      title: "No bot joins. No one knows.",
-      description:
-        "Tab audio capture is invisible. No notification, no bot in the room, no recordings sent to others.",
-    },
-    {
-      number: 7,
       title: "Click Stop when done",
       description:
         "Transcript and analysis appear in your dashboard within seconds. Ready to reference, share, or feed into your next blitz.",
@@ -115,14 +109,14 @@ export default function ExtensionsPage() {
 
   const faqs = [
     {
-      question: "Can others see I'm recording?",
+      question: "Do I need to tell people I'm recording?",
       answer:
-        "No. Tab audio capture is completely invisible. No bot joins the call, no notification appears, and others have no way to know you're recording.",
+        'Yes, always. Disclosure is the right thing to do and it builds trust. A simple heads-up at the start of the call is all it takes: "I have an AI note-taker running so I can stay present instead of scribbling notes. That cool with you?" If they say no, turn it off immediately. 11 US states also legally require all-party consent (CA, FL, IL, MA, MD, CT, MI, MT, NH, PA, WA).',
     },
     {
-      question: "Should I tell the other person I'm recording?",
+      question: "Does a bot join my call?",
       answer:
-        'Always. Even when the law doesn\'t require it, transparency builds trust. Try: "This conversation is important to me so I have an AI note-taker running. It helps me stay present instead of scribbling notes." If they say no, turn it off immediately. 11 US states require all-party consent (CA, FL, IL, MA, MD, CT, MI, MT, NH, PA, WA), so if any participant is in one of those states, disclosure is legally required.',
+        "No. The extension captures audio from your browser tab directly. No bot enters the meeting room, so there's no disruption to the conversation.",
     },
     {
       question: "How long can I record?",
@@ -137,7 +131,7 @@ export default function ExtensionsPage() {
     {
       question: "What if the recording fails?",
       answer:
-        "If audio capture drops, you'll see an error in the extension. Check browser console for details. Works best on Chromium-based browsers (Chrome, Edge, Brave).",
+        "If audio capture drops, you'll see an error in the extension. Works best on Chromium-based browsers (Chrome, Edge, Brave).",
     },
     {
       question: "Does it work on mobile?",
