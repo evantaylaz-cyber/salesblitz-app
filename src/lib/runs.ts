@@ -1,5 +1,12 @@
 import prisma from "./db";
 import { canAccessTool, TOOLS, ToolName } from "./tools";
+import { Prisma } from "@prisma/client";
+
+// Transaction-compatible client type (subset of PrismaClient used inside $transaction)
+type TxClient = Omit<
+  typeof prisma,
+  "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
+>;
 
 interface RunResult {
   success: boolean;
@@ -16,15 +23,18 @@ interface RunResult {
 export async function consumeRun(
   userId: string,
   toolName: ToolName,
-  teamId?: string | null
+  teamId?: string | null,
+  tx?: TxClient
 ): Promise<RunResult> {
+  const db = tx || prisma;
+
   // Team run consumption
   if (teamId) {
-    return consumeTeamRun(userId, teamId, toolName);
+    return consumeTeamRun(userId, teamId, toolName, db);
   }
 
   // Personal run consumption (existing logic)
-  const user = await prisma.user.findUnique({
+  const user = await db.user.findUnique({
     where: { id: userId },
     include: {
       runPacks: {
@@ -57,12 +67,12 @@ export async function consumeRun(
   // Try packs first
   if (eligiblePacks.length > 0) {
     const pack = eligiblePacks[0];
-    await prisma.runPack.update({
+    await db.runPack.update({
       where: { id: pack.id },
       data: { runsRemaining: pack.runsRemaining - 1 },
     });
 
-    await prisma.runLog.create({
+    await db.runLog.create({
       data: {
         userId,
         toolName,
@@ -81,12 +91,12 @@ export async function consumeRun(
 
   // Try subscription
   if (hasSubscriptionAccess && user.subscriptionRunsRemaining > 0) {
-    await prisma.user.update({
+    await db.user.update({
       where: { id: userId },
       data: { subscriptionRunsRemaining: user.subscriptionRunsRemaining - 1 },
     });
 
-    await prisma.runLog.create({
+    await db.runLog.create({
       data: {
         userId,
         toolName,
@@ -116,10 +126,11 @@ export async function consumeRun(
 async function consumeTeamRun(
   userId: string,
   teamId: string,
-  toolName: ToolName
+  toolName: ToolName,
+  db: TxClient = prisma
 ): Promise<RunResult> {
   // Verify team membership
-  const membership = await prisma.teamMember.findFirst({
+  const membership = await db.teamMember.findFirst({
     where: {
       teamId,
       userId,
@@ -131,7 +142,7 @@ async function consumeTeamRun(
     return { success: false, error: "Not a member of this team" };
   }
 
-  const team = await prisma.team.findUnique({
+  const team = await db.team.findUnique({
     where: { id: teamId },
     include: {
       runPacks: {
@@ -161,12 +172,12 @@ async function consumeTeamRun(
 
   if (eligiblePacks.length > 0) {
     const pack = eligiblePacks[0];
-    await prisma.runPack.update({
+    await db.runPack.update({
       where: { id: pack.id },
       data: { runsRemaining: pack.runsRemaining - 1 },
     });
 
-    await prisma.runLog.create({
+    await db.runLog.create({
       data: {
         userId,
         teamId,
@@ -186,12 +197,12 @@ async function consumeTeamRun(
 
   // Try team subscription
   if (hasSubscriptionAccess && team.subscriptionRunsRemaining > 0) {
-    await prisma.team.update({
+    await db.team.update({
       where: { id: teamId },
       data: { subscriptionRunsRemaining: team.subscriptionRunsRemaining - 1 },
     });
 
-    await prisma.runLog.create({
+    await db.runLog.create({
       data: {
         userId,
         teamId,

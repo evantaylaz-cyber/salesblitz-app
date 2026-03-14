@@ -157,92 +157,112 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Consume a run first — if they don't have runs, fail early
-    const runResult = await consumeRun(user.id, toolName as ToolName, teamId || null);
-    if (!runResult.success) {
-      return NextResponse.json({ error: runResult.error }, { status: 403 });
-    }
-
     // Initialize execution steps and expected assets for this tool
     const steps = initializeSteps(toolName as ToolName);
     const expectedAssets = getExpectedAssets(toolName as ToolName);
 
-    // Upsert Target entity (groups all activity per user per company/contact pair)
+    // Wrap run consumption + request creation in a transaction so runs
+    // are never lost if request creation fails (P1 bug fix Mar 14)
     const targetType = toolName.startsWith("interview_") ? "interview" : "prospect";
-    const target = await prisma.target.upsert({
-      where: {
-        userId_companyName_contactName: {
+
+    const { runResult, request } = await prisma.$transaction(async (tx) => {
+      // Consume a run — if they don't have runs, throw to abort transaction
+      const runResult = await consumeRun(user.id, toolName as ToolName, teamId || null, tx);
+      if (!runResult.success) {
+        throw new Error(runResult.error || "No blitzes remaining");
+      }
+
+      // Upsert Target entity (groups all activity per user per company/contact pair)
+      const target = await tx.target.upsert({
+        where: {
+          userId_companyName_contactName: {
+            userId: user.id,
+            companyName: targetCompany,
+            contactName: targetName || "",
+          },
+        },
+        update: {
+          contactTitle: targetRole || undefined,
+          roundCount: { increment: 1 },
+          currentRound: { increment: 1 },
+        },
+        create: {
           userId: user.id,
           companyName: targetCompany,
           contactName: targetName || "",
-        },
-      },
-      update: {
-        contactTitle: targetRole || undefined,
-        roundCount: { increment: 1 },
-        currentRound: { increment: 1 },
-      },
-      create: {
-        userId: user.id,
-        companyName: targetCompany,
-        contactName: targetName || "",
-        contactTitle: targetRole || null,
-        type: targetType,
-        roundCount: 1,
-        currentRound: 1,
-      },
-    });
-
-    // Create the run request with execution tracking
-    const request = await prisma.runRequest.create({
-      data: {
-        userId: user.id,
-        teamId: teamId || null,
-        toolName,
-        targetId: target.id,
-        targetName: targetName || "",
-        targetCompany,
-        targetRole: targetRole || null,
-        jobDescription: jobDescription || null,
-        linkedinUrl: linkedinUrl || null,
-        linkedinText: linkedinText || null,
-        additionalNotes: additionalNotes || null,
-        targetCompanyUrl: targetCompanyUrl || null,
-        meetingType: meetingType || null,
-        engagementType: engagementType || inferEngagementType(toolName, meetingType),
-        meetingDate: meetingDate ? new Date(meetingDate) : null,
-        priorInteractions: priorInteractions || null,
-        caseStudies: caseStudies || null,
-        interviewInstructions: interviewInstructions || null,
-        priority: teamId ? false : user.priorityProcessing,
-        status: "submitted",
-        steps: JSON.parse(JSON.stringify(steps)),
-        assets: JSON.parse(JSON.stringify(expectedAssets.map(a => ({ ...a, url: null, size: null })))),
-        currentStep: null,
-      },
-    });
-
-    // Create InterviewPanel + members if panel data provided (interview_prep only)
-    if (panel && toolName === "interview_prep" && Array.isArray(panel.members) && panel.members.length > 0) {
-      await prisma.interviewPanel.create({
-        data: {
-          runRequestId: request.id,
-          roundType: panel.roundType || meetingType || "panel",
-          roundNumber: panel.roundNumber || 1,
-          assignment: interviewInstructions || null,
-          members: {
-            create: panel.members.map((m: { name: string; title?: string; roleInMeeting: string; personalityVibe?: string; evaluationFocus?: string; linkedinUrl?: string }, idx: number) => ({
-              name: m.name,
-              title: m.title || null,
-              roleInMeeting: m.roleInMeeting,
-              personalityVibe: m.personalityVibe || null,
-              evaluationFocus: m.evaluationFocus || null,
-              linkedinUrl: m.linkedinUrl || null,
-              order: idx,
-            })),
-          },
+          contactTitle: targetRole || null,
+          type: targetType,
+          roundCount: 1,
+          currentRound: 1,
         },
       });
+
+      // Create the run request with execution tracking
+      const request = await tx.runRequest.create({
+        data: {
+          userId: user.id,
+          teamId: teamId || null,
+          toolName,
+          targetId: target.id,
+          targetName: targetName || "",
+          targetCompany,
+          targetRole: targetRole || null,
+          jobDescription: jobDescription || null,
+          linkedinUrl: linkedinUrl || null,
+          linkedinText: linkedinText || null,
+          additionalNotes: additionalNotes || null,
+          targetCompanyUrl: targetCompanyUrl || null,
+          meetingType: meetingType || null,
+          engagementType: engagementType || inferEngagementType(toolName, meetingType),
+          meetingDate: meetingDate ? new Date(meetingDate) : null,
+          priorInteractions: priorInteractions || null,
+          caseStudies: caseStudies || null,
+          interviewInstructions: interviewInstructions || null,
+          priority: teamId ? false : user.priorityProcessing,
+          status: "submitted",
+          steps: JSON.parse(JSON.stringify(steps)),
+          assets: JSON.parse(JSON.stringify(expectedAssets.map(a => ({ ...a, url: null, size: null })))),
+          currentStep: null,
+        },
+      });
+
+      // Create InterviewPanel + members if panel data provided (interview_prep only)
+      if (panel && toolName === "interview_prep" && Array.isArray(panel.members) && panel.members.length > 0) {
+        await tx.interviewPanel.create({
+          data: {
+            runRequestId: request.id,
+            roundType: panel.roundType || meetingType || "panel",
+            roundNumber: panel.roundNumber || 1,
+            assignment: interviewInstructions || null,
+            members: {
+              create: panel.members.map((m: { name: string; title?: string; roleInMeeting: string; personalityVibe?: string; evaluationFocus?: string; linkedinUrl?: string }, idx: number) => ({
+                name: m.name,
+                title: m.title || null,
+                roleInMeeting: m.roleInMeeting,
+                personalityVibe: m.personalityVibe || null,
+                evaluationFocus: m.evaluationFocus || null,
+                linkedinUrl: m.linkedinUrl || null,
+                order: idx,
+              })),
+            },
+          },
+        });
+      }
+
+      return { runResult, request };
+    }, {
+      timeout: 15000, // 15s timeout for the transaction
+    }).catch((err) => {
+      // If the error is from consumeRun (no runs), return 403
+      if (err.message?.includes("remaining") || err.message?.includes("No blitzes")) {
+        return { runResult: { success: false, error: err.message } as any, request: null };
+      }
+      throw err; // Re-throw other errors (DB failures, etc.)
+    });
+
+    // Handle consumeRun failure (no runs available) or transaction rollback
+    if (!runResult.success || !request) {
+      return NextResponse.json({ error: runResult.error || "Transaction failed" }, { status: 403 });
     }
 
     // Send email notification (don't block response on failure)
