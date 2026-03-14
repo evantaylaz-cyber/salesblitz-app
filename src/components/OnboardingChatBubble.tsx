@@ -18,6 +18,7 @@ import {
   Paperclip,
 } from "lucide-react";
 import { useVoiceInput } from "@/hooks/useVoiceInput";
+import ReactMarkdown from "react-markdown";
 
 const LAYERS = [
   { depth: 1, label: "Essentials" },
@@ -372,13 +373,34 @@ export default function OnboardingChatBubble({
                   )}
                 </div>
                 <div
-                  className={`px-3.5 py-2.5 max-w-[300px] text-sm leading-relaxed whitespace-pre-wrap ${
+                  className={`px-3.5 py-2.5 max-w-[300px] text-sm leading-relaxed ${
                     isUser
-                      ? "bg-emerald-600 text-white rounded-2xl rounded-tr-md"
+                      ? "bg-emerald-600 text-white rounded-2xl rounded-tr-md whitespace-pre-wrap"
                       : "bg-[#0a0a0a] border border-[#1a1a1a] text-neutral-100 rounded-2xl rounded-tl-md"
                   }`}
                 >
-                  {textContent}
+                  {isUser ? (
+                    textContent
+                  ) : (
+                    <ReactMarkdown
+                      components={{
+                        p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+                        strong: ({ children }) => <strong className="font-semibold text-white">{children}</strong>,
+                        em: ({ children }) => <em className="italic">{children}</em>,
+                        ul: ({ children }) => <ul className="list-disc pl-4 mb-2 last:mb-0">{children}</ul>,
+                        ol: ({ children }) => <ol className="list-decimal pl-4 mb-2 last:mb-0">{children}</ol>,
+                        li: ({ children }) => <li className="mb-0.5">{children}</li>,
+                        a: ({ href, children }) => (
+                          <a href={href} target="_blank" rel="noopener noreferrer" className="text-emerald-400 underline hover:text-emerald-300">
+                            {children}
+                          </a>
+                        ),
+                        code: ({ children }) => <code className="bg-[#1a1a1a] px-1 py-0.5 rounded text-xs font-mono">{children}</code>,
+                      }}
+                    >
+                      {textContent}
+                    </ReactMarkdown>
+                  )}
                 </div>
               </div>
             </div>

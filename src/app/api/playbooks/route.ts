@@ -30,6 +30,10 @@ export async function GET() {
             "interview_prep",
             "prospect_outreach",
             "prospect_prep",
+            "deal_playbook",
+            "proposal_blitz",
+            "territory_blitz",
+            // Backward compat for pre-Mar 13 runs
             "champion_builder",
             "competitor_research",
           ],

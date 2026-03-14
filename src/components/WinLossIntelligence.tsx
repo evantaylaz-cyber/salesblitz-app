@@ -60,10 +60,13 @@ const TOOL_LABELS: Record<string, string> = {
   prospect_outreach: "Prospect Outreach",
   interview_prep: "Interview Prep",
   prospect_prep: "Prospect Prep",
+  deal_playbook: "Deal Playbook",
+  proposal_blitz: "Proposal Blitz",
+  territory_blitz: "Territory Blitz",
+  practice_mode: "Practice Mode",
+  // Backward compat for pre-Mar 13 runs
   deal_audit: "Deal Audit",
   champion_builder: "Champion Builder",
-  practice_mode: "Practice Mode",
-  territory_blitz: "Territory Blitz",
 };
 
 const DIMENSION_LABELS: Record<string, string> = {

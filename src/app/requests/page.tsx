@@ -72,10 +72,14 @@ const TOOL_NAMES: Record<string, string> = {
   prospect_outreach: "Prospect Outreach",
   interview_prep: "Interview Prep",
   prospect_prep: "Prospect Prep",
+  deal_playbook: "Deal Playbook",
+  proposal_blitz: "Proposal Blitz",
+  territory_blitz: "Territory Blitz",
+  competitor_research: "Competitor Research",
+  practice_mode: "AI Practice Mode",
+  // Backward compat for pre-Mar 13 runs
   deal_audit: "Deal Audit",
   champion_builder: "Champion Builder",
-  practice_mode: "AI Practice Mode",
-  competitor_research: "Competitor Research",
 };
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: React.ElementType }> = {

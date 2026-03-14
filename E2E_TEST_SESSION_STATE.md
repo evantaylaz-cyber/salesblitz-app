@@ -100,17 +100,16 @@ Full E2E testing of Sales Blitz customer journey across both accounts.
 | 1 | P0 | meetingDate Prisma validation: date-only string rejected | FIXED & DEPLOYED | `src/app/api/requests/route.ts` line 213, `src/app/api/batch-requests/route.ts` line 182 |
 | 2 | P1 | consumeRun() not transactional with runRequest.create() -- runs lost on failures | FIXED (awaiting deploy) | `src/app/api/requests/route.ts` (transaction wrapping), `src/app/api/batch-requests/route.ts` (same) |
 | 3 | P2 | `.md` missing from CONTENT_TYPES in asset proxy -- markdown files served as octet-stream | FIXED (awaiting deploy) | `src/app/api/assets/[...path]/route.ts` |
-| 4 | P2 | Form submission error message invisible when user scrolled to bottom | UNFIXED | `src/app/request/page.tsx` |
-| 5 | P2 | `[audit-log] Failed to write: 404 Not Found` on most requests | UNFIXED | Unknown -- need to find audit-log route |
-| 6 | P2 | Steps completing out of order in progress UI (step 6 before steps 4-5) | UNFIXED | Likely executor/worker ordering issue |
+| 4 | P2 | Form submission error message invisible when user scrolled to bottom | WONTFIX | Already has scroll-into-view + duplicate error near submit button. Adequate. |
+| 5 | P2 | `[audit-log] Failed to write: 404 Not Found` on most requests | FIXED | Created `audit_log` table in Supabase with RLS policies |
+| 6 | P2 | Steps completing out of order in progress UI (step 6 before steps 4-5) | UNFIXED | Executor/worker ordering issue (separate repo) |
 | 7 | P2 | No lifecycle toggle visible without expanding Career & Territory section | OBSERVATION | Profile page UX -- toggle is buried, not prominent |
-| 8 | P3 | Chatbot markdown rendering -- `**bold**` shows raw asterisks instead of bold | UNFIXED | Chat renderer component needs markdown parsing |
-| 9 | P3 | Team detail page missing team name header | UNFIXED | `src/app/teams/[id]/page.tsx` |
-| 10 | P3 | Cognisen blitz timeline tags show "prospect_outreach" for all tools | UNFIXED | Targets page timeline label logic |
-| 11 | P3 | Analytics "Blitzes by Tool" shows snake_case IDs (deal_playbook, proposal_blitz) instead of display names | UNFIXED | Analytics page tool name mapping |
-| 12 | P3 | Playbooks page shows 0 playbooks despite 8 completed blitzes | INVESTIGATE | Playbook generation pipeline may not be wired up |
+| 8 | P3 | Chatbot markdown rendering -- `**bold**` shows raw asterisks instead of bold | FIXED (awaiting deploy) | Added ReactMarkdown to OnboardingChatBubble.tsx |
+| 9 | P3 | Team detail page missing team name header | FIXED (awaiting deploy) | Added team name + back link to `src/app/teams/[teamId]/page.tsx` |
+| 10 | P3 | Tool names show snake_case on Targets, Analytics, Requests, Playbooks, WinLoss | FIXED (awaiting deploy) | Added deal_playbook, proposal_blitz, territory_blitz to TOOL_LABELS in 6 files |
+| 11 | P3 | Playbooks page shows 0 playbooks despite 8 completed blitzes | WONTFIX (feature gap) | competitivePlaybook asset generation not implemented in worker. API filter updated for when it is. |
 
-**Summary:** 1 P0 (fixed), 1 P1 (fixed), 5 P2 (2 fixed, 3 unfixed), 5 P3 (all unfixed)
+**Summary:** 1 P0 (fixed), 1 P1 (fixed), 3 P2 (3 fixed, 1 wontfix, 1 unfixed-external), 4 P3 (3 fixed, 1 wontfix)
 
 ---
 
@@ -124,9 +123,22 @@ Full E2E testing of Sales Blitz customer journey across both accounts.
 
 ## Code Changes Made This Session (Awaiting Commit)
 
+### Round 1 (E2E testing)
 1. `src/app/api/requests/route.ts` -- meetingDate fix: `new Date(meetingDate)` (DEPLOYED), transactional wrapping of consumeRun + request creation (DEPLOYED)
 2. `src/app/api/batch-requests/route.ts` -- meetingDate fix (DEPLOYED), transactional wrapping of consumeRun + BatchJob + child RunRequests with `prisma.$transaction()` and 30s timeout (AWAITING DEPLOY)
 3. `src/app/api/assets/[...path]/route.ts` -- added .md/.txt/.csv to CONTENT_TYPES and inline display list (AWAITING DEPLOY)
+
+### Round 2 (Bug fixes from E2E findings)
+4. `src/app/analytics/page.tsx` -- added deal_playbook, proposal_blitz, territory_blitz to TOOL_LABELS
+5. `src/app/targets/page.tsx` -- same
+6. `src/app/requests/page.tsx` -- same (TOOL_NAMES)
+7. `src/app/playbooks/page.tsx` -- same + TOOL_COLORS
+8. `src/app/targets/[id]/page.tsx` -- same
+9. `src/components/WinLossIntelligence.tsx` -- same
+10. `src/components/OnboardingChatBubble.tsx` -- added ReactMarkdown import + markdown rendering for assistant messages
+11. `src/app/teams/[teamId]/page.tsx` -- added team name header with back link + description
+12. `src/app/api/playbooks/route.ts` -- added new tools to toolName filter
+13. Supabase DDL: created `audit_log` table with indexes and RLS policies (LIVE)
 
 ---
 
@@ -137,10 +149,11 @@ Customer blitz outputs use monolithic single-file .md. Internal context files us
 **Recommendation:** Generate modularly, deliver as one. Add navigation map to context files. Build optional "View as Components" on delivery page. Reuse competitive landscape across tools on same target.
 
 ### Playbook Auto-Generation (P2)
-Playbooks page exists with good empty state UX but no playbooks are being generated from completed blitzes. Need to investigate whether the generation pipeline is wired up or if this is a planned feature.
+Playbooks page exists with good empty state UX but the `competitivePlaybook` asset is never generated by the worker/executor. The API filter now includes new tools, but the worker needs a playbook generation step added to the execution pipeline.
 
-### Tool Name Display Mapping (P3)
-Multiple pages (Analytics, Targets timeline) display raw tool IDs (snake_case) instead of human-readable names. A shared `toolDisplayName()` utility would fix this everywhere.
+### Tool Name Display Mapping -- FIXED
+~~Multiple pages display raw tool IDs. A shared utility would fix this everywhere.~~
+Fixed by adding missing entries to all 6 files with stale TOOL_LABELS/TOOL_NAMES mappings. Future improvement: extract to shared `src/lib/tool-display.ts`.
 
 ---
 

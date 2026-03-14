@@ -43,10 +43,14 @@ const TOOL_LABELS: Record<string, string> = {
   prospect_outreach: "Prospect Outreach",
   interview_prep: "Interview Prep",
   prospect_prep: "Prospect Prep",
-  deal_audit: "Deal Audit",
-  champion_builder: "Champion Builder",
+  deal_playbook: "Deal Playbook",
+  proposal_blitz: "Proposal Blitz",
+  territory_blitz: "Territory Blitz",
   competitor_research: "Competitor Research",
   practice_mode: "AI Practice Mode",
+  // Backward compat for pre-Mar 13 runs
+  deal_audit: "Deal Audit",
+  champion_builder: "Champion Builder",
 };
 
 const STATUS_COLORS: Record<string, string> = {

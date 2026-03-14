@@ -208,6 +208,19 @@ export default function TeamDetailPage() {
 
       <main className="mx-auto max-w-4xl px-6 py-8">
 
+        {/* Team Header */}
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <Link href="/teams" className="text-sm text-neutral-500 hover:text-neutral-300 transition">
+              &larr; All Teams
+            </Link>
+            <h1 className="mt-1 text-2xl font-bold text-white">{team.name}</h1>
+            {team.description && (
+              <p className="mt-1 text-sm text-neutral-400">{team.description}</p>
+            )}
+          </div>
+        </div>
+
         {/* Team Overview */}
         <div className="mb-8 grid gap-4 sm:grid-cols-3">
           <div className="rounded-xl border bg-[#141414] p-5 shadow-sm shadow-black/20">
