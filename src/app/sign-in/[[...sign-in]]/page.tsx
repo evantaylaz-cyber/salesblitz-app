@@ -74,7 +74,7 @@ export default function SignInPage() {
         <div className="flex items-center gap-3">
           <Shield className="h-4 w-4 text-neutral-600" />
           <p className="text-xs text-neutral-600">
-            Used by AEs closing enterprise deals &amp; candidates landing competitive roles.
+            Used by AEs closing enterprise deals &amp; reps navigating career transitions.
           </p>
         </div>
       </div>

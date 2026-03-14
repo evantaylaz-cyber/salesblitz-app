@@ -1269,7 +1269,7 @@ export default function ProfilePage() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-neutral-200 mb-1">
-                  Lifecycle Stage
+                  Where are you right now?
                 </label>
                 <select
                   value={profile.lifecycleStage}
@@ -1277,11 +1277,14 @@ export default function ProfilePage() {
                   className="w-full rounded-lg border border-[#333333] bg-[#0a0a0a] px-3 py-2 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
                 >
                   <option value="">Select...</option>
-                  <option value="interviewing">Interviewing</option>
-                  <option value="ramping">Ramping</option>
-                  <option value="selling">Selling</option>
-                  <option value="managing">Managing</option>
+                  <option value="selling">Currently selling</option>
+                  <option value="ramping">Ramping into a new role</option>
+                  <option value="interviewing">Exploring opportunities</option>
+                  <option value="managing">Managing a team</option>
                 </select>
+                <p className="mt-1 text-xs text-neutral-500">
+                  This tailors your dashboard, tools & content to your current focus.
+                </p>
               </div>
               <TextArea
                 label="Career Narrative"

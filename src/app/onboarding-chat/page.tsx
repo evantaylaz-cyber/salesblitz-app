@@ -250,7 +250,7 @@ export default function OnboardingChatPage() {
                     "I work at Salesforce, salesforce.com",
                     "I'm at a startup called Acme, acme.io",
                     "I work at Gong, gong.io",
-                    "I'm between roles, prepping for interviews",
+                    "I'm exploring new opportunities",
                   ].map((suggestion) => (
                     <button
                       key={suggestion}

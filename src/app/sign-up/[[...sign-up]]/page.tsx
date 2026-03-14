@@ -29,10 +29,10 @@ export default function SignUpPage() {
           <div className="mt-10 space-y-4">
             {[
               "Deep research on any account, prospect, or interviewer in minutes",
-              "Cold outreach sequences that earn replies, whether prospecting or job hunting",
+              "Cold outreach sequences that earn replies, not silence",
               "POV decks, speaker notes & outreach sequences for every meeting type",
               "AI practice mode with scored roleplay for calls, interviews & panels",
-              "Interview prep with per-interviewer research, speaker notes & mock scenarios",
+              "Career transition prep with per-interviewer research & speaker notes",
             ].map((item) => (
               <div key={item} className="flex items-start gap-3">
                 <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-400 mt-0.5" />

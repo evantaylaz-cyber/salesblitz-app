@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 import { Check, Zap, Loader2, Star, Lock } from "lucide-react";
 import AppNav from "@/components/AppNav";
@@ -64,6 +64,20 @@ export default function SubscribePage() {
   const { isLoaded } = useUser();
   const [annual, setAnnual] = useState(true);
   const [loading, setLoading] = useState<string | null>(null);
+  const [lifecycleStage, setLifecycleStage] = useState<string>("selling");
+
+  useEffect(() => {
+    async function fetchLifecycle() {
+      try {
+        const res = await fetch("/api/profile");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.profile?.lifecycleStage) setLifecycleStage(data.profile.lifecycleStage);
+        }
+      } catch {}
+    }
+    if (isLoaded) fetchLifecycle();
+  }, [isLoaded]);
 
   async function handleCheckout(priceKey: string) {
     setLoading(priceKey);
@@ -102,7 +116,7 @@ export default function SubscribePage() {
             Name your target. Show up ready for whatever&apos;s next.
           </h1>
           <p className="mt-3 text-lg text-neutral-400 max-w-2xl mx-auto">
-            Deep research, cold outreach sequences, competitive intel, playbooks & live AI practice. Whether you're prospecting or interviewing, one blitz replaces five tools. Cancel anytime.
+            Deep research, cold outreach sequences, competitive intel, playbooks & live AI practice. One blitz replaces five tools. Cancel anytime.
           </p>
         </div>
 
@@ -212,32 +226,34 @@ export default function SubscribePage() {
           })}
         </div>
 
-        {/* Interview Sprint */}
-        <div className="mt-12 rounded-2xl border-2 border-orange-500/20 bg-gradient-to-r from-orange-500/10 to-amber-500/10 p-8">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-            <div>
-              <h3 className="text-xl font-bold text-white">Interview Sprint</h3>
-              <p className="mt-1 text-neutral-300">
-                3 Interview Prep + 3 Interview Outreach runs. No subscription required.
-              </p>
-              <p className="mt-1 text-sm text-neutral-400">One-time payment · 90-day expiration</p>
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="text-3xl font-bold text-white">$149</span>
-              <button
-                onClick={() => handleCheckout("interview_sprint")}
-                disabled={loading === "interview_sprint"}
-                className="rounded-lg bg-orange-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-orange-700 disabled:opacity-50 flex items-center gap-2"
-              >
-                {loading === "interview_sprint" ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  "Buy Sprint"
-                )}
-              </button>
+        {/* Career Transition Sprint — only visible for interviewing/ramping lifecycle */}
+        {(lifecycleStage === "interviewing" || lifecycleStage === "ramping") && (
+          <div className="mt-12 rounded-2xl border-2 border-orange-500/20 bg-gradient-to-r from-orange-500/10 to-amber-500/10 p-8">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+              <div>
+                <h3 className="text-xl font-bold text-white">Career Transition Sprint</h3>
+                <p className="mt-1 text-neutral-300">
+                  3 Interview Prep + 3 Interview Outreach runs. No subscription required.
+                </p>
+                <p className="mt-1 text-sm text-neutral-400">One-time payment · 90-day expiration · For reps ramping into a new role</p>
+              </div>
+              <div className="flex items-center gap-4">
+                <span className="text-3xl font-bold text-white">$149</span>
+                <button
+                  onClick={() => handleCheckout("interview_sprint")}
+                  disabled={loading === "interview_sprint"}
+                  className="rounded-lg bg-orange-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-orange-700 disabled:opacity-50 flex items-center gap-2"
+                >
+                  {loading === "interview_sprint" ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    "Buy Sprint"
+                  )}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Run Packs */}
         <div id="packs" className="mt-12">

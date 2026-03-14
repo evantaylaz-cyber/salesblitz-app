@@ -88,7 +88,8 @@ const TOOL_NAMES: Record<string, string> = {
   win_loss_analyst: "Win/Loss Analyst",
 };
 
-const TOOLS: Tool[] = [
+// Interview-specific tools
+const INTERVIEW_TOOLS: Tool[] = [
   {
     id: "interview_outreach",
     name: "Interview Outreach",
@@ -103,13 +104,10 @@ const TOOLS: Tool[] = [
     description: "Deep research on the company, the role & every interviewer. POV deck, speaker notes & competitive intel per panelist.",
     minimumTier: "pro",
   },
-  {
-    id: "practice_mode",
-    name: "AI Practice Mode",
-    hook: "Rehearse with your research.",
-    description: "AI personas built from your blitz intel. Prospect calls, interviews & panels. Scored on 8 messaging dimensions.",
-    minimumTier: "pro",
-  },
+];
+
+// Sales tools (includes practice mode since it works for both)
+const SALES_TOOLS: Tool[] = [
   {
     id: "prospect_outreach",
     name: "Prospect Outreach",
@@ -122,6 +120,13 @@ const TOOLS: Tool[] = [
     name: "Prospect Prep",
     hook: "Own the conversation.",
     description: "Org chart, pain points, competitive positioning & talk tracks. Methodology-structured, deal-qualified.",
+    minimumTier: "pro",
+  },
+  {
+    id: "practice_mode",
+    name: "AI Practice Mode",
+    hook: "Rehearse with your research.",
+    description: "AI personas built from your blitz intel. Prospect calls, interviews & panels. Scored on 8 messaging dimensions.",
     minimumTier: "pro",
   },
   {
@@ -147,6 +152,7 @@ const TOOLS: Tool[] = [
   },
 ];
 
+
 export default function DashboardPage() {
   const { user: clerkUser, isLoaded } = useUser();
   const [userData, setUserData] = useState<UserData | null>(null);
@@ -157,6 +163,7 @@ export default function DashboardPage() {
   const [onboardingComplete, setOnboardingComplete] = useState(false);
   const [onboardingDepth, setOnboardingDepth] = useState(0);
   const [profileChecked, setProfileChecked] = useState(false);
+  const [lifecycleStage, setLifecycleStage] = useState<string>("selling");
 
   useEffect(() => {
     if (isLoaded && clerkUser) {
@@ -174,6 +181,7 @@ export default function DashboardPage() {
         if (data.profile?.onboardingCompleted) setOnboardingComplete(true);
         const depth = data.profile?.onboardingDepth ?? 0;
         setOnboardingDepth(depth);
+        if (data.profile?.lifecycleStage) setLifecycleStage(data.profile.lifecycleStage);
         // Auto-open onboarding chat for brand new users (depth 0)
         if (depth === 0 && !data.profile?.onboardingCompleted) {
           setChatOpen(true);
@@ -291,7 +299,11 @@ export default function DashboardPage() {
           <h1 className="text-2xl font-extrabold text-white tracking-tight">
             Welcome back, {firstName}.
           </h1>
-          <p className="text-gray-500 mt-1">Pick a tool, name your target, own the conversation.</p>
+          <p className="text-gray-500 mt-1">
+            {lifecycleStage === "interviewing"
+              ? "Prep for your next role. Every round, every interviewer."
+              : "Pick a tool, name your target, own the conversation."}
+          </p>
         </div>
 
         {/* Pending requests banner */}
@@ -493,9 +505,9 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* Quick Start — 2 primary modes */}
+        {/* Quick Start — lifecycle-aware hero CTAs */}
         <h2 className="mb-4 text-sm font-semibold text-gray-500 uppercase tracking-wider">Start a Blitz</h2>
-        <div className={`relative grid grid-cols-1 gap-4 md:grid-cols-2 mb-10 ${onboardingDepth === 0 ? "pointer-events-none" : ""}`}>
+        <div className={`relative grid grid-cols-1 gap-4 ${lifecycleStage === "interviewing" || (lifecycleStage !== "selling" && lifecycleStage !== "managing" && lifecycleStage !== "ramping") ? "md:grid-cols-2" : ""} mb-10 ${onboardingDepth === 0 ? "pointer-events-none" : ""}`}>
           {onboardingDepth === 0 && profileChecked && (
             <div className="absolute inset-0 z-20 flex items-center justify-center rounded-xl bg-[#0a0a0a]/70 backdrop-blur-[2px]">
               <div className="text-center">
@@ -511,7 +523,32 @@ export default function DashboardPage() {
             </div>
           )}
 
-          {/* Prep for a Meeting */}
+          {/* Prep for an Interview — shown first for interviewing lifecycle */}
+          {lifecycleStage === "interviewing" && (
+            <button
+              onClick={() => { window.location.href = "/request?mode=interview"; }}
+              disabled={totalAvailableRuns() === 0}
+              className="group relative flex flex-col rounded-2xl border-2 border-emerald-500/20 bg-gradient-to-br from-emerald-500/10 via-[#141414] to-[#141414] p-6 text-left transition hover:border-emerald-500/40 hover:shadow-[0_0_32px_rgba(16,185,129,0.12)] disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/15 border border-emerald-500/25">
+                  <Briefcase className="h-5 w-5 text-emerald-400" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-white">Prep for an interview</h3>
+                  <p className="text-xs text-gray-500">Any round, any stage, any interviewer</p>
+                </div>
+              </div>
+              <p className="text-sm text-gray-400 leading-relaxed">
+                Deep company intel, POV deck, speaker notes per panelist, and talk tracks. Need to land the interview first? We build that outreach too.
+              </p>
+              <div className="mt-4 flex items-center gap-1.5 text-xs font-semibold text-emerald-400 group-hover:text-emerald-300 transition">
+                <Zap className="h-3.5 w-3.5" /> Start Blitz
+              </div>
+            </button>
+          )}
+
+          {/* Prep for a Meeting — always shown */}
           <button
             onClick={() => { window.location.href = "/request?mode=meeting"; }}
             disabled={totalAvailableRuns() === 0}
@@ -533,39 +570,19 @@ export default function DashboardPage() {
               <Zap className="h-3.5 w-3.5" /> Start Blitz
             </div>
           </button>
-
-          {/* Prep for an Interview */}
-          <button
-            onClick={() => { window.location.href = "/request?mode=interview"; }}
-            disabled={totalAvailableRuns() === 0}
-            className="group relative flex flex-col rounded-2xl border-2 border-emerald-500/20 bg-gradient-to-br from-emerald-500/10 via-[#141414] to-[#141414] p-6 text-left transition hover:border-emerald-500/40 hover:shadow-[0_0_32px_rgba(16,185,129,0.12)] disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            <div className="flex items-center gap-3 mb-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/15 border border-emerald-500/25">
-                <Briefcase className="h-5 w-5 text-emerald-400" />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-white">Prep for an interview</h3>
-                <p className="text-xs text-gray-500">Any round, any stage, any interviewer</p>
-              </div>
-            </div>
-            <p className="text-sm text-gray-400 leading-relaxed">
-              Deep company intel, POV deck, speaker notes per panelist, and talk tracks. Need to land the interview first? We build that outreach too.
-            </p>
-            <div className="mt-4 flex items-center gap-1.5 text-xs font-semibold text-emerald-400 group-hover:text-emerald-300 transition">
-              <Zap className="h-3.5 w-3.5" /> Start Blitz
-            </div>
-          </button>
         </div>
 
-        {/* Advanced Tools */}
+        {/* Advanced Tools — lifecycle-aware ordering */}
         <details className="mb-10 group">
           <summary className="mb-4 flex cursor-pointer items-center gap-2 text-sm font-semibold text-gray-500 uppercase tracking-wider hover:text-gray-400 transition list-none">
             <ChevronRight className="h-4 w-4 transition-transform group-open:rotate-90" />
             All Tools
           </summary>
         <div className={`relative grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3 ${onboardingDepth === 0 ? "pointer-events-none" : ""}`}>
-          {TOOLS.map((tool) => {
+          {(lifecycleStage === "interviewing"
+            ? [...INTERVIEW_TOOLS, ...SALES_TOOLS]
+            : [...SALES_TOOLS, ...INTERVIEW_TOOLS]
+          ).map((tool) => {
             const accessible = !tool.comingSoon && (canAccess(tool.minimumTier) || hasSprintAccess(tool.id));
 
             return (
