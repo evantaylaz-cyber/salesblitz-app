@@ -25,9 +25,9 @@
 
 | Path | Status | Notes |
 |------|--------|-------|
-| Path 1: Job seeker, no resume, no case studies | BLOCKED | Blitz failed (competitive_research timeout), retry produced empty delivery (BUG-010). No usable assets. |
-| Path 2: Job seeker, resume only | NOT STARTED | |
-| Path 3: Job seeker, resume + case studies | NOT STARTED | |
+| Path 1: Job seeker, text input | DONE (Mar 12) | Chatbot coached deal story, saved career_narrative + 1 deal story + 9 case studies + 3 ICPs. Layer counter stuck at 0/4 (P1). |
+| Path 2: Job seeker, resume upload | DONE (Mar 12) | Resume parsed, 7 deal stories extracted. 0 case studies saved (P1 — parse_resume doesn't trigger research_company). Layer counter same 0/4 issue. |
+| Path 3: Job seeker, no resume, no interview | DONE (Mar 12) | Routes to interview outreach. Onboarding clean. Blitz hit competitive_research timeout (P1, systemic). Fail-forward confirmed but no recovery to "delivered". |
 | Path 4: Job seeker, resume + case studies + instructions | NOT STARTED | |
 | Post-blitz: NotebookLM upload | PARTIAL | URL upload fails (auth required). File upload works. See UX-001. |
 | Post-blitz: Google Slides upload | NOT STARTED | |

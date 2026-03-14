@@ -1,30 +1,41 @@
 # Sales Blitz Product Quality Audit
 
-**Date:** 2026-03-07 (original), last updated 2026-03-10
+**Date:** 2026-03-07 (original), last updated 2026-03-13
 **Auditor:** Claude (directed by Evan)
 **Standard:** "Would an Apple product exec ship this?"
 **Scope:** Every user-facing page, API route, form, and piece of copy in the app
 
 ---
 
-## CURRENT STATE (Mar 10, 2026 evening) — SINGLE SOURCE OF TRUTH
+## CURRENT STATE (Mar 13, 2026) — SINGLE SOURCE OF TRUTH
 
 **Read this section. Ignore all "Updated Summary Stats" tables below; they are historical snapshots that contradict each other.**
 
-| Severity | Original (Mar 7) | Remaining (Mar 10 late) |
+| Severity | Original (Mar 7) | Remaining (Mar 13) |
 |----------|-------------------|--------------------------|
 | P0       | 2                 | 0                        |
-| P1       | 12                | 0                        |
-| P2       | 13                | 2                        |
+| P1       | 12                | 0 (2 new Mar 12, fixed Mar 13) |
+| P2       | 13                | 4 (2 original + 2 new, 4 fixed Mar 13) |
 | P3       | 4                 | 0                        |
-| **Total** | **31**           | **2**                    |
+| **Total** | **31**           | **4**                    |
 
-### What's left (from original audit)
+### What's left
 
 **P0: ALL FIXED.** Latest round (Mar 11): response.content null/empty guards added to callClaude(), callClaudeWithWebSearch(), callClaudeWithPTC(). Prevents crashes on empty API responses.
 
-**P1: ALL FIXED.**
+**P1 (2 new from Mar 12 E2E testing):**
+1. **Resume onboarding saves 0 case studies** (text path saves 9). Root cause: `parse_resume` in onboarding-tools.ts doesn't call `save_case_study` or trigger `research_company`. Fix: add company website scraping after resume parse.
+2. **Layer counter stuck at 0/4 during onboarding.** Root cause: Dashboard doesn't re-fetch when OnboardingChatBubble's `onDepthChange` fires. Fix: wire callback to trigger Dashboard re-fetch.
+
+**P1 (original): ALL FIXED.**
 - Document upload now wired into request form (Mar 10 session 2). File size validation added (5MB cap).
+- LiveAvatar CSP fix deployed + E2E verified (Mar 12). SSE staleness fix shipped (Mar 12). Research timeouts redesigned (Mar 12). Fail-forward hardened (Mar 12). Profile textareas fixed (Mar 12). CDN fallback loader added (Mar 12).
+
+**P2 (new from Mar 12 E2E):**
+1. Copy bug: "for at Affirm" — request/page.tsx lines 398-401, missing targetCompany guard.
+2. Company field not pre-filled from profile — request/page.tsx never calls /api/profile on mount.
+3. Resume path deal stories have null situation text — STAR structure incomplete from resume extraction.
+4. Resume path deal story situation text null — resume extracts metrics but doesn't coach for narrative.
 
 **P2 (2) — both need live HeyGen testing, can't fix from code:**
 1. **Female avatar ID unverified.** `FEMALE_AVATAR = "b4fc2d60..."` was set but never tested with real HeyGen credits. If wrong, female personas get no avatar.

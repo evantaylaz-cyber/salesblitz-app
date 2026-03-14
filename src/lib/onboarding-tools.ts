@@ -973,16 +973,117 @@ Extract ONLY what's actually in the resume. Don't invent or embellish.`;
 
     mark_onboarding_complete: tool({
       description:
-        "Mark onboarding as complete. Call this when Layer 1 essentials are captured and the user is ready to run their first blitz.",
+        "Mark onboarding as complete. Call this when Layer 1 essentials are captured and the user is ready to run their first blitz. IMPORTANT: Call research_company BEFORE this tool if you haven't already. This tool auto-scrapes case studies as a failsafe if none exist, but research_company produces richer results.",
       parameters: z.object({}),
       execute: async () => {
         console.log(`[ONBOARDING_TOOL] mark_onboarding_complete CALLED | userId=${userId}`);
         try {
+          // ── Failsafe: backfill case studies if resume path skipped research_company ──
+          const profile = await prisma.userProfile.findUnique({
+            where: { userId },
+            select: { caseStudies: true, companyName: true, companyUrl: true },
+          });
+
+          const hasCaseStudies = profile?.caseStudies && Array.isArray(profile.caseStudies) && profile.caseStudies.length > 0;
+          const hasCompany = !!profile?.companyName;
+          let caseStudiesBackfilled = false;
+
+          if (!hasCaseStudies && hasCompany) {
+            console.log(`[ONBOARDING_TOOL] mark_onboarding_complete FAILSAFE: 0 case studies, company="${profile!.companyName}". Auto-scraping...`);
+
+            try {
+              const companyName = profile!.companyName!;
+              let baseUrl = profile?.companyUrl || "";
+              if (!baseUrl) baseUrl = `https://www.${companyName.toLowerCase().replace(/[^a-z0-9]/g, "")}.com`;
+              if (!baseUrl.startsWith("http")) baseUrl = "https://" + baseUrl;
+              baseUrl = baseUrl.replace(/\/+$/, "");
+
+              const fetchPage = async (url: string): Promise<string> => {
+                try {
+                  const res = await fetch(url, {
+                    headers: { "User-Agent": "Mozilla/5.0 (compatible; SalesBlitz/1.0)", Accept: "text/html,application/xhtml+xml,text/plain" },
+                    signal: AbortSignal.timeout(8000),
+                  });
+                  if (!res.ok) return "";
+                  const html = await res.text();
+                  return html
+                    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
+                    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
+                    .replace(/<[^>]+>/g, " ")
+                    .replace(/&nbsp;/g, " ").replace(/&amp;/g, "&")
+                    .replace(/\s+/g, " ").trim().slice(0, 12000);
+                } catch { return ""; }
+              };
+
+              const [csPage, customersPage, homePage] = await Promise.allSettled([
+                fetchPage(`${baseUrl}/case-studies`),
+                fetchPage(`${baseUrl}/customers`),
+                fetchPage(baseUrl),
+              ]);
+
+              const scrapedContent = [
+                csPage.status === "fulfilled" ? csPage.value : "",
+                customersPage.status === "fulfilled" ? customersPage.value : "",
+                homePage.status === "fulfilled" ? homePage.value : "",
+              ].filter(Boolean).join("\n").slice(0, 30000);
+
+              if (scrapedContent.length > 200) {
+                const extractionResult = await generateText({
+                  model: anthropic("claude-sonnet-4-5-20250929"),
+                  prompt: `Extract case studies/customer success stories from this website content for "${companyName}". Return a JSON array of objects with: customer_name, industry, challenge, solution, result, summary. Only include REAL customers mentioned on the site. If none found, return [].\n\nWEBSITE CONTENT:\n${scrapedContent}\n\nReturn ONLY the JSON array, no other text.`,
+                  maxTokens: 2000,
+                });
+
+                try {
+                  const jsonMatch = extractionResult.text.match(/\[[\s\S]*\]/);
+                  if (jsonMatch) {
+                    const studies = JSON.parse(jsonMatch[0]);
+                    const validStudies = studies
+                      .filter((cs: any) => cs.customer_name && cs.customer_name !== "NOT_FOUND")
+                      .map((cs: any) => ({
+                        customerName: cs.customer_name,
+                        industry: cs.industry || "",
+                        challenge: cs.challenge || "",
+                        solution: cs.solution || "",
+                        result: cs.result || "",
+                        quote: cs.quote || "",
+                        summary: cs.summary || "",
+                      }));
+
+                    if (validStudies.length > 0) {
+                      await prisma.userProfile.update({
+                        where: { userId },
+                        data: { caseStudies: validStudies },
+                      });
+
+                      for (const cs of validStudies) {
+                        const docContent = `Case Study: ${cs.customerName} (${cs.industry})\nChallenge: ${cs.challenge}\nSolution: ${cs.solution}\nResult: ${cs.result}\n${cs.summary}`;
+                        try {
+                          await prisma.knowledgeDocument.create({
+                            data: { userId, title: `Case Study: ${cs.customerName}`, content: docContent, category: "case_studies" },
+                          });
+                        } catch { /* duplicate or non-fatal */ }
+                      }
+
+                      caseStudiesBackfilled = true;
+                      console.log(`[ONBOARDING_TOOL] FAILSAFE: saved ${validStudies.length} case studies for ${companyName}`);
+                    }
+                  }
+                } catch (parseErr) {
+                  console.error(`[ONBOARDING] Failsafe case study parse failed:`, parseErr);
+                }
+              }
+            } catch (scrapeErr: any) {
+              console.error(`[ONBOARDING] Failsafe scrape failed (non-blocking):`, scrapeErr.message);
+            }
+          }
+
+          // ── Mark onboarding complete ──
           await prisma.userProfile.update({
             where: { userId },
             data: { onboardingCompleted: true },
           });
-          return { success: true, message: "Onboarding marked as complete." };
+          return { success: true, message: "Onboarding marked as complete.", caseStudiesBackfilled };
         } catch (err: any) {
           console.error(`[ONBOARDING] Failed to mark complete:`, err.message);
           return { success: false, error: err.message };

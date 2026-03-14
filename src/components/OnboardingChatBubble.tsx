@@ -46,6 +46,7 @@ export default function OnboardingChatBubble({
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const resumeFileRef = useRef<HTMLInputElement>(null);
   const [depth, setDepth] = useState(currentDepth);
+  const [stepsCompleted, setStepsCompleted] = useState(0);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [uploadingFile, setUploadingFile] = useState(false);
 
@@ -62,6 +63,11 @@ export default function OnboardingChatBubble({
           const newDepth = args.depth || 1;
           setDepth(newDepth);
           onDepthChange?.(newDepth);
+        }
+        // Track intermediate progress during Layer 1 conversation
+        const progressTools = ["save_profile_section", "research_company", "save_deal_story", "parse_resume", "save_case_study"];
+        if (progressTools.includes(toolCall.toolName)) {
+          setStepsCompleted((prev) => prev + 1);
         }
       },
     });
@@ -191,7 +197,7 @@ export default function OnboardingChatBubble({
         <div className="flex-1">
           <p className="text-sm font-medium text-white">Sales Blitz Setup</p>
           <p className="text-xs text-neutral-400">
-            {profileDone ? "Complete" : `${depth}/4 layers`}
+            {profileDone ? "Complete" : depth > 0 ? `${depth}/4 layers` : stepsCompleted > 0 ? "Setting up..." : "0/4 layers"}
           </p>
         </div>
         {isLoading && <Loader2 className="h-4 w-4 animate-spin text-emerald-400" />}
@@ -219,7 +225,7 @@ export default function OnboardingChatBubble({
               {profileDone ? "AI Assistant" : "Profile Setup"}
             </h3>
             <p className="text-xs text-neutral-400">
-              {profileDone ? "Ask anything about your runs or profile" : `Layer ${depth}/4`}
+              {profileDone ? "Ask anything about your runs or profile" : depth > 0 ? `Layer ${depth}/4` : stepsCompleted > 0 ? "Setting up your profile..." : "Layer 0/4"}
             </p>
           </div>
         </div>

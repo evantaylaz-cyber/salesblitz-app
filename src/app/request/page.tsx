@@ -156,6 +156,23 @@ export default function RequestPage() {
         .then(res => res.json())
         .then(data => setPriorRuns(data.requests || []))
         .catch(() => {});
+
+      // Pre-fill from most recent target if no query params provided
+      if (!prefillCompany) {
+        fetch("/api/targets")
+          .then(res => res.ok ? res.json() : null)
+          .then(data => {
+            const targets = data?.targets;
+            if (targets && targets.length > 0) {
+              const latest = targets[0]; // most recent
+              if (latest.companyName && !targetCompany) {
+                setTargetCompany(latest.companyName);
+                if (latest.contactName && !targetName) setTargetName(latest.contactName);
+              }
+            }
+          })
+          .catch(() => {});
+      }
     }
   }, [isLoaded]);
 
@@ -395,11 +412,13 @@ export default function RequestPage() {
           <h1 className="text-2xl font-bold text-white">Blitz Started</h1>
           <p className="mt-3 text-neutral-300">
             Your <strong>{toolInfo.name}</strong> blitz{" "}
-            {targetName ? (
+            {targetName && targetCompany ? (
               <>for <strong>{targetName}</strong> at <strong>{targetCompany}</strong></>
-            ) : (
+            ) : targetName ? (
+              <>for <strong>{targetName}</strong></>
+            ) : targetCompany ? (
               <>for <strong>{targetCompany}</strong></>
-            )}{" "}is running.
+            ) : null}{" "}is running.
           </p>
           <p className="mt-2 text-sm text-neutral-400">
             We&apos;re researching and building your deliverables now. Track progress in real-time.
