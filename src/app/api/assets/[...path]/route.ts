@@ -25,6 +25,9 @@ const CONTENT_TYPES: Record<string, string> = {
   ".jpeg": "image/jpeg",
   ".html": "text/html",
   ".json": "application/json",
+  ".md": "text/markdown; charset=utf-8",
+  ".txt": "text/plain; charset=utf-8",
+  ".csv": "text/csv; charset=utf-8",
   ".pptx":
     "application/vnd.openxmlformats-officedocument.presentationml.presentation",
   ".docx":
@@ -108,7 +111,7 @@ export async function GET(
     const body = await response.arrayBuffer();
 
     // Set headers for inline display (PDFs, images) or download
-    const isInline = [".pdf", ".png", ".jpg", ".jpeg", ".html"].includes(ext);
+    const isInline = [".pdf", ".png", ".jpg", ".jpeg", ".html", ".md", ".txt", ".csv"].includes(ext);
     const disposition = isInline
       ? `inline; filename="${filename}"`
       : `attachment; filename="${filename}"`;
