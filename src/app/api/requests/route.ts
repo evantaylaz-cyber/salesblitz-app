@@ -165,7 +165,7 @@ export async function POST(req: NextRequest) {
     // are never lost if request creation fails (P1 bug fix Mar 14)
     const targetType = toolName.startsWith("interview_") ? "interview" : "prospect";
 
-    const { runResult, request } = await prisma.$transaction(async (tx) => {
+    const { runResult, request } = await prisma.$transaction(async (tx: any) => {
       // Consume a run — if they don't have runs, throw to abort transaction
       const runResult = await consumeRun(user.id, toolName as ToolName, teamId || null, tx);
       if (!runResult.success) {
@@ -252,7 +252,7 @@ export async function POST(req: NextRequest) {
       return { runResult, request };
     }, {
       timeout: 15000, // 15s timeout for the transaction
-    }).catch((err) => {
+    }).catch((err: any) => {
       // If the error is from consumeRun (no runs), return 403
       if (err.message?.includes("remaining") || err.message?.includes("No blitzes")) {
         return { runResult: { success: false, error: err.message } as any, request: null };

@@ -126,7 +126,7 @@ export async function POST(req: NextRequest) {
     // so runs are never lost if any downstream creation fails (P1 bug fix Mar 14)
     let txError: string | null = null;
 
-    const txResult = await prisma.$transaction(async (tx) => {
+    const txResult = await prisma.$transaction(async (tx: any) => {
       // Consume N runs (one per account) — if any fails, entire transaction rolls back
       const runResults = [];
       for (let i = 0; i < accounts.length; i++) {
@@ -188,7 +188,7 @@ export async function POST(req: NextRequest) {
       return { runResults, batchJob, childRequestIds };
     }, {
       timeout: 30000, // 30s timeout for batch (N accounts = more DB ops)
-    }).catch((err) => {
+    }).catch((err: any) => {
       if (err.message?.includes("Insufficient runs") || err.message?.includes("remaining") || err.message?.includes("No blitzes")) {
         txError = err.message;
         return null;

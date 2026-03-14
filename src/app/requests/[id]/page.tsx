@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useParams } from "next/navigation";
+import { TOOL_LABELS as TOOL_NAMES } from "@/lib/tool-display";
 import { useStepStream, StepUpdate } from "@/hooks/useStepStream";
 import {
   Loader2,
@@ -81,19 +82,6 @@ interface RequestDetail {
   completedAt: string | null;
   deliveredAt: string | null;
 }
-
-const TOOL_NAMES: Record<string, string> = {
-  interview_outreach: "Interview Outreach",
-  prospect_outreach: "Prospect Outreach",
-  interview_prep: "Interview Prep",
-  prospect_prep: "Prospect Prep",
-  deal_playbook: "Deal Playbook",
-  proposal_blitz: "Proposal Blitz",
-  territory_blitz: "Territory Blitz",
-  // Backward compat
-  deal_audit: "Deal Audit",
-  champion_builder: "Champion Builder",
-};
 
 const STEP_ICONS: Record<string, React.ElementType> = {
   competitive_research: Search,

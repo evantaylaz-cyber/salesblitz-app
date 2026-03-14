@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { UserButton } from "@clerk/nextjs";
+import { TOOL_LABELS as TOOL_NAMES } from "@/lib/tool-display";
 import {
   Loader2,
   CheckCircle2,
@@ -44,15 +45,6 @@ interface AdminRequest {
     priorityProcessing: boolean;
   };
 }
-
-const TOOL_NAMES: Record<string, string> = {
-  interview_outreach: "Interview Outreach",
-  prospect_outreach: "Prospect Outreach",
-  interview_prep: "Interview Prep",
-  prospect_prep: "Prospect Prep",
-  deal_audit: "Deal Audit",
-  champion_builder: "Champion Builder",
-};
 
 const STATUS_ACTIONS: Record<string, { next: string; label: string; icon: React.ElementType; color: string }> = {
   submitted: { next: "in_progress", label: "Start Working", icon: Play, color: "bg-amber-600 hover:bg-amber-700" },

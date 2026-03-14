@@ -21,14 +21,7 @@ import {
   Mic,
 } from "lucide-react";
 
-const TOOL_NAMES: Record<string, string> = {
-  interview_outreach: "Interview Outreach",
-  prospect_outreach: "Prospect Outreach",
-  interview_prep: "Interview Prep",
-  prospect_prep: "Prospect Prep",
-  deal_audit: "Deal Audit",
-  champion_builder: "Champion Builder",
-};
+import { TOOL_LABELS as TOOL_NAMES } from "@/lib/tool-display";
 
 const TOOL_HOOKS: Record<string, string> = {
   interview_outreach: "Land the interview before you walk in.",

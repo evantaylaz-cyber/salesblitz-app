@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
+import { TOOL_LABELS as TOOL_NAMES } from "@/lib/tool-display";
 import {
   Zap,
   Lock,
@@ -72,20 +73,6 @@ const TIER_NAMES: Record<string, string> = {
   launch: "Launch",
   pro: "Pro",
   closer: "Closer",
-};
-const TOOL_NAMES: Record<string, string> = {
-  interview_outreach: "Interview Outreach",
-  prospect_outreach: "Prospect Outreach",
-  interview_prep: "Interview Prep",
-  prospect_prep: "Prospect Prep",
-  deal_playbook: "Deal Playbook",
-  proposal_blitz: "Proposal Blitz",
-  practice_mode: "AI Practice Mode",
-  territory_blitz: "Territory Blitz",
-  // Backward compat for old runs
-  deal_audit: "Deal Audit",
-  champion_builder: "Champion Builder",
-  win_loss_analyst: "Win/Loss Analyst",
 };
 
 // Interview-specific tools

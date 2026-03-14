@@ -1,15 +1,7 @@
 import { Resend } from "resend";
+import { TOOL_LABELS as TOOL_NAMES } from "@/lib/tool-display";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-
-const TOOL_NAMES: Record<string, string> = {
-  interview_outreach: "Interview Outreach",
-  prospect_outreach: "Prospect Outreach",
-  interview_prep: "Interview Prep",
-  prospect_prep: "Prospect Prep",
-  deal_audit: "Deal Audit",
-  champion_builder: "Champion Builder",
-};
 
 const TOOL_DELIVERABLES: Record<string, string[]> = {
   interview_outreach: [

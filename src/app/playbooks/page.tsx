@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
+import { TOOL_LABELS, TOOL_COLORS, getToolColor } from "@/lib/tool-display";
 import {
   Loader2,
   ExternalLink,
@@ -33,36 +34,6 @@ interface CompanyGroup {
   latestRun: string;
   hasPlaybook: boolean;
 }
-
-const TOOL_LABELS: Record<string, string> = {
-  interview_outreach: "Interview Outreach",
-  interview_prep: "Interview Prep",
-  prospect_outreach: "Prospect Outreach",
-  prospect_prep: "Prospect Prep",
-  deal_playbook: "Deal Playbook",
-  proposal_blitz: "Proposal Blitz",
-  territory_blitz: "Territory Blitz",
-  competitor_research: "Competitor Research",
-  practice_mode: "AI Practice Mode",
-  // Backward compat for pre-Mar 13 runs
-  champion_builder: "Champion Builder",
-  deal_audit: "Deal Audit",
-};
-
-const TOOL_COLORS: Record<string, string> = {
-  interview_outreach: "bg-emerald-500/15 text-emerald-400",
-  interview_prep: "bg-emerald-500/15 text-emerald-400",
-  prospect_outreach: "bg-blue-500/15 text-blue-400",
-  prospect_prep: "bg-blue-500/15 text-blue-400",
-  deal_playbook: "bg-amber-500/15 text-amber-400",
-  proposal_blitz: "bg-blue-500/15 text-blue-400",
-  territory_blitz: "bg-emerald-500/15 text-emerald-400",
-  competitor_research: "bg-emerald-500/15 text-emerald-400",
-  practice_mode: "bg-purple-500/15 text-purple-400",
-  // Backward compat
-  champion_builder: "bg-amber-500/15 text-amber-400",
-  deal_audit: "bg-rose-100 text-rose-700",
-};
 
 export default function PlaybooksPage() {
   const { isLoaded } = useUser();

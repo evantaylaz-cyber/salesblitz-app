@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { TOOL_LABELS } from "@/lib/tool-display";
 import {
   TrendingUp,
   TrendingDown,
@@ -54,20 +55,6 @@ interface WinLossData {
 }
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
-
-const TOOL_LABELS: Record<string, string> = {
-  interview_outreach: "Interview Outreach",
-  prospect_outreach: "Prospect Outreach",
-  interview_prep: "Interview Prep",
-  prospect_prep: "Prospect Prep",
-  deal_playbook: "Deal Playbook",
-  proposal_blitz: "Proposal Blitz",
-  territory_blitz: "Territory Blitz",
-  practice_mode: "Practice Mode",
-  // Backward compat for pre-Mar 13 runs
-  deal_audit: "Deal Audit",
-  champion_builder: "Champion Builder",
-};
 
 const DIMENSION_LABELS: Record<string, string> = {
   overall: "Overall",

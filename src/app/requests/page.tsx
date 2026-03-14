@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
+import { TOOL_LABELS as TOOL_NAMES } from "@/lib/tool-display";
 import {
   Loader2,
   CheckCircle2,
@@ -66,21 +67,6 @@ interface BatchJob {
   createdAt: string;
   updatedAt: string;
 }
-
-const TOOL_NAMES: Record<string, string> = {
-  interview_outreach: "Interview Outreach",
-  prospect_outreach: "Prospect Outreach",
-  interview_prep: "Interview Prep",
-  prospect_prep: "Prospect Prep",
-  deal_playbook: "Deal Playbook",
-  proposal_blitz: "Proposal Blitz",
-  territory_blitz: "Territory Blitz",
-  competitor_research: "Competitor Research",
-  practice_mode: "AI Practice Mode",
-  // Backward compat for pre-Mar 13 runs
-  deal_audit: "Deal Audit",
-  champion_builder: "Champion Builder",
-};
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: React.ElementType }> = {
   submitted: { label: "Queued", color: "text-blue-400", bg: "bg-blue-500/10 border-blue-500/20", icon: Clock },

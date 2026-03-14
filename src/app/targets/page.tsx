@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
+import { TOOL_LABELS } from "@/lib/tool-display";
 import {
   Target,
   Building2,
@@ -73,20 +74,6 @@ const STATUS_COLORS: Record<string, string> = {
   closed: "text-neutral-500",
   won: "text-emerald-400",
   lost: "text-red-500",
-};
-
-const TOOL_LABELS: Record<string, string> = {
-  interview_outreach: "Interview Outreach",
-  prospect_outreach: "Prospect Outreach",
-  interview_prep: "Interview Prep",
-  prospect_prep: "Prospect Prep",
-  deal_playbook: "Deal Playbook",
-  proposal_blitz: "Proposal Blitz",
-  territory_blitz: "Territory Blitz",
-  practice_mode: "AI Practice Mode",
-  // Backward compat for pre-Mar 13 runs
-  deal_audit: "Deal Audit",
-  champion_builder: "Champion Builder",
 };
 
 function timeAgo(dateStr: string): string {
